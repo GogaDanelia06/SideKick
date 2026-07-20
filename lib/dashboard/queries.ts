@@ -100,15 +100,15 @@ export function getBilling(
     plan,
   };
 
-  const payments = PAYMENTS.map((payment, index) => ({
-    id: `payment-${index + 1}`,
-    businessId: "demo-business",
-    date: new Date(payment.date),
-    status: "PAID",
-    createdAt,
-    updatedAt: createdAt,
-    ...payment,
-  }));
+const payments = PAYMENTS.map((payment, index) => ({
+  ...payment,
+  id: `payment-${index + 1}`,
+  businessId: "demo-business",
+  date: payment.date,
+  status: "PAID",
+  createdAt,
+  updatedAt: createdAt,
+}));
 
   return {
     subscription,
