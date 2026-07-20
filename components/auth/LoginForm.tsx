@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { IconBolt } from "@tabler/icons-react";
+
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
 import { OrDivider } from "./OrDivider";
@@ -17,27 +17,41 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 export function LoginForm() {
   const { t } = useLanguage();
   const router = useRouter();
+
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setPending(true);
-    const fd = new FormData(e.currentTarget);
-    const res = await signIn("credentials", {
-      email: String(fd.get("email") ?? ""),
-      password: String(fd.get("password") ?? ""),
-      redirect: false,
-    });
-    setPending(false);
-    if (res?.error) {
-      setError(t({ ka: "არასწორი მეილი ან პაროლი", en: "Invalid email or password" }));
-    } else {
-      router.push(DASH.home);
-      router.refresh();
-    }
+  function openDashboard() {
+    localStorage.setItem("sidekick-demo-auth", "true");
+
+    router.push(DASH.home);
+    router.refresh();
   }
+
+function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+
+  setError(null);
+  setPending(true);
+
+  const formData = new FormData(event.currentTarget);
+
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+
+  const DEMO_EMAIL = "demo@sidekick.com";
+  const DEMO_PASSWORD = "Sidekick123!";
+
+  if (email !== DEMO_EMAIL || password !== DEMO_PASSWORD) {
+    setError("Invalid email or password");
+    setPending(false);
+    return;
+  }
+
+  setTimeout(() => {
+    openDashboard();
+  }, 400);
+}
 
   return (
     <AuthShell
@@ -47,27 +61,63 @@ export function LoginForm() {
       footer={
         <>
           {t(LOGIN.noAccount)}{" "}
-          <Link href={ROUTES.register} className="font-medium text-blue">
+          <Link
+            href={ROUTES.register}
+            className="font-medium text-blue"
+          >
             {t(LOGIN.signUp)}
           </Link>
         </>
       }
     >
-      <GoogleButton label={t(LOGIN.google)} onClick={() => signIn("google", { callbackUrl: DASH.home })} />
+      <GoogleButton
+        label={t(LOGIN.google)}
+        onClick={openDashboard}
+      />
+
       <OrDivider />
-      <form className="flex flex-col gap-3.5" onSubmit={onSubmit}>
-        <Field name="email" label={t(LOGIN.email)} type="email" placeholder="you@company.com" required />
-        <Field name="password" label={t(LOGIN.password)} type="password" placeholder="••••••••" required />
+
+      <form
+        className="flex flex-col gap-3.5"
+        onSubmit={onSubmit}
+      >
+        <Field
+          name="email"
+          label={t(LOGIN.email)}
+          type="email"
+          placeholder="you@company.com"
+          required
+        />
+
+        <Field
+          name="password"
+          label={t(LOGIN.password)}
+          type="password"
+          placeholder="••••••••"
+          required
+        />
+
         <div className="flex items-center justify-between text-[13px]">
           <label className="flex items-center gap-2 text-muted">
-            <input type="checkbox" className="accent-[var(--primary)]" />
+            <input
+              type="checkbox"
+              className="accent-[var(--primary)]"
+            />
+
             {t(LOGIN.remember)}
           </label>
+
           <Link href={ROUTES.forgot} className="text-blue">
             {t(LOGIN.forgot)}
           </Link>
         </div>
-        {error ? <p className="text-[13px] text-red">{error}</p> : null}
+
+        {error ? (
+          <p className="text-[13px] text-red">
+            {error}
+          </p>
+        ) : null}
+
         <button
           type="submit"
           disabled={pending}

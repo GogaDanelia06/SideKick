@@ -1,10 +1,9 @@
-import NextAuth from "next-auth";
-import { authConfig } from "@/auth.config";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-// Edge middleware uses the DB-free config; the `authorized` callback guards /dashboard.
-const { auth } = NextAuth(authConfig);
-
-export default auth;
+export function middleware(_request: NextRequest) {
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: ["/dashboard/:path*"],
