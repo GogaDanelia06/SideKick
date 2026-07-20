@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#f6f8fa"/><rect x="34" y="30" width="32" height="32" rx="9" fill="#1f883d"/><path d="M52 38l-8 12h6l-2 12 10-14h-6z" fill="#fff"/></svg></template>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.6.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --canvas:#f6f8fa; --bg:#ffffff; --soft:#f6f8fa;
+  --border:#d0d7de; --border2:#eaeef2; --input:#d0d7de;
+  --primary:#1f883d; --primary-h:#1a7f37; --blue:#0969da; --blue-surface:#0969da12; --ai:#8250df; --ai-surface:#8250df12;
+  --ink:#1f2328; --muted:#59636e; --faint:#818b98;
+  --green:#1a7f37; --amber:#bf8700; --red:#cf222e;
+  --green-s:#1a7f3718; --amber-s:#bf870018; --red-s:#cf222e14;
+  --topbar-bg:rgba(255,255,255,.9);
+  --r-sm:6px; --r:10px; --r-lg:14px;
+  --font:"Noto Sans Georgian","Inter",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",monospace;
+}
+[data-theme="dark"]{
+  --canvas:#0d1117; --bg:#161b22; --soft:#1c2128;
+  --border:#30363d; --border2:#21262d; --input:#30363d;
+  --primary:#238636; --primary-h:#2ea043; --blue:#58a6ff; --blue-surface:#1f6feb22; --ai:#a371f7; --ai-surface:#a371f722;
+  --ink:#e6edf3; --muted:#7d8590; --faint:#6e7681;
+  --green:#3fb950; --amber:#d29922; --red:#f85149;
+  --green-s:#3fb95022; --amber-s:#d2992222; --red-s:#f8514922;
+  --topbar-bg:rgba(22,27,34,.9);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+.mob{font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.mob input,.mob textarea,.mob button,.mob select{font-family:var(--font)}
+.mob ::-webkit-scrollbar{width:0;height:0}
+</style>
+</helmet>
+
+<div class="mob" data-theme="{{ theme }}" data-phone style="width:390px;height:844px;background:var(--canvas);color:var(--ink);border-radius:44px;border:10px solid #0b0d10;box-shadow:0 30px 70px rgba(0,0,0,.4);overflow:hidden;position:relative;display:flex;flex-direction:column">
+
+  <!-- status bar -->
+  <div style="height:44px;flex-shrink:0;background:var(--topbar-bg);display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:13px;font-weight:600;position:relative;z-index:5">
+    <span style="font-family:var(--mono)">9:41</span>
+    <span style="position:absolute;left:50%;top:8px;transform:translateX(-50%);width:96px;height:26px;background:#0b0d10;border-radius:14px"></span>
+    <span style="display:flex;gap:6px;align-items:center;font-size:15px"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi"></i><i class="ti ti-battery-3"></i></span>
+  </div>
+
+  <!-- top bar -->
+  <header style="height:54px;flex-shrink:0;background:var(--topbar-bg);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px;position:relative;z-index:5">
+    <button onClick="{{ openDrawer }}" style="width:36px;height:36px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg);color:var(--ink);display:grid;place-items:center;cursor:pointer;font-size:19px"><i class="ti ti-menu-2"></i></button>
+    <div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ title }}</div></div>
+    <button onClick="{{ toggleTheme }}" style="width:36px;height:36px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg);color:var(--muted);display:grid;place-items:center;cursor:pointer;font-size:17px"><i class="ti {{ themeIcon }}"></i></button>
+    <button style="width:36px;height:36px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg);color:var(--muted);display:grid;place-items:center;cursor:pointer;font-size:17px;position:relative"><i class="ti ti-bell"></i><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:999px;background:var(--red)"></span></button>
+  </header>
+
+  <!-- scroll body -->
+  <div data-scroll style="flex:1;overflow:auto;padding:16px 16px 92px">
+
+    <!-- §1 HOME -->
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between"><span style="width:30px;height:30px;border-radius:8px;background:var(--blue-surface);color:var(--blue);display:grid;place-items:center;font-size:16px"><i class="ti {{ k.icon }}"></i></span><span style="font-size:11px;color:var(--green)"><i class="ti {{ k.deltaIcon }}"></i> {{ k.delta }}</span></div>
+            <div style="font-family:var(--mono);font-size:22px;font-weight:600;margin-top:8px">{{ k.value }}</div>
+            <div style="font-size:11px;color:var(--muted)">{{ k.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px"><h3 style="font-size:14px;font-weight:600">შეტყობინებების ლიმიტი</h3></div>
+        <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:8px"><span style="font-family:var(--mono);font-size:24px;font-weight:600">6,420</span><span style="color:var(--muted);font-size:12px;margin-bottom:5px">/ 10,000</span></div>
+        <div style="height:9px;border-radius:999px;background:var(--soft);overflow:hidden;border:1px solid var(--border2)"><span style="display:block;height:100%;width:64%;background:var(--primary)"></span></div>
+        <div style="font-size:11px;color:var(--faint);margin-top:6px">განულდება 1 აგვისტოს</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">არხების სტატუსი</h3>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <sc-for list="{{ channelStatus }}" as="c" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:11px;font-size:14px"><i class="ti {{ c.icon }}" style="font-size:18px;color:var(--muted);width:20px"></i><span style="flex:1">{{ c.name }}</span><span style="width:9px;height:9px;border-radius:999px;background:{{ c.light }};box-shadow:0 0 0 3px {{ c.glow }}"></span><span style="font-size:12px;color:{{ c.light }};width:76px;text-align:right">{{ c.state }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="font-size:14px;font-weight:600">გაჩერებული შეტყ.</h3><a onClick="{{ goConvos }}" style="font-size:12px;color:var(--blue);cursor:pointer">ყველა →</a></div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ stoppedMsgs }}" as="m" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border2);border-radius:var(--r);background:var(--soft)"><i class="ti {{ m.icon }}" style="font-size:17px;color:var(--muted)"></i><div style="flex:1;min-width:0"><div style="font-weight:500;font-size:13px">{{ m.user }}</div><div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.text }}</div></div><span style="font-size:10px;font-weight:500;background:{{ m.badgeBg }};color:{{ m.badgeColor }};padding:2px 8px;border-radius:999px;white-space:nowrap">{{ m.reason }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- §2 CONVERSATIONS (list) -->
+    <sc-if value="{{ isConvos }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:2px">
+        <sc-for list="{{ convFilters }}" as="f" hint-placeholder-count="5"><span style="font-size:12px;font-weight:500;padding:6px 12px;border-radius:999px;white-space:nowrap;border:1px solid {{ f.border }};color:{{ f.color }};background:{{ f.bg }};display:inline-flex;align-items:center;gap:5px"><i class="ti {{ f.icon }}" style="font-size:13px"></i> {{ f.label }}</span></sc-for>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden">
+        <sc-for list="{{ chats }}" as="ch" hint-placeholder-count="6">
+          <div onClick="{{ ch.select }}" style="display:flex;gap:11px;padding:13px 14px;border-bottom:1px solid var(--border2);cursor:pointer;background:{{ ch.activeBg }}">
+            <div style="position:relative;flex-shrink:0"><div style="width:40px;height:40px;border-radius:999px;background:var(--soft);border:1px solid var(--border);display:grid;place-items:center;font-weight:600;color:var(--muted)">{{ ch.initials }}</div><i class="ti {{ ch.chIcon }}" style="position:absolute;bottom:-2px;right:-2px;font-size:15px;color:{{ ch.chColor }}"></i></div>
+            <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px"><span style="font-weight:600;font-size:14px">{{ ch.name }}</span><span style="width:7px;height:7px;border-radius:999px;background:{{ ch.statusColor }}"></span><span style="margin-left:auto;font-size:11px;color:var(--faint)">{{ ch.time }}</span></div><div style="font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ch.preview }}</div></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- §3 AI -->
+    <sc-if value="{{ isAi }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <h3 style="font-size:14px;font-weight:600;margin-bottom:4px"><i class="ti ti-language" style="color:var(--blue)"></i> ენები</h3>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px"><span style="font-size:13px;font-weight:500;padding:6px 12px;border-radius:999px;background:var(--primary);color:#fff">🇬🇪 ქართული</span><span style="font-size:13px;font-weight:500;padding:6px 12px;border-radius:999px;background:var(--primary);color:#fff">🇬🇧 English</span><span style="font-size:13px;padding:6px 12px;border-radius:999px;background:var(--bg);border:1px dashed var(--border);color:var(--muted)"><i class="ti ti-plus"></i></span></div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <h3 style="font-size:14px;font-weight:600;margin-bottom:12px"><i class="ti ti-building-store" style="color:var(--blue)"></i> ბიზნესის ინფო</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ bizFields }}" as="f" hint-placeholder-count="4"><div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">{{ f }}</label><input style="width:100%;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;outline:none;color:var(--ink)" /></div></sc-for>
+        </div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <h3 style="font-size:14px;font-weight:600;margin-bottom:12px"><i class="ti ti-mask" style="color:var(--blue)"></i> ხასიათი</h3>
+        <div style="font-size:12px;font-weight:500;margin-bottom:7px">1. კომუნიკაციის სტილი</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap"><sc-for list="{{ styleChips }}" as="c" hint-placeholder-count="5"><span onClick="{{ c.pick }}" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:{{ c.weight }};padding:7px 12px;border-radius:8px;cursor:pointer;color:{{ c.color }};background:{{ c.bg }};border:1px solid {{ c.border }}"><sc-if value="{{ c.sel }}" hint-placeholder-val="{{ false }}"><i class="ti ti-check" style="font-size:13px"></i></sc-if>{{ c.label }}</span></sc-for></div>
+        <div style="font-size:12px;font-weight:500;margin:12px 0 7px">2. პასუხის სიგრძე</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap"><sc-for list="{{ lenChips }}" as="c" hint-placeholder-count="3"><span onClick="{{ c.pick }}" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:{{ c.weight }};padding:7px 12px;border-radius:8px;cursor:pointer;color:{{ c.color }};background:{{ c.bg }};border:1px solid {{ c.border }}"><sc-if value="{{ c.sel }}" hint-placeholder-val="{{ false }}"><i class="ti ti-check" style="font-size:13px"></i></sc-if>{{ c.label }}</span></sc-for></div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <h3 style="font-size:14px;font-weight:600;margin-bottom:12px"><i class="ti ti-list-check" style="color:var(--blue)"></i> როლები</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+          <sc-for list="{{ roles }}" as="r" hint-placeholder-count="6"><div onClick="{{ r.toggle }}" style="display:flex;align-items:center;gap:8px;padding:10px;border-radius:var(--r);cursor:pointer;background:{{ r.cardBg }};border:1px solid {{ r.cardBorder }}"><i class="ti {{ r.icon }}" style="font-size:16px;color:{{ r.iconColor }}"></i><span style="font-size:12px;flex:1">{{ r.label }}</span></div></sc-for>
+        </div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <h3 style="font-size:14px;font-weight:600;margin-bottom:10px"><i class="ti ti-terminal-2" style="color:var(--blue)"></i> პრომპტი</h3>
+        <textarea rows="4" placeholder="შენ ხარ [კომპანიის] ასისტენტი..." style="width:100%;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:11px;font-size:13px;outline:none;color:var(--ink);resize:vertical;font-family:var(--mono)"></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px"><button style="flex:1;height:38px;border-radius:var(--r-sm);background:var(--primary);color:#fff;border:0;cursor:pointer;font-weight:500;font-size:13px"><i class="ti ti-device-floppy"></i> შენახვა</button><button style="flex:1;height:38px;border-radius:var(--r-sm);background:var(--ai-surface);color:var(--ai);border:1px solid var(--ai);cursor:pointer;font-weight:500;font-size:13px"><i class="ti ti-sparkles"></i> გენერაცია</button></div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:9px"><span style="width:28px;height:28px;border-radius:8px;background:var(--ai-surface);color:var(--ai);display:grid;place-items:center"><i class="ti ti-flask"></i></span><b style="font-size:13px">ტესტერი</b></div>
+        <div style="padding:14px;display:flex;flex-direction:column;gap:9px;background:var(--soft)"><div style="max-width:85%;padding:9px 12px;border-radius:12px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-top-left-radius:4px">მუშაობთ კვირას?</div><div style="max-width:85%;padding:9px 12px;border-radius:12px;font-size:13px;background:var(--ai-surface);border:1px solid var(--ai);color:var(--ai);border-top-right-radius:4px;margin-left:auto"><span style="font-size:10px;font-weight:600;opacity:.75;display:block;margin-bottom:2px">✦ AI</span>დიახ! კვირას 11:00–18:00 🙂</div></div>
+        <div style="padding:12px 14px;display:flex;gap:8px"><input placeholder="შეტყობინება..." style="flex:1;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;outline:none;color:var(--ink)" /><button style="width:38px;border-radius:var(--r-sm);background:var(--ai);color:#fff;border:0;cursor:pointer"><i class="ti ti-send"></i></button></div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- §4 CHANNELS -->
+    <sc-if value="{{ isChannels }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="padding:11px 13px;background:var(--blue-surface);border:1px solid var(--blue);border-radius:var(--r);font-size:12px;color:var(--blue);display:flex;gap:8px"><i class="ti ti-info-circle"></i> ინტეგრაციები. მიერთებისთვის იხ. ვიდეო.</div>
+      <sc-for list="{{ channels }}" as="c" hint-placeholder-count="4">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;display:flex;align-items:center;gap:12px">
+          <span style="width:42px;height:42px;border-radius:11px;background:var(--soft);border:1px solid var(--border);display:grid;place-items:center;font-size:22px;color:{{ c.color }}"><i class="ti {{ c.icon }}"></i></span>
+          <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">{{ c.name }}</div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:999px;background:{{ c.statusBg }};color:{{ c.statusColor }};margin-top:3px"><i class="ti ti-circle-filled" style="font-size:7px"></i> {{ c.statusText }}</span></div>
+          <button style="height:34px;padding:0 13px;font-size:12px;font-weight:500;border-radius:var(--r-sm);cursor:pointer;background:{{ c.btnBg }};color:{{ c.btnColor }};border:1px solid {{ c.btnBorder }}">{{ c.btnLabel }}</button>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- §5 PRODUCTS -->
+    <sc-if value="{{ isProducts }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button style="height:42px;border-radius:var(--r-sm);background:var(--primary);color:#fff;border:0;cursor:pointer;font-weight:500;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px"><i class="ti ti-plus"></i> პროდუქტის დამატება</button>
+      <sc-for list="{{ productRows }}" as="p" hint-placeholder-count="5">
+        <div onClick="{{ p.edit }}" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;display:flex;align-items:center;gap:12px;cursor:pointer">
+          <span style="width:46px;height:46px;border-radius:9px;background:var(--soft);border:1px solid var(--border);display:grid;place-items:center;color:var(--faint);font-size:20px;flex-shrink:0"><i class="ti ti-photo"></i></span>
+          <div style="flex:1;min-width:0"><div style="font-weight:500;font-size:14px">{{ p.name }}</div><div style="font-size:12px;color:var(--muted);font-family:var(--mono)">{{ p.code }} · მარაგი: <span style="color:{{ p.stockColor }}">{{ p.stock }}</span></div></div>
+          <div style="text-align:right"><div style="font-family:var(--mono);font-weight:600;font-size:14px">{{ p.price }}</div><div style="font-family:var(--mono);font-size:12px;color:var(--primary)">{{ p.sale }}</div></div>
+          <span style="width:32px;height:32px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--soft);color:var(--blue);display:grid;place-items:center;font-size:16px;flex-shrink:0"><i class="ti ti-edit"></i></span>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- §6 ORDERS -->
+    <sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:2px">
+        <sc-for list="{{ orderTabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.go }}" style="white-space:nowrap;font-size:12px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer;color:{{ t.chipColor }};background:{{ t.chipBg }};border:1px solid {{ t.chipBorder }}">{{ t.label }} · {{ t.count }}</button></sc-for>
+      </div>
+      <sc-for list="{{ orders }}" as="o" hint-placeholder-count="4">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden">
+          <div onClick="{{ o.toggle }}" style="padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer">
+            <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--mono);font-weight:600">{{ o.id }}</span><span style="font-weight:500">{{ o.name }}</span></div><div style="font-size:12px;color:var(--muted);font-family:var(--mono)">{{ o.phone }} · {{ o.date }}</div></div>
+            <span style="font-family:var(--mono);font-weight:600">{{ o.total }}</span><i class="ti {{ o.chevron }}" style="color:var(--muted)"></i>
+          </div>
+          <sc-if value="{{ o.open }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:14px;border-top:1px solid var(--border2);background:var(--soft);display:flex;flex-direction:column;gap:10px">
+              <div style="font-size:13px;color:var(--muted)"><i class="ti ti-map-pin" style="color:var(--blue)"></i> {{ o.addr }}</div>
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;display:flex;justify-content:space-between;font-size:13px"><span>თეთრი კაბა M ×1</span><span style="font-family:var(--mono);font-weight:600">{{ o.total }}</span></div>
+              <div style="display:flex;gap:7px;flex-wrap:wrap"><button style="font-size:11px;font-weight:500;padding:6px 10px;border-radius:var(--r-sm);background:var(--green-s);color:var(--green);border:1px solid var(--green);cursor:pointer"><i class="ti ti-cash"></i> გადახდილი</button><button style="font-size:11px;font-weight:500;padding:6px 10px;border-radius:var(--r-sm);background:var(--blue-surface);color:var(--blue);border:1px solid var(--blue);cursor:pointer"><i class="ti ti-truck-delivery"></i> გაგზავნა</button><button style="font-size:11px;font-weight:500;padding:6px 10px;border-radius:var(--r-sm);background:var(--bg);color:var(--red);border:1px solid var(--border);cursor:pointer"><i class="ti ti-trash"></i></button></div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- §7 LEADS -->
+    <sc-if value="{{ isLeads }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ leads }}" as="l" hint-placeholder-count="4">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-weight:600;font-size:14px;flex:1">{{ l.name }}</span><span style="font-size:11px;font-weight:500;padding:3px 9px;border-radius:999px;background:{{ l.statusBg }};color:{{ l.statusColor }}">{{ l.status }}</span></div>
+          <div style="font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">{{ l.phone }} · {{ l.source }}</div>
+          <div style="font-size:13px;display:flex;align-items:center;gap:8px"><i class="ti ti-heart" style="color:var(--red)"></i> {{ l.interest }}</div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- §8 ANALYTICS -->
+    <sc-if value="{{ isAnalytics }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:2px"><sc-for list="{{ ranges }}" as="r" hint-placeholder-count="6"><button onClick="{{ r.pick }}" style="white-space:nowrap;font-size:12px;font-weight:500;padding:7px 12px;border-radius:var(--r-sm);cursor:pointer;color:{{ r.color }};background:{{ r.bg }};border:1px solid {{ r.border }}">{{ r.label }}</button></sc-for></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px"><div style="font-size:12px;color:var(--muted)">მიმოწერები</div><div style="font-family:var(--mono);font-size:22px;font-weight:600;margin-top:6px">8,540</div><div style="font-size:11px;color:var(--green)"><i class="ti ti-trending-up"></i> +14%</div></div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px"><div style="font-size:12px;color:var(--muted)">შემოსავალი</div><div style="font-family:var(--mono);font-size:22px;font-weight:600;margin-top:6px">48.2K₾</div><div style="font-size:11px;color:var(--green)"><i class="ti ti-trending-up"></i> +18%</div></div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <h3 style="font-size:14px;font-weight:600;margin-bottom:14px">მიმოწერების დინამიკა</h3>
+        <div style="display:flex;align-items:flex-end;gap:7px;height:130px"><sc-for list="{{ chartBars }}" as="b" hint-placeholder-count="8"><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end"><span style="width:100%;background:var(--primary);border-radius:4px 4px 0 0;opacity:.9;height:{{ b.h }}"></span><span style="font-size:9px;color:var(--faint)">{{ b.label }}</span></div></sc-for></div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">აქტიური არხები</h3>
+        <div style="display:flex;flex-direction:column;gap:12px"><sc-for list="{{ channelBars }}" as="c" hint-placeholder-count="4"><div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="display:inline-flex;align-items:center;gap:7px"><i class="ti {{ c.icon }}" style="color:{{ c.color }}"></i> {{ c.name }}</span><span style="font-family:var(--mono);color:var(--muted)">{{ c.val }}</span></div><div style="height:7px;border-radius:999px;background:var(--soft);overflow:hidden"><span style="display:block;height:100%;width:{{ c.w }};background:{{ c.color }}"></span></div></div></sc-for></div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- §9 TEAM -->
+    <sc-if value="{{ isTeam }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button style="height:42px;border-radius:var(--r-sm);background:var(--primary);color:#fff;border:0;cursor:pointer;font-weight:500;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px"><i class="ti ti-user-plus"></i> წევრის დამატება</button>
+      <sc-for list="{{ team }}" as="m" hint-placeholder-count="4">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;display:flex;align-items:center;gap:12px">
+          <span style="width:38px;height:38px;border-radius:999px;background:{{ m.avBg }};color:#fff;display:grid;place-items:center;font-weight:600">{{ m.initial }}</span>
+          <div style="flex:1;min-width:0"><div style="font-weight:500;font-size:14px">{{ m.name }}</div><div style="font-size:12px;color:var(--muted)">{{ m.email }}</div></div>
+          <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:{{ m.roleBg }};color:{{ m.roleColor }}">{{ m.role }}</span>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- §10 BILLING -->
+    <sc-if value="{{ isBilling }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-size:12px;color:var(--muted)">მიმდინარე პაკეტი</div><div style="font-size:20px;font-weight:600">Standard</div></div><div style="text-align:right"><div style="font-family:var(--mono);font-size:22px;font-weight:600">99₾</div><div style="font-size:11px;color:var(--muted)">/ თვე</div></div></div>
+        <button style="width:100%;height:38px;border-radius:var(--r-sm);background:var(--bg);border:1px solid var(--border);color:var(--ink);font-size:13px;font-weight:500;cursor:pointer;margin-top:12px">პაკეტის შეცვლა</button>
+      </div>
+      <div style="background:linear-gradient(135deg,#1f2328,#3a3f45);border-radius:var(--r-lg);padding:18px;color:#fff"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px"><i class="ti ti-wifi" style="font-size:18px;transform:rotate(90deg)"></i><i class="ti ti-brand-mastercard" style="font-size:26px"></i></div><div style="font-family:var(--mono);font-size:16px;letter-spacing:2px">•••• •••• •••• 4242</div><div style="display:flex;justify-content:space-between;font-size:11px;margin-top:8px;opacity:.8"><span>MARIAM K.</span><span>08/28</span></div></div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden">
+        <div style="padding:13px 15px;border-bottom:1px solid var(--border2);font-size:14px;font-weight:600">გადახდის ისტორია</div>
+        <sc-for list="{{ payments }}" as="p" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:11px;padding:11px 15px;border-bottom:1px solid var(--border2);font-size:13px"><i class="ti ti-receipt" style="color:var(--muted);font-size:17px"></i><div style="flex:1;min-width:0"><div style="font-weight:500;font-size:13px">{{ p.desc }}</div><div style="font-size:11px;color:var(--muted)">{{ p.date }}</div></div><span style="font-family:var(--mono);font-weight:600">{{ p.amount }}</span></div></sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- §11 VIDEOS -->
+    <sc-if value="{{ isVideos }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ videos }}" as="v" hint-placeholder-count="6">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden">
+          <div style="aspect-ratio:16/9;background:var(--soft);display:grid;place-items:center;position:relative"><span style="width:48px;height:48px;border-radius:999px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:22px"><i class="ti ti-player-play-filled"></i></span><span style="position:absolute;top:9px;left:9px;font-size:10px;font-weight:600;background:rgba(0,0,0,.55);color:#fff;padding:2px 8px;border-radius:5px"><i class="ti ti-brand-youtube"></i> YouTube</span></div>
+          <div style="padding:13px"><div style="font-weight:600;font-size:14px">{{ v.title }}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">{{ v.dur }}</div></div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <!-- bottom tab bar -->
+  <nav style="position:absolute;bottom:0;left:0;right:0;height:76px;background:var(--topbar-bg);backdrop-filter:blur(10px);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding:9px 8px 0;z-index:6">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+      <button onClick="{{ t.go }}" style="flex:1;background:0;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:{{ t.color }};position:relative">
+        <i class="ti {{ t.icon }}" style="font-size:22px"></i>
+        <span style="font-size:10px;font-weight:500">{{ t.label }}</span>
+        <sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-2px;right:calc(50% - 20px);font-size:9px;font-weight:600;background:var(--red);color:#fff;padding:0 5px;border-radius:999px;line-height:15px;min-width:15px;text-align:center">{{ t.badge }}</span></sc-if>
+      </button>
+    </sc-for>
+  </nav>
+
+  <!-- drawer -->
+  <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeDrawer }}" style="position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:20"></div>
+  <aside style="position:absolute;top:0;left:0;bottom:0;width:264px;background:var(--bg);border-right:1px solid var(--border);z-index:21;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.3)">
+    <div style="height:60px;display:flex;align-items:center;gap:9px;padding:0 16px;border-bottom:1px solid var(--border2);font-weight:600;font-size:16px"><span style="width:28px;height:28px;border-radius:8px;background:var(--primary);display:grid;place-items:center;color:#fff;font-size:16px"><i class="ti ti-bolt"></i></span> Sidekick <span style="margin-left:auto;font-size:11px;font-weight:500;color:var(--muted);background:var(--soft);border:1px solid var(--border);padding:2px 8px;border-radius:999px">Admin</span></div>
+    <div style="flex:1;overflow:auto;padding:10px">
+      <sc-for list="{{ nav }}" as="it" hint-placeholder-count="11"><a onClick="{{ it.go }}" style="display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:var(--r-sm);font-size:14px;font-weight:500;cursor:pointer;margin-bottom:2px;color:{{ it.color }};background:{{ it.bg }}"><i class="ti {{ it.icon }}" style="font-size:18px;width:20px;text-align:center"></i> <span style="flex:1">{{ it.label }}</span><sc-if value="{{ it.badge }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;background:var(--red);color:#fff;padding:1px 7px;border-radius:999px">{{ it.badge }}</span></sc-if></a></sc-for>
+    </div>
+    <div style="padding:12px;border-top:1px solid var(--border2)"><div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--r);background:var(--soft)"><div style="width:34px;height:34px;border-radius:999px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:600">მ</div><div style="flex:1"><div style="font-weight:600;font-size:13px">Mariam K.</div><div style="font-size:11px;color:var(--muted)">Standard</div></div></div></div>
+  </aside>
+  </sc-if>
+
+  <!-- EDIT PRODUCT SHEET -->
+  <sc-if value="{{ editOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeEdit }}" style="position:absolute;inset:0;background:rgba(1,4,9,.55);z-index:30"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;z-index:31;background:var(--bg);border-top-left-radius:20px;border-top-right-radius:20px;box-shadow:0 -8px 40px rgba(0,0,0,.4);display:flex;flex-direction:column;max-height:90%">
+    <div style="display:flex;justify-content:center;padding-top:10px"><span style="width:40px;height:4px;border-radius:999px;background:var(--border)"></span></div>
+    <div style="display:flex;align-items:center;gap:11px;padding:12px 16px;border-bottom:1px solid var(--border2)">
+      <span style="width:32px;height:32px;border-radius:9px;background:var(--blue-surface);color:var(--blue);display:grid;place-items:center;font-size:17px"><i class="ti ti-edit"></i></span>
+      <div style="flex:1"><div style="font-size:15px;font-weight:600">პროდუქტის რედაქტირება</div><div style="font-size:12px;color:var(--muted)">{{ editName }}</div></div>
+      <button onClick="{{ closeEdit }}" style="width:32px;height:32px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;font-size:18px;display:grid;place-items:center"><i class="ti ti-x"></i></button>
+    </div>
+    <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+      <div style="height:120px;border:1.5px dashed var(--border);border-radius:var(--r);display:grid;place-items:center;color:var(--faint);font-size:12px;background:var(--soft);cursor:pointer"><div style="text-align:center"><i class="ti ti-photo" style="font-size:24px"></i><div style="margin-top:5px">ფოტოს შეცვლა</div></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:11px;color:var(--muted)">დასახელება</label><input value="{{ editName }}" style="width:100%;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:10px 11px;font-size:13px;outline:none;color:var(--ink);margin-top:4px" /></div>
+        <div><label style="font-size:11px;color:var(--muted)">კოდი</label><input value="{{ editCode }}" style="width:100%;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:10px 11px;font-size:13px;outline:none;color:var(--ink);margin-top:4px;font-family:var(--mono)" /></div>
+        <div><label style="font-size:11px;color:var(--muted)">ფასი</label><input value="{{ editPrice }}" style="width:100%;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:10px 11px;font-size:13px;outline:none;color:var(--ink);margin-top:4px;font-family:var(--mono)" /></div>
+        <div><label style="font-size:11px;color:var(--muted)">რაოდენობა</label><input value="{{ editStock }}" style="width:100%;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:10px 11px;font-size:13px;outline:none;color:var(--ink);margin-top:4px;font-family:var(--mono)" /></div>
+        <div><label style="font-size:11px;color:var(--muted)">ფასდაკლება %</label><input style="width:100%;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:10px 11px;font-size:13px;outline:none;color:var(--ink);margin-top:4px" /></div>
+        <div><label style="font-size:11px;color:var(--muted)">ზომა / პარამ.</label><input style="width:100%;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:10px 11px;font-size:13px;outline:none;color:var(--ink);margin-top:4px" /></div>
+      </div>
+      <div><label style="font-size:11px;color:var(--muted)">აღწერა</label><textarea rows="2" style="width:100%;background:var(--soft);border:1px solid var(--input);border-radius:var(--r-sm);padding:10px 11px;font-size:13px;outline:none;color:var(--ink);resize:vertical;margin-top:4px"></textarea></div>
+    </div>
+    <div style="display:flex;gap:10px;padding:14px 16px;border-top:1px solid var(--border2)">
+      <button onClick="{{ closeEdit }}" style="flex:1;height:44px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer">გაუქმება</button>
+      <button onClick="{{ closeEdit }}" style="flex:1.4;height:44px;border-radius:var(--r-sm);border:0;background:var(--primary);color:#fff;font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px"><i class="ti ti-device-floppy"></i> შენახვა</button>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:410,&quot;height&quot;:864},&quot;section&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { section:'home', chat:0, drawerOpen:false, orderTab:'new', openOrder:0, dateRange:'1 თვე', editProduct:null,
+    char:{style:'პროფესიონალური',len:'საშუალო'},
+    roles:{info:true,sales:true,leads:true,booking:false,orders:true,support:true} };
+
+  go(s){ this.setState({section:s, drawerOpen:false}); const el=document.querySelector('[data-scroll]'); if(el) el.scrollTop=0; }
+
+  renderVals(){
+    const s=this.state, sec=this.props.section || s.section;
+    const theme=s.theme || this.props.theme || 'light';
+    const meta={home:'Dashboard',convos:'მიმოწერები',ai:'AI ასისტენტი',channels:'არხები',products:'პროდუქტები',orders:'შეკვეთები',leads:'ლიდები',analytics:'ანალიტიკა',team:'გუნდი',billing:'ბილინგი',videos:'ვიდეო ინსტრუქციები'};
+    const navDef=[['home','ti-layout-dashboard','მთავარი',null],['convos','ti-messages','მიმოწერები','3'],['ai','ti-robot','AI ასისტენტი',null],['channels','ti-plug-connected','არხები',null],['products','ti-package','პროდუქტები',null],['orders','ti-shopping-cart','შეკვეთები','5'],['leads','ti-user-plus','ლიდები',null],['analytics','ti-chart-bar','ანალიტიკა',null],['team','ti-users','გუნდი',null],['billing','ti-credit-card','ბილინგი',null],['videos','ti-brand-youtube','ვიდეო ინსტრ.',null]];
+    const nav=navDef.map(([key,icon,label,badge])=>({icon,label,badge,go:()=>this.go(key),color:sec===key?'var(--primary)':'var(--ink)',bg:sec===key?'var(--green-s)':'transparent'}));
+    const tabDef=[['home','ti-layout-dashboard','მთავარი',null],['convos','ti-messages','ჩათი','3'],['orders','ti-shopping-cart','შეკვეთა','5'],['products','ti-package','პროდ.',null],['analytics','ti-chart-bar','სტატ.',null]];
+    const tabs=tabDef.map(([key,icon,label,badge])=>({icon,label,badge,go:()=>this.go(key),color:sec===key?'var(--primary)':'var(--muted)'}));
+
+    const kpis=[
+      {label:'მიმოწერები',icon:'ti-message-2',value:'248',delta:'+12%',deltaIcon:'ti-trending-up'},
+      {label:'ახალი ლიდები',icon:'ti-user-plus',value:'34',delta:'+8%',deltaIcon:'ti-trending-up'},
+      {label:'შეკვეთები',icon:'ti-shopping-cart',value:'19',delta:'+5%',deltaIcon:'ti-trending-up'},
+      {label:'შემოსავალი',icon:'ti-cash',value:'4,280₾',delta:'+18%',deltaIcon:'ti-trending-up'}
+    ];
+    const G='var(--green)',A='var(--amber)',R='var(--red)';
+    const channelStatus=[
+      {name:'Facebook',icon:'ti-brand-facebook',light:G,glow:'var(--green-s)',state:'აქტიური'},
+      {name:'Instagram',icon:'ti-brand-instagram',light:G,glow:'var(--green-s)',state:'აქტიური'},
+      {name:'WhatsApp',icon:'ti-brand-whatsapp',light:A,glow:'var(--amber-s)',state:'შეფერხდა'},
+      {name:'Website API',icon:'ti-world',light:R,glow:'var(--red-s)',state:'გათიშული'}
+    ];
+    const stoppedMsgs=[
+      {icon:'ti-brand-whatsapp',user:'გიორგი მ.',text:'შეკვეთის სტატუსი #1043',reason:'არხი',badgeColor:A,badgeBg:'var(--amber-s)'},
+      {icon:'ti-brand-instagram',user:'ანა ბ.',text:'ფასი მაინტერესებს',reason:'ლიმიტი',badgeColor:R,badgeBg:'var(--red-s)'},
+      {icon:'ti-brand-facebook',user:'ლევან თ.',text:'მადლობა! 🙏',reason:'AI',badgeColor:'var(--muted)',badgeBg:'var(--soft)'}
+    ];
+    const cf=(active,label,icon)=>({label,icon,color:active?'#fff':'var(--muted)',bg:active?'var(--ink)':'var(--soft)',border:active?'var(--ink)':'var(--border)'});
+    const convFilters=[cf(true,'ყველა','ti-inbox'),cf(false,'FB','ti-brand-facebook'),cf(false,'IG','ti-brand-instagram'),cf(false,'WA','ti-brand-whatsapp'),cf(false,'Web','ti-world')];
+    const chatsDef=[['ნკ','ნინო კ.','ti-brand-instagram','#c13584',A,'კი, M ზომა მინდა','ახლა'],['გმ','გიორგი მ.','ti-brand-whatsapp','#25d366',A,'შეკვეთა #1043','2წთ'],['ბდ','ბექა დ.','ti-brand-facebook','#1877f2',G,'გმადლობთ, შევუკვეთავ','9წთ'],['ას','ანა ს.','ti-brand-instagram','#c13584',R,'ფასდაკლება არის?','22წთ'],['თლ','თამარ ლ.','ti-world','var(--blue)',G,'მიწოდება რამდენ დღეში?','1სთ'],['დკ','დათო კ.','ti-brand-whatsapp','#25d366',G,'დასრულდა — გმადლობთ','3სთ']];
+    const chats=chatsDef.map((c,i)=>({initials:c[0],name:c[1],chIcon:c[2],chColor:c[3],statusColor:c[4],preview:c[5],time:c[6],select:()=>this.setState({chat:i}),activeBg:s.chat===i?'var(--blue-surface)':'transparent'}));
+
+    const chip=(group,val,cur)=>({label:val,sel:cur===val,color:cur===val?'var(--primary)':'var(--ink)',bg:cur===val?'var(--green-s)':'var(--bg)',border:cur===val?'var(--primary)':'var(--border)',weight:cur===val?'600':'500',pick:()=>this.setState(st=>({char:{...st.char,[group]:val}}))});
+    const styleChips=['მეგობრული','პროფესიონალური','ოფიციალური','გაყიდვები'].map(v=>chip('style',v,s.char.style));
+    const lenChips=['მოკლე','საშუალო','დეტალური'].map(v=>chip('len',v,s.char.len));
+    const bizFields=['კომპანიის დასახელება','საქმიანობის სფერო','სამუშაო საათები','საკონტაქტო'];
+    const roleDef=[['info','ti-info-circle','ინფო აგენტი'],['sales','ti-trending-up','გაყიდვები'],['leads','ti-user-plus','ლიდები'],['booking','ti-calendar','ჯავშანი'],['orders','ti-shopping-cart','შეკვეთა'],['support','ti-lifebuoy','მხარდაჭერა']];
+    const roles=roleDef.map(([k,icon,label])=>({icon,label,cardBg:s.roles[k]?'var(--green-s)':'var(--bg)',cardBorder:s.roles[k]?'var(--primary)':'var(--border)',iconColor:s.roles[k]?'var(--primary)':'var(--muted)',toggle:()=>this.setState(st=>({roles:{...st.roles,[k]:!st.roles[k]}}))}));
+
+    const chDef=[['Facebook','ti-brand-facebook','#1877f2',true],['Instagram','ti-brand-instagram','#c13584',true],['WhatsApp','ti-brand-whatsapp','#25d366',false],['Website API','ti-world','var(--blue)',false]];
+    const channels=chDef.map(([name,icon,color,conn])=>({name,icon,color,statusText:conn?'დაკავშ.':'გათიშ.',statusColor:conn?'var(--green)':'var(--muted)',statusBg:conn?'var(--green-s)':'var(--soft)',btnLabel:conn?'გათიშვა':'დაკავშ.',btnBg:conn?'var(--bg)':'var(--primary)',btnColor:conn?'var(--red)':'#fff',btnBorder:conn?'var(--border)':'var(--primary)'}));
+
+    const prodDef=[['თეთრი კაბა','DR-014','189₾','159₾',24],['iPhone 15 Pro','PH-201','3,500₾','—',6],['სპორტ. ფეხსაცმელი','SH-088','249₾','199₾',0],['AirPods Pro','AP-045','649₾','—',13],['ტყავის ჩანთა','BG-112','420₾','380₾',3]];
+    const productRows=prodDef.map((p,i)=>({name:p[0],code:p[1],price:p[2],sale:p[3],stockNum:String(p[4]),stock:p[4]===0?'0 (ამოიწ.)':String(p[4]),stockColor:p[4]===0?'var(--red)':(p[4]<5?'var(--amber)':'var(--ink)'),edit:()=>this.setState({editProduct:i})}));
+
+    const otDef=[['new','ახალი','19'],['send','გასაგზ.','7'],['done','დასრ.','142'],['cancel','გაუქ.','4'],['problem','პრობ.','2']];
+    const orderTabs=otDef.map(([k,label,count])=>({label,count,chipColor:s.orderTab===k?'#fff':'var(--muted)',chipBg:s.orderTab===k?'var(--ink)':'var(--soft)',chipBorder:s.orderTab===k?'var(--ink)':'var(--border)',go:()=>this.setState({orderTab:k})}));
+    const ordersDef=[['#1043','ნინო კ.','+995 599 12 34 56','189₾','07 ივლ','თბილისი, ვაჟა-ფშაველა 12'],['#1042','გიორგი მ.','+995 577 88 77 66','420₾','07 ივლ','ბათუმი, ჭავჭავაძის 45'],['#1041','ბექა დ.','+995 555 33 22 11','95₾','06 ივლ','ქუთაისი, თამარ მეფის 8'],['#1040','ანა ს.','+995 598 44 55 66','310₾','06 ივლ','თბილისი, პეკინის 3']];
+    const orders=ordersDef.map((o,i)=>({id:o[0],name:o[1],phone:o[2],total:o[3],date:o[4],addr:o[5],open:s.openOrder===i,chevron:s.openOrder===i?'ti-chevron-up':'ti-chevron-down',toggle:()=>this.setState(st=>({openOrder:st.openOrder===i?-1:i}))}));
+
+    const leadsDef=[['ნინო კ.','+995 599 12 34 56','თეთრი კაბა M','Instagram','ახალი','var(--blue)','var(--blue-surface)'],['გიორგი მ.','+995 577 88 77 66','iPhone 15 Pro','WhatsApp','მიმდინარე','var(--amber)','var(--amber-s)'],['ლევან თ.','+995 555 33 22 11','სპორტ. ფეხსაცმელი','Facebook','დახურული','var(--green)','var(--green-s)'],['თამარ ლ.','+995 598 44 55 66','საათი','Website','ახალი','var(--blue)','var(--blue-surface)']];
+    const leads=leadsDef.map(l=>({name:l[0],phone:l[1],interest:l[2],source:l[3],status:l[4],statusColor:l[5],statusBg:l[6]}));
+
+    const ranges=['1 კვ','1 თვე','3 თვე','6 თვე','1 წელი'].map(r=>({label:r,color:s.dateRange===r?'#fff':'var(--ink)',bg:s.dateRange===r?'var(--ink)':'var(--bg)',border:s.dateRange===r?'var(--ink)':'var(--border)',pick:()=>this.setState({dateRange:r})}));
+    const heights=['48%','62%','54%','78%','70%','88%','74%','96%'];
+    const chartBars=heights.map((h,i)=>({h,label:'დღ'+(i+1)}));
+    const channelBars=[{name:'Instagram',icon:'ti-brand-instagram',color:'#c13584',val:'42%',w:'42%'},{name:'WhatsApp',icon:'ti-brand-whatsapp',color:'#25d366',val:'31%',w:'31%'},{name:'Facebook',icon:'ti-brand-facebook',color:'#1877f2',val:'19%',w:'19%'},{name:'Website',icon:'ti-world',color:'var(--blue)',val:'8%',w:'8%'}];
+
+    const teamDef=[['Mariam K.','mariam@sidekick.ge','Owner','var(--primary)','var(--green-s)','var(--green)'],['Luka G.','luka@sidekick.ge','Admin','var(--blue)','var(--blue-surface)','var(--blue)'],['Nino B.','nino@sidekick.ge','Operator','var(--ai)','var(--ai-surface)','var(--ai)'],['Data T.','data@sidekick.ge','Viewer','var(--faint)','var(--soft)','var(--muted)']];
+    const team=teamDef.map(t=>({name:t[0],email:t[1],role:t[2],initial:t[0][0],avBg:t[3],roleBg:t[4],roleColor:t[5]}));
+    const payments=[{desc:'Standard — ივლისი',date:'01 ივლ 2026',amount:'99₾'},{desc:'Standard — ივნისი',date:'01 ივნ 2026',amount:'99₾'},{desc:'Standard — მაისი',date:'01 მაი 2026',amount:'99₾'},{desc:'Basic → Standard',date:'18 აპრ 2026',amount:'50₾'}];
+    const videos=[{title:'დაწყება — ანგარიში',dur:'4:12'},{title:'Facebook-ის მიერთება',dur:'3:08'},{title:'Instagram-ის მიერთება',dur:'2:54'},{title:'WhatsApp-ის მიერთება',dur:'5:20'},{title:'პრომპტის ინსტრუქცია',dur:'7:45'},{title:'პროდუქტების ატვირთვა',dur:'3:37'}];
+
+    return {
+      theme, themeIcon: theme==='dark' ? 'ti-sun' : 'ti-moon',
+      toggleTheme:()=>this.setState(st=>({theme:(st.theme||this.props.theme||'light')==='light'?'dark':'light'})),
+      title:meta[sec], nav, tabs,
+      drawerOpen:s.drawerOpen, openDrawer:()=>this.setState({drawerOpen:true}), closeDrawer:()=>this.setState({drawerOpen:false}),
+      goConvos:()=>this.go('convos'),
+      isHome:sec==='home',isConvos:sec==='convos',isAi:sec==='ai',isChannels:sec==='channels',isProducts:sec==='products',isOrders:sec==='orders',isLeads:sec==='leads',isAnalytics:sec==='analytics',isTeam:sec==='team',isBilling:sec==='billing',isVideos:sec==='videos',
+      kpis, channelStatus, stoppedMsgs, convFilters, chats, styleChips, lenChips, bizFields, roles,
+      channels, productRows, orderTabs, orders, leads, ranges, chartBars, channelBars, team, payments, videos,
+      editOpen: s.editProduct!=null,
+      editName: s.editProduct!=null ? productRows[s.editProduct].name : '',
+      editCode: s.editProduct!=null ? productRows[s.editProduct].code : '',
+      editPrice: s.editProduct!=null ? productRows[s.editProduct].price : '',
+      editStock: s.editProduct!=null ? productRows[s.editProduct].stockNum : '',
+      closeEdit:()=>this.setState({editProduct:null})
+    };
+  }
+}
+</script>
+</body>
+</html>

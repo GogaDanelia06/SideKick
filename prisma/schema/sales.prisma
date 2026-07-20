@@ -1,0 +1,76 @@
+// Conversations & messages (stored/operable), leads, and stock-driving orders.
+
+model Conversation {
+  id             String             @id @default(cuid())
+  businessId     String
+  channelId      String?
+  customerName   String?
+  customerRef    String?
+  status         ConversationStatus @default(NEW)
+  aiEnabled      Boolean            @default(true)
+  assignedToId   String?
+  botPausedUntil DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  business       Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  channel        Channel?           @relation(fields: [channelId], references: [id])
+  messages       Message[]
+  lead           Lead?
+  orders         Order[]
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  sender         MessageSender
+  text           String
+  createdAt      DateTime      @default(now())
+  deliveryStatus String?
+  stoppedReason  String?
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model Lead {
+  id             String        @id @default(cuid())
+  businessId     String
+  conversationId String?       @unique
+  name           String?
+  phone          String?
+  interest       String?
+  source         String?
+  status         LeadStatus    @default(NEW)
+  comment        String?
+  createdAt      DateTime      @default(now())
+  business       Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+}
+
+model Order {
+  id             String        @id @default(cuid())
+  businessId     String
+  conversationId String?
+  customerName   String?
+  phone          String?
+  email          String?
+  address        String?
+  total          Int           @default(0)
+  status         OrderStatus   @default(NEW)
+  note           String?
+  createdAt      DateTime      @default(now())
+  business       Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  items          OrderItem[]
+}
+
+model OrderItem {
+  id           String   @id @default(cuid())
+  orderId      String
+  productId    String?
+  codeSnapshot String
+  nameSnapshot String
+  qty          Int
+  price        Int
+  lineTotal    Int
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product      Product? @relation(fields: [productId], references: [id])
+}

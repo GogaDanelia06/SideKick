@@ -1,0 +1,70 @@
+// The tenant (Business) plus plans, subscription, payments and editable site stats.
+
+model Business {
+  id            String         @id @default(cuid())
+  name          String
+  field         String?
+  description   String?
+  contactInfo   String?
+  workingHours  String?
+  site          String?
+  branches      String?
+  extra         String?
+  createdAt     DateTime       @default(now())
+  memberships   Membership[]
+  subscription  Subscription?
+  payments      Payment[]
+  products      Product[]
+  channels      Channel[]
+  videos        Video[]
+  conversations Conversation[]
+  leads         Lead[]
+  orders        Order[]
+  aiConfig      AiConfig?
+  faqs          Faq[]
+}
+
+// Basic / Standard / Premium — editable from admin (per the spec).
+model Plan {
+  id            String         @id @default(cuid())
+  key           String         @unique
+  name          String
+  price         Int
+  msgLimit      Int
+  channelCap    Int
+  userCap       Int
+  productCap    Int
+  featured      Boolean        @default(false)
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id         String             @id @default(cuid())
+  businessId String             @unique
+  planId     String
+  status     SubscriptionStatus @default(TRIAL)
+  msgUsed    Int                @default(0)
+  renewsAt   DateTime?
+  cardRef    String?
+  business   Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  plan       Plan               @relation(fields: [planId], references: [id])
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  businessId  String
+  description String
+  amount      Int
+  date        DateTime @default(now())
+  providerRef String?
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+// Manually-editable landing-page numbers (total users, active chats, revenue).
+model SiteStat {
+  id    String @id @default(cuid())
+  key   String @unique
+  label String
+  value String
+  order Int    @default(0)
+}

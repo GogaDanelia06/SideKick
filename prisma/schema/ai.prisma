@@ -1,0 +1,28 @@
+// AI assistant configuration + FAQ. Stored settings only — the reply engine
+// (Claude prompt generation / tester) is the unbought AI Module.
+
+model AiConfig {
+  id          String   @id @default(cuid())
+  businessId  String   @unique
+  languages   String[]
+  style       String?
+  length      String?
+  emoji       String?
+  addressForm String?
+  roles       String[]
+  handoffRule String?
+  leadRule    String?
+  orderRule   String?
+  policies    String?
+  prompt      String?
+  updatedAt   DateTime @updatedAt
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model Faq {
+  id         String   @id @default(cuid())
+  businessId String
+  question   String
+  answer     String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}

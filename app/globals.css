@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-card2: var(--card2);
+  --color-sidebar: var(--sidebar);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-h);
+  --color-blue: var(--blue);
+  --color-blue-surface: var(--blue-surface);
+  --color-blue-border: var(--blue-border);
+  --color-blue-ring: var(--blue-ring);
+  --color-blue-ink: var(--blue-ink);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-purple: var(--purple);
+  --color-green: var(--green);
+  --color-amber: var(--amber);
+  --color-red: var(--red);
+
+  /* Dashboard-only surfaces (resolved inside .dash-scope) */
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-soft: var(--soft);
+  --color-border2: var(--border2);
+  --color-faint: var(--faint);
+  --color-ai: var(--ai);
+  --color-ai-surface: var(--ai-surface);
+  --color-green-surface: var(--green-surface);
+  --color-amber-surface: var(--amber-surface);
+  --color-red-surface: var(--red-surface);
+
+  --font-sans: var(--font-geo), var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-mono-src), ui-monospace, monospace;
+
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+:root {
+  --bg: #0d1117; --card: #161b22; --card2: #1c2128; --sidebar: #010409;
+  --border: #1f2937; --input: #30363d;
+  --primary: #238636; --primary-h: #2ea043;
+  --blue: #58a6ff; --blue-surface: #1f6feb22; --blue-border: #1f6feb44;
+  --blue-ring: #1f6feb66; --blue-ink: #cfe3ff;
+  --ink: #e6edf3; --muted: #7d8590; --purple: #a371f7;
+  --green: #3fb950; --amber: #d29922; --red: #f85149;
+  --header-bg: rgba(13, 17, 23, 0.85);
+}
+
+:root[data-theme="light"] {
+  --bg: #ffffff; --card: #f6f8fa; --card2: #ffffff; --sidebar: #f6f8fa;
+  --border: #d0d7de; --input: #d0d7de;
+  --primary: #1f883d; --primary-h: #1a7f37;
+  --blue: #0969da; --blue-surface: #0969da12; --blue-border: #0969da44;
+  --blue-ring: #0969da55; --blue-ink: #0a3069;
+  --ink: #1f2328; --muted: #59636e; --purple: #8250df;
+  --green: #1a7f37; --amber: #9a6700; --red: #cf222e;
+  --header-bg: rgba(255, 255, 255, 0.85);
+}
+
+/* Dashboard token layer — its own surfaces + radii, scoped so marketing is untouched. */
+.dash-scope {
+  --border: #30363d; --canvas: #0d1117; --surface: #161b22; --soft: #1c2128;
+  --border2: #21262d; --faint: #6e7681; --ai: #a371f7; --ai-surface: #a371f722;
+  --green-surface: #3fb95022; --amber-surface: #d2992222; --red-surface: #f8514922;
+  --topbar-bg: rgba(22, 27, 34, 0.9);
+  --r-sm: 6px; --r: 10px; --r-lg: 14px;
+}
+:root[data-theme="light"] .dash-scope {
+  --border: #d0d7de; --canvas: #f6f8fa; --surface: #ffffff; --soft: #f6f8fa;
+  --border2: #eaeef2; --faint: #818b98; --ai: #8250df; --ai-surface: #8250df12;
+  --green-surface: #1a7f3718; --amber-surface: #bf870018; --red-surface: #cf222e14;
+  --topbar-bg: rgba(255, 255, 255, 0.9);
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}

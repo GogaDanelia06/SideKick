@@ -1,0 +1,65 @@
+// Sidekick backend — multi-file Prisma schema (Postgres).
+// Scope: Frontend + Backend only. AI reply engine and channel integrations
+// are separate unbought modules; their tables store settings but nothing drives them yet.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  OPERATOR
+  VIEWER
+}
+
+enum ChannelType {
+  FACEBOOK
+  INSTAGRAM
+  WHATSAPP
+  WEBSITE
+}
+
+enum ChannelStatus {
+  ACTIVE
+  DELAYED
+  OFF
+}
+
+enum ConversationStatus {
+  NEW
+  ACTIVE
+  DONE
+}
+
+enum MessageSender {
+  CUSTOMER
+  AI
+  OPERATOR
+}
+
+enum OrderStatus {
+  NEW
+  TO_SEND
+  DONE
+  CANCELLED
+  PROBLEM
+}
+
+enum LeadStatus {
+  NEW
+  ACTIVE
+  CLOSED
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+}

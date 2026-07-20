@@ -1,0 +1,65 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { signOut } from "next-auth/react";
+import clsx from "clsx";
+import { IconLanguage, IconLogout, IconSelector, IconUserCircle } from "@tabler/icons-react";
+import { Switch } from "./ui/Switch";
+import { ACCOUNT } from "@/lib/dashboard/account";
+import { DASH } from "@/lib/dashboard/routes";
+import { useLanguage } from "@/lib/i18n/useLanguage";
+import { useTheme } from "@/lib/theme/useTheme";
+
+/** Sidebar footer: account card that opens an upward menu (language, theme, logout). */
+export function ProfileMenu() {
+  const { t, locale, toggle: toggleLang } = useLanguage();
+  const { theme, toggle: toggleTheme } = useTheme();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative border-t border-border2 p-3">
+      {open ? (
+        <div className="absolute inset-x-3 bottom-[calc(100%-4px)] z-40 rounded-[10px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
+          <div className="mb-1 border-b border-border2 px-2.5 pb-2 pt-1">
+            <div className="text-[13px] font-semibold">{ACCOUNT.name}</div>
+            <div className="text-[11px] text-muted">{ACCOUNT.email}</div>
+          </div>
+          <Link href={DASH.profile} onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2.5 text-[13px] hover:bg-soft">
+            <IconUserCircle size={17} /> {t({ ka: "პროფილი", en: "Profile" })}
+          </Link>
+          <div className="flex items-center gap-2.5 px-2.5 py-2.5 text-[13px]">
+            <IconLanguage size={17} />
+            <span className="flex-1">{t({ ka: "ენა", en: "Language" })}</span>
+            <button type="button" onClick={toggleLang} className="rounded-full border border-border bg-soft px-2.5 py-1 text-[12px] font-semibold">
+              {locale === "ka" ? "ქართული" : "English"}
+            </button>
+          </div>
+          <div className="flex items-center gap-2.5 px-2.5 py-2.5 text-[13px]">
+            <span className="flex-1">{theme === "dark" ? t({ ka: "მუქი თემა", en: "Dark theme" }) : t({ ka: "ღია თემა", en: "Light theme" })}</span>
+            <Switch on={theme === "dark"} onToggle={toggleTheme} ariaLabel="Theme" />
+          </div>
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="flex w-full items-center gap-2.5 rounded-[6px] px-2.5 py-2.5 text-left text-[13px] text-red hover:bg-red-surface"
+          >
+            <IconLogout size={17} /> {t({ ka: "გასვლა", en: "Log out" })}
+          </button>
+        </div>
+      ) : null}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={clsx("flex w-full items-center gap-2.5 rounded-[10px] border bg-soft p-2 text-left", open ? "border-border" : "border-transparent")}
+      >
+        <span className="grid size-[34px] place-items-center rounded-full bg-primary text-sm font-semibold text-white">{ACCOUNT.initial}</span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[13px] font-semibold">{ACCOUNT.name}</span>
+          <span className="block text-[11px] text-muted">{t(ACCOUNT.plan)}</span>
+        </span>
+        <IconSelector size={18} className="text-muted" />
+      </button>
+    </div>
+  );
+}
