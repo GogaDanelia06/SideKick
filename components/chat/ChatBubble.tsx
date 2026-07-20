@@ -2,7 +2,6 @@ import clsx from "clsx";
 import { CHAT } from "@/lib/content/chat";
 import type { ChatMessage } from "@/lib/chat/types";
 
-/** A single chat message. AI bubbles carry the "✦ Sidekick AI" label. */
 export function ChatBubble({
   message,
   aiTone = "neutral",
