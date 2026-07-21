@@ -1,10 +1,13 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 
-export function middleware(_request: NextRequest) {
-  return NextResponse.next();
-}
+// Edge middleware: uses the adapter-free auth config (no Prisma/bcrypt) to read
+// the session cookie and enforce the `authorized` callback. Unauthenticated
+// requests to /dashboard are redirected to /login.
+const { auth } = NextAuth(authConfig);
+
+export default auth;
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard", "/dashboard/:path*"],
 };

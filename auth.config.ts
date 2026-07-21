@@ -3,7 +3,8 @@ import type { NextAuthConfig } from "next-auth";
 export const authConfig = {
   trustHost: true,
   pages: { signIn: "/login" },
-  session: { strategy: "jwt" },
+  // 7-day sessions, silently refreshed at most once a day.
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
   providers: [],
   callbacks: {
 

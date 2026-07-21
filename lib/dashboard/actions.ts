@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { OrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getContext } from "@/lib/session";
 import { DASH } from "./routes";
@@ -18,6 +19,17 @@ export async function setChannelConnected(channelId: string, connected: boolean)
     },
   });
   revalidatePath(DASH.channels);
+}
+
+/** Move an order through its lifecycle. Scoped to the caller's business. */
+export async function setOrderStatus(orderId: string, status: OrderStatus) {
+  const ctx = await getContext();
+  if (!ctx) return;
+  await prisma.order.updateMany({
+    where: { id: orderId, businessId: ctx.businessId },
+    data: { status },
+  });
+  revalidatePath(DASH.orders);
 }
 
 export async function saveAiConfig(data: FormData) {

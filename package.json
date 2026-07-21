@@ -4,7 +4,8 @@
   "private": true,
   "packageManager": "pnpm@10.15.0",
   "prisma": {
-    "schema": "prisma/schema"
+    "schema": "prisma/schema",
+    "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
     "predev": "prisma generate",
