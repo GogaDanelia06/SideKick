@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { IconBolt } from "@tabler/icons-react";
 
 import { AuthShell } from "./AuthShell";
@@ -17,41 +18,37 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 export function LoginForm() {
   const { t } = useLanguage();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  function openDashboard() {
-    localStorage.setItem("sidekick-demo-auth", "true");
+  // Middleware appends ?callbackUrl=… when it bounces you off a dashboard page,
+  // so sign-in returns you to where you were actually headed. Only same-site
+  // paths are honoured — never an absolute URL from the query string.
+  const requested = searchParams.get("callbackUrl");
+  const callbackUrl = requested?.startsWith("/") ? requested : DASH.home;
 
-    router.push(DASH.home);
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setPending(true);
+
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
+
+    const res = await signIn("credentials", { email, password, redirect: false });
+
+    if (!res?.ok || res.error) {
+      setPending(false);
+      // Deliberately vague: never reveal whether the address exists.
+      return setError(t(LOGIN.invalid));
+    }
+
+    router.push(callbackUrl);
     router.refresh();
   }
-
-function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-  event.preventDefault();
-
-  setError(null);
-  setPending(true);
-
-  const formData = new FormData(event.currentTarget);
-
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
-
-  const DEMO_EMAIL = "demo@sidekick.com";
-  const DEMO_PASSWORD = "Sidekick123!";
-
-  if (email !== DEMO_EMAIL || password !== DEMO_PASSWORD) {
-    setError("Invalid email or password");
-    setPending(false);
-    return;
-  }
-
-  setTimeout(() => {
-    openDashboard();
-  }, 400);
-}
 
   return (
     <AuthShell
@@ -61,10 +58,7 @@ function onSubmit(event: React.FormEvent<HTMLFormElement>) {
       footer={
         <>
           {t(LOGIN.noAccount)}{" "}
-          <Link
-            href={ROUTES.register}
-            className="font-medium text-blue"
-          >
+          <Link href={ROUTES.register} className="font-medium text-blue">
             {t(LOGIN.signUp)}
           </Link>
         </>
@@ -72,15 +66,12 @@ function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     >
       <GoogleButton
         label={t(LOGIN.google)}
-        onClick={openDashboard}
+        onClick={() => signIn("google", { callbackUrl })}
       />
 
       <OrDivider />
 
-      <form
-        className="flex flex-col gap-3.5"
-        onSubmit={onSubmit}
-      >
+      <form className="flex flex-col gap-3.5" onSubmit={onSubmit}>
         <Field
           name="email"
           label={t(LOGIN.email)}
@@ -99,11 +90,7 @@ function onSubmit(event: React.FormEvent<HTMLFormElement>) {
 
         <div className="flex items-center justify-between text-[13px]">
           <label className="flex items-center gap-2 text-muted">
-            <input
-              type="checkbox"
-              className="accent-[var(--primary)]"
-            />
-
+            <input type="checkbox" className="accent-[var(--primary)]" />
             {t(LOGIN.remember)}
           </label>
 
@@ -112,11 +99,7 @@ function onSubmit(event: React.FormEvent<HTMLFormElement>) {
           </Link>
         </div>
 
-        {error ? (
-          <p className="text-[13px] text-red">
-            {error}
-          </p>
-        ) : null}
+        {error ? <p className="text-[13px] text-red">{error}</p> : null}
 
         <button
           type="submit"

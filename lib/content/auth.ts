@@ -11,6 +11,7 @@ export const LOGIN = {
   remember: { ka: "დამიმახსოვრე", en: "Remember me" },
   forgot: { ka: "პაროლის აღდგენა", en: "Forgot password" },
   submit: { ka: "ავტორიზაცია", en: "Sign in" },
+  invalid: { ka: "ელფოსტა ან პაროლი არასწორია", en: "Invalid email or password" },
   noAccount: { ka: "არ გაქვს ანგარიში?", en: "Don't have an account?" },
   signUp: { ka: "რეგისტრაცია", en: "Sign up" },
 } satisfies Record<string, Bilingual>;
