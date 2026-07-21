@@ -4,6 +4,6 @@ import { AiView } from "@/components/dashboard/ai/AiView";
 
 export default async function AiPage() {
   const ctx = await requireContext();
-  const { config, faqs } = await getAiConfig(ctx.businessId);
-  return <AiView config={config} faqs={faqs} />;
+  const { config, business } = await getAiConfig(ctx.businessId);
+  return <AiView config={config} business={business} />;
 }

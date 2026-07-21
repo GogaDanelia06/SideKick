@@ -4,6 +4,6 @@ import { BillingView } from "@/components/dashboard/billing/BillingView";
 
 export default async function BillingPage() {
   const ctx = await requireContext();
-  const { subscription, payments, cardName } = await getBilling(ctx.businessId, ctx.userId);
-  return <BillingView subscription={subscription} payments={payments} cardName={cardName} />;
+  const { subscription, payments, cardName, plans } = await getBilling(ctx.businessId, ctx.userId);
+  return <BillingView subscription={subscription} payments={payments} cardName={cardName} plans={plans} />;
 }

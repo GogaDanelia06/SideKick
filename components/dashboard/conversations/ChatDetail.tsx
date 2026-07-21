@@ -23,7 +23,7 @@ export function ChatDetail({ chat, onBack }: { chat: Chat; onBack: () => void })
   const [order, setOrder] = useState(false);
 
   return (
-    <div className="flex min-h-0 flex-col overflow-hidden rounded-[14px] border border-border bg-surface">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[14px] border border-border bg-surface">
       <div className="flex flex-wrap items-center gap-2.5 border-b border-border2 p-3">
         <button type="button" onClick={onBack} aria-label="Back" className="text-muted lg:hidden">
           <IconArrowLeft size={20} />

@@ -2,9 +2,10 @@ import clsx from "clsx";
 import { IconBolt } from "@tabler/icons-react";
 import { NavList } from "./NavList";
 import { ProfileMenu } from "./ProfileMenu";
+import type { Account } from "@/lib/dashboard/queries";
 
 /** Desktop-only left navigation column (lg+). */
-export function Sidebar({ className }: { className?: string }) {
+export function Sidebar({ className, account }: { className?: string; account: Account }) {
   return (
     <aside
       className={clsx(
@@ -22,7 +23,7 @@ export function Sidebar({ className }: { className?: string }) {
         </span>
       </div>
       <NavList />
-      <ProfileMenu />
+      <ProfileMenu account={account} />
     </aside>
   );
 }

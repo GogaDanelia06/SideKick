@@ -5,5 +5,5 @@ import { TeamView } from "@/components/dashboard/team/TeamView";
 export default async function TeamPage() {
   const ctx = await requireContext();
   const members = await getTeam(ctx.businessId);
-  return <TeamView members={members} />;
+  return <TeamView members={members} currentUserId={ctx.userId} currentRole={ctx.role} />;
 }

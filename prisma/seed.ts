@@ -6,7 +6,41 @@ const prisma = new PrismaClient();
 const BIZ = "biz_demo";
 const USER = "usr_demo";
 
+/**
+ * DEMO seed — creates a fake tenant with fake products, orders and customers.
+ * For local development only. Use `pnpm db:seed:prod` for a real database.
+ *
+ * Guard: refuse to run against anything that isn't a local database, so demo
+ * products and a `demo1234` login can never end up in a client's production
+ * data. Override deliberately with `--force` if you really mean it.
+ */
+function assertLocalDatabase() {
+  const url = process.env.DATABASE_URL ?? "";
+  const isLocal = /@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
+  if (isLocal || process.argv.includes("--force")) return;
+
+  const host = (() => {
+    try {
+      return new URL(url).host;
+    } catch {
+      return "(unparseable DATABASE_URL)";
+    }
+  })();
+
+  console.error(
+    `\n✗ Refusing to seed DEMO data into a non-local database.\n` +
+      `  Target: ${host}\n\n` +
+      `  This seed creates a fake business, fake products/orders and a\n` +
+      `  demo@sidekick.ge / demo1234 login — none of which belong in production.\n\n` +
+      `  For a real database run:  pnpm db:seed:prod\n` +
+      `  To override anyway:       pnpm db:seed -- --force\n`,
+  );
+  process.exit(1);
+}
+
 async function main() {
+  assertLocalDatabase();
+
   for (const p of PLANS) await prisma.plan.upsert({ where: { key: p.key }, create: p, update: p });
   for (const s of SITE_STATS) await prisma.siteStat.upsert({ where: { key: s.key }, create: s, update: s });
 

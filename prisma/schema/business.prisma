@@ -4,7 +4,10 @@ model Business {
   id            String         @id @default(cuid())
   name          String
   field         String?
+  email         String?
+  phone         String?
   description   String?
+  // Anything beyond email/phone — Viber, Telegram, fax…
   contactInfo   String?
   workingHours  String?
   site          String?

@@ -11,8 +11,17 @@ model AiConfig {
   addressForm String?
   roles       String[]
   handoffRule String?
+  // Lead capture: toggle + what counts as a lead.
+  leadEnabled Boolean  @default(false)
   leadRule    String?
-  orderRule   String?
+  // Order taking: toggle + what counts as an order.
+  orderEnabled Boolean @default(false)
+  orderRule    String?
+  // May the bot amend/cancel an existing order?
+  allowOrderEdit Boolean @default(false)
+  // Free-form "question → answer" pairs the bot should know.
+  faqText     String?
+  // Delivery / returns policy.
   policies    String?
   prompt      String?
   updatedAt   DateTime @updatedAt

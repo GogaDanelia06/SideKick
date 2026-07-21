@@ -18,7 +18,7 @@ export function ChatList({ selected, onSelect }: { selected: number; onSelect: (
   const { t } = useLanguage();
 
   return (
-    <div className="flex min-h-0 flex-col overflow-hidden rounded-[14px] border border-border bg-surface">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[14px] border border-border bg-surface">
       <div className="flex flex-wrap gap-1.5 border-b border-border2 p-3">
         {CONV_FILTERS.map((f, i) => (
           <span
