@@ -1,9 +1,15 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { env } from "@/lib/env";
 
 export type Ctx = { userId: string; businessId: string; role: string };
 
 export async function getContext(): Promise<Ctx | null> {
+  // Request-time config check: surfaces a clear "you forgot to set X" error
+  // instead of a confusing auth/database failure further down. Cached after
+  // the first call, and never runs during `next build`.
+  env();
+
   const session = await auth();
   const userId = session?.user?.id;
   const businessId = session?.user?.businessId;

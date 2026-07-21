@@ -1,13 +1,5 @@
 import { z } from "zod";
 
-/**
- * Validates required environment variables once, at server startup, with a
- * clear error listing anything missing/invalid — so misconfiguration fails
- * loudly on boot instead of surfacing as a confusing runtime error later.
- *
- * Server-only: import from Node code (e.g. lib/db.ts). Do NOT import from edge
- * middleware — DATABASE_URL isn't needed there and Prisma can't run in it.
- */
 const schema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   AUTH_SECRET: z
@@ -18,13 +10,32 @@ const schema = z.object({
   AUTH_GOOGLE_SECRET: z.string().optional(),
 });
 
-const parsed = schema.safeParse(process.env);
+type Env = z.infer<typeof schema>;
+let cached: Env | undefined;
 
-if (!parsed.success) {
-  const details = parsed.error.issues
-    .map((issue) => `  • ${issue.path.join(".")}: ${issue.message}`)
-    .join("\n");
-  throw new Error(`Invalid environment variables:\n${details}`);
+/**
+ * Validates required environment variables the first time they're needed — at
+ * request time, NOT at import time.
+ *
+ * This must stay lazy: `next build` collects page data by importing every
+ * route, so eager validation would fail the whole build on a machine that has
+ * no runtime secrets. The marketing site has no database dependency and must
+ * deploy regardless; only the authenticated area needs these values.
+ */
+export function env(): Env {
+  if (cached) return cached;
+
+  const parsed = schema.safeParse(process.env);
+  if (!parsed.success) {
+    const details = parsed.error.issues
+      .map((issue) => `  • ${issue.path.join(".")}: ${issue.message}`)
+      .join("\n");
+    throw new Error(
+      `Invalid environment variables:\n${details}\n` +
+        `Set these in your .env file locally, or in your host's environment settings (e.g. Vercel → Settings → Environment Variables).`,
+    );
+  }
+
+  cached = parsed.data;
+  return cached;
 }
-
-export const env = parsed.data;
