@@ -2,7 +2,7 @@
 
 import { IconCash, IconShoppingCart, IconUserPlus } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
-import { CHANNEL_META } from "./ChannelFilter";
+import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { AnalyticsData } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual, IconType } from "@/lib/content/types";

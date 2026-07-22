@@ -3,7 +3,7 @@ import { Packages } from "@/components/pricing/Packages";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbSchema, softwareAppSchema } from "@/lib/seo/jsonld";
+import { breadcrumbSchema, softwareAppSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { PACKAGES } from "@/lib/content/packages";
 
@@ -27,6 +27,14 @@ export default function PricingPage() {
           lowPrice: String(Math.min(...prices)),
           highPrice: String(Math.max(...prices)),
           priceCurrency: "GEL",
+        })}
+      />
+      <JsonLd
+        data={webPageSchema({
+          name: "ფასები | Sidekick",
+          description:
+            "Sidekick-ის ფასები და პაკეტები — ბეისიქი, სტანდარტი, პრემიუმი. პირველი თვე ყველა პაკეტზე უფასოა.",
+          path: "/pricing",
         })}
       />
       <Breadcrumbs items={crumbs} />

@@ -305,6 +305,96 @@ export async function getAnalytics(
 
 export type AnalyticsData = Awaited<ReturnType<typeof getAnalytics>>;
 
+/**
+ * Inbox list. Reads whatever is in the database — so once a channel
+ * integration starts writing Conversation/Message rows, these appear here
+ * with no further changes.
+ */
+export async function getConversations(businessId: string, channel?: ChannelType) {
+  const rows = await prisma.conversation.findMany({
+    where: { businessId, ...(channel ? { channel: { type: channel } } : {}) },
+    include: {
+      channel: { select: { type: true } },
+      lead: { select: { id: true } },
+      orders: { select: { id: true }, take: 1 },
+      messages: {
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: { text: true, createdAt: true, stoppedReason: true },
+      },
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 100,
+  });
+
+  const now = Date.now();
+  return rows.map((c) => {
+    const last = c.messages[0];
+    const name = c.customerName?.trim() || "—";
+    return {
+      id: c.id,
+      name,
+      initials: name.slice(0, 2).toUpperCase(),
+      channelType: c.channel?.type ?? null,
+      // Ring marks intent: this conversation produced an order, or a lead.
+      ring: c.orders.length ? ("order" as const) : c.lead ? ("lead" as const) : ("none" as const),
+      // Alert explains why a human should look: bot paused, AI off, or the
+      // last message was stopped for some reason.
+      alert: c.botPausedUntil && c.botPausedUntil > new Date()
+        ? ("wait" as const)
+        : last?.stoppedReason
+          ? ("aierr" as const)
+          : !c.aiEnabled
+            ? ("aioff" as const)
+            : ("none" as const),
+      preview: last?.text ?? "",
+      aiEnabled: c.aiEnabled,
+      status: c.status,
+      minutesAgo: Math.max(
+        0,
+        Math.round((now - (last?.createdAt ?? c.updatedAt).getTime()) / 60000),
+      ),
+    };
+  });
+}
+
+export type ConversationRow = Awaited<ReturnType<typeof getConversations>>[number];
+
+/** One thread with its messages. Scoped by businessId so an id from the URL
+ *  can't be used to read another tenant's conversation. */
+export async function getConversation(businessId: string, id: string) {
+  const c = await prisma.conversation.findFirst({
+    where: { id, businessId },
+    include: {
+      channel: { select: { type: true } },
+      lead: { select: { id: true } },
+      orders: { select: { id: true }, take: 1 },
+      messages: { orderBy: { createdAt: "asc" }, take: 200 },
+    },
+  });
+  if (!c) return null;
+
+  const name = c.customerName?.trim() || "—";
+  return {
+    id: c.id,
+    name,
+    initials: name.slice(0, 2).toUpperCase(),
+    channelType: c.channel?.type ?? null,
+    status: c.status,
+    aiEnabled: c.aiEnabled,
+    hasLead: Boolean(c.lead),
+    hasOrder: c.orders.length > 0,
+    messages: c.messages.map((m) => ({
+      id: m.id,
+      sender: m.sender,
+      text: m.text,
+      stoppedReason: m.stoppedReason,
+    })),
+  };
+}
+
+export type ConversationDetail = NonNullable<Awaited<ReturnType<typeof getConversation>>>;
+
 /** Identity shown in the sidebar account card — the real signed-in user. */
 export async function getAccount(userId: string, businessId: string) {
   const [user, subscription] = await Promise.all([

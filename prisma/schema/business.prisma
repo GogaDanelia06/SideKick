@@ -61,6 +61,8 @@ model Payment {
   date        DateTime @default(now())
   providerRef String?
   business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, date])
 }
 
 // Manually-editable landing-page numbers (total users, active chats, revenue).

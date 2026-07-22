@@ -34,4 +34,6 @@ model Faq {
   question   String
   answer     String
   business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
 }

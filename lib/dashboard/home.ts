@@ -1,14 +1,10 @@
 import {
-  IconBrandFacebook,
-  IconBrandInstagram,
-  IconBrandWhatsapp,
   IconCash,
   IconMessage2,
   IconShoppingCart,
   IconUserPlus,
-  IconWorld,
 } from "@tabler/icons-react";
-import type { ChannelStatus, ChannelType } from "@prisma/client";
+import type { ChannelStatus } from "@prisma/client";
 import type { Bilingual, IconType } from "@/lib/content/types";
 import type { Tone } from "./tone";
 
@@ -31,13 +27,6 @@ export const LIMIT_LABELS = {
   noPlan: { ka: "აქტიური პაკეტი არ არის", en: "No active plan" },
   unlimited: { ka: "ულიმიტო", en: "Unlimited" },
   renews: { ka: "განახლდება", en: "Renews" },
-};
-
-export const CHANNEL_META: Record<ChannelType, { name: string; icon: IconType }> = {
-  FACEBOOK: { name: "Facebook", icon: IconBrandFacebook },
-  INSTAGRAM: { name: "Instagram", icon: IconBrandInstagram },
-  WHATSAPP: { name: "WhatsApp", icon: IconBrandWhatsapp },
-  WEBSITE: { name: "Website API", icon: IconWorld },
 };
 
 export const CHANNEL_STATE: Record<ChannelStatus, { tone: Tone; label: Bilingual }> = {

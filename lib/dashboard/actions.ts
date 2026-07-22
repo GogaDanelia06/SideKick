@@ -217,6 +217,23 @@ export async function deleteLead(id: string) {
   revalidatePath(DASH.leads);
 }
 
+/* ── Conversations ─────────────────────────────────────────────────────── */
+
+/**
+ * Turn the bot on/off for one thread. This is a stored setting the channel
+ * integration will read before auto-replying — safe to change today even
+ * though nothing is delivering messages yet.
+ */
+export async function setConversationAi(conversationId: string, aiEnabled: boolean) {
+  const ctx = await getContext();
+  if (!ctx) return;
+  await prisma.conversation.updateMany({
+    where: { id: conversationId, businessId: ctx.businessId },
+    data: { aiEnabled },
+  });
+  revalidatePath(DASH.conversations);
+}
+
 /* ── Team ──────────────────────────────────────────────────────────────── */
 // Only OWNER/ADMIN may change the team. Membership rows are the tenant link,
 // so every lookup is filtered by the caller's businessId.

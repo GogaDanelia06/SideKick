@@ -3,7 +3,8 @@
 import clsx from "clsx";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { StatusDot } from "@/components/dashboard/ui/StatusDot";
-import { CHANNEL_META, CHANNEL_STATE } from "@/lib/dashboard/home";
+import { CHANNEL_STATE } from "@/lib/dashboard/home";
+import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { HomeOverview } from "@/lib/dashboard/queries";
 import { TONE_TEXT } from "@/lib/dashboard/tone";
 import { useLanguage } from "@/lib/i18n/useLanguage";

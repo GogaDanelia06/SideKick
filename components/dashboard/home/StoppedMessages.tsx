@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { IconMessageOff } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
-import { CHANNEL_META } from "@/lib/dashboard/home";
+import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { HomeOverview } from "@/lib/dashboard/queries";
 import { TONE_BADGE } from "@/lib/dashboard/tone";
 import { DASH } from "@/lib/dashboard/routes";

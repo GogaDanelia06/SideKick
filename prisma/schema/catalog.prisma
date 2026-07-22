@@ -18,6 +18,8 @@ model Product {
   orderItems  OrderItem[]
 
   @@unique([businessId, code])
+
+  @@index([businessId, createdAt])
 }
 
 // A connection record only. Real FB/IG/WA OAuth + webhooks are the unbought
@@ -43,4 +45,6 @@ model Video {
   youtubeUrl String
   category   String?
   business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
 }

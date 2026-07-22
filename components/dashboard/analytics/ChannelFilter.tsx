@@ -3,25 +3,14 @@
 import { useEffect, useState } from "react";
 import type { ChannelType } from "@prisma/client";
 import {
-  IconBrandFacebook,
-  IconBrandInstagram,
-  IconBrandWhatsapp,
   IconCheck,
   IconChevronDown,
   IconStack2,
-  IconWorld,
 } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { IconType } from "@/lib/content/types";
+import { CHANNEL_META, CHANNEL_ORDER } from "@/lib/dashboard/channelMeta";
 
-export const CHANNEL_META: Record<ChannelType, { name: string; icon: IconType; color: string }> = {
-  FACEBOOK: { name: "Facebook", icon: IconBrandFacebook, color: "#1877f2" },
-  INSTAGRAM: { name: "Instagram", icon: IconBrandInstagram, color: "#c13584" },
-  WHATSAPP: { name: "WhatsApp", icon: IconBrandWhatsapp, color: "#25d366" },
-  WEBSITE: { name: "Website", icon: IconWorld, color: "#58a6ff" },
-};
-
-const ORDER: ChannelType[] = ["FACEBOOK", "INSTAGRAM", "WHATSAPP", "WEBSITE"];
+const ORDER = CHANNEL_ORDER;
 
 /** "All channels" dropdown — narrows every figure on the page to one channel. */
 export function ChannelFilter({

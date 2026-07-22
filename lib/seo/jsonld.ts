@@ -25,6 +25,33 @@ export function websiteSchema(): JsonLdData {
   };
 }
 
+/**
+ * WebPage (and its subtypes) — describes the individual page to search
+ * engines and ties it back to the site and publisher.
+ *
+ * `type` narrows it: "AboutPage" / "ContactPage" are recognised subtypes of
+ * WebPage, so emitting one of those satisfies both requirements at once.
+ */
+export function webPageSchema(page: {
+  type?: "WebPage" | "AboutPage" | "ContactPage";
+  name: string;
+  description: string;
+  path: string;
+}): JsonLdData {
+  const url = absoluteUrl(page.path);
+  return {
+    "@context": "https://schema.org",
+    "@type": page.type ?? "WebPage",
+    name: page.name,
+    description: page.description,
+    url,
+    inLanguage: "ka-GE",
+    isPartOf: { "@type": "WebSite", name: SITE.name, url: SITE.url },
+    publisher: { "@type": "Organization", name: SITE.name, url: SITE.url },
+    primaryImageOfPage: absoluteUrl("/opengraph-image"),
+  };
+}
+
 /** FAQPage — pair with a visible FAQ list so answers can surface in search. */
 export function faqSchema(items: { question: string; answer: string }[]): JsonLdData {
   return {
