@@ -18,7 +18,9 @@ export const FOOTER = {
   linksHeading: { ka: "ჩვენს შესახებ", en: "About" },
   links: [
     { label: { ka: "ფასები", en: "Pricing" }, href: ROUTES.pricing },
-    { label: { ka: "წესები და პირობები", en: "Terms & conditions" }, href: "#" },
+    { label: { ka: "წესები და პირობები", en: "Terms & conditions" }, href: ROUTES.terms },
+    { label: { ka: "კონფიდენციალურობა", en: "Privacy policy" }, href: ROUTES.privacy },
+    { label: { ka: "მონაცემთა დაცვა", en: "Data protection" }, href: ROUTES.dataProtection },
     { label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" }, href: ROUTES.register },
   ] satisfies FooterLink[],
   copyright: {

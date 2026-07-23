@@ -23,7 +23,7 @@ export const LEGAL_REVIEW_NOTICE: Bilingual = {
 
 /** Company details that must be filled in before launch. */
 export const LEGAL_ENTITY = {
-  name: { ka: 'შპს „საიდქიქ"', en: "Sidekick LLC" } as Bilingual,
+  name: { ka: 'შპს „საიდქიქ“', en: "Sidekick LLC" } as Bilingual,
   regNumber: "【საიდენტიფიკაციო კოდი】",
   address: "【იურიდიული მისამართი】",
   email: "【legal@sidekick.ge】",
@@ -59,7 +59,7 @@ export const TERMS: LegalDoc = {
       heading: { ka: "1. ზოგადი დებულებები", en: "1. General provisions" },
       paragraphs: [
         {
-          ka: `წინამდებარე წესები და პირობები არეგულირებს 【შპს „საიდქიქ"】-ის (შემდგომში „კომპანია", „ჩვენ") მიერ შემოთავაზებული პლატფორმა Sidekick-ით (შემდგომში „მომსახურება") სარგებლობას.`,
+          ka: `წინამდებარე წესები და პირობები არეგულირებს 【შპს „საიდქიქ“】-ის (შემდგომში „კომპანია“, „ჩვენ“) მიერ შემოთავაზებული პლატფორმა Sidekick-ით (შემდგომში „მომსახურება“) სარგებლობას.`,
           en: `These terms and conditions govern the use of the Sidekick platform (the "Service") operated by 【Sidekick LLC】 (the "Company", "we").`,
         },
         {
@@ -106,7 +106,7 @@ export const TERMS: LegalDoc = {
       heading: { ka: "4. პაკეტები, ფასი და გადახდა", en: "4. Plans, pricing and payment" },
       bullets: [
         {
-          ka: "მომსახურება ხელმისაწვდომია პაკეტების სახით. მოქმედი ფასები მითითებულია ვებგვერდის „ფასების" გვერდზე.",
+          ka: "მომსახურება ხელმისაწვდომია პაკეტების სახით. მოქმედი ფასები მითითებულია ვებგვერდის „ფასების“ გვერდზე.",
           en: "The Service is offered as subscription plans. Current prices are shown on the Pricing page of the website.",
         },
         {
@@ -237,7 +237,7 @@ export const PRIVACY: LegalDoc = {
       heading: { ka: "1. ვინ ვართ", en: "1. Who we are" },
       paragraphs: [
         {
-          ka: "მონაცემთა დამმუშავებელია 【შპს „საიდქიქ"】, საიდენტიფიკაციო კოდი 【—】, მისამართი 【—】.",
+          ka: "მონაცემთა დამმუშავებელია 【შპს „საიდქიქ“】, საიდენტიფიკაციო კოდი 【—】, მისამართი 【—】.",
           en: "The data controller is 【Sidekick LLC】, registration number 【—】, address 【—】.",
         },
       ],
@@ -375,7 +375,7 @@ export const DATA_PROTECTION: LegalDoc = {
       heading: { ka: "1. სამართლებრივი საფუძველი", en: "1. Legal basis" },
       paragraphs: [
         {
-          ka: "პერსონალურ მონაცემებს ვამუშავებთ „პერსონალურ მონაცემთა დაცვის შესახებ" საქართველოს კანონის შესაბამისად.",
+          ka: "პერსონალურ მონაცემებს ვამუშავებთ „პერსონალურ მონაცემთა დაცვის შესახებ“ საქართველოს კანონის შესაბამისად.",
           en: "We process personal data in accordance with the Law of Georgia on Personal Data Protection.",
         },
         {
