@@ -101,3 +101,36 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
+
+/* Loading skeletons. A sweeping highlight reads as "working" better than a
+   pulse, and it's one animation on a pseudo-element rather than per-node. */
+@keyframes skeletonSweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, currentColor 9%, transparent);
+  border-radius: 6px;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, currentColor 7%, transparent),
+    transparent
+  );
+  animation: skeletonSweep 1.4s ease-in-out infinite;
+}
+
+/* Respect the OS setting — a constant sweep is exactly the kind of motion
+   that triggers discomfort. Keep the shape, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+}
