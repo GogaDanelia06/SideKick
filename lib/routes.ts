@@ -6,6 +6,7 @@ export const ROUTES = {
   login: "/login",
   register: "/register",
   forgot: "/forgot",
+  reset: "/reset",
   terms: "/terms",
   privacy: "/privacy",
   dataProtection: "/data-protection",

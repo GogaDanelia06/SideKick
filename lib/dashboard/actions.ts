@@ -4,11 +4,12 @@ import { revalidatePath } from "next/cache";
 import type { LeadStatus, OrderStatus, Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getContext } from "@/lib/session";
+import { can, requirePermission } from "@/lib/auth/permissions";
 import { DASH } from "./routes";
 
 /** Connect/disconnect a channel record (no real OAuth — that's the unbought module). */
 export async function setChannelConnected(channelId: string, connected: boolean) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("channels:write");
   if (!ctx) return;
   await prisma.channel.updateMany({
     where: { id: channelId, businessId: ctx.businessId },
@@ -23,7 +24,7 @@ export async function setChannelConnected(channelId: string, connected: boolean)
 
 /** Move an order through its lifecycle. Scoped to the caller's business. */
 export async function setOrderStatus(orderId: string, status: OrderStatus) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("orders:write");
   if (!ctx) return;
   await prisma.order.updateMany({
     where: { id: orderId, businessId: ctx.businessId },
@@ -49,7 +50,7 @@ async function upsertAiConfig(businessId: string, fields: Record<string, unknown
 }
 
 export async function saveAiCharacter(data: FormData) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("ai:write");
   if (!ctx) return;
   await upsertAiConfig(ctx.businessId, {
     style: (data.get("style") as string) || null,
@@ -61,7 +62,7 @@ export async function saveAiCharacter(data: FormData) {
 }
 
 export async function saveAiRules(data: FormData) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("ai:write");
   if (!ctx) return;
   await upsertAiConfig(ctx.businessId, {
     roles: data.getAll("roles").map(String),
@@ -77,13 +78,13 @@ export async function saveAiRules(data: FormData) {
 }
 
 export async function saveAiPrompt(data: FormData) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("ai:write");
   if (!ctx) return;
   await upsertAiConfig(ctx.businessId, { prompt: (data.get("prompt") as string) || null });
 }
 
 export async function setAiLanguages(languages: string[]) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("ai:write");
   if (!ctx) return;
   const clean = [...new Set(languages.map((l) => l.trim()).filter(Boolean))].slice(0, 12);
   await upsertAiConfig(ctx.businessId, { languages: clean });
@@ -91,7 +92,7 @@ export async function setAiLanguages(languages: string[]) {
 
 /** Business profile shown to the assistant (and on the profile screen). */
 export async function saveBusinessInfo(data: FormData) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("business:write");
   if (!ctx) return;
   const s = (k: string) => ((data.get(k) as string) || "").trim() || null;
   await prisma.business.update({
@@ -120,7 +121,7 @@ const num = (data: FormData, k: string) => {
 const str = (data: FormData, k: string) => ((data.get(k) as string) || "").trim() || null;
 
 export async function createProduct(data: FormData) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("products:write");
   if (!ctx) return;
   const name = str(data, "name");
   const code = str(data, "code");
@@ -136,7 +137,7 @@ export async function createProduct(data: FormData) {
 }
 
 export async function updateProduct(id: string, data: FormData) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("products:write");
   if (!ctx) return;
   await prisma.product.updateMany({
     where: { id, businessId: ctx.businessId },
@@ -150,24 +151,35 @@ export async function updateProduct(id: string, data: FormData) {
 }
 
 export async function deleteProduct(id: string) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("products:write");
   if (!ctx) return;
   await prisma.product.deleteMany({ where: { id, businessId: ctx.businessId } });
   revalidatePath(DASH.products);
 }
 
+/**
+ * The profile screen edits two different things at two different permission
+ * levels: your own account (anyone may edit their own) and the business
+ * (OWNER/ADMIN only). Applied separately so a VIEWER can still fix their own
+ * name without being able to rename the company.
+ */
 export async function saveProfile(data: FormData) {
   const ctx = await getContext();
   if (!ctx) return;
   const s = (k: string) => (data.get(k) as string) || null;
+
   await prisma.user.update({
     where: { id: ctx.userId },
     data: { name: s("name"), phone: s("phone") },
   });
-  await prisma.business.update({
-    where: { id: ctx.businessId },
-    data: { name: s("company") ?? undefined, field: s("field"), description: s("description") },
-  });
+
+  if (can(ctx.role, "business:write")) {
+    await prisma.business.update({
+      where: { id: ctx.businessId },
+      data: { name: s("company") ?? undefined, field: s("field"), description: s("description") },
+    });
+  }
+
   revalidatePath(DASH.profile);
 }
 
@@ -176,7 +188,7 @@ export async function saveProfile(data: FormData) {
 // manage them by hand. All writes are scoped to the caller's business.
 
 export async function createLead(data: FormData) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("leads:write");
   if (!ctx) return;
   const name = str(data, "name");
   if (!name) return;
@@ -194,14 +206,14 @@ export async function createLead(data: FormData) {
 }
 
 export async function setLeadStatus(id: string, status: LeadStatus) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("leads:write");
   if (!ctx) return;
   await prisma.lead.updateMany({ where: { id, businessId: ctx.businessId }, data: { status } });
   revalidatePath(DASH.leads);
 }
 
 export async function updateLeadComment(id: string, comment: string) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("leads:write");
   if (!ctx) return;
   await prisma.lead.updateMany({
     where: { id, businessId: ctx.businessId },
@@ -211,7 +223,7 @@ export async function updateLeadComment(id: string, comment: string) {
 }
 
 export async function deleteLead(id: string) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("leads:write");
   if (!ctx) return;
   await prisma.lead.deleteMany({ where: { id, businessId: ctx.businessId } });
   revalidatePath(DASH.leads);
@@ -225,7 +237,7 @@ export async function deleteLead(id: string) {
  * though nothing is delivering messages yet.
  */
 export async function setConversationAi(conversationId: string, aiEnabled: boolean) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("conversations:write");
   if (!ctx) return;
   await prisma.conversation.updateMany({
     where: { id: conversationId, businessId: ctx.businessId },
@@ -239,7 +251,7 @@ export async function setConversationAi(conversationId: string, aiEnabled: boole
 // so every lookup is filtered by the caller's businessId.
 
 function canManageTeam(role: string) {
-  return role === "OWNER" || role === "ADMIN";
+  return can(role, "team:manage");
 }
 
 export type TeamResult = { ok: true } | { ok: false; error: string };
@@ -332,7 +344,7 @@ export async function removeTeamMember(membershipId: string): Promise<TeamResult
 export async function changePlan(planKey: string): Promise<TeamResult> {
   const ctx = await getContext();
   if (!ctx) return { ok: false, error: "unauthorized" };
-  if (ctx.role !== "OWNER") return { ok: false, error: "forbidden" };
+  if (!can(ctx.role, "billing:manage")) return { ok: false, error: "forbidden" };
 
   const plan = await prisma.plan.findUnique({ where: { key: planKey } });
   if (!plan) return { ok: false, error: "unknown_plan" };

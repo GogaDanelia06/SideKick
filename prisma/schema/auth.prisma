@@ -12,6 +12,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   memberships   Membership[]
+  resetTokens   PasswordResetToken[]
 }
 
 model Account {
@@ -38,6 +39,21 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// Password reset. Only a HASH of the token is stored, so a database leak
+/// can't be used to reset anyone's password. Tokens are single-use and expire.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model VerificationToken {
