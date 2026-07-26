@@ -9,7 +9,6 @@ import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { HeroSlide as Slide } from "@/lib/content/hero";
 
-/** One hero slide: copy + CTAs on the left, a product mock on the right. */
 export function HeroSlide({ slide, mock }: { slide: Slide; mock: ReactNode }) {
   const { t } = useLanguage();
 

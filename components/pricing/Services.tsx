@@ -6,7 +6,6 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ServiceCard } from "./ServiceCard";
 import { SERVICES, SERVICES_HEADING } from "@/lib/content/services";
 
-/** Grid of what Sidekick includes (first pricing-page section). */
 export function Services() {
   return (
     <section className="pb-6 pt-[60px]">

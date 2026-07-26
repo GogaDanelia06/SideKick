@@ -1,6 +1,5 @@
 import clsx from "clsx";
 
-/** Pill toggle used for theme, AI on/off, role and handoff switches. */
 export function Switch({
   on,
   onToggle,

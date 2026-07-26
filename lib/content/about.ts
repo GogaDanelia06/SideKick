@@ -1,6 +1,5 @@
 import type { Bilingual } from "./types";
 
-/** A paragraph whose optional `strong` lead-in renders in bold ink. */
 export type AboutParagraph = { strong?: Bilingual; text: Bilingual };
 
 export const ABOUT = {

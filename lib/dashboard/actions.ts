@@ -1,13 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { LeadStatus, OrderStatus, Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getContext } from "@/lib/session";
+import { can, requirePermission } from "@/lib/auth/permissions";
+import { normalizeYouTubeUrl } from "./youtube";
 import { DASH } from "./routes";
 
-/** Connect/disconnect a channel record (no real OAuth — that's the unbought module). */
+export type ActionResult = { ok: true } | { ok: false; error: string };
+
+export type TeamResult = ActionResult;
+
 export async function setChannelConnected(channelId: string, connected: boolean) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("channels:write");
   if (!ctx) return;
   await prisma.channel.updateMany({
     where: { id: channelId, businessId: ctx.businessId },
@@ -20,24 +26,87 @@ export async function setChannelConnected(channelId: string, connected: boolean)
   revalidatePath(DASH.channels);
 }
 
-export async function saveAiConfig(data: FormData) {
-  const ctx = await getContext();
+export async function setOrderStatus(orderId: string, status: OrderStatus) {
+  const ctx = await requirePermission("orders:write");
   if (!ctx) return;
-  const s = (k: string) => (data.get(k) as string) || null;
-  const fields = {
-    style: s("style"),
-    length: s("length"),
-    emoji: s("emoji"),
-    addressForm: s("addressForm"),
-    prompt: s("prompt"),
-    roles: data.getAll("roles").map(String),
-  };
+  await prisma.order.updateMany({
+    where: { id: orderId, businessId: ctx.businessId },
+    data: { status },
+  });
+  revalidatePath(DASH.orders);
+}
+
+async function upsertAiConfig(businessId: string, fields: Record<string, unknown>) {
   await prisma.aiConfig.upsert({
-    where: { businessId: ctx.businessId },
+    where: { businessId },
     update: fields,
-    create: { businessId: ctx.businessId, languages: ["ქართული"], ...fields },
+    create: { businessId, languages: ["ქართული"], ...fields },
   });
   revalidatePath(DASH.ai);
+}
+
+export async function saveAiCharacter(data: FormData) {
+  const ctx = await requirePermission("ai:write");
+  if (!ctx) return;
+  await upsertAiConfig(ctx.businessId, {
+    style: (data.get("style") as string) || null,
+    length: (data.get("length") as string) || null,
+    emoji: (data.get("emoji") as string) || null,
+    addressForm: (data.get("addressForm") as string) || null,
+    roles: data.getAll("roles").map(String),
+  });
+}
+
+export async function saveAiRules(data: FormData) {
+  const ctx = await requirePermission("ai:write");
+  if (!ctx) return;
+  await upsertAiConfig(ctx.businessId, {
+    roles: data.getAll("roles").map(String),
+    handoffRule: (data.get("handoffRule") as string) || null,
+    leadEnabled: data.get("leadEnabled") === "on",
+    leadRule: (data.get("leadRule") as string) || null,
+    orderEnabled: data.get("orderEnabled") === "on",
+    orderRule: (data.get("orderRule") as string) || null,
+    allowOrderEdit: data.get("allowOrderEdit") === "on",
+    faqText: (data.get("faqText") as string) || null,
+    policies: (data.get("policies") as string) || null,
+  });
+}
+
+export async function saveAiPrompt(data: FormData) {
+  const ctx = await requirePermission("ai:write");
+  if (!ctx) return;
+  await upsertAiConfig(ctx.businessId, { prompt: (data.get("prompt") as string) || null });
+}
+
+export async function setAiLanguages(languages: string[]) {
+  const ctx = await requirePermission("ai:write");
+  if (!ctx) return;
+  const clean = [...new Set(languages.map((l) => l.trim()).filter(Boolean))].slice(0, 12);
+  await upsertAiConfig(ctx.businessId, { languages: clean });
+}
+
+export async function saveBusinessInfo(data: FormData) {
+  const ctx = await requirePermission("business:write");
+  if (!ctx) return;
+  const s = (k: string) => ((data.get(k) as string) || "").trim() || null;
+  await prisma.business.update({
+    where: { id: ctx.businessId },
+    data: {
+      name: s("name") ?? undefined,
+      field: s("field"),
+      email: s("email"),
+      phone: s("phone"),
+      contactInfo: s("contactInfo"),
+      workingHours: s("workingHours"),
+      site: s("site"),
+      branches: s("branches"),
+      description: s("description"),
+      extra: s("extra"),
+    },
+  });
+  revalidatePath(DASH.ai);
+  revalidatePath(DASH.profile);
 }
 
 const num = (data: FormData, k: string) => {
@@ -47,7 +116,7 @@ const num = (data: FormData, k: string) => {
 const str = (data: FormData, k: string) => ((data.get(k) as string) || "").trim() || null;
 
 export async function createProduct(data: FormData) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("products:write");
   if (!ctx) return;
   const name = str(data, "name");
   const code = str(data, "code");
@@ -63,7 +132,7 @@ export async function createProduct(data: FormData) {
 }
 
 export async function updateProduct(id: string, data: FormData) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("products:write");
   if (!ctx) return;
   await prisma.product.updateMany({
     where: { id, businessId: ctx.businessId },
@@ -77,7 +146,7 @@ export async function updateProduct(id: string, data: FormData) {
 }
 
 export async function deleteProduct(id: string) {
-  const ctx = await getContext();
+  const ctx = await requirePermission("products:write");
   if (!ctx) return;
   await prisma.product.deleteMany({ where: { id, businessId: ctx.businessId } });
   revalidatePath(DASH.products);
@@ -87,13 +156,194 @@ export async function saveProfile(data: FormData) {
   const ctx = await getContext();
   if (!ctx) return;
   const s = (k: string) => (data.get(k) as string) || null;
+
   await prisma.user.update({
     where: { id: ctx.userId },
     data: { name: s("name"), phone: s("phone") },
   });
-  await prisma.business.update({
-    where: { id: ctx.businessId },
-    data: { name: s("company") ?? undefined, field: s("field"), description: s("description") },
-  });
+
+  if (can(ctx.role, "business:write")) {
+    await prisma.business.update({
+      where: { id: ctx.businessId },
+      data: { name: s("company") ?? undefined, field: s("field"), description: s("description") },
+    });
+  }
+
   revalidatePath(DASH.profile);
+}
+
+export async function createLead(data: FormData) {
+  const ctx = await requirePermission("leads:write");
+  if (!ctx) return;
+  const name = str(data, "name");
+  if (!name) return;
+  await prisma.lead.create({
+    data: {
+      businessId: ctx.businessId,
+      name,
+      phone: str(data, "phone"),
+      interest: str(data, "interest"),
+      source: str(data, "source") ?? "manual",
+      comment: str(data, "comment"),
+    },
+  });
+  revalidatePath(DASH.leads);
+}
+
+export async function setLeadStatus(id: string, status: LeadStatus) {
+  const ctx = await requirePermission("leads:write");
+  if (!ctx) return;
+  await prisma.lead.updateMany({ where: { id, businessId: ctx.businessId }, data: { status } });
+  revalidatePath(DASH.leads);
+}
+
+export async function updateLeadComment(id: string, comment: string) {
+  const ctx = await requirePermission("leads:write");
+  if (!ctx) return;
+  await prisma.lead.updateMany({
+    where: { id, businessId: ctx.businessId },
+    data: { comment: comment.trim() || null },
+  });
+  revalidatePath(DASH.leads);
+}
+
+export async function deleteLead(id: string) {
+  const ctx = await requirePermission("leads:write");
+  if (!ctx) return;
+  await prisma.lead.deleteMany({ where: { id, businessId: ctx.businessId } });
+  revalidatePath(DASH.leads);
+}
+
+export async function createVideo(data: FormData): Promise<ActionResult> {
+  const ctx = await requirePermission("videos:write");
+  if (!ctx) return { ok: false, error: "forbidden" };
+
+  const title = str(data, "title");
+  const url = normalizeYouTubeUrl(String(data.get("youtubeUrl") ?? ""));
+  if (!title) return { ok: false, error: "title_required" };
+  if (!url) return { ok: false, error: "bad_url" };
+
+  await prisma.video.create({
+    data: {
+      businessId: ctx.businessId,
+      title,
+      youtubeUrl: url,
+      category: str(data, "category"),
+    },
+  });
+  revalidatePath(DASH.videos);
+  return { ok: true };
+}
+
+export async function deleteVideo(id: string): Promise<ActionResult> {
+  const ctx = await requirePermission("videos:write");
+  if (!ctx) return { ok: false, error: "forbidden" };
+
+  await prisma.video.deleteMany({ where: { id, businessId: ctx.businessId } });
+  revalidatePath(DASH.videos);
+  return { ok: true };
+}
+
+export async function setConversationAi(conversationId: string, aiEnabled: boolean) {
+  const ctx = await requirePermission("conversations:write");
+  if (!ctx) return;
+  await prisma.conversation.updateMany({
+    where: { id: conversationId, businessId: ctx.businessId },
+    data: { aiEnabled },
+  });
+  revalidatePath(DASH.conversations);
+}
+
+function canManageTeam(role: string) {
+  return can(role, "team:manage");
+}
+
+export async function addTeamMember(data: FormData): Promise<TeamResult> {
+  const ctx = await getContext();
+  if (!ctx) return { ok: false, error: "unauthorized" };
+  if (!canManageTeam(ctx.role)) return { ok: false, error: "forbidden" };
+
+  const email = String(data.get("email") ?? "").toLowerCase().trim();
+  const name = String(data.get("name") ?? "").trim() || null;
+  const role = String(data.get("role") ?? "VIEWER") as Role;
+  if (!email) return { ok: false, error: "email_required" };
+
+  const user = await prisma.user.upsert({
+    where: { email },
+    update: name ? { name } : {},
+    create: { email, name },
+  });
+
+  const existing = await prisma.membership.findUnique({
+    where: { userId_businessId: { userId: user.id, businessId: ctx.businessId } },
+  });
+  if (existing) return { ok: false, error: "already_member" };
+
+  await prisma.membership.create({
+    data: { userId: user.id, businessId: ctx.businessId, role },
+  });
+  revalidatePath(DASH.team);
+  return { ok: true };
+}
+
+export async function updateMemberRole(membershipId: string, role: Role): Promise<TeamResult> {
+  const ctx = await getContext();
+  if (!ctx) return { ok: false, error: "unauthorized" };
+  if (!canManageTeam(ctx.role)) return { ok: false, error: "forbidden" };
+
+  const target = await prisma.membership.findFirst({
+    where: { id: membershipId, businessId: ctx.businessId },
+  });
+  if (!target) return { ok: false, error: "not_found" };
+
+  if (target.role === "OWNER" && role !== "OWNER") {
+    const owners = await prisma.membership.count({
+      where: { businessId: ctx.businessId, role: "OWNER" },
+    });
+    if (owners <= 1) return { ok: false, error: "last_owner" };
+  }
+
+  await prisma.membership.update({ where: { id: membershipId }, data: { role } });
+  revalidatePath(DASH.team);
+  return { ok: true };
+}
+
+export async function removeTeamMember(membershipId: string): Promise<TeamResult> {
+  const ctx = await getContext();
+  if (!ctx) return { ok: false, error: "unauthorized" };
+  if (!canManageTeam(ctx.role)) return { ok: false, error: "forbidden" };
+
+  const target = await prisma.membership.findFirst({
+    where: { id: membershipId, businessId: ctx.businessId },
+  });
+  if (!target) return { ok: false, error: "not_found" };
+  if (target.userId === ctx.userId) return { ok: false, error: "cannot_remove_self" };
+
+  if (target.role === "OWNER") {
+    const owners = await prisma.membership.count({
+      where: { businessId: ctx.businessId, role: "OWNER" },
+    });
+    if (owners <= 1) return { ok: false, error: "last_owner" };
+  }
+
+  await prisma.membership.delete({ where: { id: membershipId } });
+  revalidatePath(DASH.team);
+  return { ok: true };
+}
+
+export async function changePlan(planKey: string): Promise<TeamResult> {
+  const ctx = await getContext();
+  if (!ctx) return { ok: false, error: "unauthorized" };
+  if (!can(ctx.role, "billing:manage")) return { ok: false, error: "forbidden" };
+
+  const plan = await prisma.plan.findUnique({ where: { key: planKey } });
+  if (!plan) return { ok: false, error: "unknown_plan" };
+
+  await prisma.subscription.upsert({
+    where: { businessId: ctx.businessId },
+    update: { planId: plan.id },
+    create: { businessId: ctx.businessId, planId: plan.id, status: "TRIAL" },
+  });
+  revalidatePath(DASH.billing);
+  return { ok: true };
 }

@@ -1,14 +1,11 @@
-// Sidekick backend — multi-file Prisma schema (Postgres).
-// Scope: Frontend + Backend only. AI reply engine and channel integrations
-// are separate unbought modules; their tables store settings but nothing drives them yet.
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {

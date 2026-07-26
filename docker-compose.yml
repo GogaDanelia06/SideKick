@@ -1,0 +1,31 @@
+# Local development database. Reproducible Postgres matching DATABASE_URL
+# (postgresql://goga@localhost:5432/sidekick_dev). Requires Docker installed.
+#
+#   docker compose up -d      # start
+#   pnpm db:migrate           # apply schema
+#   pnpm db:seed              # load demo data
+#   docker compose down       # stop (add -v to also wipe the data volume)
+#
+# NOTE: stop any native Postgres on 5432 first, or you'll get a port conflict.
+# HOST_AUTH_METHOD=trust is passwordless — fine for local dev only, never prod.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: sidekick_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: goga
+      POSTGRES_DB: sidekick_dev
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - sidekick_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U goga -d sidekick_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  sidekick_pgdata:

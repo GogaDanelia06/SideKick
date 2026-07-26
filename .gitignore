@@ -19,6 +19,8 @@ yarn-debug.log*
 
 # env files
 .env*
+# …except the committed template, which holds names only, never values.
+!.env.example
 
 # vercel
 .vercel

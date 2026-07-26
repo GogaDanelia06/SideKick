@@ -21,7 +21,6 @@ export type DashNavItem = {
   badge?: string;
 };
 
-/** Primary navigation shown in the sidebar (desktop) and drawer (mobile). */
 export const DASH_NAV: DashNavItem[] = [
   { href: DASH.home, icon: IconLayoutDashboard, label: { ka: "მთავარი", en: "Overview" } },
   { href: DASH.conversations, icon: IconMessages, label: { ka: "მიმოწერები", en: "Conversations" }, badge: "3" },
@@ -36,5 +35,4 @@ export const DASH_NAV: DashNavItem[] = [
   { href: DASH.videos, icon: IconBrandYoutube, label: { ka: "ვიდეო ინსტრუქციები", en: "Tutorials" } },
 ];
 
-/** The five destinations surfaced in the mobile bottom bar. */
 export const DASH_TABS = [DASH.home, DASH.conversations, DASH.orders, DASH.products, DASH.analytics];

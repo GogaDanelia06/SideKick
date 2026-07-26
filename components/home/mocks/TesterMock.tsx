@@ -14,7 +14,6 @@ const COPY = {
   a: { ka: "AirPods Pro ღირს 649₾ და ამჟამად მარაგშია. გსურთ შეკვეთა?", en: "The AirPods Pro cost ₾649 and are currently in stock. Would you like to order?" },
 };
 
-/** Slide 3 visual: dry-run the bot against your own catalog before launch. */
 export function TesterMock() {
   const { t } = useLanguage();
   return (

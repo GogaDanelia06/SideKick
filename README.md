@@ -1,69 +1,97 @@
 # Sidekick
 
-Marketing site + app shell for **Sidekick**, an AI assistant that answers
-customers 24/7 across Facebook, Instagram and WhatsApp, collects leads and
-grows sales. Bilingual (ქართული / English), dark + light themes.
+Multi-tenant SaaS for Georgian businesses: an AI assistant that answers
+customers across channels, collects leads and tracks sales, with a full
+management dashboard. Bilingual (ქართული / English), dark + light themes.
 
-## Stack
+Next.js 16 · React 19 · TypeScript strict · Prisma 6 · PostgreSQL · Auth.js
 
-- **Next.js 16** (App Router) · **React 19** · **TypeScript** (strict)
-- **Tailwind CSS v4** — design tokens exposed via `@theme inline` over CSS
-  variables, so `[data-theme]` swaps the whole palette with zero re-styling
-- **@tabler/icons-react** · **framer-motion** (hero + chat animation)
-- Fonts via `next/font`: Inter, IBM Plex Mono, Noto Sans Georgian
+---
 
-## Getting started
+## Documentation
+
+| Document | Read it when |
+| --- | --- |
+| [docs/SETUP.md](docs/SETUP.md) | getting the project running on a new machine |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | you need to understand how it fits together |
+| [docs/API.md](docs/API.md) | adding or calling an endpoint or Server Action |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | shipping to production |
+| [docs/HANDOVER.md](docs/HANDOVER.md) | taking ownership — access, gaps, trade-offs |
+| [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md) | Annex 8 — every library, version and licence |
+| [docs/SECURITY-CHECKLIST.md](docs/SECURITY-CHECKLIST.md) | Annex 9 — security controls, mapped to code |
+
+New here? [SETUP.md](docs/SETUP.md), then
+[ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+---
+
+## Quick start
 
 ```bash
 pnpm install
-pnpm dev        # http://localhost:3000
-pnpm build      # production build
-pnpm lint
+docker compose up -d          # local Postgres 16
+# create .env with DATABASE_URL, AUTH_SECRET, AUTH_URL — see docs/SETUP.md
+pnpm db:migrate
+pnpm db:seed:prod             # subscription plans — required
+pnpm dev                      # http://localhost:3000
 ```
 
-## Architecture
+Full instructions, including every environment variable, are in
+[docs/SETUP.md](docs/SETUP.md).
 
-Every file is single-responsibility and ≤120 lines. Text is never hardcoded in
-components — it lives in `lib/content/*` as colocated `Bilingual` objects and is
-resolved at render time with the `t()` helper from the language context.
+---
+
+## Layout
 
 ```
 app/
-  layout.tsx            Root: fonts, no-flash theme script, providers, header, chat
-  (marketing)/          Pages that show the footer (home, about, pricing, contact)
-  (auth)/               Footer-less centered pages (login, register, forgot)
-components/
-  ui/                   Primitives: Container, Card, Badge, Button, Field, …
-  layout/               Header, Nav, Footer, Theme + Language toggles
-  home/                 Hero carousel, slide mocks, Stats, Story, Benefits, CTA
-  pricing/ contact/     Services + Packages, contact info + live AI chat
-  auth/ chat/           Auth forms; floating chat widget + shared bubble/input
+  (marketing)/     public pages — home, about, pricing, contact, legal
+  (auth)/          login, register, forgot, reset
+  dashboard/       authenticated tenant area, one folder per screen
+  admin/           platform-owner content editors (stats, plans, faq, seo)
+  api/auth/        register, forgot, reset + the Auth.js catch-all
+components/        ui primitives, layout, marketing sections, dashboard screens
 lib/
-  i18n/                 Locale context + `t()` bilingual resolver
-  theme/                Theme context + pre-paint no-flash script
-  content/              All copy (bilingual) + structured data (icons, prices)
-  chat/                 Keyword bot (bot.ts) — the one file a real API replaces
-hooks/                  useCarousel, useChat
+  session.ts       the tenant boundary — getContext / requireContext
+  auth/            permission matrix, password-reset tokens
+  security/        rate limiting
+  dashboard/       queries (reads) and actions (writes)
+  content/         all copy, bilingual
+  seo/             metadata builders and JSON-LD schemas
+prisma/schema/     multi-file schema + migrations
 ```
 
-### Theming
+---
 
-`app/globals.css` defines dark tokens on `:root` and light overrides on
-`:root[data-theme="light"]`. `theme-script.ts` sets `data-theme` before first
-paint (stored preference → OS preference → dark) to avoid a flash.
+## The rules that matter
 
-### Internationalisation
+1. Every query takes `businessId`. One without it is a data leak.
+2. Every write action starts with `requirePermission()`.
+3. No user-facing string lives in a component — copy goes in `lib/content/*`.
+4. Environment validation stays lazy (`lib/env.ts`), or the build breaks.
 
-`LanguageProvider` holds the active locale (persisted to `localStorage`) and
-exposes `t(bilingual)`. Switching is instant and client-side — no reload.
+The reasoning behind each is in
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Backend (next)
+---
 
-The UI is intentionally backend-ready:
+## Commands
 
-- **Chat** — `lib/chat/bot.ts` is a deterministic keyword bot. Replace
-  `getBotReply` with a call to a real AI endpoint; the UI already speaks in the
-  active locale and needs no changes.
-- **Auth forms** — login / register / forgot submit handlers are stubs
-  (`preventDefault`); wire them to real endpoints / an auth provider.
-- **Content** — `lib/content/*` can later be sourced from a CMS or the API.
+```bash
+pnpm dev / build / start / lint
+pnpm test             # run the unit test suite (Vitest)
+pnpm test:watch       # re-run on change
+
+pnpm db:migrate       # create + apply a migration
+pnpm db:studio        # browse the database
+pnpm db:seed:prod     # plans + FAQ — safe anywhere
+pnpm db:seed          # demo tenant — local only
+
+pnpm admin:grant <email>   # make a registered user a platform admin (/admin)
+```
+
+## Tests
+
+`pnpm test` runs 124 unit tests over the security-critical logic — the
+permission matrix, input validation, password-reset tokens, the rate-limiter
+window and log redaction. No database required; they run anywhere.

@@ -5,7 +5,6 @@ import { IconSend } from "@tabler/icons-react";
 import { CHAT } from "@/lib/content/chat";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Text input + send button. Enter (without shift) submits. */
 export function ChatInput({
   placeholder,
   onSend,

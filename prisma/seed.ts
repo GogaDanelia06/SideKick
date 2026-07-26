@@ -6,7 +6,33 @@ const prisma = new PrismaClient();
 const BIZ = "biz_demo";
 const USER = "usr_demo";
 
+function assertLocalDatabase() {
+  const url = process.env.DATABASE_URL ?? "";
+  const isLocal = /@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
+  if (isLocal || process.argv.includes("--force")) return;
+
+  const host = (() => {
+    try {
+      return new URL(url).host;
+    } catch {
+      return "(unparseable DATABASE_URL)";
+    }
+  })();
+
+  console.error(
+    `\n✗ Refusing to seed DEMO data into a non-local database.\n` +
+      `  Target: ${host}\n\n` +
+      `  This seed creates a fake business, fake products/orders and a\n` +
+      `  demo@sidekick.ge / demo1234 login — none of which belong in production.\n\n` +
+      `  For a real database run:  pnpm db:seed:prod\n` +
+      `  To override anyway:       pnpm db:seed -- --force\n`,
+  );
+  process.exit(1);
+}
+
 async function main() {
+  assertLocalDatabase();
+
   for (const p of PLANS) await prisma.plan.upsert({ where: { key: p.key }, create: p, update: p });
   for (const s of SITE_STATS) await prisma.siteStat.upsert({ where: { key: s.key }, create: s, update: s });
 
@@ -34,7 +60,6 @@ async function main() {
   });
   await prisma.aiConfig.upsert({ where: { businessId: BIZ }, update: AI_CONFIG, create: { businessId: BIZ, ...AI_CONFIG } });
 
-  // Extra team members (owner is the demo account above).
   for (const m of TEAM_MEMBERS) {
     const u = await prisma.user.upsert({
       where: { email: m.email },
@@ -48,7 +73,6 @@ async function main() {
     });
   }
 
-  // Clean business-scoped collections so re-seeding is idempotent (FK-safe order).
   await prisma.$transaction([
     prisma.payment.deleteMany({ where: { businessId: BIZ } }),
     prisma.orderItem.deleteMany({ where: { order: { businessId: BIZ } } }),

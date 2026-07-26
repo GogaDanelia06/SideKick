@@ -15,7 +15,6 @@ type Props = {
   as?: "h1" | "h2";
 };
 
-/** Eyebrow badge + heading (+ optional subtitle) used to open every section. */
 export function SectionHeading({
   badge,
   badgeIcon,

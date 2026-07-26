@@ -2,15 +2,19 @@
 
 import { useState } from "react";
 import clsx from "clsx";
+import { IconShoppingCartOff } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { OrderRow } from "./OrderRow";
-import { ORDER_TABS, ORDERS } from "@/lib/dashboard/orders";
+import { ORDER_TABS } from "@/lib/dashboard/orders";
+import type { OrdersData } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-export function OrdersView() {
+export function OrdersView({ orders, counts }: OrdersData) {
   const { t } = useLanguage();
   const [tab, setTab] = useState(ORDER_TABS[0].key);
-  const [openId, setOpenId] = useState<string | null>(ORDERS[0].id);
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  const visible = orders.filter((o) => o.status === tab);
 
   return (
     <div className="flex flex-col gap-4">
@@ -26,20 +30,32 @@ export function OrdersView() {
             )}
           >
             {t(ot.label)}
-            <span className="rounded-full border border-border bg-soft px-2 py-px text-[11px] text-muted">{ot.count}</span>
+            <span className="rounded-full border border-border bg-soft px-2 py-px text-[11px] text-muted">
+              {counts[ot.key] ?? 0}
+            </span>
           </button>
         ))}
       </div>
-      <Panel className="overflow-hidden">
-        {ORDERS.map((order) => (
-          <OrderRow
-            key={order.id}
-            order={order}
-            open={openId === order.id}
-            onToggle={() => setOpenId((cur) => (cur === order.id ? null : order.id))}
-          />
-        ))}
-      </Panel>
+
+      {visible.length === 0 ? (
+        <Panel className="flex flex-col items-center gap-2 p-10 text-center">
+          <IconShoppingCartOff size={28} className="text-faint" />
+          <p className="text-sm text-muted">
+            {t({ ka: "ამ სტატუსით შეკვეთა არ არის", en: "No orders with this status" })}
+          </p>
+        </Panel>
+      ) : (
+        <Panel className="overflow-hidden">
+          {visible.map((order) => (
+            <OrderRow
+              key={order.id}
+              order={order}
+              open={openId === order.id}
+              onToggle={() => setOpenId((cur) => (cur === order.id ? null : order.id))}
+            />
+          ))}
+        </Panel>
+      )}
     </div>
   );
 }

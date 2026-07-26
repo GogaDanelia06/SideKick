@@ -1,18 +1,24 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import type { Payment, Plan, Subscription } from "@prisma/client";
-import { IconReceipt } from "@tabler/icons-react";
+import { IconCheck, IconCreditCardOff, IconReceipt } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
+import { changePlan } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 type Props = {
   subscription: (Subscription & { plan: Plan }) | null;
   payments: Payment[];
   cardName: string;
+  plans: Plan[];
 };
 
-export function BillingView({ subscription, payments, cardName }: Props) {
+export function BillingView({ subscription, payments, cardName, plans }: Props) {
   const { t } = useLanguage();
+  const [pending, start] = useTransition();
+  const [picking, setPicking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const plan = subscription?.plan;
   const used = subscription?.msgUsed ?? 0;
   const limit = plan?.msgLimit ?? 0;
@@ -34,7 +40,55 @@ export function BillingView({ subscription, payments, cardName }: Props) {
               <div className="text-xs text-muted">/ {t({ ka: "თვე", en: "mo" })}</div>
             </div>
           </div>
-          <button type="button" className="mt-4 h-10 w-full rounded-[8px] border border-border text-sm font-medium">{t({ ka: "პაკეტის შეცვლა", en: "Change plan" })}</button>
+          <button
+            type="button"
+            onClick={() => { setPicking((v) => !v); setError(null); }}
+            className="mt-4 h-10 w-full rounded-[8px] border border-border text-sm font-medium hover:border-blue"
+          >
+            {picking ? t({ ka: "დახურვა", en: "Close" }) : t({ ka: "პაკეტის შეცვლა", en: "Change plan" })}
+          </button>
+
+          {picking ? (
+            <div className="mt-3 grid gap-2">
+              {plans.map((p) => {
+                const current = subscription?.planId === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    disabled={pending || current}
+                    onClick={() =>
+                      start(async () => {
+                        const res = await changePlan(p.key);
+                        if (!res.ok) setError(res.error);
+                        else setPicking(false);
+                      })
+                    }
+                    className={`flex items-center justify-between rounded-[8px] border px-3.5 py-2.5 text-left text-[13px] disabled:opacity-60 ${current ? "border-primary bg-green-surface text-green" : "border-border hover:border-blue"}`}
+                  >
+                    <span className="font-medium">{p.name}</span>
+                    <span className="flex items-center gap-2 font-mono">
+                      {p.price}₾
+                      {current ? <IconCheck size={15} /> : null}
+                    </span>
+                  </button>
+                );
+              })}
+              {error ? (
+                <p className="text-xs text-red">
+                  {error === "forbidden"
+                    ? t({ ka: "მხოლოდ მფლობელს შეუძლია პაკეტის შეცვლა", en: "Only the owner can change the plan" })
+                    : t({ ka: "ვერ შეიცვალა", en: "Could not change plan" })}
+                </p>
+              ) : null}
+              <p className="text-xs text-muted">
+                {t({
+                  ka: "პაკეტი იცვლება მაშინვე. გადახდის აღება დაემატება საგადახდო მოდულთან ერთად.",
+                  en: "The plan changes immediately. Taking payment arrives with the payments module.",
+                })}
+              </p>
+            </div>
+          ) : null}
         </Panel>
         <Panel className="p-5">
           <div className="mb-2 flex items-center justify-between">
@@ -69,9 +123,22 @@ export function BillingView({ subscription, payments, cardName }: Props) {
             <div className="mb-8 font-mono tracking-[0.25em]">•••• •••• •••• {subscription?.cardRef ?? "————"}</div>
             <div className="flex items-center justify-between text-xs"><span className="uppercase">{cardName || "—"}</span><span className="font-mono">08/28</span></div>
           </div>
-          <button type="button" className="mt-4 h-10 w-full rounded-[8px] border border-border text-sm font-medium">{t({ ka: "ახალი ბარათი", en: "New card" })}</button>
+          <div className="mt-4 flex items-start gap-2 rounded-[8px] border border-border2 bg-soft px-3 py-2.5 text-xs text-muted">
+            <IconCreditCardOff size={15} className="mt-px shrink-0" />
+            {t({
+              ka: "ბარათის მართვა დაემატება საგადახდო მოდულთან ერთად (BOG / TBC).",
+              en: "Card management arrives with the payments module (BOG / TBC).",
+            })}
+          </div>
         </Panel>
-        <button type="button" className="h-11 rounded-[10px] border border-red text-sm font-medium text-red">{t({ ka: "გააუქმე გამოწერა", en: "Cancel subscription" })}</button>
+        <button
+          type="button"
+          disabled
+          title={t({ ka: "საჭიროებს საგადახდო მოდულს", en: "Requires the payments module" })}
+          className="h-11 cursor-not-allowed rounded-[10px] border border-red text-sm font-medium text-red opacity-50"
+        >
+          {t({ ka: "გააუქმე გამოწერა", en: "Cancel subscription" })}
+        </button>
       </div>
     </div>
   );

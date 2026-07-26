@@ -5,7 +5,6 @@ import { CONTACT_INFO } from "@/lib/content/contact";
 import { SOCIALS, SOCIAL_LABEL } from "@/lib/content/social";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Left column of the contact page: reachable channels. */
 export function ContactInfo() {
   const { t } = useLanguage();
 

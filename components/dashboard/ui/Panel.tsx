@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
-/** Standard dashboard surface card: elevated surface, hairline border, 14px radius. */
 export function Panel({
   className,
   children,

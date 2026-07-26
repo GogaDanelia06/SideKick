@@ -22,7 +22,6 @@ const STAT_CARDS = [
   { icon: IconCash, label: { ka: "გაყიდვა", en: "Sales" }, value: "48K", unit: "₾" },
 ];
 
-/** Slide 2 visual: the "everything in one panel" dashboard. */
 export function DashboardMock() {
   const { t } = useLanguage();
   return (

@@ -1,9 +1,7 @@
 import type { Bilingual } from "./types";
 
-/** Brand name is intentionally not translated. */
 export const BRAND = "Sidekick";
 
-/** Reusable action labels shared across pages (hero, banners, cards). */
 export const ACTIONS = {
   tryFree: { ka: "ცადე უფასოდ", en: "Try it free" },
   learnMore: { ka: "გაიგე მეტი", en: "Learn more" },

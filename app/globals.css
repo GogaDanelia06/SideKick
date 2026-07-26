@@ -21,7 +21,6 @@
   --color-amber: var(--amber);
   --color-red: var(--red);
 
-  /* Dashboard-only surfaces (resolved inside .dash-scope) */
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
   --color-soft: var(--soft);
@@ -63,7 +62,6 @@
   --header-bg: rgba(255, 255, 255, 0.85);
 }
 
-/* Dashboard token layer — its own surfaces + radii, scoped so marketing is untouched. */
 .dash-scope {
   --border: #30363d; --canvas: #0d1117; --surface: #161b22; --soft: #1c2128;
   --border2: #21262d; --faint: #6e7681; --ai: #a371f7; --ai-surface: #a371f722;
@@ -100,4 +98,33 @@ body {
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
+}
+
+@keyframes skeletonSweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, currentColor 9%, transparent);
+  border-radius: 6px;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, currentColor 7%, transparent),
+    transparent
+  );
+  animation: skeletonSweep 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
 }

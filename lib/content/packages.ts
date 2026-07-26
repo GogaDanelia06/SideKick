@@ -2,57 +2,52 @@ import type { Bilingual } from "./types";
 
 export type Package = {
   name: Bilingual;
-  price: string;
+  price: number;
   featured: boolean;
   features: Bilingual[];
+};
+
+export const PLAN_SUPPORT: Record<string, Bilingual> = {
+  basic: { ka: "მხარდაჭერა: ელფოსტა", en: "Support: email" },
+  standard: { ka: "მხარდაჭერა: პრიორიტეტული", en: "Support: priority" },
+  premium: { ka: "მხარდაჭერა: 24/7 + პერსონალური", en: "Support: 24/7 + dedicated" },
 };
 
 export const PACKAGES_HEADING = {
   badge: { ka: "პაკეტები", en: "Packages" },
   title: { ka: "აირჩიე შენი გეგმა", en: "Choose your plan" },
-  note: { ka: "პირველი თვე ყველა პაკეტზე უფასოა", en: "The first month is free on every plan" },
 };
 
 export const PACKAGE_META = {
   popular: { ka: "პოპულარული", en: "Popular" },
-  unit: { ka: "₾ / თვე", en: "₾ / mo" },
 };
 
-export const PACKAGES: Package[] = [
-  {
-    name: { ka: "ბეისიქი", en: "Basic" },
-    price: "49",
-    featured: false,
-    features: [
-      { ka: "1,000 შეტყობინება / თვე", en: "1,000 messages / month" },
-      { ka: "1 არხი", en: "1 channel" },
-      { ka: "1 მომხმარებელი", en: "1 user" },
-      { ka: "100 პროდუქტი", en: "100 products" },
-      { ka: "მხარდაჭერა: ელფოსტა", en: "Support: email" },
-    ],
-  },
-  {
-    name: { ka: "სტანდარტი", en: "Standard" },
-    price: "99",
-    featured: true,
-    features: [
-      { ka: "10,000 შეტყობინება / თვე", en: "10,000 messages / month" },
-      { ka: "3 არხი", en: "3 channels" },
-      { ka: "5 მომხმარებელი", en: "5 users" },
-      { ka: "1,000 პროდუქტი", en: "1,000 products" },
-      { ka: "მხარდაჭერა: პრიორიტეტული", en: "Support: priority" },
-    ],
-  },
-  {
-    name: { ka: "პრემიუმი", en: "Premium" },
-    price: "199",
-    featured: false,
-    features: [
-      { ka: "შეუზღუდავი შეტყობინება", en: "Unlimited messages" },
-      { ka: "ყველა არხი", en: "All channels" },
-      { ka: "შეუზღუდავი მომხმარებელი", en: "Unlimited users" },
-      { ka: "შეუზღუდავი პროდუქტი", en: "Unlimited products" },
-      { ka: "მხარდაჭერა: 24/7 + პერსონალური", en: "Support: 24/7 + dedicated" },
-    ],
-  },
+export type BillingPeriod = {
+  months: number;
+  label: Bilingual;
+  unit: Bilingual;
+  discountPct: number;
+};
+
+export const BILLING_PERIODS: BillingPeriod[] = [
+  { months: 1, label: { ka: "1 თვე", en: "1 month" }, unit: { ka: "₾ / თვე", en: "₾ / mo" }, discountPct: 0 },
+  { months: 3, label: { ka: "3 თვე", en: "3 months" }, unit: { ka: "₾ / 3 თვე", en: "₾ / 3 mo" }, discountPct: 0 },
+  { months: 12, label: { ka: "1 წელი", en: "1 year" }, unit: { ka: "₾ / წელი", en: "₾ / yr" }, discountPct: 0 },
 ];
+
+export function periodPrice(monthly: number, period: BillingPeriod): number {
+  return Math.round(monthly * period.months * (1 - period.discountPct / 100));
+}
+
+export const FREE_PERIOD = {
+  badge: { ka: "უფასო პერიოდი — 30 დღე", en: "Free period — 30 days" },
+  bannerTitle: {
+    ka: "5 დღე სასტარტო პერიოდი + 30 დღე უფასო მომსახურება",
+    en: "5-day starter period + 30 days of free service",
+  },
+  bannerText: {
+    ka: "რეგისტრაციისთანავე იღებ სრულ წვდომას 5 დღით — არხების დაკავშირების ჩათვლით. შემდეგ ირჩევ პაკეტს და გადახდის მეთოდს, რის შემდეგაც გელოდება დამატებით 30 დღე სრულიად უფასოდ. თანხა ჩამოიჭრება მხოლოდ ამ პერიოდის დასრულების შემდეგ და გამოწერის გაუქმება ნებისმიერ დროს შეგიძლია.",
+    en: "You get full access for 5 days the moment you register — including connecting channels. Then you choose a plan and a payment method, which unlocks a further 30 days completely free. You're only charged once that period ends, and you can cancel at any time.",
+  },
+  monthlyEquivalent: { ka: "თვეში", en: "per month" },
+};

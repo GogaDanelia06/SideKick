@@ -1,30 +1,52 @@
 "use client";
 
+import { useState } from "react";
 import { IconGift, IconTag } from "@tabler/icons-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PackageCard } from "./PackageCard";
-import { PACKAGES, PACKAGES_HEADING } from "@/lib/content/packages";
+import { PeriodSwitch } from "./PeriodSwitch";
+import {
+  BILLING_PERIODS,
+  FREE_PERIOD,
+  PACKAGES_HEADING,
+  type Package,
+} from "@/lib/content/packages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Three-tier pricing table (second pricing-page section). */
-export function Packages() {
+export function Packages({ packages }: { packages: Package[] }) {
   const { t } = useLanguage();
+  const [period, setPeriod] = useState(BILLING_PERIODS[0]);
 
   return (
-    <section className="pb-16 pt-10">
+    <section id="packages" className="scroll-mt-20 pb-16 pt-10">
       <Container>
-        <div className="mb-9 text-center">
-          <SectionHeading badge={PACKAGES_HEADING.badge} badgeIcon={IconTag} title={PACKAGES_HEADING.title} />
-          <p className="mt-2 flex items-center justify-center gap-1.5 text-[15px] text-muted">
-            <IconGift size={16} className="text-green" />
-            {t(PACKAGES_HEADING.note)}
-          </p>
+        <div className="mb-8 text-center">
+          <SectionHeading
+            badge={PACKAGES_HEADING.badge}
+            badgeIcon={IconTag}
+            title={PACKAGES_HEADING.title}
+          />
         </div>
+
+        <div className="mb-8 flex justify-center">
+          <PeriodSwitch value={period} onChange={setPeriod} />
+        </div>
+
         <div className="grid items-start gap-5 md:grid-cols-3">
-          {PACKAGES.map((pkg, i) => (
-            <PackageCard key={i} pkg={pkg} />
+          {packages.map((pkg, i) => (
+            <PackageCard key={i} pkg={pkg} period={period} />
           ))}
+        </div>
+
+        <div className="mt-8 rounded-lg border border-green bg-card px-6 py-5 text-center sm:px-10">
+          <div className="mb-2 flex items-center justify-center gap-2 text-[15px] font-semibold text-green">
+            <IconGift size={18} />
+            {t(FREE_PERIOD.bannerTitle)}
+          </div>
+          <p className="mx-auto max-w-[680px] text-sm leading-relaxed text-muted">
+            {t(FREE_PERIOD.bannerText)}
+          </p>
         </div>
       </Container>
     </section>

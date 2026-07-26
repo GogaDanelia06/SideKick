@@ -1,16 +1,13 @@
-// Demo data for local development. Mirrors the frontend mock so the wired
-// dashboard looks identical to what the client already reviewed.
-
 export const PLANS = [
-  { key: "basic", name: "ბეისიქი", price: 49, msgLimit: 1000, channelCap: 1, userCap: 1, productCap: 100, featured: false },
-  { key: "standard", name: "სტანდარტი", price: 99, msgLimit: 10000, channelCap: 3, userCap: 5, productCap: 1000, featured: true },
-  { key: "premium", name: "პრემიუმი", price: 199, msgLimit: -1, channelCap: -1, userCap: -1, productCap: -1, featured: false },
+  { key: "basic", name: "ბეისიქი", nameEn: "Basic", price: 49, msgLimit: 1000, channelCap: 1, userCap: 1, productCap: 100, featured: false },
+  { key: "standard", name: "სტანდარტი", nameEn: "Standard", price: 99, msgLimit: 10000, channelCap: 3, userCap: 5, productCap: 1000, featured: true },
+  { key: "premium", name: "პრემიუმი", nameEn: "Premium", price: 199, msgLimit: -1, channelCap: -1, userCap: -1, productCap: -1, featured: false },
 ];
 
 export const SITE_STATS = [
-  { key: "total_users", label: "მომხმარებელი ჯამში", value: "1,200+", order: 0 },
-  { key: "active_chats_today", label: "აქტიური ჩატი დღეს", value: "8,540", order: 1 },
-  { key: "revenue", label: "გაყიდული პროდუქცია ბოტებით", value: "2.4M₾", order: 2 },
+  { key: "total_users", labelKa: "მომხმარებელი ჯამში", labelEn: "Users in total", value: "1,200+", order: 0 },
+  { key: "active_chats_today", labelKa: "აქტიური ჩატი დღეს", labelEn: "Active chats today", value: "8,540", order: 1 },
+  { key: "revenue", labelKa: "გაყიდული პროდუქცია ბოტებით", labelEn: "Products sold via bots", value: "2.4M₾", order: 2 },
 ];
 
 export const PRODUCTS = [
@@ -66,7 +63,6 @@ export const AI_CONFIG = {
   prompt: "შენ ხარ Sidekick-ის AI ასისტენტი. უპასუხე თავაზიანად, დაეხმარე პროდუქტის შერჩევაში და შეკვეთის გაფორმებაში.",
 };
 
-// Extra team members beyond the owner (owner = the logged-in demo account).
 export const TEAM_MEMBERS = [
   { name: "Luka G.", email: "luka@sidekick.ge", role: "ADMIN" },
   { name: "Nino B.", email: "nino@sidekick.ge", role: "OPERATOR" },

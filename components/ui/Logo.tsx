@@ -4,7 +4,6 @@ import { IconBolt } from "@tabler/icons-react";
 import { BRAND } from "@/lib/content/common";
 import { ROUTES } from "@/lib/routes";
 
-/** Brand mark (bolt glyph + wordmark) shared by the header and footer. */
 export function Logo({ className }: { className?: string }) {
   return (
     <Link

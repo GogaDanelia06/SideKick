@@ -1,6 +1,5 @@
 import type { Bilingual } from "./types";
 
-/** Copy shared by the floating chat widget and the embedded contact chat. */
 export const CHAT = {
   aiLabel: "✦ Sidekick AI",
   online: { ka: "ონლაინ", en: "online" },

@@ -17,7 +17,6 @@ function Field({ label, ...input }: { label: string } & ComponentProps<"input">)
   );
 }
 
-/** Edit-product dialog. Submits to the updateProduct server action. */
 export function ProductModal({ product, onClose }: { product: Product | null; onClose: () => void }) {
   const { t } = useLanguage();
   if (!product) return null;

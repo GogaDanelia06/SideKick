@@ -6,7 +6,6 @@ import { DASH_META } from "@/lib/dashboard/meta";
 import { DASH } from "@/lib/dashboard/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Sticky page header: title + subtitle (per route), with a menu button on mobile. */
 export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
   const pathname = usePathname();
   const { t } = useLanguage();

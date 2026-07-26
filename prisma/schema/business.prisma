@@ -1,9 +1,9 @@
-// The tenant (Business) plus plans, subscription, payments and editable site stats.
-
 model Business {
   id            String         @id @default(cuid())
   name          String
   field         String?
+  email         String?
+  phone         String?
   description   String?
   contactInfo   String?
   workingHours  String?
@@ -24,11 +24,11 @@ model Business {
   faqs          Faq[]
 }
 
-// Basic / Standard / Premium — editable from admin (per the spec).
 model Plan {
   id            String         @id @default(cuid())
   key           String         @unique
   name          String
+  nameEn        String         @default("")
   price         Int
   msgLimit      Int
   channelCap    Int
@@ -58,13 +58,33 @@ model Payment {
   date        DateTime @default(now())
   providerRef String?
   business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, date])
 }
 
-// Manually-editable landing-page numbers (total users, active chats, revenue).
 model SiteStat {
-  id    String @id @default(cuid())
-  key   String @unique
-  label String
-  value String
-  order Int    @default(0)
+  id      String @id @default(cuid())
+  key     String @unique
+  value   String
+  labelKa String
+  labelEn String
+  order   Int    @default(0)
+}
+
+model SiteFaq {
+  id         String  @id @default(cuid())
+  questionKa String
+  questionEn String
+  answerKa   String
+  answerEn   String
+  order      Int     @default(0)
+  published  Boolean @default(true)
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  valueKa   String
+  valueEn   String   @default("")
+  updatedAt DateTime @updatedAt
 }

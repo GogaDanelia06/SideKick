@@ -18,7 +18,6 @@ const TABS: { href: string; label: Bilingual }[] = [
 
 const iconFor = (href: string) => DASH_NAV.find((n) => n.href === href)!.icon;
 
-/** Mobile bottom tab bar (below lg). */
 export function BottomNav({ className }: { className?: string }) {
   const pathname = usePathname();
   const { t } = useLanguage();

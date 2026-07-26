@@ -1,44 +1,33 @@
 import {
-  IconBrandFacebook,
-  IconBrandInstagram,
-  IconBrandWhatsapp,
   IconCash,
   IconMessage2,
   IconShoppingCart,
   IconUserPlus,
-  IconWorld,
 } from "@tabler/icons-react";
+import type { ChannelStatus } from "@prisma/client";
 import type { Bilingual, IconType } from "@/lib/content/types";
 import type { Tone } from "./tone";
 
-export type Kpi = { label: Bilingual; icon: IconType; value: string; delta: string };
-export const KPIS: Kpi[] = [
-  { label: { ka: "დღევანდელი მიმოწერები", en: "Today's conversations" }, icon: IconMessage2, value: "248", delta: "+12%" },
-  { label: { ka: "ახალი ლიდები", en: "New leads" }, icon: IconUserPlus, value: "34", delta: "+8%" },
-  { label: { ka: "ახალი შეკვეთები", en: "New orders" }, icon: IconShoppingCart, value: "19", delta: "+5%" },
-  { label: { ka: "შემოსავალი", en: "Revenue" }, icon: IconCash, value: "4,280₾", delta: "+18%" },
+export type KpiKey = "conversations" | "leads" | "orders" | "revenue";
+
+export const KPI_META: { key: KpiKey; label: Bilingual; icon: IconType; money?: boolean }[] = [
+  { key: "conversations", label: { ka: "დღევანდელი მიმოწერები", en: "Today's conversations" }, icon: IconMessage2 },
+  { key: "leads", label: { ka: "ახალი ლიდები", en: "New leads" }, icon: IconUserPlus },
+  { key: "orders", label: { ka: "ახალი შეკვეთები", en: "New orders" }, icon: IconShoppingCart },
+  { key: "revenue", label: { ka: "შემოსავალი", en: "Revenue" }, icon: IconCash, money: true },
 ];
 
-export const LIMIT = {
+export const LIMIT_LABELS = {
   heading: { ka: "დარჩენილი შეტყობინებების ლიმიტი", en: "Remaining message limit" },
-  plan: { ka: "Standard · 10,000 / თვე", en: "Standard · 10,000 / mo" },
-  remaining: "6,420",
-  used: { ka: "დარჩა · 3,580 გამოყენებული", en: "left · 3,580 used" },
-  percent: 64,
-  reset: { ka: "განულდება 1 აგვისტოს", en: "Resets Aug 1" },
+  left: { ka: "დარჩა", en: "left" },
+  used: { ka: "გამოყენებული", en: "used" },
+  noPlan: { ka: "აქტიური პაკეტი არ არის", en: "No active plan" },
+  unlimited: { ka: "ულიმიტო", en: "Unlimited" },
+  renews: { ka: "განახლდება", en: "Renews" },
 };
 
-export type ChannelStat = { name: string; icon: IconType; tone: Tone; state: Bilingual };
-export const CHANNEL_STATUS: ChannelStat[] = [
-  { name: "Facebook", icon: IconBrandFacebook, tone: "green", state: { ka: "აქტიური", en: "Active" } },
-  { name: "Instagram", icon: IconBrandInstagram, tone: "green", state: { ka: "აქტიური", en: "Active" } },
-  { name: "WhatsApp", icon: IconBrandWhatsapp, tone: "amber", state: { ka: "ხარვეზია", en: "Issue" } },
-  { name: "Website API", icon: IconWorld, tone: "red", state: { ka: "გათიშული", en: "Offline" } },
-];
-
-export type StoppedMsg = { icon: IconType; user: string; text: string; reason: Bilingual; tone: Tone; time: string };
-export const STOPPED_MSGS: StoppedMsg[] = [
-  { icon: IconBrandWhatsapp, user: "გიორგი მ.", text: "შეკვეთის სტატუსი მაინტერესებს #1043", reason: { ka: "არხი შეფერხდა", en: "Channel delayed" }, tone: "amber", time: "2 წთ" },
-  { icon: IconBrandInstagram, user: "ანა ბ.", text: "გამარჯობა, ფასი მაინტერესებს", reason: { ka: "ლიმიტი ამოიწურა", en: "Limit reached" }, tone: "red", time: "14 წთ" },
-  { icon: IconBrandFacebook, user: "ლევან თ.", text: "მადლობა! 🙏", reason: { ka: "AI გათიშულია", en: "AI off" }, tone: "muted", time: "1 სთ" },
-];
+export const CHANNEL_STATE: Record<ChannelStatus, { tone: Tone; label: Bilingual }> = {
+  ACTIVE: { tone: "green", label: { ka: "აქტიური", en: "Active" } },
+  DELAYED: { tone: "amber", label: { ka: "ხარვეზია", en: "Issue" } },
+  OFF: { tone: "red", label: { ka: "გათიშული", en: "Offline" } },
+};

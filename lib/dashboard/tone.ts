@@ -1,4 +1,3 @@
-/** Status tone → Tailwind classes. Keeps color logic out of the components. */
 export type Tone = "green" | "amber" | "red" | "muted";
 
 export const TONE_TEXT: Record<Tone, string> = {
