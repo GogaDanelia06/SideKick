@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
-/** Centered, max-width page gutter (1140px) used by every section. */
 export function Container({
   className,
   children,

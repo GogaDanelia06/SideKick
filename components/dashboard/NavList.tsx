@@ -6,7 +6,6 @@ import clsx from "clsx";
 import { DASH_NAV } from "@/lib/dashboard/nav";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Shared sidebar/drawer navigation. `onNavigate` lets the drawer close on tap. */
 export function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { t } = useLanguage();

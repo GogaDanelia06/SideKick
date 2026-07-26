@@ -6,14 +6,14 @@ import { IconChevronDown, IconHelpCircle } from "@tabler/icons-react";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { FAQ_HEADING, FAQS } from "@/lib/content/faq";
+import { FAQ_HEADING, type FaqItem } from "@/lib/content/faq";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Accordion of common questions. Answers stay rendered (hidden when collapsed)
- *  so they're in the HTML for search engines, matching the FAQPage JSON-LD. */
-export function Faq() {
+export function Faq({ faqs }: { faqs: FaqItem[] }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(0);
+
+  if (faqs.length === 0) return null;
 
   return (
     <section className="pb-16">
@@ -25,7 +25,7 @@ export function Faq() {
           sub={FAQ_HEADING.sub}
         />
         <div className="mt-6 flex flex-col gap-3">
-          {FAQS.map((item, i) => {
+          {faqs.map((item, i) => {
             const isOpen = open === i;
             return (
               <Card key={i} className="overflow-hidden">

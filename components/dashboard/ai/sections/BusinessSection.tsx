@@ -5,7 +5,6 @@ import { IconBuildingStore } from "@tabler/icons-react";
 import { saveBusinessInfo } from "@/lib/dashboard/actions";
 import { AreaField, SectionForm, TextField } from "../parts";
 
-/** What the assistant needs to know about the business to answer accurately. */
 export function BusinessSection({ business }: { business: Business | null }) {
   return (
     <SectionForm

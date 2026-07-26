@@ -8,7 +8,6 @@ import { Topbar } from "./Topbar";
 import { BottomNav } from "./BottomNav";
 import { MobileDrawer } from "./MobileDrawer";
 
-/** App frame for the authenticated area: sidebar (desktop) / bottom nav + drawer (mobile). */
 export function DashboardShell({ children, account }: { children: ReactNode; account: Account }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 

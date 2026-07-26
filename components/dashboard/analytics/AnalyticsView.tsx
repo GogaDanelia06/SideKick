@@ -12,8 +12,6 @@ import { RANGES } from "@/lib/dashboard/analytics";
 import type { AnalyticsData } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Filters live in the URL so a view can be shared, refreshed, and re-queried
- *  on the server rather than filtered in the browser. */
 export function AnalyticsView({
   data,
   rangeIndex,

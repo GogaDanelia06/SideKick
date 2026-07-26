@@ -1,18 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { PLANS } from "./seed-data";
+import { FAQS } from "../lib/content/faq";
 
-/**
- * PRODUCTION seed — reference data only.
- *
- * Loads the subscription plans, which the app genuinely needs (registration
- * attaches a plan, billing reads it, the pricing page lists them). It creates
- * NO demo tenant, users, products, orders or conversations — a customer-facing
- * database must start empty of fake business data.
- *
- * Safe to re-run: every write is an upsert keyed on the plan key.
- *
- *   pnpm db:seed:prod
- */
 const prisma = new PrismaClient();
 
 async function main() {
@@ -20,10 +9,24 @@ async function main() {
     await prisma.plan.upsert({ where: { key: plan.key }, create: plan, update: plan });
   }
 
+  if ((await prisma.siteFaq.count()) === 0) {
+    await prisma.siteFaq.createMany({
+      data: FAQS.map((f, i) => ({
+        questionKa: f.question.ka,
+        questionEn: f.question.en,
+        answerKa: f.answer.ka,
+        answerEn: f.answer.en,
+        order: i,
+        published: true,
+      })),
+    });
+  }
+
   const total = await prisma.plan.count();
-  console.log(`✓ Production seed complete — ${total} plans available.`);
+  const faq = await prisma.siteFaq.count();
+  console.log(`✓ Production seed complete — ${total} plans, ${faq} FAQ entries.`);
   console.log(`  ${PLANS.map((p) => `${p.name} (${p.price}₾)`).join(", ")}`);
-  console.log("  No demo tenant created. The database is ready for real clients.");
+  console.log("  No demo tenant created. SiteStat left empty (no invented numbers).");
 }
 
 main()

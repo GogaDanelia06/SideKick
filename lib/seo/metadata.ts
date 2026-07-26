@@ -2,26 +2,19 @@ import type { Metadata } from "next";
 import { OG_IMAGE, SITE } from "./site";
 
 type PageMeta = {
-  /** Page title without the "| Sidekick" suffix. Omit on the home page. */
   title?: string;
+  absoluteTitle?: string;
   description?: string;
-  /** Site-relative path, e.g. "/pricing". Resolved against metadataBase. */
   path: string;
-  /** Set false for private pages that must not be indexed. */
   index?: boolean;
 };
 
-/** Builds a complete Metadata object (canonical + Open Graph + Twitter) for a
- *  page. Next only shallow-merges these objects across segments, so each page
- *  needs the full set — this keeps them consistent. The og:image is supplied
- *  automatically by app/opengraph-image.tsx. */
-export function pageMetadata({ title, description, path, index = true }: PageMeta): Metadata {
+export function pageMetadata({ title, absoluteTitle, description, path, index = true }: PageMeta): Metadata {
   const desc = description ?? SITE.description;
-  const ogTitle = title ? `${title} | ${SITE.name}` : SITE.title;
+  const ogTitle = absoluteTitle ?? (title ? `${title} | ${SITE.name}` : SITE.title);
 
   return {
-    // Omit when absent so the root title.default/template still applies.
-    ...(title ? { title } : {}),
+    ...(absoluteTitle ? { title: { absolute: absoluteTitle } } : title ? { title } : {}),
     description: desc,
     alternates: { canonical: path },
     openGraph: {

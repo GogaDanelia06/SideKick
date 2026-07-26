@@ -6,15 +6,11 @@ import type { LegalDoc } from "@/lib/content/legal";
 import { LEGAL_REVIEW_NOTICE } from "@/lib/content/legal";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Anything still wrapped in 【】 is an unfilled placeholder. */
 const PLACEHOLDER = /【[^】]*】/;
 
 export function LegalView({ doc }: { doc: LegalDoc }) {
   const { t, locale } = useLanguage();
 
-  // The draft warning is for whoever is building the site — never for the
-  // public. Showing "this needs a lawyer" on a live legal page would undermine
-  // the document itself.
   const isDraftVisible = process.env.NODE_ENV !== "production";
   const unfilled =
     isDraftVisible &&

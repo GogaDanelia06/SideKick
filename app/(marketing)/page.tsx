@@ -6,10 +6,18 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { webPageSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { SITE } from "@/lib/seo/site";
+import { getSiteStats, getSeoSettings } from "@/lib/site/content";
 
-export const metadata = pageMetadata({ path: "/" });
+export async function generateMetadata() {
+  const { title, description } = await getSeoSettings();
+  return pageMetadata({ path: "/", absoluteTitle: title, description });
+}
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const stats = await getSiteStats();
+
   return (
     <>
       <JsonLd
@@ -19,7 +27,7 @@ export default function HomePage() {
           path: "/",
         })}
       />
-      <Hero />
+      <Hero stats={stats} />
       <Story />
       <Benefits />
       <CtaBanner />

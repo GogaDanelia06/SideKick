@@ -11,7 +11,6 @@ import { DASH } from "@/lib/dashboard/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { useTheme } from "@/lib/theme/useTheme";
 
-/** Sidebar footer: account card that opens an upward menu (language, theme, logout). */
 export function ProfileMenu({ account }: { account: Account }) {
   const { t, locale, toggle: toggleLang } = useLanguage();
   const { theme, toggle: toggleTheme } = useTheme();

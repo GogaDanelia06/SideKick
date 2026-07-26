@@ -4,15 +4,13 @@ import { sendMail } from "@/lib/mail/send";
 import { passwordResetEmail } from "@/lib/mail/templates";
 import { forgotSchema } from "@/lib/validation/auth";
 import { absoluteUrl } from "@/lib/seo/site";
+import { log } from "@/lib/logger";
+import { clientIp, consume, tooManyRequestsMessage } from "@/lib/security/rateLimit";
 
-/**
- * Request a password reset link.
- *
- * Always responds 200 with the same body, whether or not the address exists.
- * Revealing that difference would turn this endpoint into a way to discover
- * which emails have accounts.
- */
 export async function POST(req: Request) {
+  const ipLimit = await consume("forgotIp", clientIp(req));
+  if (!ipLimit.ok) return throttled(ipLimit.retryAfterSec);
+
   const body = await req.json().catch(() => null);
   const parsed = forgotSchema.safeParse(body);
   if (!parsed.success) {
@@ -22,7 +20,14 @@ export async function POST(req: Request) {
     );
   }
 
+  const emailLimit = await consume("forgot", parsed.data.email);
+  if (!emailLimit.ok) return throttled(emailLimit.retryAfterSec);
+
   const issued = await createResetToken(parsed.data.email);
+
+  if (!issued) {
+    log.info("password reset requested for unknown address");
+  }
 
   if (issued) {
     const link = absoluteUrl(`/reset?token=${issued.token}`);
@@ -30,4 +35,11 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ ok: true });
+}
+
+function throttled(retryAfterSec: number) {
+  return NextResponse.json(
+    { error: tooManyRequestsMessage(retryAfterSec) },
+    { status: 429, headers: { "Retry-After": String(retryAfterSec) } },
+  );
 }

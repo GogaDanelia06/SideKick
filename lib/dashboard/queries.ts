@@ -1,13 +1,6 @@
 import type { ChannelType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 
-/**
- * Dashboard read layer. Every query is scoped to the caller's `businessId` —
- * that filter is the multi-tenant isolation boundary, so a signed-in user can
- * only ever read their own business's data. `businessId` must come from the
- * session (see getContext), never from user input.
- */
-
 export function getLeads(businessId: string) {
   return prisma.lead.findMany({
     where: { businessId },
@@ -51,8 +44,6 @@ export async function getBilling(businessId: string, userId: string) {
     prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
     prisma.plan.findMany({ orderBy: { price: "asc" } }),
   ]);
-  // Cardholder name isn't stored — live card management is the PSP module.
-  // Until then, show the account holder's name alongside the saved card ref.
   const cardName = user?.name ?? "";
   return { subscription, payments, cardName, plans };
 }
@@ -66,8 +57,6 @@ export async function getAiConfig(businessId: string) {
   return { config, faqs, business };
 }
 
-// Locale-neutral formatting done on the server, in the business's timezone, so
-// the markup can't differ between server and client (no hydration mismatch).
 const TZ = "Asia/Tbilisi";
 const fmtDate = new Intl.DateTimeFormat("en-GB", {
   day: "2-digit", month: "2-digit", year: "numeric", timeZone: TZ,
@@ -117,13 +106,11 @@ export async function getOrders(businessId: string) {
 export type OrdersData = Awaited<ReturnType<typeof getOrders>>;
 export type OrderRowData = OrdersData["orders"][number];
 
-/** Percentage change vs. the previous period; null when there's no baseline. */
 function metric(current: number, previous: number) {
   const deltaPct = previous > 0 ? Math.round(((current - previous) / previous) * 100) : null;
   return { value: current, deltaPct };
 }
 
-/** Everything the dashboard overview needs, computed live from the database. */
 export async function getHomeOverview(businessId: string) {
   const now = new Date();
   const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -132,7 +119,7 @@ export async function getHomeOverview(businessId: string) {
 
   const today = { gte: startToday };
   const yesterday = { gte: startYesterday, lt: startToday };
-  const counted = { not: "CANCELLED" as const }; // cancelled orders don't earn revenue
+  const counted = { not: "CANCELLED" as const };
 
   const [
     convToday,
@@ -198,11 +185,6 @@ export async function getHomeOverview(businessId: string) {
 
 export type HomeOverview = Awaited<ReturnType<typeof getHomeOverview>>;
 
-/**
- * Analytics for a rolling window, optionally narrowed to one channel.
- * Leads and orders reach a channel through their conversation, so the filter
- * travels that relation. Everything stays scoped to `businessId`.
- */
 export async function getAnalytics(
   businessId: string,
   days: number,
@@ -247,7 +229,6 @@ export async function getAnalytics(
         conversations: {
           where: { createdAt: period },
           select: {
-            // A conversation yields at most one lead (1–1 relation).
             lead: { select: { id: true } },
             orders: { where: { status: counted }, select: { total: true } },
           },
@@ -263,7 +244,6 @@ export async function getAnalytics(
     }),
   ]);
 
-  // Bucket conversations into 8 equal slices for the activity chart.
   const BUCKETS = 8;
   const span = Math.max(1, now.getTime() - start.getTime());
   const bars = new Array(BUCKETS).fill(0);
@@ -305,11 +285,6 @@ export async function getAnalytics(
 
 export type AnalyticsData = Awaited<ReturnType<typeof getAnalytics>>;
 
-/**
- * Inbox list. Reads whatever is in the database — so once a channel
- * integration starts writing Conversation/Message rows, these appear here
- * with no further changes.
- */
 export async function getConversations(businessId: string, channel?: ChannelType) {
   const rows = await prisma.conversation.findMany({
     where: { businessId, ...(channel ? { channel: { type: channel } } : {}) },
@@ -336,10 +311,7 @@ export async function getConversations(businessId: string, channel?: ChannelType
       name,
       initials: name.slice(0, 2).toUpperCase(),
       channelType: c.channel?.type ?? null,
-      // Ring marks intent: this conversation produced an order, or a lead.
       ring: c.orders.length ? ("order" as const) : c.lead ? ("lead" as const) : ("none" as const),
-      // Alert explains why a human should look: bot paused, AI off, or the
-      // last message was stopped for some reason.
       alert: c.botPausedUntil && c.botPausedUntil > new Date()
         ? ("wait" as const)
         : last?.stoppedReason
@@ -360,8 +332,6 @@ export async function getConversations(businessId: string, channel?: ChannelType
 
 export type ConversationRow = Awaited<ReturnType<typeof getConversations>>[number];
 
-/** One thread with its messages. Scoped by businessId so an id from the URL
- *  can't be used to read another tenant's conversation. */
 export async function getConversation(businessId: string, id: string) {
   const c = await prisma.conversation.findFirst({
     where: { id, businessId },
@@ -395,7 +365,6 @@ export async function getConversation(businessId: string, id: string) {
 
 export type ConversationDetail = NonNullable<Awaited<ReturnType<typeof getConversation>>>;
 
-/** Identity shown in the sidebar account card — the real signed-in user. */
 export async function getAccount(userId: string, businessId: string) {
   const [user, subscription] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } }),

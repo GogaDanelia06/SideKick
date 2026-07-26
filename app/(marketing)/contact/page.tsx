@@ -5,7 +5,7 @@ import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { FAQS } from "@/lib/content/faq";
+import { getSiteFaq } from "@/lib/site/content";
 
 export const metadata = pageMetadata({
   title: "კონტაქტი",
@@ -14,18 +14,24 @@ export const metadata = pageMetadata({
   path: "/contact",
 });
 
+export const dynamic = "force-dynamic";
+
 const crumbs: Crumb[] = [
   HOME_CRUMB,
   { label: { ka: "კონტაქტი", en: "Contact" }, href: "/contact" },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const faqs = await getSiteFaq();
+
   return (
     <>
       <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: c.label.ka, path: c.href })))} />
-      <JsonLd
-        data={faqSchema(FAQS.map((f) => ({ question: f.question.ka, answer: f.answer.ka })))}
-      />
+      {faqs.length > 0 ? (
+        <JsonLd
+          data={faqSchema(faqs.map((f) => ({ question: f.question.ka, answer: f.answer.ka })))}
+        />
+      ) : null}
       <JsonLd
         data={webPageSchema({
           type: "ContactPage",
@@ -37,7 +43,7 @@ export default function ContactPage() {
       />
       <Breadcrumbs items={crumbs} />
       <ContactView />
-      <Faq />
+      <Faq faqs={faqs} />
     </>
   );
 }

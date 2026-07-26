@@ -7,7 +7,6 @@ import { setAiLanguages } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { INPUT, SectionHead } from "../parts";
 
-/** Flags are cosmetic; the stored value is the language name. */
 const FLAG: Record<string, string> = {
   "ქართული": "🇬🇪",
   English: "🇬🇧",
@@ -17,7 +16,6 @@ const FLAG: Record<string, string> = {
 };
 const SUGGESTED = ["ქართული", "English", "Русский", "Türkçe"];
 
-/** Languages the assistant may reply in. Saves immediately on change. */
 export function LanguagesSection({ config }: { config: AiConfig | null }) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();

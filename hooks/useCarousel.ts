@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-/** Index state + auto-advance for a wrap-around carousel. */
 export function useCarousel(count: number, intervalMs = 0) {
   const [index, setIndex] = useState(0);
 

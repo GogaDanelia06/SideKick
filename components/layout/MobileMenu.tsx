@@ -10,7 +10,6 @@ import { ACTIONS } from "@/lib/content/common";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Hamburger + slide-down panel that exposes nav + profile below the md breakpoint. */
 export function MobileMenu() {
   const { t } = useLanguage();
   const pathname = usePathname();

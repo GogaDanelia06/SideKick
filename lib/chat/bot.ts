@@ -2,11 +2,6 @@ import type { Bilingual } from "@/lib/i18n/types";
 
 type Rule = { keywords: string[]; reply: Bilingual };
 
-/**
- * Deterministic keyword bot that powers the demo chat. Matching runs across
- * both languages, so a visitor can type in either. When a real backend lands,
- * only this resolver needs to change — the UI already speaks in Bilingual.
- */
 const RULES: Rule[] = [
   {
     keywords: ["ფას", "ღირ", "price", "თანხ"],

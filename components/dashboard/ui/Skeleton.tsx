@@ -2,21 +2,6 @@ import clsx from "clsx";
 import type { CSSProperties } from "react";
 import { Panel } from "./Panel";
 
-/**
- * Loading placeholders for the dashboard.
- *
- * These are server components with no state — a `loading.tsx` renders instantly
- * while the page's database queries run. Each skeleton mirrors the real
- * layout's dimensions so content doesn't jump when it arrives.
- *
- * The `.skeleton` class (globals.css) carries the shimmer and honours
- * prefers-reduced-motion.
- */
-
-/**
- * One placeholder bar. Size normally comes from `className`; `style` is there
- * for computed dimensions Tailwind can't express (e.g. staggered chart bars).
- */
 export function Skeleton({
   className,
   style,
@@ -27,7 +12,6 @@ export function Skeleton({
   return <span className={clsx("skeleton block", className)} style={style} aria-hidden="true" />;
 }
 
-/** A panel with a title bar and n body lines — the generic fallback shape. */
 export function SkeletonPanel({
   lines = 3,
   className,
@@ -47,7 +31,6 @@ export function SkeletonPanel({
   );
 }
 
-/** Four KPI tiles, matching KpiGrid / AnalyticsKpis. */
 export function SkeletonKpis({ count = 4 }: { count?: number }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -65,7 +48,6 @@ export function SkeletonKpis({ count = 4 }: { count?: number }) {
   );
 }
 
-/** A table: header strip plus n rows. */
 export function SkeletonTable({
   rows = 5,
   cols = 5,
@@ -91,7 +73,6 @@ export function SkeletonTable({
   );
 }
 
-/** A row of pill-shaped controls (tabs, range buttons, filters). */
 export function SkeletonPills({ count = 4 }: { count?: number }) {
   return (
     <div className="flex flex-wrap gap-2">
@@ -102,7 +83,6 @@ export function SkeletonPills({ count = 4 }: { count?: number }) {
   );
 }
 
-/** Card grid — products, videos, plan boxes. */
 export function SkeletonCards({
   count = 3,
   height = "h-40",
@@ -123,7 +103,6 @@ export function SkeletonCards({
   );
 }
 
-/** Page heading placeholder, for screens whose title comes from data. */
 export function SkeletonHeading() {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">

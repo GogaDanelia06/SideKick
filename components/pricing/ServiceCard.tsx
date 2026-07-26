@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/Card";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Service } from "@/lib/content/services";
 
-/** Service card with its description always visible. */
 export function ServiceCard({ service }: { service: Service }) {
   const { t } = useLanguage();
 

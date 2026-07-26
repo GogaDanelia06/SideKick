@@ -5,7 +5,6 @@ import { LIMIT_LABELS } from "@/lib/dashboard/home";
 import type { HomeOverview } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Monthly message quota with a usage bar — real subscription usage. */
 export function LimitCard({ limit }: { limit: HomeOverview["limit"] }) {
   const { t, locale } = useLanguage();
 

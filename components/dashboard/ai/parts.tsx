@@ -11,7 +11,6 @@ export const INPUT =
 export const AREA =
   "w-full rounded-[8px] border border-input bg-canvas p-3 text-sm outline-none placeholder:text-faint focus:border-blue";
 
-/** Short-lived "Saved" confirmation after a successful write. */
 function useSavedFlag(ms = 2500): [boolean, () => void] {
   const [on, setOn] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -29,7 +28,6 @@ function useSavedFlag(ms = 2500): [boolean, () => void] {
   return [on, trigger];
 }
 
-/** Section heading with its icon, matching the panel titles in the design. */
 export function SectionHead({
   icon: Icon,
   title,
@@ -56,10 +54,6 @@ export function SectionHead({
   );
 }
 
-/**
- * Section wrapper: heading + its own save button. Each section saves
- * independently so a long settings screen can't lose work in one big submit.
- */
 export function SectionForm({
   icon,
   title,
@@ -159,10 +153,6 @@ export function AreaField({
   );
 }
 
-/**
- * Selectable chips backed by a hidden radio group, so the choice posts with the
- * form. The selected chip shows a check, as in the design.
- */
 export function ChipChoice({
   name, label, options, value,
 }: {
@@ -190,7 +180,6 @@ export function ChipChoice({
   );
 }
 
-/** Banner for features that depend on the (not yet commissioned) AI module. */
 export function AiModuleNotice({ text }: { text: Bilingual }) {
   const { t } = useLanguage();
   return (
@@ -201,7 +190,6 @@ export function AiModuleNotice({ text }: { text: Bilingual }) {
   );
 }
 
-/** Checkbox styled as a labelled row, used by the behaviour rules. */
 export function CheckRow({
   name, label, defaultChecked, className,
 }: {

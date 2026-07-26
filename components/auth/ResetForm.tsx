@@ -19,7 +19,6 @@ export function ResetForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // No token in the URL — nothing to do but ask for a fresh link.
   if (!token) {
     return (
       <AuthShell

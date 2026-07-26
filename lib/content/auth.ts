@@ -12,6 +12,10 @@ export const LOGIN = {
   forgot: { ka: "პაროლის აღდგენა", en: "Forgot password" },
   submit: { ka: "ავტორიზაცია", en: "Sign in" },
   invalid: { ka: "ელფოსტა ან პაროლი არასწორია", en: "Invalid email or password" },
+  rateLimited: {
+    ka: "ძალიან ბევრი მცდელობა. სცადეთ ხელახლა რამდენიმე წუთში.",
+    en: "Too many attempts. Please try again in a few minutes.",
+  },
   noAccount: { ka: "არ გაქვს ანგარიში?", en: "Don't have an account?" },
   signUp: { ka: "რეგისტრაცია", en: "Sign up" },
 } satisfies Record<string, Bilingual>;
@@ -44,8 +48,6 @@ export const FORGOT = {
   email: { ka: "ელფოსტა", en: "Email" },
   submit: { ka: "აღდგენის ბმულის გაგზავნა", en: "Send reset link" },
   back: { ka: "შესვლაზე დაბრუნება", en: "Back to sign in" },
-  // Deliberately identical whether or not the address exists — the response
-  // must not reveal which emails have accounts.
   sent: {
     ka: "თუ ეს მეილი დარეგისტრირებულია, აღდგენის ბმული გამოგზავნილია. შეამოწმეთ ფოსტა.",
     en: "If that email is registered, a reset link has been sent. Check your inbox.",

@@ -11,6 +11,7 @@ import { ChatMock } from "./mocks/ChatMock";
 import { DashboardMock } from "./mocks/DashboardMock";
 import { TesterMock } from "./mocks/TesterMock";
 import { HERO_INTERVAL_MS, HERO_SLIDES, type HeroMock } from "@/lib/content/hero";
+import type { SiteStatView } from "@/lib/site/content";
 import { useCarousel } from "@/hooks/useCarousel";
 
 const MOCKS: Record<HeroMock, ComponentType> = {
@@ -36,8 +37,7 @@ function Arrow({ side, onClick }: { side: "left" | "right"; onClick: () => void 
   );
 }
 
-/** Auto-advancing hero carousel plus the stats strip and slide dots. */
-export function Hero() {
+export function Hero({ stats }: { stats: SiteStatView[] }) {
   const { index, goTo, next, prev } = useCarousel(HERO_SLIDES.length, HERO_INTERVAL_MS);
   const slide = HERO_SLIDES[index];
   const Mock = MOCKS[slide.mock];
@@ -50,7 +50,7 @@ export function Hero() {
           <Arrow side="right" onClick={next} />
           <HeroSlide slide={slide} mock={<Mock />} />
         </div>
-        <Stats />
+        <Stats stats={stats} />
         <HeroDots count={HERO_SLIDES.length} index={index} onSelect={goTo} />
       </Container>
     </section>

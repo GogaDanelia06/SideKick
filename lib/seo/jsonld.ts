@@ -1,7 +1,6 @@
-import type { JsonLdData } from "@/components/seo/JsonLd";
+ import type { JsonLdData } from "@/components/seo/JsonLd";
 import { SITE, absoluteUrl } from "./site";
 
-/** The business behind the site. Emitted on every marketing page. */
 export function organizationSchema(): JsonLdData {
   return {
     "@context": "https://schema.org",
@@ -13,7 +12,6 @@ export function organizationSchema(): JsonLdData {
   };
 }
 
-/** The website itself. */
 export function websiteSchema(): JsonLdData {
   return {
     "@context": "https://schema.org",
@@ -25,13 +23,6 @@ export function websiteSchema(): JsonLdData {
   };
 }
 
-/**
- * WebPage (and its subtypes) — describes the individual page to search
- * engines and ties it back to the site and publisher.
- *
- * `type` narrows it: "AboutPage" / "ContactPage" are recognised subtypes of
- * WebPage, so emitting one of those satisfies both requirements at once.
- */
 export function webPageSchema(page: {
   type?: "WebPage" | "AboutPage" | "ContactPage";
   name: string;
@@ -52,7 +43,6 @@ export function webPageSchema(page: {
   };
 }
 
-/** FAQPage — pair with a visible FAQ list so answers can surface in search. */
 export function faqSchema(items: { question: string; answer: string }[]): JsonLdData {
   return {
     "@context": "https://schema.org",
@@ -65,7 +55,6 @@ export function faqSchema(items: { question: string; answer: string }[]): JsonLd
   };
 }
 
-/** BreadcrumbList — mirrors the visible breadcrumb trail on interior pages. */
 export function breadcrumbSchema(items: { name: string; path: string }[]): JsonLdData {
   return {
     "@context": "https://schema.org",
@@ -79,7 +68,6 @@ export function breadcrumbSchema(items: { name: string; path: string }[]): JsonL
   };
 }
 
-/** The product as a SaaS app, with the price range drawn from the packages. */
 export function softwareAppSchema(offer: {
   lowPrice: string;
   highPrice: string;

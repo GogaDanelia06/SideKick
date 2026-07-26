@@ -5,41 +5,46 @@ import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, softwareAppSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { PACKAGES } from "@/lib/content/packages";
+import { getPlans } from "@/lib/site/content";
 
 export const metadata = pageMetadata({
   title: "ფასები",
   description:
-    "Sidekick-ის ფასები და პაკეტები — ბეისიქი, სტანდარტი, პრემიუმი. პირველი თვე ყველა პაკეტზე უფასოა. აირჩიე შენს ბიზნესზე მორგებული გეგმა.",
+    "Sidekick-ის ფასები და პაკეტები — ბეისიქი, სტანდარტი, პრემიუმი. 30 დღე უფასო პერიოდი ყველა პაკეტზე. აირჩიე შენს ბიზნესზე მორგებული გეგმა.",
   path: "/pricing",
 });
 
+export const dynamic = "force-dynamic";
+
 const crumbs: Crumb[] = [HOME_CRUMB, { label: { ka: "ფასები", en: "Pricing" }, href: "/pricing" }];
 
-export default function PricingPage() {
-  const prices = PACKAGES.map((p) => Number(p.price));
+export default async function PricingPage() {
+  const packages = await getPlans();
+  const prices = packages.map((p) => p.price);
 
   return (
     <>
       <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: c.label.ka, path: c.href })))} />
-      <JsonLd
-        data={softwareAppSchema({
-          lowPrice: String(Math.min(...prices)),
-          highPrice: String(Math.max(...prices)),
-          priceCurrency: "GEL",
-        })}
-      />
+      {prices.length > 0 ? (
+        <JsonLd
+          data={softwareAppSchema({
+            lowPrice: String(Math.min(...prices)),
+            highPrice: String(Math.max(...prices)),
+            priceCurrency: "GEL",
+          })}
+        />
+      ) : null}
       <JsonLd
         data={webPageSchema({
           name: "ფასები | Sidekick",
           description:
-            "Sidekick-ის ფასები და პაკეტები — ბეისიქი, სტანდარტი, პრემიუმი. პირველი თვე ყველა პაკეტზე უფასოა.",
+            "Sidekick-ის ფასები და პაკეტები — ბეისიქი, სტანდარტი, პრემიუმი. 30 დღე უფასო პერიოდი ყველა პაკეტზე.",
           path: "/pricing",
         })}
       />
       <Breadcrumbs items={crumbs} />
       <Services />
-      <Packages />
+      <Packages packages={packages} />
     </>
   );
 }

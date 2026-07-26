@@ -1,5 +1,3 @@
-// Products/inventory, channel connection records, and tutorial videos.
-
 model Product {
   id          String      @id @default(cuid())
   businessId  String
@@ -22,8 +20,6 @@ model Product {
   @@index([businessId, createdAt])
 }
 
-// A connection record only. Real FB/IG/WA OAuth + webhooks are the unbought
-// integration module; `connected`/`status` are stored so the UI works today.
 model Channel {
   id            String         @id @default(cuid())
   businessId    String

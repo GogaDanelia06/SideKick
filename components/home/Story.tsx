@@ -6,7 +6,6 @@ import { Container } from "@/components/ui/Container";
 import { STORY } from "@/lib/content/home";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Founders' story card. */
 export function Story() {
   const { t } = useLanguage();
 

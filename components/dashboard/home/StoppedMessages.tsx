@@ -10,7 +10,6 @@ import { DASH } from "@/lib/dashboard/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 
-/** Conversations the bot handed off and why — the overview's action list. */
 export function StoppedMessages({ items }: { items: HomeOverview["stopped"] }) {
   const { t } = useLanguage();
 

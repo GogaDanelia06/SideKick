@@ -13,7 +13,6 @@ type LanguageContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   toggle: () => void;
-  /** Resolve a colocated bilingual value to the active locale. */
   t: <T>(value: Bilingual<T>) => T;
 };
 

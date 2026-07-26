@@ -6,14 +6,6 @@ const prisma = new PrismaClient();
 const BIZ = "biz_demo";
 const USER = "usr_demo";
 
-/**
- * DEMO seed — creates a fake tenant with fake products, orders and customers.
- * For local development only. Use `pnpm db:seed:prod` for a real database.
- *
- * Guard: refuse to run against anything that isn't a local database, so demo
- * products and a `demo1234` login can never end up in a client's production
- * data. Override deliberately with `--force` if you really mean it.
- */
 function assertLocalDatabase() {
   const url = process.env.DATABASE_URL ?? "";
   const isLocal = /@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
@@ -68,7 +60,6 @@ async function main() {
   });
   await prisma.aiConfig.upsert({ where: { businessId: BIZ }, update: AI_CONFIG, create: { businessId: BIZ, ...AI_CONFIG } });
 
-  // Extra team members (owner is the demo account above).
   for (const m of TEAM_MEMBERS) {
     const u = await prisma.user.upsert({
       where: { email: m.email },
@@ -82,7 +73,6 @@ async function main() {
     });
   }
 
-  // Clean business-scoped collections so re-seeding is idempotent (FK-safe order).
   await prisma.$transaction([
     prisma.payment.deleteMany({ where: { businessId: BIZ } }),
     prisma.orderItem.deleteMany({ where: { order: { businessId: BIZ } } }),

@@ -7,7 +7,6 @@ import { KPI_META } from "@/lib/dashboard/home";
 import type { HomeOverview } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Four headline metrics at the top of the overview — live, vs. yesterday. */
 export function KpiGrid({ kpis }: { kpis: HomeOverview["kpis"] }) {
   const { t } = useLanguage();
 

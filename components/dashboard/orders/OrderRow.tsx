@@ -18,7 +18,6 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 const CELL = "rounded-[10px] border border-border bg-surface px-3 py-2.5";
 const BTN = "inline-flex h-9 items-center gap-1.5 rounded-[6px] px-4 text-[13px] font-medium disabled:opacity-60";
 
-/** One expandable order row: compact summary that opens to full details. */
 export function OrderRow({
   order,
   open,

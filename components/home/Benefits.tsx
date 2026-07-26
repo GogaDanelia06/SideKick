@@ -8,7 +8,6 @@ import { BENEFITS } from "@/lib/content/benefits";
 import { BENEFITS_HEADING } from "@/lib/content/home";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** "What Sidekick does" — six-card benefits grid. */
 export function Benefits() {
   const { t } = useLanguage();
 

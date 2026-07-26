@@ -1,7 +1,6 @@
 import { BRAND } from "./common";
 import type { Bilingual } from "./types";
 
-/** Founders' story block below the hero. */
 export const STORY = {
   heading: { ka: "შევქმენით ის, რაც თავად გვჭირდებოდა.", en: "We built what we needed ourselves." },
   paragraphs: [
@@ -20,13 +19,11 @@ export const STORY = {
   ] satisfies Bilingual[],
 };
 
-/** Section header for the benefits grid. */
 export const BENEFITS_HEADING = {
   badge: BRAND,
   title: { ka: "რას აკეთებს Sidekick", en: "What Sidekick does" } satisfies Bilingual,
 };
 
-/** "First month free" call-to-action banner. */
 export const CTA_BANNER = {
   badge: { ka: "პირველი თვე უფასოდ", en: "First month free" },
   title: { ka: "დარწმუნდით შედეგში, სანამ გადაიხდით", en: "See the results before you pay" },

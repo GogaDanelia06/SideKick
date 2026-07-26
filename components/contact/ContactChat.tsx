@@ -10,7 +10,6 @@ import { BRAND } from "@/lib/content/common";
 import { CONTACT_CHIPS, CONTACT_SEED } from "@/lib/content/contact";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Embedded live AI chat — the interactive centerpiece of the contact page. */
 export function ContactChat() {
   const { t } = useLanguage();
   const { messages, send } = useChat(t(CONTACT_SEED));

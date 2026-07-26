@@ -35,7 +35,6 @@ export function ForgotForm() {
       return setError(data.error ?? t({ ka: "ვერ გაიგზავნა", en: "Could not send" }));
     }
 
-    // Success looks the same whether or not the account exists.
     setSent(true);
   }
 

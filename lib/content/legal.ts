@@ -1,27 +1,10 @@
 import type { Bilingual } from "./types";
 
-/**
- * Legal documents for the public site.
- *
- * ⚠️ DRAFT — REQUIRES REVIEW BY A QUALIFIED LAWYER BEFORE PUBLICATION.
- *
- * The content below is written to match what the application actually does
- * (see prisma/schema/*.prisma), which is the part templates usually get wrong.
- * It is NOT a substitute for legal advice. Anything wrapped in 【】 must be
- * replaced with the company's real details before this goes live.
- *
- * Key legal distinction reflected throughout: there are two data relationships.
- *  1. Sidekick ↔ the subscriber business  → Sidekick is the CONTROLLER.
- *  2. The subscriber ↔ its own customers  → the subscriber is the CONTROLLER,
- *     Sidekick is only the PROCESSOR acting on their instructions.
- */
-
 export const LEGAL_REVIEW_NOTICE: Bilingual = {
   ka: "ეს დოკუმენტი მომზადებულია პროექტის ფარგლებში და საჭიროებს იურისტის განხილვას გამოქვეყნებამდე.",
   en: "This document was prepared as part of the project and requires review by a lawyer before publication.",
 };
 
-/** Company details that must be filled in before launch. */
 export const LEGAL_ENTITY = {
   name: { ka: 'შპს „საიდქიქ“', en: "Sidekick LLC" } as Bilingual,
   regNumber: "【საიდენტიფიკაციო კოდი】",
@@ -43,8 +26,6 @@ export type LegalDoc = {
   updated: string;
   sections: LegalSection[];
 };
-
-/* ────────────────────────────── TERMS ────────────────────────────── */
 
 export const TERMS: LegalDoc = {
   slug: "terms",
@@ -222,8 +203,6 @@ export const TERMS: LegalDoc = {
   ],
 };
 
-/* ───────────────────────────── PRIVACY ───────────────────────────── */
-
 export const PRIVACY: LegalDoc = {
   slug: "privacy",
   title: { ka: "კონფიდენციალურობის პოლიტიკა", en: "Privacy Policy" },
@@ -359,8 +338,6 @@ export const PRIVACY: LegalDoc = {
     },
   ],
 };
-
-/* ────────────────────── PERSONAL DATA PROTECTION ────────────────────── */
 
 export const DATA_PROTECTION: LegalDoc = {
   slug: "data-protection",

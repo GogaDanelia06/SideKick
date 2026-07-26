@@ -11,8 +11,6 @@ export const FAQ_HEADING = {
   },
 };
 
-/** Draft Q&As — accurate to the product, but review the wording before launch.
- *  Answers here are also emitted as FAQPage JSON-LD, so keep them in sync. */
 export const FAQS: FaqItem[] = [
   {
     question: { ka: "რა არის Sidekick?", en: "What is Sidekick?" },

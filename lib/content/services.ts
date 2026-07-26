@@ -16,7 +16,6 @@ export const SERVICES_HEADING = {
   sub: { ka: "დააკლიკე ბოქსს დეტალური აღწერისთვის", en: "Click a box for a detailed description" },
 };
 
-// `desc` uses "\n" for line breaks and "•" for bullets; rendered pre-line.
 export const SERVICES: Service[] = [
   {
     icon: IconShoppingCart,

@@ -13,15 +13,6 @@ const schema = z.object({
 type Env = z.infer<typeof schema>;
 let cached: Env | undefined;
 
-/**
- * Validates required environment variables the first time they're needed — at
- * request time, NOT at import time.
- *
- * This must stay lazy: `next build` collects page data by importing every
- * route, so eager validation would fail the whole build on a machine that has
- * no runtime secrets. The marketing site has no database dependency and must
- * deploy regardless; only the authenticated area needs these values.
- */
 export function env(): Env {
   if (cached) return cached;
 

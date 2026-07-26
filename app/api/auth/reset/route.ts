@@ -5,9 +5,18 @@ import { verifyResetToken } from "@/lib/auth/passwordReset";
 import { sendMail } from "@/lib/mail/send";
 import { passwordChangedEmail } from "@/lib/mail/templates";
 import { resetSchema } from "@/lib/validation/auth";
+import { log } from "@/lib/logger";
+import { clientIp, consume, tooManyRequestsMessage } from "@/lib/security/rateLimit";
 
-/** Set a new password using a valid reset token. */
 export async function POST(req: Request) {
+  const limit = await consume("reset", clientIp(req));
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: tooManyRequestsMessage(limit.retryAfterSec) },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSec) } },
+    );
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = resetSchema.safeParse(body);
   if (!parsed.success) {
@@ -27,8 +36,6 @@ export async function POST(req: Request) {
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
 
-  // Password write and token spend happen together — if either fails, neither
-  // applies, so a token can't be burned without the password actually changing.
   await prisma.$transaction([
     prisma.user.update({ where: { id: record.userId }, data: { passwordHash } }),
     prisma.passwordResetToken.update({
@@ -37,6 +44,7 @@ export async function POST(req: Request) {
     }),
   ]);
 
+  log.info("password reset completed", { userId: record.userId });
   await sendMail(passwordChangedEmail(record.user.email));
   return NextResponse.json({ ok: true });
 }

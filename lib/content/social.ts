@@ -13,7 +13,6 @@ export const SOCIAL_LABEL: Bilingual = {
   en: "Social networks",
 };
 
-/** Shared by the contact page and the footer. Hrefs are placeholders. */
 export const SOCIALS: Social[] = [
   { icon: IconBrandFacebook, label: "Facebook", href: "#" },
   { icon: IconBrandInstagram, label: "Instagram", href: "#" },

@@ -17,7 +17,6 @@ const COPY = {
 const INCOMING = "max-w-[80%] self-start rounded-[13px] rounded-tl-[4px] border border-border bg-card2 px-[13px] py-2.5 text-sm leading-[1.5]";
 const OUTGOING = "max-w-[80%] self-end rounded-[13px] rounded-tr-[4px] bg-primary px-[13px] py-2.5 text-sm leading-[1.5] text-white";
 
-/** Slide 1 visual: a customer conversation ending in an auto-tagged lead. */
 export function ChatMock() {
   const { t } = useLanguage();
   return (

@@ -18,7 +18,6 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const MARK = "inline-flex h-8 items-center gap-1.5 rounded-[6px] border px-3 text-xs font-medium";
 
-/** Right pane: the selected conversation with agent controls. */
 export function ChatDetail({
   chat,
   onBack,
@@ -76,7 +75,6 @@ export function ChatDetail({
           <IconShoppingCart size={15} /> {t({ ka: "შეკვეთა", en: "Order" })}
         </span>
 
-        {/* Real setting: the integration reads this before auto-replying. */}
         <span className={clsx("flex items-center gap-2 rounded-[6px] border border-border px-2.5 py-1.5 text-xs font-medium", chat.aiEnabled ? "bg-ai-surface" : "bg-soft")}>
           <IconRobot size={15} className="text-ai" /> AI
           <Switch

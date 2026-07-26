@@ -46,9 +46,6 @@ export function AiView({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[260px_1fr] lg:items-start">
-      {/* Sized to the viewport (not the section) so the rail is the same length
-          on every tab and fills the screen, and sticky so the Tester pinned at
-          its bottom stays reachable while a long section scrolls. */}
       <Panel className="flex flex-col p-3 lg:sticky lg:top-4 lg:h-[calc(100vh-7rem)] lg:min-h-[520px]">
         <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
           {t({ ka: "კონფიგურაცია", en: "Configuration" })}
@@ -78,8 +75,6 @@ export function AiView({
           })}
         </nav>
 
-        {/* The tester is a different kind of thing — trying the assistant, not
-            configuring it — so it sits apart from the settings list. */}
         <div className="mt-auto border-t border-border2 pt-3">
           <button
             type="button"

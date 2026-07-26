@@ -7,8 +7,6 @@ import {
 import type { ChannelType } from "@prisma/client";
 import type { IconType } from "@/lib/content/types";
 
-/** Display name / icon / brand colour for each channel. Shared by analytics,
- *  conversations and the overview so they can't drift apart. */
 export const CHANNEL_META: Record<ChannelType, { name: string; icon: IconType; color: string }> = {
   FACEBOOK: { name: "Facebook", icon: IconBrandFacebook, color: "#1877f2" },
   INSTAGRAM: { name: "Instagram", icon: IconBrandInstagram, color: "#c13584" },

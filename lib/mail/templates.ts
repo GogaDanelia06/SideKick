@@ -1,8 +1,5 @@
 import type { Mail } from "./send";
 
-/** Bilingual email bodies. Kept plain and inline-styled — email clients strip
- *  stylesheets, and Georgian must render in every client. */
-
 export function passwordResetEmail(to: string, link: string, name?: string | null): Mail {
   const greeting = name ? `გამარჯობა, ${name}!` : "გამარჯობა!";
 

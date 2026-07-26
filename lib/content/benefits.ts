@@ -10,7 +10,6 @@ import type { Bilingual, IconType } from "./types";
 
 export type Benefit = { icon: IconType; title: Bilingual; desc: Bilingual };
 
-/** "What Sidekick does" — the six-card benefits grid on the home page. */
 export const BENEFITS: Benefit[] = [
   {
     icon: IconPlugConnected,

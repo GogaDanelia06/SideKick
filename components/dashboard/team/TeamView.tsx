@@ -21,7 +21,6 @@ const ROLE: Record<Role, { pill: string; title: string; avatar: string; perms: B
 const ROLES: Role[] = ["OWNER", "ADMIN", "OPERATOR", "VIEWER"];
 const cap = (r: string) => r[0] + r.slice(1).toLowerCase();
 
-/** Server-side failure codes → readable text. */
 const ERRORS: Record<string, Bilingual> = {
   forbidden: { ka: "ამის უფლება არ გაქვთ", en: "You don't have permission for this" },
   email_required: { ka: "ელფოსტა სავალდებულოა", en: "Email is required" },
@@ -49,7 +48,6 @@ export function TeamView({
 
   const canManage = currentRole === "OWNER" || currentRole === "ADMIN";
 
-  // Close the row menu on any outside click.
   useEffect(() => {
     if (!menuFor) return;
     const close = () => setMenuFor(null);

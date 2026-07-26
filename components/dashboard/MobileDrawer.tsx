@@ -6,7 +6,6 @@ import { NavList } from "./NavList";
 import { ProfileMenu } from "./ProfileMenu";
 import type { Account } from "@/lib/dashboard/queries";
 
-/** Slide-in full navigation for < lg, opened from the topbar menu button. */
 export function MobileDrawer({ open, onClose, account }: { open: boolean; onClose: () => void; account: Account }) {
   return (
     <div className={clsx("lg:hidden", !open && "pointer-events-none")}>

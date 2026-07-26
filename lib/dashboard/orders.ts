@@ -2,7 +2,6 @@ import type { OrderStatus } from "@prisma/client";
 import type { Bilingual } from "@/lib/content/types";
 import type { Tone } from "./tone";
 
-/** Status tabs for the orders screen. Counts come from the database. */
 export type OrderTab = { key: OrderStatus; label: Bilingual; tone: Tone };
 
 export const ORDER_TABS: OrderTab[] = [

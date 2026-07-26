@@ -3,8 +3,17 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { provisionBusiness } from "@/lib/provision";
 import { registerSchema } from "@/lib/validation/auth";
+import { clientIp, consume, tooManyRequestsMessage } from "@/lib/security/rateLimit";
 
 export async function POST(req: Request) {
+  const limit = await consume("register", clientIp(req));
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: tooManyRequestsMessage(limit.retryAfterSec) },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSec) } },
+    );
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) {
@@ -25,7 +34,6 @@ export async function POST(req: Request) {
       name: `${firstName} ${lastName}`.trim(),
       passwordHash,
       phone,
-      // Auto-verified for now — swap for an emailed link when a mail provider is added.
       emailVerified: new Date(),
     },
   });

@@ -5,8 +5,6 @@ export const alt = SITE.title;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-/** Default social share card for the whole site (og:image + twitter:image).
- *  Latin-only so it renders without loading a Georgian font. */
 export default function OpengraphImage() {
   return new ImageResponse(
     (

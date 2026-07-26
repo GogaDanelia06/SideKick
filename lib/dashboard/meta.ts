@@ -3,7 +3,6 @@ import { DASH } from "./routes";
 
 export type DashMeta = { title: Bilingual; subtitle: Bilingual };
 
-/** Topbar title + subtitle per route (looked up by pathname). */
 export const DASH_META: Record<string, DashMeta> = {
   [DASH.home]: { title: { ka: "Dashboard", en: "Dashboard" }, subtitle: { ka: "მთავარი მიმოხილვა", en: "Overview" } },
   [DASH.conversations]: { title: { ka: "მიმოწერები", en: "Conversations" }, subtitle: { ka: "ყველა ჩათი ერთ სივრცეში", en: "Every chat in one place" } },

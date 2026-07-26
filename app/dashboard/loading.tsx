@@ -1,6 +1,5 @@
 import { SkeletonKpis, SkeletonPanel } from "@/components/dashboard/ui/Skeleton";
 
-/** Also the fallback for any nested route without its own loading.tsx. */
 export default function Loading() {
   return (
     <div className="flex flex-col gap-5">

@@ -14,7 +14,6 @@ export default async function AnalyticsPage({
   const ctx = await requireContext();
   const sp = await searchParams;
 
-  // Never trust the query string — clamp/whitelist before it reaches a query.
   const rangeIndex = Math.min(Math.max(Number(sp.range ?? 1) || 0, 0), RANGE_DAYS.length - 1);
   const channel = CHANNELS.includes(sp.channel as ChannelType) ? (sp.channel as ChannelType) : null;
 

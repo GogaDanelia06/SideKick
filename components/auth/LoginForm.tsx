@@ -23,9 +23,6 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  // Middleware appends ?callbackUrl=… when it bounces you off a dashboard page,
-  // so sign-in returns you to where you were actually headed. Only same-site
-  // paths are honoured — never an absolute URL from the query string.
   const requested = searchParams.get("callbackUrl");
   const callbackUrl = requested?.startsWith("/") ? requested : DASH.home;
 
@@ -42,8 +39,7 @@ export function LoginForm() {
 
     if (!res?.ok || res.error) {
       setPending(false);
-      // Deliberately vague: never reveal whether the address exists.
-      return setError(t(LOGIN.invalid));
+      return setError(t(res?.code === "rate_limited" ? LOGIN.rateLimited : LOGIN.invalid));
     }
 
     router.push(callbackUrl);

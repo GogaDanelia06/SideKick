@@ -9,7 +9,6 @@ import { CTA_BANNER } from "@/lib/content/home";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** "First month free" conversion banner. */
 export function CtaBanner() {
   const { t } = useLanguage();
 

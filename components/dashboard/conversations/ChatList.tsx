@@ -27,7 +27,6 @@ function ago(mins: number): Bilingual {
   return { ka: `${Math.floor(h / 24)} დღე`, en: `${Math.floor(h / 24)} d` };
 }
 
-/** Filterable list of conversations; each row selects the detail view. */
 export function ChatList({
   conversations,
   selectedId,

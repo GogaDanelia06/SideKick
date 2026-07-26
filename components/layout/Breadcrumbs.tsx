@@ -6,8 +6,6 @@ import { Container } from "@/components/ui/Container";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Crumb } from "@/lib/content/breadcrumbs";
 
-/** Visible breadcrumb trail for interior pages. Pair with breadcrumbSchema so
- *  the same trail is exposed to search engines as BreadcrumbList JSON-LD. */
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
   const { t } = useLanguage();
 

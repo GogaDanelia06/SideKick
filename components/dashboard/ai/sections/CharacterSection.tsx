@@ -10,7 +10,6 @@ const LENGTH = ["მოკლე", "საშუალო", "დეტალუ�
 const EMOJI = ["არასოდეს", "ზომიერად", "ხშირად"];
 const ADDR = ["ფორმალური", "ფამილიარული"];
 
-/** Tone of voice — how the assistant speaks to customers. */
 export function CharacterSection({ config }: { config: AiConfig | null }) {
   return (
     <SectionForm

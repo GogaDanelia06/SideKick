@@ -5,12 +5,6 @@ import { IconFlask, IconSend, IconSparkles } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AiModuleNotice, INPUT } from "../parts";
 
-/**
- * Try the assistant against the current prompt. The interface is complete, but
- * producing a reply needs the AI reply engine — a separate module — so the
- * sample exchange is clearly labelled and sending stays disabled rather than
- * faking an answer.
- */
 export function TesterSection() {
   const { t } = useLanguage();
   const [draft, setDraft] = useState("");

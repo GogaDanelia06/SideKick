@@ -25,7 +25,6 @@ const ROLES: { key: string; label: Bilingual; icon: IconType }[] = [
   { key: "support", label: { ka: "მხარდაჭერის აგენტი", en: "Support agent" }, icon: IconHeadset },
 ];
 
-/** What the assistant is allowed to do, and when it must hand off. */
 export function RulesSection({ config }: { config: AiConfig | null }) {
   const { t } = useLanguage();
   const roles = config?.roles ?? [];
@@ -36,7 +35,6 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
       title={{ ka: "ქცევის წესები", en: "Behaviour rules" }}
       action={saveAiRules}
     >
-      {/* 1. Roles */}
       <fieldset>
         <legend className="mb-2 text-[13px] font-medium">
           <span className="text-muted">1.</span> {t({ ka: "როლები", en: "Roles" })}
@@ -62,7 +60,6 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
         </div>
       </fieldset>
 
-      {/* 2. Hand-off */}
       <div>
         <div className="mb-2 text-[13px] font-medium">
           <span className="text-muted">2.</span>{" "}
@@ -80,7 +77,6 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
         />
       </div>
 
-      {/* 3–5. Capture toggles, grouped as in the design */}
       <div className="grid gap-4 rounded-[10px] border border-border p-4">
         <div>
           <CheckRow
@@ -135,7 +131,6 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
         />
       </div>
 
-      {/* 6. FAQ */}
       <div>
         <div className="mb-2 text-[13px] font-medium">
           <span className="text-muted">6.</span>{" "}
@@ -150,7 +145,6 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
         />
       </div>
 
-      {/* 7. Delivery / returns */}
       <AreaField
         name="policies"
         rows={3}

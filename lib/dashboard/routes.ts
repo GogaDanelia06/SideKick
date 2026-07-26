@@ -1,5 +1,3 @@
-/** Dashboard route table. Kept apart from the marketing ROUTES so the two
- *  areas of the app never accidentally cross-link. */
 export const DASH = {
   home: "/dashboard",
   conversations: "/dashboard/conversations",

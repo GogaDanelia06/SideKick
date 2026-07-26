@@ -10,7 +10,6 @@ import { CHAT } from "@/lib/content/chat";
 import { BRAND } from "@/lib/content/common";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Global floating assistant available on every page. */
 export function ChatWidget() {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);

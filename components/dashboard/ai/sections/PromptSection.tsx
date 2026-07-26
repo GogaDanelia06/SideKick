@@ -6,7 +6,6 @@ import { saveAiPrompt } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AREA, AiModuleNotice, SectionForm } from "../parts";
 
-/** The assistant's base instruction. Saving is real; generating needs the AI module. */
 export function PromptSection({ config }: { config: AiConfig | null }) {
   const { t } = useLanguage();
   const needsModule = t({ ka: "საჭიროებს AI მოდულს", en: "Requires the AI module" });

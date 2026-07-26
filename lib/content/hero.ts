@@ -11,7 +11,6 @@ export type HeroSlide = {
   sub: Bilingual;
 };
 
-/** Auto-advance cadence for the hero carousel. */
 export const HERO_INTERVAL_MS = 5000;
 
 export const HERO_SLIDES: HeroSlide[] = [

@@ -1,10 +1,5 @@
 import { z } from "zod";
 
-/**
- * One password rule, used by registration AND reset, so they can't drift apart.
- * 8 characters with a letter and a digit — enough to stop "123456" without
- * pushing people into writing passwords on sticky notes.
- */
 export const passwordSchema = z
   .string()
   .min(8, "პაროლი უნდა იყოს მინიმუმ 8 სიმბოლო")

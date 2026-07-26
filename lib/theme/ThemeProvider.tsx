@@ -27,8 +27,6 @@ function subscribe(onChange: () => void) {
   };
 }
 
-// Read the attribute the pre-paint script already committed, so React state
-// and the painted theme never disagree (no flash, no hydration mismatch).
 function getSnapshot(): Theme {
   const current = document.documentElement.dataset.theme;
   return current === "light" || current === "dark" ? current : DEFAULT_THEME;

@@ -8,9 +8,6 @@ import type { ChannelStatus } from "@prisma/client";
 import type { Bilingual, IconType } from "@/lib/content/types";
 import type { Tone } from "./tone";
 
-/** Presentation metadata for the overview. All values come from the database
- *  (see getHomeOverview) — only labels, icons and status styling live here. */
-
 export type KpiKey = "conversations" | "leads" | "orders" | "revenue";
 
 export const KPI_META: { key: KpiKey; label: Bilingual; icon: IconType; money?: boolean }[] = [

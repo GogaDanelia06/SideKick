@@ -1,6 +1,5 @@
 import type { Bilingual } from "./types";
 
-/** Copy for the 404 page (app/not-found.tsx). */
 export const NOT_FOUND: {
   code: string;
   title: Bilingual;

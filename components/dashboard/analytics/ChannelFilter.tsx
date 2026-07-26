@@ -12,7 +12,6 @@ import { CHANNEL_META, CHANNEL_ORDER } from "@/lib/dashboard/channelMeta";
 
 const ORDER = CHANNEL_ORDER;
 
-/** "All channels" dropdown — narrows every figure on the page to one channel. */
 export function ChannelFilter({
   value,
   onChange,

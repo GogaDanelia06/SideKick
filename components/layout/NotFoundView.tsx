@@ -7,7 +7,6 @@ import { NOT_FOUND } from "@/lib/content/notFound";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Branded 404 body — bilingual, with a way back into the site. */
 export function NotFoundView() {
   const { t } = useLanguage();
 

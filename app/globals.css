@@ -21,7 +21,6 @@
   --color-amber: var(--amber);
   --color-red: var(--red);
 
-  /* Dashboard-only surfaces (resolved inside .dash-scope) */
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
   --color-soft: var(--soft);
@@ -63,7 +62,6 @@
   --header-bg: rgba(255, 255, 255, 0.85);
 }
 
-/* Dashboard token layer — its own surfaces + radii, scoped so marketing is untouched. */
 .dash-scope {
   --border: #30363d; --canvas: #0d1117; --surface: #161b22; --soft: #1c2128;
   --border2: #21262d; --faint: #6e7681; --ai: #a371f7; --ai-surface: #a371f722;
@@ -102,8 +100,6 @@ body {
   to { opacity: 1; transform: none; }
 }
 
-/* Loading skeletons. A sweeping highlight reads as "working" better than a
-   pulse, and it's one animation on a pseudo-element rather than per-node. */
 @keyframes skeletonSweep {
   from { transform: translateX(-100%); }
   to   { transform: translateX(100%); }
@@ -129,8 +125,6 @@ body {
   animation: skeletonSweep 1.4s ease-in-out infinite;
 }
 
-/* Respect the OS setting — a constant sweep is exactly the kind of motion
-   that triggers discomfort. Keep the shape, drop the movement. */
 @media (prefers-reduced-motion: reduce) {
   .skeleton::after { animation: none; }
 }

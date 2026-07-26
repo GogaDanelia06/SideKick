@@ -12,8 +12,6 @@ export default async function ConversationsPage({
   const ctx = await requireContext();
   const sp = await searchParams;
 
-  // Whitelist the channel; the thread id is validated by the query itself,
-  // which scopes to businessId so another tenant's id simply returns null.
   const channel = CHANNEL_ORDER.includes(sp.channel as ChannelType)
     ? (sp.channel as ChannelType)
     : null;

@@ -5,9 +5,13 @@ import type { LeadStatus, OrderStatus, Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getContext } from "@/lib/session";
 import { can, requirePermission } from "@/lib/auth/permissions";
+import { normalizeYouTubeUrl } from "./youtube";
 import { DASH } from "./routes";
 
-/** Connect/disconnect a channel record (no real OAuth — that's the unbought module). */
+export type ActionResult = { ok: true } | { ok: false; error: string };
+
+export type TeamResult = ActionResult;
+
 export async function setChannelConnected(channelId: string, connected: boolean) {
   const ctx = await requirePermission("channels:write");
   if (!ctx) return;
@@ -22,7 +26,6 @@ export async function setChannelConnected(channelId: string, connected: boolean)
   revalidatePath(DASH.channels);
 }
 
-/** Move an order through its lifecycle. Scoped to the caller's business. */
 export async function setOrderStatus(orderId: string, status: OrderStatus) {
   const ctx = await requirePermission("orders:write");
   if (!ctx) return;
@@ -33,13 +36,6 @@ export async function setOrderStatus(orderId: string, status: OrderStatus) {
   revalidatePath(DASH.orders);
 }
 
-/* ── AI assistant settings ─────────────────────────────────────────────── */
-// The assistant screen saves section by section, so one long form can't be lost
-// by an unrelated validation error. Every write is scoped to the caller's
-// business. These persist *settings only* — generating replies from them is the
-// separate AI module.
-
-/** Upsert a subset of AiConfig for the caller's business. */
 async function upsertAiConfig(businessId: string, fields: Record<string, unknown>) {
   await prisma.aiConfig.upsert({
     where: { businessId },
@@ -90,7 +86,6 @@ export async function setAiLanguages(languages: string[]) {
   await upsertAiConfig(ctx.businessId, { languages: clean });
 }
 
-/** Business profile shown to the assistant (and on the profile screen). */
 export async function saveBusinessInfo(data: FormData) {
   const ctx = await requirePermission("business:write");
   if (!ctx) return;
@@ -157,12 +152,6 @@ export async function deleteProduct(id: string) {
   revalidatePath(DASH.products);
 }
 
-/**
- * The profile screen edits two different things at two different permission
- * levels: your own account (anyone may edit their own) and the business
- * (OWNER/ADMIN only). Applied separately so a VIEWER can still fix their own
- * name without being able to rename the company.
- */
 export async function saveProfile(data: FormData) {
   const ctx = await getContext();
   if (!ctx) return;
@@ -182,10 +171,6 @@ export async function saveProfile(data: FormData) {
 
   revalidatePath(DASH.profile);
 }
-
-/* ── Leads ─────────────────────────────────────────────────────────────── */
-// Leads normally arrive from a conversation; these let an operator add and
-// manage them by hand. All writes are scoped to the caller's business.
 
 export async function createLead(data: FormData) {
   const ctx = await requirePermission("leads:write");
@@ -229,13 +214,36 @@ export async function deleteLead(id: string) {
   revalidatePath(DASH.leads);
 }
 
-/* ── Conversations ─────────────────────────────────────────────────────── */
+export async function createVideo(data: FormData): Promise<ActionResult> {
+  const ctx = await requirePermission("videos:write");
+  if (!ctx) return { ok: false, error: "forbidden" };
 
-/**
- * Turn the bot on/off for one thread. This is a stored setting the channel
- * integration will read before auto-replying — safe to change today even
- * though nothing is delivering messages yet.
- */
+  const title = str(data, "title");
+  const url = normalizeYouTubeUrl(String(data.get("youtubeUrl") ?? ""));
+  if (!title) return { ok: false, error: "title_required" };
+  if (!url) return { ok: false, error: "bad_url" };
+
+  await prisma.video.create({
+    data: {
+      businessId: ctx.businessId,
+      title,
+      youtubeUrl: url,
+      category: str(data, "category"),
+    },
+  });
+  revalidatePath(DASH.videos);
+  return { ok: true };
+}
+
+export async function deleteVideo(id: string): Promise<ActionResult> {
+  const ctx = await requirePermission("videos:write");
+  if (!ctx) return { ok: false, error: "forbidden" };
+
+  await prisma.video.deleteMany({ where: { id, businessId: ctx.businessId } });
+  revalidatePath(DASH.videos);
+  return { ok: true };
+}
+
 export async function setConversationAi(conversationId: string, aiEnabled: boolean) {
   const ctx = await requirePermission("conversations:write");
   if (!ctx) return;
@@ -246,21 +254,10 @@ export async function setConversationAi(conversationId: string, aiEnabled: boole
   revalidatePath(DASH.conversations);
 }
 
-/* ── Team ──────────────────────────────────────────────────────────────── */
-// Only OWNER/ADMIN may change the team. Membership rows are the tenant link,
-// so every lookup is filtered by the caller's businessId.
-
 function canManageTeam(role: string) {
   return can(role, "team:manage");
 }
 
-export type TeamResult = { ok: true } | { ok: false; error: string };
-
-/**
- * Add someone to the business. If the address already belongs to a user we
- * attach them; otherwise we create the account shell so they can be invited.
- * No password is set — they sign up / reset to claim it.
- */
 export async function addTeamMember(data: FormData): Promise<TeamResult> {
   const ctx = await getContext();
   if (!ctx) return { ok: false, error: "unauthorized" };
@@ -299,7 +296,6 @@ export async function updateMemberRole(membershipId: string, role: Role): Promis
   });
   if (!target) return { ok: false, error: "not_found" };
 
-  // Never leave the business without an owner.
   if (target.role === "OWNER" && role !== "OWNER") {
     const owners = await prisma.membership.count({
       where: { businessId: ctx.businessId, role: "OWNER" },
@@ -335,12 +331,6 @@ export async function removeTeamMember(membershipId: string): Promise<TeamResult
   return { ok: true };
 }
 
-/* ── Billing ───────────────────────────────────────────────────────────── */
-
-/**
- * Switch subscription plan. Records the change against the business; taking
- * payment for it is the PSP module, which isn't part of this build.
- */
 export async function changePlan(planKey: string): Promise<TeamResult> {
   const ctx = await getContext();
   if (!ctx) return { ok: false, error: "unauthorized" };

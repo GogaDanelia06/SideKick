@@ -9,7 +9,6 @@ import type { HomeOverview } from "@/lib/dashboard/queries";
 import { TONE_TEXT } from "@/lib/dashboard/tone";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Health lights for every channel on this account — real connection state. */
 export function ChannelStatusCard({ channels }: { channels: HomeOverview["channels"] }) {
   const { t } = useLanguage();
 

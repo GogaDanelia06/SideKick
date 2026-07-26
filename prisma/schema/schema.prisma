@@ -1,19 +1,10 @@
-// Sidekick backend — multi-file Prisma schema (Postgres).
-// Scope: Frontend + Backend only. AI reply engine and channel integrations
-// are separate unbought modules; their tables store settings but nothing drives them yet.
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  // Pooled connection — used by the app at runtime. Serverless functions open
-  // many short-lived connections, so a hosted Postgres (e.g. Neon) must be
-  // reached through its pooler or it will exhaust connection limits.
   url       = env("DATABASE_URL")
-  // Direct (unpooled) connection — used only for migrations, which can't run
-  // over a pooler. Locally this is just the same URL.
   directUrl = env("DIRECT_URL")
 }
 
