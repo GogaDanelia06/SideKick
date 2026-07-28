@@ -367,7 +367,10 @@ export type ConversationDetail = NonNullable<Awaited<ReturnType<typeof getConver
 
 export async function getAccount(userId: string, businessId: string) {
   const [user, subscription] = await Promise.all([
-    prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true, isAdmin: true },
+    }),
     prisma.subscription.findUnique({
       where: { businessId },
       select: { plan: { select: { name: true } } },
@@ -380,6 +383,7 @@ export async function getAccount(userId: string, businessId: string) {
     email: user?.email ?? "",
     initial: name.charAt(0).toUpperCase(),
     planName: subscription?.plan.name ?? null,
+    isAdmin: user?.isAdmin ?? false,
   };
 }
 

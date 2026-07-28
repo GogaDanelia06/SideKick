@@ -29,11 +29,19 @@ model Plan {
   key           String         @unique
   name          String
   nameEn        String         @default("")
+  /// Monthly price. price3m / price12m hold the explicit multi-month prices —
+  /// null means "fall back to price × months", so an unset plan still works.
   price         Int
+  price3m       Int?
+  price12m      Int?
   msgLimit      Int
   channelCap    Int
   userCap       Int
   productCap    Int
+  /// Extra bullet lines shown on the pricing card, on top of the ones derived
+  /// from the caps above. Free-form so the admin can write anything.
+  extrasKa      String[]       @default([])
+  extrasEn      String[]       @default([])
   featured      Boolean        @default(false)
   subscriptions Subscription[]
 }
@@ -81,10 +89,114 @@ model SiteFaq {
   published  Boolean @default(true)
 }
 
+/// Every simple editable text on the public site, addressed by a stable key
+/// (e.g. "story_title", "terms_body", "contact_email"). One table instead of a
+/// model per section — a new editable field costs a key, not a migration.
+/// A key that is absent falls back to the hardcoded default in lib/content,
+/// so the site always renders even before an admin touches anything.
 model SiteSetting {
   id        String   @id @default(cuid())
   key       String   @unique
   valueKa   String
   valueEn   String   @default("")
   updatedAt DateTime @updatedAt
+}
+
+/// Homepage carousel slide. Media is optional — with none, the slide falls back
+/// to one of the built-in animated mocks (`mock`).
+model HeroSlide {
+  id         String          @id @default(cuid())
+  order      Int             @default(0)
+  published  Boolean         @default(true)
+  /// Uploaded image/video URL. Null = use `mock`.
+  mediaUrl   String?
+  mediaType  String?
+  /// Built-in mock to show when there's no media: chat | dashboard | tester
+  mock       String?
+  badgeKa    String          @default("")
+  badgeEn    String          @default("")
+  titleKa    String
+  titleEn    String
+  textKa     String
+  textEn     String
+  ctaLabelKa String          @default("")
+  ctaLabelEn String          @default("")
+  /// Where "learn more" goes. Defaults to the pricing page.
+  ctaUrl     String          @default("/pricing")
+  stats      HeroSlideStat[]
+
+  @@index([order])
+}
+
+/// A single animated figure inside a slide's mock panel. The figure starts at
+/// `baseValue` and ticks by a random amount in [changeMin, changeMax] every
+/// random interval in [intervalMinMs, intervalMaxMs] — which is what makes the
+/// hero look alive without inventing a fake total.
+model HeroSlideStat {
+  id            String    @id @default(cuid())
+  slideId       String
+  order         Int       @default(0)
+  labelKa       String
+  labelEn       String
+  baseValue     Float     @default(0)
+  changeMin     Float     @default(0)
+  changeMax     Float     @default(0)
+  intervalMinMs Int       @default(2000)
+  intervalMaxMs Int       @default(6000)
+  /// Rendered right after the number, e.g. "₾" or "%".
+  suffix        String    @default("")
+  slide         HeroSlide @relation(fields: [slideId], references: [id], onDelete: Cascade)
+
+  @@index([slideId, order])
+}
+
+/// "What Sidekick does" boxes on the landing page.
+model Benefit {
+  id        String  @id @default(cuid())
+  order     Int     @default(0)
+  published Boolean @default(true)
+  /// Tabler icon name, e.g. "IconClockHour4". Resolved through an allow-list.
+  icon      String  @default("IconSparkles")
+  titleKa   String
+  titleEn   String
+  descKa    String
+  descEn    String
+
+  @@index([order])
+}
+
+/// One numbered section of a legal document (Terms / Privacy / Data protection).
+/// Kept as rows rather than one giant text field so the admin edits section by
+/// section and the page keeps its heading structure — which is also what makes
+/// these documents readable and linkable.
+model LegalSection {
+  id        String  @id @default(cuid())
+  /// Which document: "terms" | "privacy" | "data-protection"
+  doc       String
+  order     Int     @default(0)
+  published Boolean @default(true)
+  headingKa String
+  headingEn String
+  /// Paragraphs, separated by a blank line.
+  bodyKa    String  @default("")
+  bodyEn    String  @default("")
+  /// Bullet points, one per line. Empty means no list.
+  bulletsKa String  @default("")
+  bulletsEn String  @default("")
+
+  @@index([doc, order])
+}
+
+/// "What Sidekick gives you" boxes on the pricing page.
+model ServiceBox {
+  id        String  @id @default(cuid())
+  order     Int     @default(0)
+  published Boolean @default(true)
+  icon      String  @default("IconSparkles")
+  titleKa   String
+  titleEn   String
+  bodyKa    String
+  bodyEn    String
+
+  @@index([order])
 }

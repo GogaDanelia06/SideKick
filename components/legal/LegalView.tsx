@@ -8,13 +8,23 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const PLACEHOLDER = /【[^】]*】/;
 
-export function LegalView({ doc }: { doc: LegalDoc }) {
+/** `sections` overrides the drafted copy when the admin has edited this
+ *  document; without it the page falls back to lib/content/legal.ts. */
+export function LegalView({
+  doc,
+  sections,
+}: {
+  doc: LegalDoc;
+  sections?: LegalDoc["sections"];
+}) {
   const { t, locale } = useLanguage();
+
+  const list = sections && sections.length > 0 ? sections : doc.sections;
 
   const isDraftVisible = process.env.NODE_ENV !== "production";
   const unfilled =
     isDraftVisible &&
-    doc.sections.some((s) =>
+    list.some((s) =>
       [...(s.paragraphs ?? []), ...(s.bullets ?? [])].some(
         (b) => PLACEHOLDER.test(b.ka) || PLACEHOLDER.test(b.en),
       ),
@@ -57,7 +67,7 @@ export function LegalView({ doc }: { doc: LegalDoc }) {
           ) : null}
 
           <div className="mt-8 flex flex-col gap-8">
-            {doc.sections.map((s, i) => (
+            {list.map((s, i) => (
               <section key={i}>
                 <h2 className="mb-3 text-lg font-semibold">{t(s.heading)}</h2>
 

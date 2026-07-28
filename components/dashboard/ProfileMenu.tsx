@@ -4,9 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
-import { IconLanguage, IconLogout, IconSelector, IconUserCircle } from "@tabler/icons-react";
+import {
+  IconExternalLink,
+  IconLanguage,
+  IconLogout,
+  IconSelector,
+  IconShieldLock,
+  IconUserCircle,
+} from "@tabler/icons-react";
 import { Switch } from "./ui/Switch";
 import type { Account } from "@/lib/dashboard/queries";
+import { ADMIN } from "@/lib/admin/routes";
 import { DASH } from "@/lib/dashboard/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { useTheme } from "@/lib/theme/useTheme";
@@ -38,6 +46,17 @@ export function ProfileMenu({ account }: { account: Account }) {
             <span className="flex-1">{theme === "dark" ? t({ ka: "მუქი თემა", en: "Dark theme" }) : t({ ka: "ღია თემა", en: "Light theme" })}</span>
             <Switch on={theme === "dark"} onToggle={toggleTheme} ariaLabel="Theme" />
           </div>
+          {account.isAdmin ? (
+            <Link
+              href={ADMIN.home}
+              onClick={() => setOpen(false)}
+              className="mt-1 flex items-center gap-2.5 border-t border-border2 px-2.5 pb-2.5 pt-3 text-[13px] hover:bg-soft"
+            >
+              <IconShieldLock size={17} />
+              <span className="flex-1">{t({ ka: "ადმინ პანელი", en: "Admin panel" })}</span>
+              <IconExternalLink size={14} className="text-faint" />
+            </Link>
+          ) : null}
           <button
             type="button"
             onClick={() => signOut({ callbackUrl: "/login" })}

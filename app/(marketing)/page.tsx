@@ -6,7 +6,14 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { webPageSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { SITE } from "@/lib/seo/site";
-import { getSiteStats, getSeoSettings } from "@/lib/site/content";
+import {
+  getSiteStats,
+  getSeoSettings,
+  getSiteTexts,
+  getBenefits,
+  getHeroSlides,
+  getHeroIntervalMs,
+} from "@/lib/site/content";
 
 export async function generateMetadata() {
   const { title, description } = await getSeoSettings();
@@ -16,7 +23,21 @@ export async function generateMetadata() {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const stats = await getSiteStats();
+  const [stats, benefits, heroSlides, heroIntervalMs, texts] = await Promise.all([
+    getSiteStats(),
+    getBenefits(),
+    getHeroSlides(),
+    getHeroIntervalMs(),
+    getSiteTexts([
+      "story_title",
+      "story_body",
+      "cta_badge",
+      "cta_title",
+      "cta_text",
+      "cta_button",
+      "cta_url",
+    ]),
+  ]);
 
   return (
     <>
@@ -27,10 +48,18 @@ export default async function HomePage() {
           path: "/",
         })}
       />
-      <Hero stats={stats} />
-      <Story />
-      <Benefits />
-      <CtaBanner />
+      <Hero stats={stats} slides={heroSlides} intervalMs={heroIntervalMs} />
+      <Story title={texts.story_title} body={texts.story_body} />
+      <Benefits boxes={benefits} />
+      <CtaBanner
+        content={{
+          badge: texts.cta_badge,
+          title: texts.cta_title,
+          text: texts.cta_text,
+          button: texts.cta_button,
+          url: texts.cta_url?.ka,
+        }}
+      />
     </>
   );
 }

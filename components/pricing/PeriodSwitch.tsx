@@ -34,11 +34,6 @@ export function PeriodSwitch({
             )}
           >
             {t(p.label)}
-            {p.discountPct > 0 ? (
-              <span className={clsx("ml-1.5 text-xs", active ? "text-white/80" : "text-green")}>
-                −{p.discountPct}%
-              </span>
-            ) : null}
           </button>
         );
       })}

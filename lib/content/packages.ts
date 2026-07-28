@@ -2,7 +2,12 @@ import type { Bilingual } from "./types";
 
 export type Package = {
   name: Bilingual;
+  /** Monthly price. */
   price: number;
+  /** Explicit multi-month prices. Null falls back to price × months, so a plan
+   *  with no discount configured still shows a sensible number. */
+  price3m: number | null;
+  price12m: number | null;
   featured: boolean;
   features: Bilingual[];
 };
@@ -26,17 +31,34 @@ export type BillingPeriod = {
   months: number;
   label: Bilingual;
   unit: Bilingual;
-  discountPct: number;
 };
 
 export const BILLING_PERIODS: BillingPeriod[] = [
-  { months: 1, label: { ka: "1 თვე", en: "1 month" }, unit: { ka: "₾ / თვე", en: "₾ / mo" }, discountPct: 0 },
-  { months: 3, label: { ka: "3 თვე", en: "3 months" }, unit: { ka: "₾ / 3 თვე", en: "₾ / 3 mo" }, discountPct: 0 },
-  { months: 12, label: { ka: "1 წელი", en: "1 year" }, unit: { ka: "₾ / წელი", en: "₾ / yr" }, discountPct: 0 },
+  { months: 1, label: { ka: "1 თვე", en: "1 month" }, unit: { ka: "₾ / თვე", en: "₾ / mo" } },
+  { months: 3, label: { ka: "3 თვე", en: "3 months" }, unit: { ka: "₾ / 3 თვე", en: "₾ / 3 mo" } },
+  { months: 12, label: { ka: "1 წელი", en: "1 year" }, unit: { ka: "₾ / წელი", en: "₾ / yr" } },
 ];
 
-export function periodPrice(monthly: number, period: BillingPeriod): number {
-  return Math.round(monthly * period.months * (1 - period.discountPct / 100));
+/**
+ * Price for a whole billing period.
+ *
+ * Uses the price the admin set for that term when there is one; otherwise falls
+ * back to the monthly price times the number of months. That fallback is what
+ * lets an admin configure only the terms they actually discount.
+ */
+export function periodPrice(pkg: Package, period: BillingPeriod): number {
+  if (period.months === 3 && pkg.price3m != null) return pkg.price3m;
+  if (period.months === 12 && pkg.price12m != null) return pkg.price12m;
+  return pkg.price * period.months;
+}
+
+/** Percentage saved against paying monthly, or 0 when there's no discount. */
+export function periodSavingPct(pkg: Package, period: BillingPeriod): number {
+  if (period.months === 1) return 0;
+  const full = pkg.price * period.months;
+  const actual = periodPrice(pkg, period);
+  if (full <= 0 || actual >= full) return 0;
+  return Math.round((1 - actual / full) * 100);
 }
 
 export const FREE_PERIOD = {

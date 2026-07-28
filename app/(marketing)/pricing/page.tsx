@@ -5,7 +5,7 @@ import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, softwareAppSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { getPlans } from "@/lib/site/content";
+import { getPlans, getServiceBoxes, getSiteTexts } from "@/lib/site/content";
 
 export const metadata = pageMetadata({
   title: "ფასები",
@@ -19,7 +19,11 @@ export const dynamic = "force-dynamic";
 const crumbs: Crumb[] = [HOME_CRUMB, { label: { ka: "ფასები", en: "Pricing" }, href: "/pricing" }];
 
 export default async function PricingPage() {
-  const packages = await getPlans();
+  const [packages, serviceBoxes, texts] = await Promise.all([
+    getPlans(),
+    getServiceBoxes(),
+    getSiteTexts(["free_badge", "free_title", "free_text"]),
+  ]);
   const prices = packages.map((p) => p.price);
 
   return (
@@ -43,8 +47,11 @@ export default async function PricingPage() {
         })}
       />
       <Breadcrumbs items={crumbs} />
-      <Services />
-      <Packages packages={packages} />
+      <Services boxes={serviceBoxes} />
+      <Packages
+        packages={packages}
+        free={{ badge: texts.free_badge, title: texts.free_title, text: texts.free_text }}
+      />
     </>
   );
 }

@@ -55,12 +55,22 @@ function planFeatures(p: {
 
 export async function getPlans(): Promise<Package[]> {
   const plans = await prisma.plan.findMany({ orderBy: { price: "asc" } });
-  return plans.map((p) => ({
-    name: { ka: p.name, en: p.nameEn || p.name },
-    price: p.price,
-    featured: p.featured,
-    features: planFeatures(p),
-  }));
+  return plans.map((p) => {
+    // Admin-written bullets come after the ones derived from the caps, pairing
+    // each Georgian line with the English one at the same index.
+    const extras: Bilingual[] = p.extrasKa
+      .map((ka, i) => ({ ka: ka.trim(), en: (p.extrasEn[i] ?? ka).trim() }))
+      .filter((b) => b.ka);
+
+    return {
+      name: { ka: p.name, en: p.nameEn || p.name },
+      price: p.price,
+      price3m: p.price3m,
+      price12m: p.price12m,
+      featured: p.featured,
+      features: [...planFeatures(p), ...extras],
+    };
+  });
 }
 
 export async function getSiteFaq(): Promise<FaqItem[]> {
@@ -71,6 +81,150 @@ export async function getSiteFaq(): Promise<FaqItem[]> {
   return rows.map((r) => ({
     question: { ka: r.questionKa, en: r.questionEn },
     answer: { ka: r.answerKa, en: r.answerEn },
+  }));
+}
+
+/**
+ * Read editable texts by key.
+ *
+ * Returns only the keys an admin has actually saved (and left non-empty), so
+ * call sites can fall back to the hardcoded copy with `??`. That keeps every
+ * default next to the component that uses it rather than in one giant map.
+ */
+export async function getSiteTexts(keys: string[]): Promise<Record<string, Bilingual>> {
+  if (keys.length === 0) return {};
+  const rows = await prisma.siteSetting.findMany({ where: { key: { in: keys } } });
+  const out: Record<string, Bilingual> = {};
+  for (const r of rows) {
+    const ka = r.valueKa.trim();
+    if (!ka) continue;
+    out[r.key] = { ka, en: r.valueEn.trim() || ka };
+  }
+  return out;
+}
+
+/** Single-language value (URLs, phone numbers, emails). */
+export async function getSiteValue(key: string): Promise<string | null> {
+  const row = await prisma.siteSetting.findUnique({ where: { key } });
+  return row?.valueKa.trim() || null;
+}
+
+/* ── Hero carousel ──────────────────────────────────────────────────────── */
+
+export type HeroStatView = {
+  label: Bilingual;
+  baseValue: number;
+  changeMin: number;
+  changeMax: number;
+  intervalMinMs: number;
+  intervalMaxMs: number;
+  suffix: string;
+};
+
+export type HeroSlideView = {
+  mediaUrl: string | null;
+  mediaType: string | null;
+  mock: string | null;
+  badge: Bilingual | null;
+  title: Bilingual;
+  text: Bilingual;
+  ctaLabel: Bilingual | null;
+  ctaUrl: string;
+  stats: HeroStatView[];
+};
+
+/** Published slides with their animated figures, in order. */
+export async function getHeroSlides(): Promise<HeroSlideView[]> {
+  const rows = await prisma.heroSlide.findMany({
+    where: { published: true },
+    orderBy: { order: "asc" },
+    include: { stats: { orderBy: { order: "asc" } } },
+  });
+
+  return rows.map((s) => ({
+    mediaUrl: s.mediaUrl,
+    mediaType: s.mediaType,
+    mock: s.mock,
+    badge: s.badgeKa ? { ka: s.badgeKa, en: s.badgeEn || s.badgeKa } : null,
+    title: { ka: s.titleKa, en: s.titleEn || s.titleKa },
+    text: { ka: s.textKa, en: s.textEn || s.textKa },
+    ctaLabel: s.ctaLabelKa ? { ka: s.ctaLabelKa, en: s.ctaLabelEn || s.ctaLabelKa } : null,
+    ctaUrl: s.ctaUrl,
+    stats: s.stats.map((t) => ({
+      label: { ka: t.labelKa, en: t.labelEn || t.labelKa },
+      baseValue: t.baseValue,
+      changeMin: t.changeMin,
+      changeMax: t.changeMax,
+      intervalMinMs: t.intervalMinMs,
+      intervalMaxMs: t.intervalMaxMs,
+      suffix: t.suffix,
+    })),
+  }));
+}
+
+/** Carousel auto-advance in milliseconds. Defaults to 5 seconds. */
+export async function getHeroIntervalMs(): Promise<number> {
+  const row = await prisma.siteSetting.findUnique({ where: { key: "hero_interval_s" } });
+  const s = Number(row?.valueKa);
+  return Number.isFinite(s) && s >= 1 ? s * 1000 : 5000;
+}
+
+/* ── Content boxes ──────────────────────────────────────────────────────── */
+
+export type BoxView = { icon: string; title: Bilingual; body: Bilingual };
+
+/** Published landing-page benefit boxes, in order. */
+export async function getBenefits(): Promise<BoxView[]> {
+  const rows = await prisma.benefit.findMany({
+    where: { published: true },
+    orderBy: { order: "asc" },
+  });
+  return rows.map((b) => ({
+    icon: b.icon,
+    title: { ka: b.titleKa, en: b.titleEn || b.titleKa },
+    body: { ka: b.descKa, en: b.descEn || b.descKa },
+  }));
+}
+
+/** Published pricing-page service boxes, in order. */
+export async function getServiceBoxes(): Promise<BoxView[]> {
+  const rows = await prisma.serviceBox.findMany({
+    where: { published: true },
+    orderBy: { order: "asc" },
+  });
+  return rows.map((s) => ({
+    icon: s.icon,
+    title: { ka: s.titleKa, en: s.titleEn || s.titleKa },
+    body: { ka: s.bodyKa, en: s.bodyEn || s.bodyKa },
+  }));
+}
+
+/* ── Legal documents ────────────────────────────────────────────────────── */
+
+export type LegalSectionView = {
+  heading: Bilingual;
+  paragraphs: Bilingual[];
+  bullets: Bilingual[];
+};
+
+/** Published sections of a legal document, in order. Empty means the caller
+ *  should fall back to the drafted copy in lib/content/legal.ts. */
+export async function getLegalSections(doc: string): Promise<LegalSectionView[]> {
+  const rows = await prisma.legalSection.findMany({
+    where: { doc, published: true },
+    orderBy: { order: "asc" },
+  });
+
+  const split = (ka: string, en: string, sep: RegExp): Bilingual[] => {
+    const a = ka.split(sep).map((s) => s.trim()).filter(Boolean);
+    const b = en.split(sep).map((s) => s.trim()).filter(Boolean);
+    return a.map((text, i) => ({ ka: text, en: b[i] ?? text }));
+  };
+
+  return rows.map((r) => ({
+    heading: { ka: r.headingKa, en: r.headingEn || r.headingKa },
+    paragraphs: split(r.bodyKa, r.bodyEn, /\n\s*\n/),
+    bullets: split(r.bulletsKa, r.bulletsEn, /\n/),
   }));
 }
 

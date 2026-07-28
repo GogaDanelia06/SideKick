@@ -84,11 +84,65 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
             <Num name="price" label={{ ka: "ფასი (₾ / თვე)", en: "Price (₾ / mo)" }} value={p.price} />
           </div>
 
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <label className="block">
+              <span className={LABEL}>{t({ ka: "ფასი — 3 თვე (₾)", en: "Price — 3 months (₾)" })}</span>
+              <input
+                name="price3m"
+                type="number"
+                defaultValue={p.price3m ?? ""}
+                placeholder={String(p.price * 3)}
+                className={INPUT}
+              />
+            </label>
+            <label className="block">
+              <span className={LABEL}>{t({ ka: "ფასი — 1 წელი (₾)", en: "Price — 1 year (₾)" })}</span>
+              <input
+                name="price12m"
+                type="number"
+                defaultValue={p.price12m ?? ""}
+                placeholder={String(p.price * 12)}
+                className={INPUT}
+              />
+            </label>
+          </div>
+          <p className="mt-1.5 text-[12px] text-faint">
+            {t({
+              ka: "ცარიელი = ფასდაკლების გარეშე (თვიური × თვეების რაოდენობა).",
+              en: "Empty = no discount (monthly × number of months).",
+            })}
+          </p>
+
           <div className="mt-3 grid gap-3 sm:grid-cols-4">
             <Num name="msgLimit" label={{ ka: "შეტყობინება", en: "Messages" }} value={p.msgLimit} />
             <Num name="channelCap" label={{ ka: "არხები", en: "Channels" }} value={p.channelCap} />
             <Num name="userCap" label={{ ka: "მომხმარებელი", en: "Users" }} value={p.userCap} />
             <Num name="productCap" label={{ ka: "პროდუქტი", en: "Products" }} value={p.productCap} />
+          </div>
+
+          {/* Five free-form bullets, appended after the ones derived from caps. */}
+          <div className="mt-4">
+            <span className={LABEL}>
+              {t({ ka: "დამატებითი პარამეტრები (5 ველი)", en: "Extra features (5 slots)" })}
+            </span>
+            <div className="flex flex-col gap-2">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div key={i} className="grid gap-2 sm:grid-cols-2">
+                  <input
+                    name={`extraKa${i}`}
+                    defaultValue={p.extrasKa[i] ?? ""}
+                    placeholder={t({ ka: `${i + 1}. ქართულად`, en: `${i + 1}. Georgian` })}
+                    className={INPUT}
+                  />
+                  <input
+                    name={`extraEn${i}`}
+                    defaultValue={p.extrasEn[i] ?? ""}
+                    placeholder={t({ ka: `${i + 1}. ინგლისურად`, en: `${i + 1}. English` })}
+                    className={INPUT}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="mt-4 flex items-center justify-between">

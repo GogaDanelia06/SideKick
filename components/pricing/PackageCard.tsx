@@ -8,18 +8,27 @@ import {
   FREE_PERIOD,
   PACKAGE_META,
   periodPrice,
+  periodSavingPct,
   type BillingPeriod,
   type Package,
 } from "@/lib/content/packages";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-export function PackageCard({ pkg, period }: { pkg: Package; period: BillingPeriod }) {
+export function PackageCard({
+  pkg,
+  period,
+  freeBadge,
+}: {
+  pkg: Package;
+  period: BillingPeriod;
+  freeBadge?: string;
+}) {
   const { t } = useLanguage();
 
-  const monthly = Number(pkg.price);
-  const total = periodPrice(monthly, period);
+  const total = periodPrice(pkg, period);
   const perMonth = period.months > 1 ? Math.round(total / period.months) : null;
+  const saving = periodSavingPct(pkg, period);
 
   return (
     <div
@@ -42,14 +51,21 @@ export function PackageCard({ pkg, period }: { pkg: Package; period: BillingPeri
       </div>
 
       {perMonth ? (
-        <div className="mt-1 text-[13px] text-muted">
-          ≈ {perMonth}₾ {t(FREE_PERIOD.monthlyEquivalent)}
+        <div className="mt-1 flex items-center gap-2 text-[13px] text-muted">
+          <span>
+            ≈ {perMonth}₾ {t(FREE_PERIOD.monthlyEquivalent)}
+          </span>
+          {saving > 0 ? (
+            <span className="rounded-full bg-green-surface px-2 py-0.5 text-[11px] font-semibold text-green">
+              −{saving}%
+            </span>
+          ) : null}
         </div>
       ) : null}
 
       <span className="mt-3.5 inline-flex items-center gap-1.5 rounded-full border border-green bg-green-surface px-3 py-1 text-xs font-semibold text-green">
         <IconGift size={13} />
-        {t(FREE_PERIOD.badge)}
+        {freeBadge || t(FREE_PERIOD.badge)}
       </span>
 
       <Button

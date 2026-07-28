@@ -10,8 +10,9 @@ import { Stats } from "./Stats";
 import { ChatMock } from "./mocks/ChatMock";
 import { DashboardMock } from "./mocks/DashboardMock";
 import { TesterMock } from "./mocks/TesterMock";
+import { DbHeroSlide } from "./DbHeroSlide";
 import { HERO_INTERVAL_MS, HERO_SLIDES, type HeroMock } from "@/lib/content/hero";
-import type { SiteStatView } from "@/lib/site/content";
+import type { HeroSlideView, SiteStatView } from "@/lib/site/content";
 import { useCarousel } from "@/hooks/useCarousel";
 
 const MOCKS: Record<HeroMock, ComponentType> = {
@@ -37,21 +38,42 @@ function Arrow({ side, onClick }: { side: "left" | "right"; onClick: () => void 
   );
 }
 
-export function Hero({ stats }: { stats: SiteStatView[] }) {
-  const { index, goTo, next, prev } = useCarousel(HERO_SLIDES.length, HERO_INTERVAL_MS);
-  const slide = HERO_SLIDES[index];
-  const Mock = MOCKS[slide.mock];
+/** Admin slides take over the carousel entirely when any exist; otherwise the
+ *  shipped ones run, so the landing page is never empty. */
+export function Hero({
+  stats,
+  slides = [],
+  intervalMs,
+}: {
+  stats: SiteStatView[];
+  slides?: HeroSlideView[];
+  intervalMs?: number;
+}) {
+  const useDb = slides.length > 0;
+  const count = useDb ? slides.length : HERO_SLIDES.length;
+  const { index, goTo, next, prev } = useCarousel(count, intervalMs ?? HERO_INTERVAL_MS);
+
+  const shipped = HERO_SLIDES[index];
+  const Mock = shipped ? MOCKS[shipped.mock] : MOCKS.chat;
 
   return (
     <section className="pb-9 pt-[60px]">
       <Container>
         <div className="relative">
-          <Arrow side="left" onClick={prev} />
-          <Arrow side="right" onClick={next} />
-          <HeroSlide slide={slide} mock={<Mock />} />
+          {count > 1 ? (
+            <>
+              <Arrow side="left" onClick={prev} />
+              <Arrow side="right" onClick={next} />
+            </>
+          ) : null}
+          {useDb ? (
+            <DbHeroSlide slide={slides[index]!} />
+          ) : (
+            <HeroSlide slide={shipped} mock={<Mock />} />
+          )}
         </div>
         <Stats stats={stats} />
-        <HeroDots count={HERO_SLIDES.length} index={index} onSelect={goTo} />
+        <HeroDots count={count} index={index} onSelect={goTo} />
       </Container>
     </section>
   );
