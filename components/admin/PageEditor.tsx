@@ -71,7 +71,7 @@ export function PageEditor({
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-6 flex max-w-[1370px] flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-[22px] font-semibold">{t(page.label)}</h1>
           <p className="mt-1 text-sm text-muted">
@@ -91,9 +91,9 @@ export function PageEditor({
 
       {/* Single-section pages don't need a rail to choose from. */}
       {page.sections.length === 1 ? (
-        current ? <Section data={current} /> : null
+        current ? <div className="max-w-[1100px]"><Section data={current} /></div> : null
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[260px_1fr] lg:items-start">
+        <div className="grid gap-4 lg:grid-cols-[250px_minmax(0,1100px)] lg:items-start">
           <div className="rounded-lg border border-border bg-card p-3 lg:sticky lg:top-4">
             <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
               {t({ ka: "სექციები", en: "Sections" })}

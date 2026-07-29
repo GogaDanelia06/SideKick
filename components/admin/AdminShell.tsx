@@ -79,7 +79,10 @@ export function AdminShell({ email, children }: { email: string; children: React
           </div>
         </div>
 
-        <main className="mx-auto w-full max-w-[900px] flex-1 px-5 py-7 sm:px-8">{children}</main>
+        {/* Full width, like the tenant dashboard — the section rail sits right
+            beside the sidebar instead of floating in the middle of the screen.
+            Individual screens constrain their own reading width where it helps. */}
+        <main className="w-full flex-1 px-5 py-7 sm:px-6">{children}</main>
       </div>
     </div>
   );

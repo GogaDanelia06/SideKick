@@ -17,7 +17,7 @@ export default function AdminHome() {
         }}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid max-w-[1100px] gap-4 sm:grid-cols-2">
         {ADMIN_PAGES.map((p) => (
           <Link
             key={p.slug}
