@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import {
-  ADMIN_BOX_NAV,
-  ADMIN_CONTENT_NAV,
-  ADMIN_LEGAL_NAV,
-  ADMIN_NAV,
-} from "@/lib/admin/routes";
+import { ADMIN_NAV } from "@/lib/admin/routes";
+import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
+/**
+ * Two groups: the platform-level screens, then one entry per public page. The
+ * page entries lead to a screen that lists that page's sections in a second
+ * column — so the nav stays short no matter how many editable sections exist.
+ */
 export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { t } = useLanguage();
@@ -37,48 +38,26 @@ export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
         );
       })}
 
-      {/* Editable page texts — one entry per section of the public site. */}
       <div className="mb-1 mt-4 px-2.5 text-[11px] font-semibold uppercase tracking-wide text-faint">
-        {t({ ka: "გვერდების ტექსტები", en: "Page content" })}
+        {t({ ka: "საიტის გვერდები", en: "Site pages" })}
       </div>
-      {[...ADMIN_BOX_NAV, ...ADMIN_CONTENT_NAV].map((item) => {
-        const active = pathname === item.href;
+      {ADMIN_PAGES.map((p) => {
+        const href = `/admin/page/${p.slug}`;
+        const active = pathname === href;
         return (
           <Link
-            key={item.href}
-            href={item.href}
+            key={p.slug}
+            href={href}
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
             className={clsx(
-              "mb-0.5 flex flex-col rounded-[6px] px-2.5 py-2 transition-colors",
+              "mb-0.5 flex items-center gap-3 rounded-[6px] px-2.5 py-2.5 text-sm font-medium transition-colors",
               active ? "bg-green-surface text-primary" : "text-ink hover:bg-soft",
             )}
           >
-            <span className="text-[13px] font-medium">{t(item.label)}</span>
-            <span className="text-[11px] text-faint">{t(item.page)}</span>
-          </Link>
-        );
-      })}
-
-      {/* Legal documents — section-by-section editors. */}
-      <div className="mb-1 mt-4 px-2.5 text-[11px] font-semibold uppercase tracking-wide text-faint">
-        {t({ ka: "იურიდიული", en: "Legal" })}
-      </div>
-      {ADMIN_LEGAL_NAV.map((item) => {
-        const active = pathname === item.href;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            aria-current={active ? "page" : undefined}
-            className={clsx(
-              "mb-0.5 flex flex-col rounded-[6px] px-2.5 py-2 transition-colors",
-              active ? "bg-green-surface text-primary" : "text-ink hover:bg-soft",
-            )}
-          >
-            <span className="text-[13px] font-medium">{t(item.label)}</span>
-            <span className="text-[11px] text-faint">{t(item.page)}</span>
+            <p.icon size={18} className="w-5 shrink-0" />
+            <span className="flex-1">{t(p.label)}</span>
+            <span className="text-[11px] text-faint">{p.sections.length}</span>
           </Link>
         );
       })}
