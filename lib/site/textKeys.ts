@@ -185,6 +185,11 @@ export const TEXT_GROUPS: TextGroup[] = [
  */
 export type LegalDocMeta = { doc: string; title: Bilingual; route: string };
 
+/** The stable SiteSetting key holding a legal document's own heading (its H1). */
+export function legalTitleKey(doc: string): string {
+  return `legal_${doc}_title`;
+}
+
 export const LEGAL_DOCS: LegalDocMeta[] = [
   { doc: "terms", title: ka("წესები და პირობები", "Terms & conditions"), route: "/terms" },
   { doc: "privacy", title: ka("კონფიდენციალურობა", "Privacy policy"), route: "/privacy" },

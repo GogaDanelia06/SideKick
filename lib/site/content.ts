@@ -227,6 +227,14 @@ export async function getLegalSections(doc: string): Promise<LegalSectionView[]>
   }));
 }
 
+/** A legal document's admin-set heading, or null to use the drafted title. */
+export async function getLegalTitle(doc: string): Promise<Bilingual | null> {
+  const row = await prisma.siteSetting.findUnique({ where: { key: `legal_${doc}_title` } });
+  const ka = row?.valueKa.trim();
+  if (!ka) return null;
+  return { ka, en: row?.valueEn.trim() || ka };
+}
+
 /* ── Per-page SEO ───────────────────────────────────────────────────────── */
 
 /** What an admin has overridden for one page. Empty strings mean "not set",

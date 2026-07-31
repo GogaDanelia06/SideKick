@@ -4,7 +4,7 @@ import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { seoFor } from "@/lib/seo/metadata";
-import { getLegalSections } from "@/lib/site/content";
+import { getLegalSections, getLegalTitle } from "@/lib/site/content";
 import { TERMS } from "@/lib/content/legal";
 
 export const generateMetadata = seoFor({
@@ -23,7 +23,10 @@ const crumbs: Crumb[] = [
 
 
 export default async function Page() {
-  const sections = await getLegalSections("terms");
+  const [sections, title] = await Promise.all([
+    getLegalSections("terms"),
+    getLegalTitle("terms"),
+  ]);
   return (
     <>
       <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: c.label.ka, path: c.href })))} />
@@ -35,7 +38,7 @@ export default async function Page() {
         })}
       />
       <Breadcrumbs items={crumbs} />
-      <LegalView doc={TERMS} sections={sections} />
+      <LegalView doc={TERMS} sections={sections} title={title ?? undefined} />
     </>
   );
 }

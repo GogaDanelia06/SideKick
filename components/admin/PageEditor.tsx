@@ -24,7 +24,13 @@ export type SectionData =
   | { kind: "boxes"; boxKind: "benefit" | "service"; items: BoxItem[] }
   | { kind: "plans"; plans: Plan[] }
   | { kind: "faq"; faqs: SiteFaq[] }
-  | { kind: "legal"; doc: string; sections: LegalSection[] }
+  | {
+      kind: "legal";
+      doc: string;
+      sections: LegalSection[];
+      title: { ka: string; en: string };
+      defaultTitle: string;
+    }
   | {
       kind: "seo";
       path: string;
@@ -47,7 +53,14 @@ function Section({ data }: { data: SectionData }) {
     case "faq":
       return <FaqEditor faqs={data.faqs} />;
     case "legal":
-      return <LegalEditor doc={data.doc} sections={data.sections} />;
+      return (
+        <LegalEditor
+          doc={data.doc}
+          sections={data.sections}
+          title={data.title}
+          defaultTitle={data.defaultTitle}
+        />
+      );
     case "seo":
       return <SeoEditor path={data.path} values={data.values} defaults={data.defaults} />;
   }

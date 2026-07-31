@@ -19,6 +19,7 @@ import {
   deleteLegalSection,
   moveLegalSection,
   toggleLegalPublished,
+  saveLegalTitle,
 } from "@/lib/admin/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
@@ -88,12 +89,23 @@ function SectionFields({ initial }: { initial?: Fields }) {
   );
 }
 
-export function LegalEditor({ doc, sections }: { doc: string; sections: LegalSection[] }) {
+export function LegalEditor({
+  doc,
+  sections,
+  title,
+  defaultTitle,
+}: {
+  doc: string;
+  sections: LegalSection[];
+  title: { ka: string; en: string };
+  defaultTitle: string;
+}) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [savedTitle, setSavedTitle] = useState(false);
   const addRef = useRef<HTMLFormElement>(null);
 
   function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
@@ -107,6 +119,48 @@ export function LegalEditor({ doc, sections }: { doc: string; sections: LegalSec
 
   return (
     <div className="flex flex-col gap-4">
+      {/* The document's own heading — this is the page's H1. Blank falls back
+          to the drafted title, so the page is never left without one. */}
+      <form
+        action={(fd) =>
+          run(() => saveLegalTitle(doc, fd), () => {
+            setSavedTitle(true);
+            setTimeout(() => setSavedTitle(false), 2500);
+          })
+        }
+        className="rounded-lg border border-border bg-card p-4"
+      >
+        <span className="mb-1.5 block text-[12px] font-medium text-muted">
+          {t({ ka: "დოკუმენტის სათაური (H1)", en: "Document heading (H1)" })}
+        </span>
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          <input
+            name="titleKa"
+            defaultValue={title.ka}
+            placeholder={defaultTitle}
+            className="h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue"
+          />
+          <input
+            name="titleEn"
+            defaultValue={title.en}
+            placeholder={t({ ka: "ინგლისურად", en: "In English" })}
+            className="h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue"
+          />
+        </div>
+        <div className="mt-3 flex items-center justify-end gap-3">
+          {savedTitle ? (
+            <span className="text-[13px] text-green">{t({ ka: "შენახულია", en: "Saved" })}</span>
+          ) : null}
+          <button
+            type="submit"
+            disabled={pending}
+            className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60"
+          >
+            {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+          </button>
+        </div>
+      </form>
+
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted">
           {sections.length} {t({ ka: "სექცია", en: "sections" })}

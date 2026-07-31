@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ADMIN_PAGES, findAdminPage } from "@/lib/admin/pages";
-import { findGroup } from "@/lib/site/textKeys";
+import { findGroup, findLegalDoc, legalTitleKey } from "@/lib/site/textKeys";
 import { getHeroIntervalMs } from "@/lib/site/content";
 import { SITE } from "@/lib/seo/site";
 import { PageEditor, type SectionData } from "@/components/admin/PageEditor";
@@ -110,13 +110,17 @@ export default async function AdminPageEditor({
       }
 
       case "legal": {
+        const doc = section.legalDoc!;
+        const [rows, titleRow] = await Promise.all([
+          prisma.legalSection.findMany({ where: { doc }, orderBy: { order: "asc" } }),
+          prisma.siteSetting.findUnique({ where: { key: legalTitleKey(doc) } }),
+        ]);
         data[section.key] = {
           kind: "legal",
-          doc: section.legalDoc!,
-          sections: await prisma.legalSection.findMany({
-            where: { doc: section.legalDoc! },
-            orderBy: { order: "asc" },
-          }),
+          doc,
+          sections: rows,
+          title: { ka: titleRow?.valueKa ?? "", en: titleRow?.valueEn ?? "" },
+          defaultTitle: findLegalDoc(doc)?.title.ka ?? "",
         };
         break;
       }

@@ -5,17 +5,20 @@ import { Container } from "@/components/ui/Container";
 import type { LegalDoc } from "@/lib/content/legal";
 import { LEGAL_REVIEW_NOTICE } from "@/lib/content/legal";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Bilingual } from "@/lib/content/types";
 
 const PLACEHOLDER = /【[^】]*】/;
 
-/** `sections` overrides the drafted copy when the admin has edited this
- *  document; without it the page falls back to lib/content/legal.ts. */
+/** `sections` and `title` override the drafted copy when the admin has edited
+ *  this document; without them the page falls back to lib/content/legal.ts. */
 export function LegalView({
   doc,
   sections,
+  title,
 }: {
   doc: LegalDoc;
   sections?: LegalDoc["sections"];
+  title?: Bilingual;
 }) {
   const { t, locale } = useLanguage();
 
@@ -35,7 +38,7 @@ export function LegalView({
       <Container>
         <div className="mx-auto max-w-[760px]">
           <h1 className="text-3xl font-semibold leading-snug tracking-[-0.01em]">
-            {t(doc.title)}
+            {t(title ?? doc.title)}
           </h1>
           <p className="mt-2 text-sm text-muted">
             {t({ ka: "ბოლო განახლება", en: "Last updated" })}:{" "}

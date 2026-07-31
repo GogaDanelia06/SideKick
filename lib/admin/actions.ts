@@ -6,7 +6,7 @@ import type { ChannelType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 import { ADMIN_PAGES } from "@/lib/admin/pages";
-import { findGroup, findLegalDoc } from "@/lib/site/textKeys";
+import { findGroup, findLegalDoc, legalTitleKey } from "@/lib/site/textKeys";
 import { ICON_NAMES } from "@/lib/content/icons";
 import { CHANNEL_TYPES } from "@/lib/dashboard/channels";
 import { normalizeYouTubeUrl } from "@/lib/dashboard/youtube";
@@ -586,6 +586,28 @@ export async function deleteLegalSection(id: string): Promise<AdminResult> {
   await requireAdmin();
   const row = await prisma.legalSection.delete({ where: { id } });
   revalidateLegal(row.doc);
+  return { ok: true };
+}
+
+/**
+ * The document's own H1. Stored as a setting rather than a column because it
+ * is one line of copy per document, exactly what SiteSetting exists for.
+ */
+export async function saveLegalTitle(doc: string, fd: FormData): Promise<AdminResult> {
+  await requireAdmin();
+  if (!findLegalDoc(doc)) return { ok: false, error: "not_found" };
+
+  const key = legalTitleKey(doc);
+  const valueKa = field(fd, "titleKa");
+  const valueEn = field(fd, "titleEn");
+
+  await prisma.siteSetting.upsert({
+    where: { key },
+    create: { key, valueKa, valueEn },
+    update: { valueKa, valueEn },
+  });
+
+  revalidateLegal(doc);
   return { ok: true };
 }
 
