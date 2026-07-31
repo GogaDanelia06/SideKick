@@ -1,0 +1,60 @@
+{
+  "$comment": [
+    "Global SEO settings for the whole site. Everything here is deliberately a",
+    "file and not an admin-panel screen: these change once a year, and a wrong",
+    "value (a bad canonical domain, a stray verification tag) can de-index the",
+    "site — so they are reviewed in a pull request, not in a text box.",
+    "",
+    "Blank values are simply not emitted. Add a value and it appears; clear it",
+    "and the tag disappears. Nothing here needs a code change to take effect.",
+    "",
+    "The URL can also come from NEXT_PUBLIC_SITE_URL, which wins over the value",
+    "below — that is how preview deployments get their own address."
+  ],
+
+  "website": {
+    "name": "Sidekick",
+    "url": "https://sidekick.ge",
+    "title": "Sidekick — AI ასისტენტი ბიზნესისთვის",
+    "description": "Sidekick პასუხობს კლიენტებს 24/7 Facebook-ზე, Instagram-ზე და WhatsApp-ზე, აგროვებს ლიდებს და ზრდის გაყიდვებს — ყოველგვარი კოდის გარეშე."
+  },
+
+  "organization": {
+    "name": "Sidekick",
+    "legalName": "",
+    "logo": "/opengraph-image",
+    "email": "",
+    "phone": "",
+    "address": {
+      "street": "",
+      "city": "",
+      "region": "",
+      "postalCode": "",
+      "country": "GE"
+    },
+    "socialLinks": []
+  },
+
+  "defaults": {
+    "ogImage": "/opengraph-image",
+    "ogImageWidth": 1200,
+    "ogImageHeight": 630,
+    "language": "ka",
+    "locale": "ka_GE",
+    "altLocale": "en_US",
+    "canonicalDomain": "https://sidekick.ge"
+  },
+
+  "analytics": {
+    "googleAnalyticsId": "",
+    "googleTagManagerId": "",
+    "facebookPixelId": ""
+  },
+
+  "verification": {
+    "google": "",
+    "bing": "",
+    "yandex": "",
+    "facebookDomain": ""
+  }
+}

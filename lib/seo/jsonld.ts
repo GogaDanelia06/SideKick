@@ -1,14 +1,40 @@
  import type { JsonLdData } from "@/components/seo/JsonLd";
-import { SITE, absoluteUrl } from "./site";
+import { ORGANIZATION, SITE, absoluteUrl } from "./site";
 
+/**
+ * The organisation behind the site.
+ *
+ * Every optional field is dropped when blank rather than emitted empty —
+ * schema.org treats an empty string as a claim, and a wrong claim is worse for
+ * a rich result than a missing one.
+ */
 export function organizationSchema(): JsonLdData {
+  const { name, legalName, logo, email, phone, address, socialLinks } = ORGANIZATION;
+
+  const postalAddress =
+    address.street || address.city
+      ? {
+          "@type": "PostalAddress",
+          ...(address.street ? { streetAddress: address.street } : {}),
+          ...(address.city ? { addressLocality: address.city } : {}),
+          ...(address.region ? { addressRegion: address.region } : {}),
+          ...(address.postalCode ? { postalCode: address.postalCode } : {}),
+          ...(address.country ? { addressCountry: address.country } : {}),
+        }
+      : null;
+
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: SITE.name,
+    name,
     url: SITE.url,
-    logo: absoluteUrl("/opengraph-image"),
+    logo: absoluteUrl(logo),
     description: SITE.description,
+    ...(legalName ? { legalName } : {}),
+    ...(email ? { email } : {}),
+    ...(phone ? { telephone: phone } : {}),
+    ...(postalAddress ? { address: postalAddress } : {}),
+    ...(socialLinks.length > 0 ? { sameAs: socialLinks } : {}),
   };
 }
 

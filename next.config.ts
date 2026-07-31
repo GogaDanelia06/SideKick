@@ -2,6 +2,20 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
+/**
+ * Analytics is off by default (see seo.config.json), so its domains are not
+ * allowed here. Turning a tag on means adding the matching entries below,
+ * otherwise the browser silently blocks the script and the tag never reports:
+ *
+ *   Google Analytics / Tag Manager
+ *     script-src  + https://www.googletagmanager.com
+ *     connect-src + https://www.google-analytics.com https://*.analytics.google.com
+ *     img-src     + https://www.google-analytics.com
+ *
+ *   Facebook Pixel
+ *     script-src  + https://connect.facebook.net
+ *     img-src     + https://www.facebook.com
+ */
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,

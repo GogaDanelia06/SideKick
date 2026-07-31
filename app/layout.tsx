@@ -3,7 +3,8 @@ import { IBM_Plex_Mono, Inter, Noto_Sans_Georgian } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { themeScript } from "@/lib/theme/theme-script";
-import { OG_IMAGE, SITE } from "@/lib/seo/site";
+import { OG_IMAGE, SITE, VERIFICATION } from "@/lib/seo/site";
+import { Analytics } from "@/components/seo/Analytics";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const mono = IBM_Plex_Mono({
@@ -46,12 +47,26 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
+  // Search-engine ownership tags. Only the ones filled in seo.config.json are
+  // emitted — an empty verification meta tag is worse than none.
+  ...(VERIFICATION.google || VERIFICATION.bing || VERIFICATION.yandex
+    ? {
+        verification: {
+          ...(VERIFICATION.google ? { google: VERIFICATION.google } : {}),
+          ...(VERIFICATION.yandex ? { yandex: VERIFICATION.yandex } : {}),
+          ...(VERIFICATION.bing ? { other: { "msvalidate.01": VERIFICATION.bing } } : {}),
+        },
+      }
+    : {}),
+  ...(VERIFICATION.facebookDomain
+    ? { other: { "facebook-domain-verification": VERIFICATION.facebookDomain } }
+    : {}),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="ka"
+      lang={SITE.language}
       suppressHydrationWarning
       className={`${inter.variable} ${mono.variable} ${georgian.variable}`}
     >
@@ -60,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
