@@ -4,6 +4,7 @@ import {
   IconChartBar,
   IconFileText,
   IconGift,
+  IconHeading,
   IconHelpCircle,
   IconHome,
   IconInfoCircle,
@@ -118,6 +119,13 @@ export const ADMIN_PAGES: AdminPage[] = [
     icon: IconTag,
     route: "/pricing",
     sections: [
+      {
+        key: "heading",
+        label: ka("სექციის სათაური (H1)", "Section heading (H1)"),
+        icon: IconHeading,
+        kind: "text",
+        textGroup: "pricing-heading",
+      },
       {
         key: "services",
         label: ka("სერვისების სექცია", "Services section"),

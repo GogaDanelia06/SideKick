@@ -22,7 +22,14 @@ export default async function PricingPage() {
   const [packages, serviceBoxes, texts] = await Promise.all([
     getPlans(),
     getServiceBoxes(),
-    getSiteTexts(["free_badge", "free_title", "free_text"]),
+    getSiteTexts([
+      "free_badge",
+      "free_title",
+      "free_text",
+      "pricing_badge",
+      "pricing_h1",
+      "pricing_sub",
+    ]),
   ]);
   const prices = packages.map((p) => p.price);
 
@@ -47,7 +54,12 @@ export default async function PricingPage() {
         })}
       />
       <Breadcrumbs items={crumbs} />
-      <Services boxes={serviceBoxes} />
+      <Services
+        boxes={serviceBoxes}
+        badge={texts.pricing_badge}
+        title={texts.pricing_h1}
+        sub={texts.pricing_sub}
+      />
       <Packages
         packages={packages}
         free={{ badge: texts.free_badge, title: texts.free_title, text: texts.free_text }}

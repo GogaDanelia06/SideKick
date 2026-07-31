@@ -119,7 +119,32 @@ const CONTACT: TextGroup = {
   ],
 };
 
-export const TEXT_GROUPS: TextGroup[] = [STORY, CTA, FREE_PERIOD, ABOUT, CONTACT];
+/* ── Pricing heading ────────────────────────────────────────────────────── */
+
+const PRICING: TextGroup = {
+  slug: "pricing-heading",
+  title: ka("სექციის სათაური", "Section heading"),
+  page: ka("ფასების გვერდი", "Pricing page"),
+  fields: [
+    {
+      key: "pricing_badge",
+      label: ka("ბეჯი", "Badge"),
+      kind: "short",
+    },
+    {
+      key: "pricing_h1",
+      label: ka("სათაური (H1)", "Heading (H1)"),
+      kind: "short",
+      hint: ka(
+        "გვერდის მთავარი სათაური — ეს არის H1, რომელსაც Google კითხულობს.",
+        "The page's main heading — this is the H1 that Google reads.",
+      ),
+    },
+    { key: "pricing_sub", label: ka("ქვესათაური", "Subheading"), kind: "short" },
+  ],
+};
+
+export const TEXT_GROUPS: TextGroup[] = [STORY, CTA, FREE_PERIOD, ABOUT, CONTACT, PRICING];
 
 /* ── #13–15 Legal ───────────────────────────────────────────────────────── */
 

@@ -6,9 +6,21 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ServiceCard } from "./ServiceCard";
 import { SERVICES, SERVICES_HEADING } from "@/lib/content/services";
 import type { BoxView } from "@/lib/site/content";
+import type { Bilingual } from "@/lib/content/types";
 
-/** Admin-editable boxes; falls back to the shipped set when the table is empty. */
-export function Services({ boxes }: { boxes?: BoxView[] }) {
+/** Admin-editable heading and boxes; each falls back to the shipped copy when
+ *  the admin hasn't set it. The title here is the page's H1. */
+export function Services({
+  boxes,
+  badge,
+  title,
+  sub,
+}: {
+  boxes?: BoxView[];
+  badge?: Bilingual;
+  title?: Bilingual;
+  sub?: Bilingual;
+}) {
   const useDb = Boolean(boxes && boxes.length > 0);
 
   return (
@@ -16,9 +28,10 @@ export function Services({ boxes }: { boxes?: BoxView[] }) {
       <Container>
         <div className="mb-9">
           <SectionHeading
-            badge={SERVICES_HEADING.badge}
+            badge={badge ?? SERVICES_HEADING.badge}
             badgeIcon={IconStack2}
-            title={SERVICES_HEADING.title}
+            title={title ?? SERVICES_HEADING.title}
+            sub={sub ?? SERVICES_HEADING.sub}
             size="xl"
             as="h1"
           />
