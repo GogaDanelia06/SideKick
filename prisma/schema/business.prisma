@@ -16,7 +16,6 @@ model Business {
   payments      Payment[]
   products      Product[]
   channels      Channel[]
-  videos        Video[]
   conversations Conversation[]
   leads         Lead[]
   orders        Order[]
@@ -185,6 +184,41 @@ model LegalSection {
   bulletsEn String  @default("")
 
   @@index([doc, order])
+}
+
+/// How-to videos shown to every tenant under "Tutorials" in the dashboard.
+/// Platform-owned, not tenant-owned: businesses read these, only the admin
+/// panel writes them, so all customers see the same up-to-date guidance.
+model Tutorial {
+  id         String   @id @default(cuid())
+  order      Int      @default(0)
+  published  Boolean  @default(true)
+  titleKa    String
+  titleEn    String
+  descKa     String   @default("")
+  descEn     String   @default("")
+  /// Normalized to https://www.youtube.com/watch?v=<id> on save.
+  youtubeUrl String
+  /// Free-text grouping label ("დაწყება", "არხები"). Empty means ungrouped.
+  categoryKa String   @default("")
+  categoryEn String   @default("")
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@index([order])
+}
+
+/// Connection instructions shown beside each channel on the tenant's Channels
+/// screen. One row per channel type, so the type itself is the key — there is
+/// nothing to reorder and never more than one guide per channel.
+model ChannelGuide {
+  type       ChannelType @id
+  published  Boolean     @default(true)
+  /// Optional walkthrough video. Empty means text-only instructions.
+  youtubeUrl String      @default("")
+  /// Numbered steps, one per line.
+  bodyKa     String      @default("")
+  bodyEn     String      @default("")
+  updatedAt  DateTime    @default(now()) @updatedAt
 }
 
 /// "What Sidekick gives you" boxes on the pricing page.

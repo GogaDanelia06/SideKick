@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import clsx from "clsx";
 import type { HeroSlide, HeroSlideStat, LegalSection, Plan, SiteFaq, SiteStat } from "@prisma/client";
-import { IconChevronRight, IconExternalLink } from "@tabler/icons-react";
+import { IconExternalLink } from "@tabler/icons-react";
 import { findAdminPage } from "@/lib/admin/pages";
+import { SectionLayout, SectionRail } from "./ui/SectionRail";
 import type { TextGroup } from "@/lib/site/textKeys";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
@@ -93,42 +93,11 @@ export function PageEditor({
       {page.sections.length === 1 ? (
         current ? <div className="max-w-[1100px]"><Section data={current} /></div> : null
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[250px_minmax(0,1100px)] lg:items-start">
-          <div className="rounded-lg border border-border bg-card p-3 lg:sticky lg:top-4">
-            <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
-              {t({ ka: "სექციები", en: "Sections" })}
-            </div>
-            <nav className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
-              {page.sections.map((s) => {
-                const on = active === s.key;
-                return (
-                  <button
-                    key={s.key}
-                    type="button"
-                    onClick={() => setActive(s.key)}
-                    aria-current={on ? "page" : undefined}
-                    className={clsx(
-                      "flex shrink-0 items-center gap-2.5 rounded-[8px] px-3 py-2.5 text-left text-[13px] transition-colors",
-                      on
-                        ? "bg-green-surface font-semibold text-green"
-                        : "text-muted hover:bg-soft hover:text-ink",
-                    )}
-                  >
-                    <s.icon size={17} className="shrink-0" />
-                    <span className="flex-1 whitespace-nowrap lg:whitespace-normal">
-                      {t(s.label)}
-                    </span>
-                    {on ? (
-                      <IconChevronRight size={15} className="hidden shrink-0 lg:block" />
-                    ) : null}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          <div className="min-w-0">{current ? <Section data={current} /> : null}</div>
-        </div>
+        <SectionLayout
+          rail={<SectionRail items={page.sections} active={active} onSelect={setActive} />}
+        >
+          {current ? <Section data={current} /> : null}
+        </SectionLayout>
       )}
     </>
   );

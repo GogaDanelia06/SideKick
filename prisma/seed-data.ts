@@ -39,15 +39,6 @@ export const ORDERS = [
   { customerName: "ანა ს.", phone: "+995 598 44 55 66", address: "თბილისი, პეკინის 3", status: "DONE", items: [{ code: "DR-014", name: "თეთრი კაბა", qty: 2, price: 159 }] },
 ] as const;
 
-export const VIDEOS = [
-  { title: "დაწყება — ანგარიშის შექმნა", youtubeUrl: "https://youtu.be/dQw4w9WgXcQ", category: "start" },
-  { title: "Facebook-ის მიერთება", youtubeUrl: "https://youtu.be/dQw4w9WgXcQ", category: "channel" },
-  { title: "Instagram-ის მიერთება", youtubeUrl: "https://youtu.be/dQw4w9WgXcQ", category: "channel" },
-  { title: "WhatsApp-ის მიერთება", youtubeUrl: "https://youtu.be/dQw4w9WgXcQ", category: "channel" },
-  { title: "პრომპტის დაწერის ინსტრუქცია", youtubeUrl: "https://youtu.be/dQw4w9WgXcQ", category: "ai" },
-  { title: "პროდუქტების ატვირთვა (CSV)", youtubeUrl: "https://youtu.be/dQw4w9WgXcQ", category: "products" },
-];
-
 export const FAQS = [
   { question: "რამდენ ხანში ხდება მიწოდება?", answer: "თბილისში 1-2 დღე, რეგიონებში 2-4 დღე." },
   { question: "შესაძლებელია დაბრუნება?", answer: "დიახ, 14 დღის განმავლობაში, თუ პროდუქტი გამოუყენებელია." },

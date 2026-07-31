@@ -34,13 +34,3 @@ model Channel {
   @@unique([businessId, type])
 }
 
-model Video {
-  id         String    @id @default(cuid())
-  businessId String?
-  title      String
-  youtubeUrl String
-  category   String?
-  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
-
-  @@index([businessId])
-}

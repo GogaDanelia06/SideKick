@@ -5,7 +5,6 @@ import type { LeadStatus, OrderStatus, Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getContext } from "@/lib/session";
 import { can, requirePermission } from "@/lib/auth/permissions";
-import { normalizeYouTubeUrl } from "./youtube";
 import { DASH } from "./routes";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -212,36 +211,6 @@ export async function deleteLead(id: string) {
   if (!ctx) return;
   await prisma.lead.deleteMany({ where: { id, businessId: ctx.businessId } });
   revalidatePath(DASH.leads);
-}
-
-export async function createVideo(data: FormData): Promise<ActionResult> {
-  const ctx = await requirePermission("videos:write");
-  if (!ctx) return { ok: false, error: "forbidden" };
-
-  const title = str(data, "title");
-  const url = normalizeYouTubeUrl(String(data.get("youtubeUrl") ?? ""));
-  if (!title) return { ok: false, error: "title_required" };
-  if (!url) return { ok: false, error: "bad_url" };
-
-  await prisma.video.create({
-    data: {
-      businessId: ctx.businessId,
-      title,
-      youtubeUrl: url,
-      category: str(data, "category"),
-    },
-  });
-  revalidatePath(DASH.videos);
-  return { ok: true };
-}
-
-export async function deleteVideo(id: string): Promise<ActionResult> {
-  const ctx = await requirePermission("videos:write");
-  if (!ctx) return { ok: false, error: "forbidden" };
-
-  await prisma.video.deleteMany({ where: { id, businessId: ctx.businessId } });
-  revalidatePath(DASH.videos);
-  return { ok: true };
 }
 
 export async function setConversationAi(conversationId: string, aiEnabled: boolean) {

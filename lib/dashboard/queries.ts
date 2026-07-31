@@ -15,13 +15,6 @@ export function getProducts(businessId: string) {
   });
 }
 
-export function getVideos(businessId: string) {
-  return prisma.video.findMany({
-    where: { businessId },
-    orderBy: { title: "asc" },
-  });
-}
-
 export function getChannels(businessId: string) {
   return prisma.channel.findMany({
     where: { businessId },

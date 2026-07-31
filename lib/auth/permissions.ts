@@ -8,7 +8,6 @@ export type Permission =
   | "conversations:write"
   | "channels:write"
   | "ai:write"
-  | "videos:write"
   | "business:write"
   | "team:manage"
   | "billing:manage";
@@ -24,7 +23,6 @@ const ADMIN_SCOPE: Permission[] = [
   "products:write",
   "channels:write",
   "ai:write",
-  "videos:write",
   "business:write",
   "team:manage",
 ];

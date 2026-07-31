@@ -2,11 +2,15 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import type { ChannelType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 import { SEO_KEYS } from "@/lib/site/content";
 import { findGroup, findLegalDoc } from "@/lib/site/textKeys";
 import { ICON_NAMES } from "@/lib/content/icons";
+import { CHANNEL_TYPES } from "@/lib/dashboard/channels";
+import { normalizeYouTubeUrl } from "@/lib/dashboard/youtube";
+import { DASH } from "@/lib/dashboard/routes";
 import { log } from "@/lib/logger";
 
 export type AdminResult = { ok: true } | { ok: false; error: string };
@@ -633,5 +637,125 @@ export async function updateSeo(fd: FormData): Promise<AdminResult> {
 
   revalidatePath("/admin/seo");
   revalidatePath("/");
+  return { ok: true };
+}
+
+/* ── Tutorials and channel guides (dashboard help) ──────────────────────── */
+
+function revalidateTutorials() {
+  revalidatePath("/admin/tutorials");
+  revalidatePath(DASH.videos);
+  revalidatePath(DASH.channels);
+}
+
+function tutorialFields(fd: FormData) {
+  return {
+    titleKa: field(fd, "titleKa"),
+    titleEn: field(fd, "titleEn"),
+    descKa: field(fd, "descKa"),
+    descEn: field(fd, "descEn"),
+    categoryKa: field(fd, "categoryKa"),
+    categoryEn: field(fd, "categoryEn"),
+  };
+}
+
+export async function createTutorial(fd: FormData): Promise<AdminResult> {
+  const admin = await requireAdmin();
+
+  const data = tutorialFields(fd);
+  const youtubeUrl = normalizeYouTubeUrl(field(fd, "youtubeUrl"));
+  if (!data.titleKa) return { ok: false, error: "title_required" };
+  if (!youtubeUrl) return { ok: false, error: "bad_url" };
+
+  const max = await prisma.tutorial.aggregate({ _max: { order: true } });
+  await prisma.tutorial.create({
+    data: { ...data, youtubeUrl, order: (max._max.order ?? -1) + 1 },
+  });
+
+  log.info("admin added tutorial", { userId: admin.userId });
+  revalidateTutorials();
+  return { ok: true };
+}
+
+export async function updateTutorial(id: string, fd: FormData): Promise<AdminResult> {
+  await requireAdmin();
+
+  const data = tutorialFields(fd);
+  const youtubeUrl = normalizeYouTubeUrl(field(fd, "youtubeUrl"));
+  if (!data.titleKa) return { ok: false, error: "title_required" };
+  if (!youtubeUrl) return { ok: false, error: "bad_url" };
+
+  await prisma.tutorial.update({ where: { id }, data: { ...data, youtubeUrl } });
+  revalidateTutorials();
+  return { ok: true };
+}
+
+export async function deleteTutorial(id: string): Promise<AdminResult> {
+  await requireAdmin();
+  await prisma.tutorial.delete({ where: { id } });
+  revalidateTutorials();
+  return { ok: true };
+}
+
+export async function toggleTutorialPublished(id: string, published: boolean): Promise<AdminResult> {
+  await requireAdmin();
+  await prisma.tutorial.update({ where: { id }, data: { published } });
+  revalidateTutorials();
+  return { ok: true };
+}
+
+export async function moveTutorial(id: string, dir: "up" | "down"): Promise<AdminResult> {
+  await requireAdmin();
+  const all = await prisma.tutorial.findMany({ orderBy: { order: "asc" } });
+  const i = all.findIndex((v) => v.id === id);
+  if (i === -1) return { ok: false, error: "not_found" };
+  const j = dir === "up" ? i - 1 : i + 1;
+  if (j < 0 || j >= all.length) return { ok: true };
+  await prisma.$transaction([
+    prisma.tutorial.update({ where: { id: all[i]!.id }, data: { order: all[j]!.order } }),
+    prisma.tutorial.update({ where: { id: all[j]!.id }, data: { order: all[i]!.order } }),
+  ]);
+  revalidateTutorials();
+  return { ok: true };
+}
+
+/** One guide per channel type, so this upserts rather than creates: the admin
+ *  edits four fixed rows that may or may not exist in the table yet. */
+export async function saveChannelGuide(type: ChannelType, fd: FormData): Promise<AdminResult> {
+  await requireAdmin();
+  if (!CHANNEL_TYPES.includes(type)) return { ok: false, error: "not_found" };
+
+  const raw = field(fd, "youtubeUrl");
+  const youtubeUrl = raw ? normalizeYouTubeUrl(raw) : "";
+  if (raw && !youtubeUrl) return { ok: false, error: "bad_url" };
+
+  const data = {
+    youtubeUrl: youtubeUrl ?? "",
+    bodyKa: field(fd, "bodyKa"),
+    bodyEn: field(fd, "bodyEn"),
+  };
+
+  await prisma.channelGuide.upsert({
+    where: { type },
+    create: { type, ...data },
+    update: data,
+  });
+
+  revalidateTutorials();
+  return { ok: true };
+}
+
+export async function toggleChannelGuidePublished(
+  type: ChannelType,
+  published: boolean,
+): Promise<AdminResult> {
+  await requireAdmin();
+  if (!CHANNEL_TYPES.includes(type)) return { ok: false, error: "not_found" };
+  await prisma.channelGuide.upsert({
+    where: { type },
+    create: { type, published },
+    update: { published },
+  });
+  revalidateTutorials();
   return { ok: true };
 }

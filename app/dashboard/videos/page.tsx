@@ -1,10 +1,8 @@
 import { requireContext } from "@/lib/session";
-import { getVideos } from "@/lib/dashboard/queries";
-import { can } from "@/lib/auth/permissions";
+import { getTutorials } from "@/lib/dashboard/tutorials";
 import { VideosView } from "@/components/dashboard/videos/VideosView";
 
 export default async function VideosPage() {
-  const ctx = await requireContext();
-  const videos = await getVideos(ctx.businessId);
-  return <VideosView videos={videos} canManage={can(ctx.role, "videos:write")} />;
+  await requireContext();
+  return <VideosView tutorials={await getTutorials()} />;
 }

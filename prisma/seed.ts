@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { PLANS, SITE_STATS, PRODUCTS, CHANNELS, LEADS, ORDERS, VIDEOS, FAQS, AI_CONFIG, TEAM_MEMBERS, PAYMENTS } from "./seed-data";
+import { PLANS, SITE_STATS, PRODUCTS, CHANNELS, LEADS, ORDERS, FAQS, AI_CONFIG, TEAM_MEMBERS, PAYMENTS } from "./seed-data";
 
 const prisma = new PrismaClient();
 const BIZ = "biz_demo";
@@ -82,13 +82,11 @@ async function main() {
     prisma.lead.deleteMany({ where: { businessId: BIZ } }),
     prisma.product.deleteMany({ where: { businessId: BIZ } }),
     prisma.channel.deleteMany({ where: { businessId: BIZ } }),
-    prisma.video.deleteMany({ where: { businessId: BIZ } }),
     prisma.faq.deleteMany({ where: { businessId: BIZ } }),
   ]);
 
   await prisma.product.createMany({ data: PRODUCTS.map((p) => ({ ...p, businessId: BIZ })) });
   await prisma.channel.createMany({ data: CHANNELS.map((c) => ({ ...c, businessId: BIZ, lastSyncAt: c.connected ? new Date() : null })) });
-  await prisma.video.createMany({ data: VIDEOS.map((v) => ({ ...v, businessId: BIZ })) });
   await prisma.faq.createMany({ data: FAQS.map((f) => ({ ...f, businessId: BIZ })) });
   await prisma.lead.createMany({ data: LEADS.map((l) => ({ ...l, businessId: BIZ })) });
   await prisma.payment.createMany({ data: PAYMENTS.map((p) => ({ ...p, date: new Date(p.date), businessId: BIZ })) });
