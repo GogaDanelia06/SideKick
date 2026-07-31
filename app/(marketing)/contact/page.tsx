@@ -5,7 +5,7 @@ import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { seoFor } from "@/lib/seo/metadata";
-import { getSiteFaq } from "@/lib/site/content";
+import { getSiteFaq, getSiteTexts } from "@/lib/site/content";
 
 export const generateMetadata = seoFor({
   title: "კონტაქტი",
@@ -22,7 +22,10 @@ const crumbs: Crumb[] = [
 ];
 
 export default async function ContactPage() {
-  const faqs = await getSiteFaq();
+  const [faqs, texts] = await Promise.all([
+    getSiteFaq(),
+    getSiteTexts(["contact_badge", "contact_h1", "contact_sub"]),
+  ]);
 
   return (
     <>
@@ -42,7 +45,11 @@ export default async function ContactPage() {
         })}
       />
       <Breadcrumbs items={crumbs} />
-      <ContactView />
+      <ContactView
+        badge={texts.contact_badge}
+        title={texts.contact_h1}
+        sub={texts.contact_sub}
+      />
       <Faq faqs={faqs} />
     </>
   );

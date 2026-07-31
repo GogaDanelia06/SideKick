@@ -177,6 +177,13 @@ export const ADMIN_PAGES: AdminPage[] = [
     route: "/contact",
     sections: [
       {
+        key: "heading",
+        label: ka("სექციის სათაური (H1)", "Section heading (H1)"),
+        icon: IconHeading,
+        kind: "text",
+        textGroup: "contact-heading",
+      },
+      {
         key: "details",
         label: ka("საკონტაქტო ინფორმაცია", "Contact details"),
         icon: IconAddressBook,
