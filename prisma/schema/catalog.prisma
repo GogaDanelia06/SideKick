@@ -16,7 +16,6 @@ model Product {
   orderItems  OrderItem[]
 
   @@unique([businessId, code])
-
   @@index([businessId, createdAt])
 }
 
@@ -33,4 +32,3 @@ model Channel {
 
   @@unique([businessId, type])
 }
-
