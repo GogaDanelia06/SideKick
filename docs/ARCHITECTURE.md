@@ -319,9 +319,30 @@ for this build. Each is a single file, with the swap documented in its header:
 | --- | --- | --- | --- |
 | Email | `lib/mail/send.ts` | logs to console | implement `deliver()`, add provider key |
 | AI replies | `lib/chat/bot.ts` | keyword matcher | replace `getBotReply` with an API call |
-| Payments | `Subscription.cardRef`, `Payment.providerRef` | fields exist, unused | wire a PSP |
+| Payments | `lib/payments/` | BOG + TBC wired | set the bank credentials |
 | Channels | `Channel` rows + status | modelled, not connected | Meta/WhatsApp integration |
 
-The channel and payment integrations were explicitly excluded from this
-engagement's scope. The database and UI already model them, so adding them is
-additive rather than structural.
+The channel integration was excluded from this engagement's scope. The database
+and UI already model it, so adding it is additive rather than structural.
+
+### Payments
+
+`lib/payments/` holds one adapter per Georgian bank behind a shared
+`PaymentAdapter` interface, and `lib/billing/checkout.ts` holds the money logic
+that both share. A bank only appears as an option when its credentials are set,
+so the platform can launch with one and add the other with no code change.
+
+Two rules hold the design together:
+
+1. **The price is never taken from the browser.** `amountFor()` recomputes it
+   from the `Plan` row on every checkout, so a tampered form cannot change what
+   is charged.
+2. **A callback is a hint, not a fact.** Callbacks only identify *which* payment
+   to re-check; the outcome always comes from an authenticated call back to the
+   bank. BOG's callback is signature-verified on top of that; TBC does not sign
+   at all, which is precisely why the body is never trusted.
+
+`settlePayment()` is idempotent — it is called from both the bank's callback and
+the customer's return page, and guards the transition with
+`updateMany({ where: { status: "PENDING" } })`, so whichever arrives first wins
+and a replayed callback cannot extend a subscription twice.

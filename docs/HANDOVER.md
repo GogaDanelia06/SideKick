@@ -16,9 +16,12 @@ Neon-ის Postgres-ზე. ორი ნაწილისგან შედ�
 უფლებები, ყველა dashboard-ის გვერდი რეალურ ბაზასთან, კლიენტების ერთმანეთისგან
 სრული იზოლაცია, SEO, უსაფრთხოების ჰედერები და brute-force დაცვა.
 
+გადახდა ორივე ქართულ ბანკთან (BOG და TBC) აშენებულია — აკლია მხოლოდ სავაჭრო
+რეკვიზიტები. სანამ ისინი არ დაყენდება, ფასიანი პაკეტის ყიდვა შეუძლებელია.
+
 **რა არის შეგნებულად დატოვებული:** ელფოსტის რეალური გაგზავნა (ერთი ფაილი),
-რეალური AI პასუხები (ერთი ფაილი), გადახდის სისტემა და Facebook/Instagram/
-WhatsApp ინტეგრაციები — ეს უკანასკნელი ორი ხელშეკრულებით ამ ეტაპზე არ შედიოდა.
+რეალური AI პასუხები (ერთი ფაილი) და Facebook/Instagram/WhatsApp ინტეგრაციები —
+ეს უკანასკნელი ხელშეკრულებით ამ ეტაპზე არ შედიოდა.
 
 დეტალები ქვემოთ, ინგლისურად — რადგან კოდის კომენტარები და ცვლადების სახელები
 ინგლისურადაა და ორ ენას შორის გადართვა შეცდომების წყაროა.
@@ -52,7 +55,8 @@ manager, not a document. **Do not commit real credentials to this file.**
 | Google Search Console | SEO monitoring, sitemap | | ☐ |
 | Google Cloud Console | OAuth client (if Google sign-in is enabled) | | ☐ |
 | Email provider | transactional mail (once configured) | | ☐ |
-| Payment provider | PSP merchant account (once configured) | | ☐ |
+| Bank of Georgia | merchant account + API credentials | | ☐ |
+| TBC | merchant account + API credentials | | ☐ |
 
 **Transfer checklist**
 
@@ -153,15 +157,28 @@ passwords only — it cannot retroactively fix stored ones.
 
 *Fix:* force a reset for those accounts.
 
-### 7. Channels and payments are modelled, not connected
+### 7. Channels are modelled, not connected
 
 `Channel` rows exist and can be toggled, but no OAuth or webhook runs behind the
-toggle. `Subscription.cardRef` and `Payment.providerRef` exist and are unused.
+toggle. This is **not** an oversight — the Facebook/Instagram/WhatsApp
+integration was a separate line item in the original four-part scope and was not
+commissioned. The schema and UI model it so that adding it later is additive.
 
-This is **not** an oversight — the Facebook/Instagram/WhatsApp integration and
-the payment module were separate line items in the original four-part scope and
-were not commissioned. The schema and UI model them so that adding them later is
-additive.
+### 7a. Payments need bank credentials before they do anything
+
+The payment module is built and covers both Georgian banks, but it stays inert
+until credentials are set: with none configured the billing screen says payments
+are not enabled and **no plan can be bought at all**. That is deliberate — there
+is no code path that grants a paid plan without a bank confirming the money.
+
+To go live, set `BOG_CLIENT_ID` / `BOG_CLIENT_SECRET` and/or `TBC_API_KEY` /
+`TBC_CLIENT_ID` / `TBC_CLIENT_SECRET` (see `.env.example`). Each bank requires
+its own merchant agreement, and **recurring billing — charging a saved card
+without the customer present — is a separate product in both contracts.** The
+code stores the saved-card reference the banks return, but automatic renewal is
+not scheduled anywhere yet: today a customer renews by paying again. Whoever
+adds a renewal job should charge through the same
+`settlePayment()` path so the idempotency guarantee still holds.
 
 ### 8. Test coverage is unit-level, not yet integration-level
 

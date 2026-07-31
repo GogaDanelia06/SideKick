@@ -26,9 +26,9 @@ export function PackageCard({
 }) {
   const { t } = useLanguage();
 
-  const total = periodPrice(pkg, period);
+  const total = periodPrice(pkg, period.months);
   const perMonth = period.months > 1 ? Math.round(total / period.months) : null;
-  const saving = periodSavingPct(pkg, period);
+  const saving = periodSavingPct(pkg, period.months);
 
   return (
     <div

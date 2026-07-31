@@ -43,6 +43,7 @@ model Plan {
   extrasEn      String[]       @default([])
   featured      Boolean        @default(false)
   subscriptions Subscription[]
+  payments      Payment[]
 }
 
 model Subscription {
@@ -57,15 +58,31 @@ model Subscription {
   plan       Plan               @relation(fields: [planId], references: [id])
 }
 
+/// One attempt to pay for a subscription period — created before the customer
+/// is sent to the bank, so an abandoned or failed payment leaves a record too.
+/// This is also the billing history the customer sees.
 model Payment {
-  id          String   @id @default(cuid())
-  businessId  String
-  description String
-  amount      Int
-  date        DateTime @default(now())
-  providerRef String?
-  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  id           String           @id @default(cuid())
+  businessId   String
+  description  String
+  /// Whole lari. Plan prices are whole lari, so there is no tetri to lose.
+  amount       Int
+  currency     String           @default("GEL")
+  date         DateTime         @default(now())
+  status       PaymentStatus    @default(PENDING)
+  provider     PaymentProvider?
+  /// The bank's own id — BOG order id or TBC payId. Unique per provider so a
+  /// callback delivered twice cannot be applied twice.
+  providerRef  String?
+  /// What was bought. Kept even if the plan is later renamed or deleted.
+  planId       String?
+  months       Int              @default(1)
+  paidAt       DateTime?
+  failReason   String?
+  business     Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  plan         Plan?            @relation(fields: [planId], references: [id])
 
+  @@unique([provider, providerRef])
   @@index([businessId, date])
 }
 

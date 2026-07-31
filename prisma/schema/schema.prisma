@@ -60,3 +60,20 @@ enum SubscriptionStatus {
   PAST_DUE
   CANCELLED
 }
+
+/// Georgian payment service providers. Both are supported; a business picks
+/// one per payment, so a bank outage never blocks every customer at once.
+enum PaymentProvider {
+  BOG
+  TBC
+}
+
+/// A payment's life: created when the customer is sent to the bank, then
+/// settled once the bank's authoritative status is read back. Never advanced
+/// from a callback body alone.
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  EXPIRED
+}

@@ -39,24 +39,32 @@ export const BILLING_PERIODS: BillingPeriod[] = [
   { months: 12, label: { ka: "1 წელი", en: "1 year" }, unit: { ka: "₾ / წელი", en: "₾ / yr" } },
 ];
 
+/** Just the price columns — so the Plan row from the database and the Package
+ *  shown on the marketing page can share one pricing rule. */
+export type Priced = Pick<Package, "price" | "price3m" | "price12m">;
+
 /**
  * Price for a whole billing period.
  *
  * Uses the price the admin set for that term when there is one; otherwise falls
  * back to the monthly price times the number of months. That fallback is what
  * lets an admin configure only the terms they actually discount.
+ *
+ * This is the single source of truth for what a period costs: the pricing page
+ * and the checkout that charges the card both come through here, so the number
+ * a customer sees is the number they pay.
  */
-export function periodPrice(pkg: Package, period: BillingPeriod): number {
-  if (period.months === 3 && pkg.price3m != null) return pkg.price3m;
-  if (period.months === 12 && pkg.price12m != null) return pkg.price12m;
-  return pkg.price * period.months;
+export function periodPrice(pkg: Priced, months: number): number {
+  if (months === 3 && pkg.price3m != null) return pkg.price3m;
+  if (months === 12 && pkg.price12m != null) return pkg.price12m;
+  return pkg.price * months;
 }
 
 /** Percentage saved against paying monthly, or 0 when there's no discount. */
-export function periodSavingPct(pkg: Package, period: BillingPeriod): number {
-  if (period.months === 1) return 0;
-  const full = pkg.price * period.months;
-  const actual = periodPrice(pkg, period);
+export function periodSavingPct(pkg: Priced, months: number): number {
+  if (months === 1) return 0;
+  const full = pkg.price * months;
+  const actual = periodPrice(pkg, months);
   if (full <= 0 || actual >= full) return 0;
   return Math.round((1 - actual / full) * 100);
 }
