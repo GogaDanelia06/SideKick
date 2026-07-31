@@ -4,6 +4,7 @@ import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { seoFor } from "@/lib/seo/metadata";
+import { getSiteTexts, getSiteValue } from "@/lib/site/content";
 
 export const generateMetadata = seoFor({
   title: "ჩვენ შესახებ",
@@ -20,7 +21,12 @@ const crumbs: Crumb[] = [
   { label: { ka: "ჩვენ შესახებ", en: "About us" }, href: "/about" },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [texts, imageUrl] = await Promise.all([
+    getSiteTexts(["about_title", "about_body"]),
+    getSiteValue("about_image"),
+  ]);
+
   return (
     <>
       <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: c.label.ka, path: c.href })))} />
@@ -34,7 +40,11 @@ export default function AboutPage() {
         })}
       />
       <Breadcrumbs items={crumbs} />
-      <AboutView />
+      <AboutView
+        title={texts.about_title}
+        body={texts.about_body}
+        imageUrl={imageUrl}
+      />
     </>
   );
 }
