@@ -53,6 +53,9 @@ export type AdminSection = {
   boxKind?: "benefit" | "service";
   /** kind: "legal" — which document */
   legalDoc?: string;
+  /** kind: "seo" — which public path, when it isn't the page's own route.
+   *  The legal screen drives three separate pages, so it needs this. */
+  seoPath?: string;
 };
 
 export type AdminPage = {
@@ -101,6 +104,12 @@ export const ADMIN_PAGES: AdminPage[] = [
         kind: "text",
         textGroup: "cta",
       },
+      {
+        key: "seo",
+        label: ka("SEO", "SEO"),
+        icon: IconSearch,
+        kind: "seo",
+      },
     ],
   },
   {
@@ -124,6 +133,12 @@ export const ADMIN_PAGES: AdminPage[] = [
         kind: "text",
         textGroup: "free-period",
       },
+      {
+        key: "seo",
+        label: ka("SEO", "SEO"),
+        icon: IconSearch,
+        kind: "seo",
+      },
     ],
   },
   {
@@ -138,6 +153,12 @@ export const ADMIN_PAGES: AdminPage[] = [
         icon: IconPhoto,
         kind: "text",
         textGroup: "about",
+      },
+      {
+        key: "seo",
+        label: ka("SEO", "SEO"),
+        icon: IconSearch,
+        kind: "seo",
       },
     ],
   },
@@ -155,6 +176,12 @@ export const ADMIN_PAGES: AdminPage[] = [
         textGroup: "contact",
       },
       { key: "faq", label: ka("ხშირად დასმული კითხვები", "FAQ"), icon: IconHelpCircle, kind: "faq" },
+      {
+        key: "seo",
+        label: ka("SEO", "SEO"),
+        icon: IconSearch,
+        kind: "seo",
+      },
     ],
   },
   {
@@ -170,6 +197,8 @@ export const ADMIN_PAGES: AdminPage[] = [
         kind: "text",
         textGroup: "free-period",
       },
+      // No SEO section: /register sits under the auth layout, which sends
+      // noindex on purpose. Offering SEO fields here would only mislead.
     ],
   },
   {
@@ -199,19 +228,27 @@ export const ADMIN_PAGES: AdminPage[] = [
         kind: "legal",
         legalDoc: "data-protection",
       },
-    ],
-  },
-  {
-    slug: "seo",
-    label: ka("SEO", "SEO"),
-    icon: IconSearch,
-    route: "/",
-    sections: [
+      // One screen drives three public pages, so each needs its own SEO row.
       {
-        key: "seo",
-        label: ka("სათაური და აღწერა", "Title & description"),
+        key: "seo-terms",
+        label: ka("SEO — წესები", "SEO — Terms"),
         icon: IconSearch,
         kind: "seo",
+        seoPath: "/terms",
+      },
+      {
+        key: "seo-privacy",
+        label: ka("SEO — კონფიდენციალურობა", "SEO — Privacy"),
+        icon: IconSearch,
+        kind: "seo",
+        seoPath: "/privacy",
+      },
+      {
+        key: "seo-data",
+        label: ka("SEO — მონაცემთა დაცვა", "SEO — Data protection"),
+        icon: IconSearch,
+        kind: "seo",
+        seoPath: "/data-protection",
       },
     ],
   },

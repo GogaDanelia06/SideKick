@@ -15,7 +15,7 @@ import { BoxesEditor, type BoxItem } from "./boxes/BoxesEditor";
 import { PlansEditor } from "./plans/PlansEditor";
 import { FaqEditor } from "./faq/FaqEditor";
 import { LegalEditor } from "./legal/LegalEditor";
-import { SeoEditor } from "./seo/SeoEditor";
+import { SeoEditor, type SeoValues } from "./seo/SeoEditor";
 
 export type SectionData =
   | { kind: "carousel"; slides: (HeroSlide & { stats: HeroSlideStat[] })[]; intervalSeconds: number }
@@ -25,7 +25,12 @@ export type SectionData =
   | { kind: "plans"; plans: Plan[] }
   | { kind: "faq"; faqs: SiteFaq[] }
   | { kind: "legal"; doc: string; sections: LegalSection[] }
-  | { kind: "seo"; title: string; description: string };
+  | {
+      kind: "seo";
+      path: string;
+      values: SeoValues;
+      defaults: { title: string; description: string; siteUrl: string };
+    };
 
 function Section({ data }: { data: SectionData }) {
   switch (data.kind) {
@@ -44,7 +49,7 @@ function Section({ data }: { data: SectionData }) {
     case "legal":
       return <LegalEditor doc={data.doc} sections={data.sections} />;
     case "seo":
-      return <SeoEditor title={data.title} description={data.description} />;
+      return <SeoEditor path={data.path} values={data.values} defaults={data.defaults} />;
   }
 }
 

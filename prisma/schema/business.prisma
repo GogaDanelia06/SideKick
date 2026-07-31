@@ -203,6 +203,28 @@ model LegalSection {
   @@index([doc, order])
 }
 
+/// SEO overrides for one public page, keyed by its path ("/", "/pricing", …).
+///
+/// Every field is optional in effect: an empty string means "use the default
+/// derived in lib/seo", so clearing a box in the admin panel restores the
+/// built-in value rather than blanking the tag. A page with no row at all
+/// behaves exactly as it did before this table existed.
+model PageSeo {
+  path          String   @id
+  title         String   @default("")
+  description   String   @default("")
+  /// Absolute URL, or empty to derive it from `path`. Wrong values here can
+  /// de-index a page, so the admin form validates it.
+  canonical     String   @default("")
+  /// False emits robots noindex,nofollow for this page.
+  indexable     Boolean  @default(true)
+  ogTitle       String   @default("")
+  ogDescription String   @default("")
+  /// Empty falls back to the generated /opengraph-image.
+  ogImageUrl    String   @default("")
+  updatedAt     DateTime @default(now()) @updatedAt
+}
+
 /// How-to videos shown to every tenant under "Tutorials" in the dashboard.
 /// Platform-owned, not tenant-owned: businesses read these, only the admin
 /// panel writes them, so all customers see the same up-to-date guidance.

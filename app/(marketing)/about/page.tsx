@@ -3,14 +3,17 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { seoFor } from "@/lib/seo/metadata";
 
-export const metadata = pageMetadata({
+export const generateMetadata = seoFor({
   title: "ჩვენ შესახებ",
   description:
     "გაიგე მეტი Sidekick-ის შესახებ — AI პლატფორმა, რომელიც ბიზნესებს ეხმარება მომხმარებლების 24/7 მომსახურებასა და გაყიდვების ზრდაში.",
   path: "/about",
 });
+
+// The SEO fields are admin-editable, so metadata is read per request.
+export const dynamic = "force-dynamic";
 
 const crumbs: Crumb[] = [
   HOME_CRUMB,

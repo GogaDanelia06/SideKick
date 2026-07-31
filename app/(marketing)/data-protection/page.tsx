@@ -3,11 +3,11 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { seoFor } from "@/lib/seo/metadata";
 import { getLegalSections } from "@/lib/site/content";
 import { DATA_PROTECTION } from "@/lib/content/legal";
 
-export const metadata = pageMetadata({
+export const generateMetadata = seoFor({
   title: DATA_PROTECTION.title.ka,
   description: DATA_PROTECTION.description.ka,
   path: "/data-protection",

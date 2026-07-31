@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import type { ChannelType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
-import { SEO_KEYS } from "@/lib/site/content";
+import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { findGroup, findLegalDoc } from "@/lib/site/textKeys";
 import { ICON_NAMES } from "@/lib/content/icons";
 import { CHANNEL_TYPES } from "@/lib/dashboard/channels";
@@ -617,26 +617,53 @@ export async function moveLegalSection(id: string, dir: "up" | "down"): Promise<
   return { ok: true };
 }
 
-export async function updateSeo(fd: FormData): Promise<AdminResult> {
+/** Paths an admin is allowed to write SEO for — taken from the registry, so a
+ *  crafted request cannot create rows for arbitrary paths. */
+function seoPaths(): string[] {
+  return ADMIN_PAGES.flatMap((p) =>
+    p.sections.filter((s) => s.kind === "seo").map((s) => s.seoPath ?? p.route),
+  );
+}
+
+/** A canonical is either a site-relative path or a full http(s) URL. Anything
+ *  else — javascript:, a bare word, a typo — is rejected rather than published,
+ *  because a bad canonical quietly de-indexes the page. */
+function validCanonical(value: string): boolean {
+  if (!value) return true;
+  if (value.startsWith("/")) return true;
+  try {
+    const u = new URL(value);
+    return u.protocol === "https:" || u.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+export async function updateSeo(path: string, fd: FormData): Promise<AdminResult> {
   await requireAdmin();
-  const title = field(fd, "title");
-  const description = field(fd, "description");
+  if (!seoPaths().includes(path)) return { ok: false, error: "unknown_page" };
 
-  await prisma.$transaction([
-    prisma.siteSetting.upsert({
-      where: { key: SEO_KEYS.title },
-      create: { key: SEO_KEYS.title, valueKa: title },
-      update: { valueKa: title },
-    }),
-    prisma.siteSetting.upsert({
-      where: { key: SEO_KEYS.description },
-      create: { key: SEO_KEYS.description, valueKa: description },
-      update: { valueKa: description },
-    }),
-  ]);
+  const canonical = field(fd, "canonical");
+  if (!validCanonical(canonical)) return { ok: false, error: "bad_canonical" };
 
-  revalidatePath("/admin/seo");
-  revalidatePath("/");
+  const data = {
+    title: field(fd, "title"),
+    description: field(fd, "description"),
+    canonical,
+    indexable: field(fd, "indexable") !== "0",
+    ogTitle: field(fd, "ogTitle"),
+    ogDescription: field(fd, "ogDescription"),
+    ogImageUrl: safeUrl(field(fd, "ogImageUrl"), ""),
+  };
+
+  await prisma.pageSeo.upsert({
+    where: { path },
+    create: { path, ...data },
+    update: data,
+  });
+
+  revalidatePath("/admin");
+  revalidatePath(path);
   return { ok: true };
 }
 

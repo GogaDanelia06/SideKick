@@ -4,10 +4,10 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, softwareAppSchema, webPageSchema } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { seoFor } from "@/lib/seo/metadata";
 import { getPlans, getServiceBoxes, getSiteTexts } from "@/lib/site/content";
 
-export const metadata = pageMetadata({
+export const generateMetadata = seoFor({
   title: "ფასები",
   description:
     "Sidekick-ის ფასები და პაკეტები — ბეისიქი, სტანდარტი, პრემიუმი. 30 დღე უფასო პერიოდი ყველა პაკეტზე. აირჩიე შენს ბიზნესზე მორგებული გეგმა.",

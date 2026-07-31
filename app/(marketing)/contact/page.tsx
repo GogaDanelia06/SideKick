@@ -4,10 +4,10 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqSchema, webPageSchema } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { seoFor } from "@/lib/seo/metadata";
 import { getSiteFaq } from "@/lib/site/content";
 
-export const metadata = pageMetadata({
+export const generateMetadata = seoFor({
   title: "კონტაქტი",
   description:
     "დაგვიკავშირდი — Sidekick-ის გუნდი მზადაა გიპასუხოს კითხვებზე და დაგეხმაროს პლატფორმის დაწყებაში.",

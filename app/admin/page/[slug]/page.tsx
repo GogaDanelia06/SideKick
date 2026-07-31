@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ADMIN_PAGES, findAdminPage } from "@/lib/admin/pages";
 import { findGroup } from "@/lib/site/textKeys";
-import { getHeroIntervalMs, getSeoSettings } from "@/lib/site/content";
+import { getHeroIntervalMs } from "@/lib/site/content";
+import { SITE } from "@/lib/seo/site";
 import { PageEditor, type SectionData } from "@/components/admin/PageEditor";
 
 export function generateStaticParams() {
@@ -121,8 +122,27 @@ export default async function AdminPageEditor({
       }
 
       case "seo": {
-        const seo = await getSeoSettings();
-        data[section.key] = { kind: "seo", title: seo.title, description: seo.description };
+        // Legal drives three public pages from one screen, hence seoPath.
+        const seoPath = section.seoPath ?? page.route;
+        const row = await prisma.pageSeo.findUnique({ where: { path: seoPath } });
+        data[section.key] = {
+          kind: "seo",
+          path: seoPath,
+          values: {
+            title: row?.title ?? "",
+            description: row?.description ?? "",
+            canonical: row?.canonical ?? "",
+            indexable: row?.indexable ?? true,
+            ogTitle: row?.ogTitle ?? "",
+            ogDescription: row?.ogDescription ?? "",
+            ogImageUrl: row?.ogImageUrl ?? "",
+          },
+          defaults: {
+            title: SITE.title,
+            description: SITE.description,
+            siteUrl: SITE.url,
+          },
+        };
         break;
       }
     }

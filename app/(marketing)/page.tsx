@@ -3,31 +3,29 @@ import { Story } from "@/components/home/Story";
 import { Benefits } from "@/components/home/Benefits";
 import { CtaBanner } from "@/components/home/CtaBanner";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { webPageSchema } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { softwareAppSchema, webPageSchema } from "@/lib/seo/jsonld";
+import { seoFor } from "@/lib/seo/metadata";
 import { SITE } from "@/lib/seo/site";
 import {
   getSiteStats,
-  getSeoSettings,
   getSiteTexts,
   getBenefits,
   getHeroSlides,
   getHeroIntervalMs,
+  getPlans,
 } from "@/lib/site/content";
 
-export async function generateMetadata() {
-  const { title, description } = await getSeoSettings();
-  return pageMetadata({ path: "/", absoluteTitle: title, description });
-}
+export const generateMetadata = seoFor({ path: "/" });
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [stats, benefits, heroSlides, heroIntervalMs, texts] = await Promise.all([
+  const [stats, benefits, heroSlides, heroIntervalMs, plans, texts] = await Promise.all([
     getSiteStats(),
     getBenefits(),
     getHeroSlides(),
     getHeroIntervalMs(),
+    getPlans(),
     getSiteTexts([
       "story_title",
       "story_body",
@@ -39,6 +37,8 @@ export default async function HomePage() {
     ]),
   ]);
 
+  const prices = plans.map((p) => p.price);
+
   return (
     <>
       <JsonLd
@@ -48,6 +48,18 @@ export default async function HomePage() {
           path: "/",
         })}
       />
+      {/* The product itself, priced. Repeated from /pricing because the landing
+          page is what search results point at, and the price range is what
+          earns the rich result. Skipped when no plan is published. */}
+      {prices.length > 0 ? (
+        <JsonLd
+          data={softwareAppSchema({
+            lowPrice: String(Math.min(...prices)),
+            highPrice: String(Math.max(...prices)),
+            priceCurrency: "GEL",
+          })}
+        />
+      ) : null}
       <Hero stats={stats} slides={heroSlides} intervalMs={heroIntervalMs} />
       <Story title={texts.story_title} body={texts.story_body} />
       <Benefits boxes={benefits} />

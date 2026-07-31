@@ -2,7 +2,6 @@ import { prisma } from "@/lib/db";
 import type { Bilingual } from "@/lib/content/types";
 import { PLAN_SUPPORT, type Package } from "@/lib/content/packages";
 import type { FaqItem } from "@/lib/content/faq";
-import { SITE } from "@/lib/seo/site";
 
 export type SiteStatView = { value: string; label: Bilingual };
 
@@ -228,17 +227,47 @@ export async function getLegalSections(doc: string): Promise<LegalSectionView[]>
   }));
 }
 
-export const SEO_KEYS = { title: "seo_title", description: "seo_description" } as const;
+/* ── Per-page SEO ───────────────────────────────────────────────────────── */
 
-export type SeoSettings = { title: string; description: string };
+/** What an admin has overridden for one page. Empty strings mean "not set",
+ *  which the metadata builder reads as "use the built-in default". */
+export type PageSeoOverrides = {
+  title: string;
+  description: string;
+  canonical: string;
+  indexable: boolean;
+  ogTitle: string;
+  ogDescription: string;
+  ogImageUrl: string;
+};
 
-export async function getSeoSettings(): Promise<SeoSettings> {
-  const rows = await prisma.siteSetting.findMany({
-    where: { key: { in: [SEO_KEYS.title, SEO_KEYS.description] } },
-  });
-  const map = new Map(rows.map((r) => [r.key, r.valueKa.trim()]));
+const NO_OVERRIDES: PageSeoOverrides = {
+  title: "",
+  description: "",
+  canonical: "",
+  indexable: true,
+  ogTitle: "",
+  ogDescription: "",
+  ogImageUrl: "",
+};
+
+/**
+ * SEO overrides for one path.
+ *
+ * Returns a fully-populated object even when no row exists, so callers never
+ * branch on null — an untouched page simply gets empty overrides and keeps the
+ * defaults it always had.
+ */
+export async function getPageSeo(path: string): Promise<PageSeoOverrides> {
+  const row = await prisma.pageSeo.findUnique({ where: { path } });
+  if (!row) return NO_OVERRIDES;
   return {
-    title: map.get(SEO_KEYS.title) || SITE.title,
-    description: map.get(SEO_KEYS.description) || SITE.description,
+    title: row.title.trim(),
+    description: row.description.trim(),
+    canonical: row.canonical.trim(),
+    indexable: row.indexable,
+    ogTitle: row.ogTitle.trim(),
+    ogDescription: row.ogDescription.trim(),
+    ogImageUrl: row.ogImageUrl.trim(),
   };
 }
