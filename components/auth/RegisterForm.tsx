@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { IconArrowRight, IconBolt, IconMailCheck, IconMailFast } from "@tabler/icons-react";
 import { AuthShell } from "./AuthShell";
@@ -17,6 +17,14 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 export function RegisterForm() {
   const { t } = useLanguage();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Where to land once the account exists — e.g. /start sends people here with
+  // billing as the destination. Only site-relative paths are honoured, so the
+  // query string cannot bounce a new customer to another domain.
+  const requested = searchParams.get("callbackUrl");
+  const callbackUrl = requested?.startsWith("/") ? requested : DASH.home;
+
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -60,7 +68,7 @@ export function RegisterForm() {
         </>
       }
     >
-      <GoogleButton label={t(REGISTER.google)} onClick={() => signIn("google", { callbackUrl: DASH.home })} />
+      <GoogleButton label={t(REGISTER.google)} onClick={() => signIn("google", { callbackUrl })} />
       <OrDivider />
       {sent ? (
         <div className="flex flex-col gap-4">
@@ -70,7 +78,7 @@ export function RegisterForm() {
           </div>
           <button
             type="button"
-            onClick={() => { router.push(DASH.home); router.refresh(); }}
+            onClick={() => { router.push(callbackUrl); router.refresh(); }}
             className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white"
           >
             {t({ ka: "გადადი დეშბორდზე", en: "Go to dashboard" })}

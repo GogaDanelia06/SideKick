@@ -5,6 +5,8 @@ export const ROUTES = {
   contact: "/contact",
   login: "/login",
   register: "/register",
+  /** Sends the visitor to billing, signing them up first if they aren't yet. */
+  start: "/start",
   forgot: "/forgot",
   reset: "/reset",
   terms: "/terms",

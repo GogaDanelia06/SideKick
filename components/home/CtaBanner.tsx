@@ -18,8 +18,14 @@ export type CtaContent = {
   url?: string;
 };
 
-/** Admin-editable via the `cta_*` keys; every field independently falls back to
- *  the shipped copy, so a half-filled form still renders correctly. */
+/**
+ * Admin-editable via the `cta_*` keys; every field independently falls back to
+ * the shipped copy, so a half-filled form still renders correctly.
+ *
+ * The button defaults to /start, which decides where to send the visitor based
+ * on whether they are signed in — see app/start/page.tsx. An admin can point it
+ * anywhere else by filling `cta_url`.
+ */
 export function CtaBanner({ content = {} }: { content?: CtaContent }) {
   const { t } = useLanguage();
 
@@ -36,7 +42,7 @@ export function CtaBanner({ content = {} }: { content?: CtaContent }) {
           <p className="mx-auto mb-6 max-w-[620px] text-muted">
             {t(content.text ?? CTA_BANNER.text)}
           </p>
-          <Button href={content.url || ROUTES.pricing}>
+          <Button href={content.url || ROUTES.start}>
             <IconArrowRight size={18} />
             {t(content.button ?? ACTIONS.learnMore)}
           </Button>

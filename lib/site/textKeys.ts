@@ -62,7 +62,10 @@ const CTA: TextGroup = {
       label: ka("ღილაკის ბმული", "Button URL"),
       kind: "url",
       singleLang: true,
-      hint: ka("მაგ. /register", "e.g. /register"),
+      hint: ka(
+        "ცარიელი = /start — ავტორიზებულს პირდაპირ ბილინგში გადაიყვანს, დანარჩენს ჯერ რეგისტრაციაზე.",
+        "Blank = /start — signed-in visitors go straight to billing, everyone else registers first.",
+      ),
     },
   ],
 };
