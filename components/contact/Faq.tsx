@@ -16,7 +16,9 @@ export function Faq({ faqs }: { faqs: FaqItem[] }) {
   if (faqs.length === 0) return null;
 
   return (
-    <section className="pb-16">
+    // The footer links straight here, so the section needs a stable anchor.
+    // scroll-mt keeps the heading clear of the fixed header on arrival.
+    <section id="faq" className="scroll-mt-24 pb-16">
       <Container className="max-w-[820px]">
         <SectionHeading
           badge={FAQ_HEADING.badge}

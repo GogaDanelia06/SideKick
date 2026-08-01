@@ -18,6 +18,8 @@ export const FOOTER = {
   linksHeading: { ka: "ჩვენს შესახებ", en: "About" },
   links: [
     { label: { ka: "ფასები", en: "Pricing" }, href: ROUTES.pricing },
+    // Jumps to the FAQ block on the contact page — see components/contact/Faq.tsx
+    { label: { ka: "ხშირად დასმული კითხვები", en: "Frequently asked questions" }, href: `${ROUTES.contact}#faq` },
     { label: { ka: "წესები და პირობები", en: "Terms & conditions" }, href: ROUTES.terms },
     { label: { ka: "კონფიდენციალურობა", en: "Privacy policy" }, href: ROUTES.privacy },
     { label: { ka: "მონაცემთა დაცვა", en: "Data protection" }, href: ROUTES.dataProtection },
