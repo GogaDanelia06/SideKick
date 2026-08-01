@@ -73,6 +73,15 @@ export function StatsEditor({ stats }: { stats: SiteStat[] }) {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* These are fixed figures. The ones that tick upward on their own are a
+          different thing entirely, and this is where people look for them. */}
+      <p className="rounded-[8px] border border-border2 bg-soft px-3.5 py-2.5 text-[12px] text-muted">
+        {t({
+          ka: "ეს არის სტატიკური ციფრების ზოლი — რასაც ჩაწერ, ის ჩანს. ცოცხალი, თავისით მზარდი ციფრები „მთავარი კარუსელის“ სექციაშია, სლაიდის შიგნით.",
+          en: "A static strip — whatever you type is what shows. The figures that climb on their own live under “Hero carousel”, inside a slide.",
+        })}
+      </p>
+
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted">
           {stats.length} {t({ ka: "მაჩვენებელი", en: "stats" })}

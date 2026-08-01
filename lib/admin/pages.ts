@@ -83,7 +83,14 @@ export const ADMIN_PAGES: AdminPage[] = [
         icon: IconCarouselHorizontal,
         kind: "carousel",
       },
-      { key: "stats", label: ka("სტატისტიკა", "Stats strip"), icon: IconChartBar, kind: "stats" },
+      // Named for what it is, so it is never mistaken for the animated figures
+      // that live inside a carousel slide.
+      {
+        key: "stats",
+        label: ka("ციფრების ზოლი (სტატიკური)", "Stats strip (static)"),
+        icon: IconChartBar,
+        kind: "stats",
+      },
       {
         key: "story",
         label: ka("ისტორიის სექცია", "Story section"),
