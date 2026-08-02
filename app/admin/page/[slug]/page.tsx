@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ADMIN_PAGES, findAdminPage } from "@/lib/admin/pages";
 import { findGroup, findLegalDoc, legalTitleKey } from "@/lib/site/textKeys";
+import { STAT_SOURCES } from "@/lib/site/statSources";
 import { getHeroIntervalMs } from "@/lib/site/content";
 import { SITE } from "@/lib/seo/site";
 import { PageEditor, type SectionData } from "@/components/admin/PageEditor";
@@ -48,6 +49,9 @@ export default async function AdminPageEditor({
         data[section.key] = {
           kind: "stats",
           stats: await prisma.siteStat.findMany({ orderBy: { order: "asc" } }),
+          // Only the key and label cross into the client; the query functions
+          // stay on the server.
+          sources: STAT_SOURCES.map((s) => ({ key: s.key, label: s.label })),
         };
         break;
       }

@@ -8,6 +8,7 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { findGroup, findLegalDoc, legalTitleKey } from "@/lib/site/textKeys";
 import { ICON_NAMES } from "@/lib/content/icons";
+import { STAT_SOURCE_KEYS } from "@/lib/site/statSources";
 import { CHANNEL_TYPES } from "@/lib/dashboard/channels";
 import { normalizeYouTubeUrl } from "@/lib/dashboard/youtube";
 import { DASH } from "@/lib/dashboard/routes";
@@ -24,21 +25,40 @@ function field(fd: FormData, name: string): string {
   return String(fd.get(name) ?? "").trim();
 }
 
+/**
+ * A stat is either counted or typed.
+ *
+ * With a source, the typed value is cleared so a stale number can't linger and
+ * reappear if the source is later removed. Without one, a value is required —
+ * an empty figure would render a blank slot in the strip.
+ */
+type StatData = { value: string; source: string; labelKa: string; labelEn: string };
+
+function siteStatFields(fd: FormData): { data: StatData } | { error: string } {
+  const source = field(fd, "source");
+  if (source && !STAT_SOURCE_KEYS.includes(source)) return { error: "unknown_source" };
+
+  const labelKa = field(fd, "labelKa");
+  const labelEn = field(fd, "labelEn");
+  if (!labelKa || !labelEn) return { error: "all_fields_required" };
+
+  const value = field(fd, "value");
+  if (!source && !value) return { error: "value_or_source_required" };
+
+  return { data: { value: source ? "" : value, source, labelKa, labelEn } };
+}
+
 export async function createStat(fd: FormData): Promise<AdminResult> {
   const admin = await requireAdmin();
 
-  const value = field(fd, "value");
-  const labelKa = field(fd, "labelKa");
-  const labelEn = field(fd, "labelEn");
-  if (!value || !labelKa || !labelEn) return { ok: false, error: "all_fields_required" };
+  const parsed = siteStatFields(fd);
+  if ("error" in parsed) return { ok: false, error: parsed.error };
 
   const max = await prisma.siteStat.aggregate({ _max: { order: true } });
   await prisma.siteStat.create({
     data: {
       key: `stat_${randomUUID().slice(0, 8)}`,
-      value,
-      labelKa,
-      labelEn,
+      ...parsed.data,
       order: (max._max.order ?? -1) + 1,
     },
   });
@@ -51,12 +71,10 @@ export async function createStat(fd: FormData): Promise<AdminResult> {
 export async function updateStat(id: string, fd: FormData): Promise<AdminResult> {
   await requireAdmin();
 
-  const value = field(fd, "value");
-  const labelKa = field(fd, "labelKa");
-  const labelEn = field(fd, "labelEn");
-  if (!value || !labelKa || !labelEn) return { ok: false, error: "all_fields_required" };
+  const parsed = siteStatFields(fd);
+  if ("error" in parsed) return { ok: false, error: parsed.error };
 
-  await prisma.siteStat.update({ where: { id }, data: { value, labelKa, labelEn } });
+  await prisma.siteStat.update({ where: { id }, data: parsed.data });
   revalidateStats();
   return { ok: true };
 }

@@ -21,40 +21,93 @@ const INPUT =
 const ERRORS: Record<string, Bilingual> = {
   all_fields_required: { ka: "შეავსეთ ყველა ველი", en: "Fill in every field" },
   not_found: { ka: "ვერ მოიძებნა", en: "Not found" },
+  unknown_source: { ka: "უცნობი წყარო", en: "Unknown source" },
+  value_or_source_required: {
+    ka: "ჩაწერე ციფრი ან აირჩიე ავტომატური წყარო",
+    en: "Type a figure or pick an automatic source",
+  },
 };
 
-type Fields = { value: string; labelKa: string; labelEn: string };
+type Fields = { value: string; source: string; labelKa: string; labelEn: string };
 
-function StatFields({ initial }: { initial?: Fields }) {
+/**
+ * Counted or typed, never both.
+ *
+ * Picking a source disables the figure box rather than hiding it, so it stays
+ * obvious that the number is now coming from somewhere else.
+ */
+function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourceOption[] }) {
   const { t } = useLanguage();
+  const [source, setSource] = useState(initial?.source ?? "");
+  const auto = source !== "";
+
   return (
-    <div className="grid gap-2.5 sm:grid-cols-[120px_1fr_1fr]">
-      <input
-        name="value"
-        required
-        defaultValue={initial?.value}
-        placeholder={t({ ka: "ციფრი", en: "Figure" })}
-        className={INPUT}
-      />
-      <input
-        name="labelKa"
-        required
-        defaultValue={initial?.labelKa}
-        placeholder={t({ ka: "წარწერა (ქართ.)", en: "Label (KA)" })}
-        className={INPUT}
-      />
-      <input
-        name="labelEn"
-        required
-        defaultValue={initial?.labelEn}
-        placeholder={t({ ka: "წარწერა (ინგ.)", en: "Label (EN)" })}
-        className={INPUT}
-      />
+    <div className="grid gap-2.5">
+      <label className="block">
+        <span className="mb-1 block text-[12px] font-medium text-muted">
+          {t({ ka: "საიდან მოდის ციფრი", en: "Where the figure comes from" })}
+        </span>
+        <select
+          name="source"
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
+          className={INPUT}
+        >
+          <option value="">{t({ ka: "ხელით ჩაწერილი", en: "Typed by hand" })}</option>
+          {sources.map((s) => (
+            <option key={s.key} value={s.key}>
+              {t(s.label)}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <div className="grid gap-2.5 sm:grid-cols-[140px_1fr_1fr]">
+        <input
+          name="value"
+          required={!auto}
+          disabled={auto}
+          defaultValue={initial?.value}
+          placeholder={auto ? t({ ka: "ავტომატური", en: "Automatic" }) : t({ ka: "ციფრი", en: "Figure" })}
+          className={`${INPUT} disabled:opacity-50`}
+        />
+        <input
+          name="labelKa"
+          required
+          defaultValue={initial?.labelKa}
+          placeholder={t({ ka: "წარწერა (ქართ.)", en: "Label (KA)" })}
+          className={INPUT}
+        />
+        <input
+          name="labelEn"
+          required
+          defaultValue={initial?.labelEn}
+          placeholder={t({ ka: "წარწერა (ინგ.)", en: "Label (EN)" })}
+          className={INPUT}
+        />
+      </div>
+
+      {auto ? (
+        <p className="text-[12px] text-green">
+          {t({
+            ka: "ციფრი ბაზიდან წაიკითხება ყოველ ჯერზე — ხელით შეცვლა აღარ სჭირდება.",
+            en: "Read from the database on every visit — nothing to keep up to date.",
+          })}
+        </p>
+      ) : null}
     </div>
   );
 }
 
-export function StatsEditor({ stats }: { stats: SiteStat[] }) {
+export type StatSourceOption = { key: string; label: Bilingual };
+
+export function StatsEditor({
+  stats,
+  sources,
+}: {
+  stats: SiteStat[];
+  sources: StatSourceOption[];
+}) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();
   const [adding, setAdding] = useState(false);
@@ -109,7 +162,7 @@ export function StatsEditor({ stats }: { stats: SiteStat[] }) {
           action={(fd) => run(() => createStat(fd), () => { addRef.current?.reset(); setAdding(false); })}
           className="rounded-lg border border-border bg-card p-4"
         >
-          <StatFields />
+          <StatFields sources={sources} />
           <div className="mt-3 flex justify-end">
             <button
               type="submit"
@@ -135,7 +188,10 @@ export function StatsEditor({ stats }: { stats: SiteStat[] }) {
               <form
                 action={(fd) => run(() => updateStat(s.id, fd), () => setEditing(null))}
               >
-                <StatFields initial={{ value: s.value, labelKa: s.labelKa, labelEn: s.labelEn }} />
+                <StatFields
+                  initial={{ value: s.value, source: s.source, labelKa: s.labelKa, labelEn: s.labelEn }}
+                  sources={sources}
+                />
                 <div className="mt-3 flex justify-end gap-2">
                   <button
                     type="button"
@@ -155,10 +211,16 @@ export function StatsEditor({ stats }: { stats: SiteStat[] }) {
               </form>
             ) : (
               <div className="flex items-center gap-4">
-                <div className="font-mono text-2xl font-medium">{s.value}</div>
+                <div className="font-mono text-2xl font-medium">
+                  {s.source ? <span className="text-[15px] text-green">auto</span> : s.value}
+                </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm">{s.labelKa}</div>
-                  <div className="truncate text-[13px] text-muted">{s.labelEn}</div>
+                  <div className="truncate text-[13px] text-muted">
+                    {s.source
+                      ? t(sources.find((o) => o.key === s.source)?.label ?? { ka: s.source, en: s.source })
+                      : s.labelEn}
+                  </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <button

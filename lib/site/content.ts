@@ -1,13 +1,41 @@
 import { prisma } from "@/lib/db";
+import { findStatSource } from "@/lib/site/statSources";
+import { log } from "@/lib/logger";
 import type { Bilingual } from "@/lib/content/types";
 import { PLAN_SUPPORT, type Package } from "@/lib/content/packages";
 import type { FaqItem } from "@/lib/content/faq";
 
 export type SiteStatView = { value: string; label: Bilingual };
 
+/**
+ * The figures in the landing strip.
+ *
+ * A row with a `source` is counted live; one without shows what an admin typed.
+ * A source that no longer exists in the registry falls back to the stored value
+ * rather than disappearing, so removing a counter from the code never blanks a
+ * figure on the public page.
+ */
 export async function getSiteStats(): Promise<SiteStatView[]> {
   const rows = await prisma.siteStat.findMany({ orderBy: { order: "asc" } });
-  return rows.map((r) => ({ value: r.value, label: { ka: r.labelKa, en: r.labelEn } }));
+
+  return Promise.all(
+    rows.map(async (r) => {
+      const source = r.source ? findStatSource(r.source) : undefined;
+      let value = r.value;
+
+      if (source) {
+        try {
+          value = await source.compute();
+        } catch (err) {
+          // A counter that fails must not take the whole page down; the stored
+          // value is stale but harmless, and the error is worth knowing about.
+          log.error("live stat could not be counted", err, { source: r.source });
+        }
+      }
+
+      return { value, label: { ka: r.labelKa, en: r.labelEn } };
+    }),
+  );
 }
 
 function cap(n: number, unlimited: Bilingual, ka: (v: string) => string, en: (v: string) => string): Bilingual {

@@ -9,7 +9,7 @@ import type { TextGroup } from "@/lib/site/textKeys";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 import { HeroEditor } from "./hero/HeroEditor";
-import { StatsEditor } from "./stats/StatsEditor";
+import { StatsEditor, type StatSourceOption } from "./stats/StatsEditor";
 import { TextGroupEditor } from "./content/TextGroupEditor";
 import { BoxesEditor, type BoxItem } from "./boxes/BoxesEditor";
 import { PlansEditor } from "./plans/PlansEditor";
@@ -19,7 +19,7 @@ import { SeoEditor, type SeoValues } from "./seo/SeoEditor";
 
 export type SectionData =
   | { kind: "carousel"; slides: (HeroSlide & { stats: HeroSlideStat[] })[]; intervalSeconds: number }
-  | { kind: "stats"; stats: SiteStat[] }
+  | { kind: "stats"; stats: SiteStat[]; sources: StatSourceOption[] }
   | { kind: "text"; group: TextGroup; values: Record<string, { ka: string; en: string }> }
   | { kind: "boxes"; boxKind: "benefit" | "service"; items: BoxItem[] }
   | { kind: "plans"; plans: Plan[] }
@@ -43,7 +43,7 @@ function Section({ data }: { data: SectionData }) {
     case "carousel":
       return <HeroEditor slides={data.slides} intervalSeconds={data.intervalSeconds} />;
     case "stats":
-      return <StatsEditor stats={data.stats} />;
+      return <StatsEditor stats={data.stats} sources={data.sources} />;
     case "text":
       return <TextGroupEditor group={data.group} values={data.values} />;
     case "boxes":

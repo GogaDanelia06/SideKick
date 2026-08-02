@@ -87,10 +87,21 @@ model Payment {
   @@index([businessId, date])
 }
 
+/// One figure in the strip on the landing page.
+///
+/// Either the platform counts it or a person writes it, never both. When
+/// `source` names a counter from lib/site/statSources.ts the figure is read
+/// from the database on every request and `value` is ignored; when `source` is
+/// empty the typed `value` is shown as-is. That split exists because a typed
+/// number goes stale the moment it is saved — so anything the system actually
+/// knows should never be typed.
 model SiteStat {
   id        String   @id @default(cuid())
   key       String   @unique
+  /// Shown only when `source` is empty.
   value     String
+  /// A key from STAT_SOURCES, or "" for a hand-written figure.
+  source    String   @default("")
   labelKa   String
   labelEn   String
   order     Int      @default(0)
