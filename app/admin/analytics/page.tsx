@@ -40,6 +40,42 @@ function Card({
   );
 }
 
+/** A figure inside the income block — no icon, so the numbers lead. */
+function Figure({
+  label,
+  value,
+  sub,
+  strong,
+}: {
+  label: Bilingual;
+  value: string;
+  sub?: Bilingual;
+  strong?: boolean;
+}) {
+  return (
+    <div>
+      <BiText className="text-[12px] text-muted" value={label} />
+      <div
+        className={`mt-1 font-mono font-medium leading-none ${
+          strong ? "text-[32px] text-green" : "text-[24px]"
+        }`}
+      >
+        {value}
+      </div>
+      {sub ? <BiText as="div" className="mt-1.5 text-[12px] text-faint" value={sub} /> : null}
+    </div>
+  );
+}
+
+function SubCount({ label, count, tone }: { label: Bilingual; count: number; tone: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <BiText value={label} />
+      <span className={`font-mono ${tone}`}>{count}</span>
+    </span>
+  );
+}
+
 export default async function AdminAnalyticsPage() {
   const s = await getPlatformStats();
   const maxGrowth = Math.max(1, ...s.growth.map((g) => g.count));
@@ -53,6 +89,66 @@ export default async function AdminAnalyticsPage() {
           en: "Aggregate figures across every tenant. No conversation content is shown here — numbers only.",
         }}
       />
+
+      {/* Income first — it is the platform owner's own money, and the reason
+          the rest of the page matters. */}
+      <div className="mb-6 rounded-lg border border-green bg-green-surface/30 p-5">
+        <BiText
+          as="h2"
+          className="mb-4 text-base font-semibold"
+          value={{ ka: "ჩვენი შემოსავალი", en: "Our income" }}
+        />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <Figure
+            label={{ ka: "თვიური შემოსავალი (MRR)", en: "Monthly recurring (MRR)" }}
+            value={`${fmt(s.income.mrr)}₾`}
+            sub={{
+              ka: `${s.subscriptions.active} აქტიური გამოწერა`,
+              en: `${s.subscriptions.active} active subscriptions`,
+            }}
+            strong
+          />
+          <Figure
+            label={{ ka: "ამ თვეში მიღებული", en: "Collected this month" }}
+            value={`${fmt(s.income.collectedThisMonth)}₾`}
+          />
+          <Figure
+            label={{ ka: "სულ მიღებული", en: "Collected in total" }}
+            value={`${fmt(s.income.collectedTotal)}₾`}
+          />
+          <Figure
+            label={{ ka: "პრობლემური გადახდები", en: "Payment problems" }}
+            value={fmt(s.income.failedThisMonth + s.income.pending)}
+            sub={{
+              ka: `${s.income.failedThisMonth} ჩავარდნილი · ${s.income.pending} მიმდინარე`,
+              en: `${s.income.failedThisMonth} failed · ${s.income.pending} pending`,
+            }}
+          />
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1.5 border-t border-border2 pt-4 text-[12px] text-muted">
+          <SubCount
+            label={{ ka: "საცდელი", en: "Trial" }}
+            count={s.subscriptions.trial}
+            tone="text-ink"
+          />
+          <SubCount
+            label={{ ka: "აქტიური", en: "Active" }}
+            count={s.subscriptions.active}
+            tone="text-green"
+          />
+          <SubCount
+            label={{ ka: "ვადაგადაცილებული", en: "Past due" }}
+            count={s.subscriptions.pastDue}
+            tone="text-amber"
+          />
+          <SubCount
+            label={{ ka: "გაუქმებული", en: "Cancelled" }}
+            count={s.subscriptions.cancelled}
+            tone="text-faint"
+          />
+        </div>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card
@@ -85,11 +181,11 @@ export default async function AdminAnalyticsPage() {
         />
         <Card
           icon={IconShoppingCart}
-          label={{ ka: "შეკვეთა", en: "Orders" }}
-          value={fmt(s.orders.total)}
+          label={{ ka: "კლიენტების გაყიდვები", en: "Tenants' sales" }}
+          value={fmt(s.tenantSales.orders)}
           sub={{
-            ka: `${fmt(s.orders.revenue)}₾ ბრუნვა`,
-            en: `${fmt(s.orders.revenue)}₾ revenue`,
+            ka: `${fmt(s.tenantSales.total)}₾ — მათი ბრუნვა, არა ჩვენი`,
+            en: `${fmt(s.tenantSales.total)}₾ — their turnover, not ours`,
           }}
         />
         <Card
@@ -113,8 +209,18 @@ export default async function AdminAnalyticsPage() {
       <div className="mt-6 rounded-lg border border-border bg-card p-5">
         <BiText
           as="h2"
-          className="mb-4 text-base font-semibold"
+          className="mb-1 text-base font-semibold"
           value={{ ka: "პაკეტების განაწილება", en: "Plan distribution" }}
+        />
+        {/* Counts every subscription, paying or not — the status split above is
+            where you see who is actually on a paid plan. */}
+        <BiText
+          as="p"
+          className="mb-4 text-[12px] text-faint"
+          value={{
+            ka: "ყველა გამოწერა, საცდელის ჩათვლით.",
+            en: "Every subscription, trials included.",
+          }}
         />
         <div className="flex flex-col gap-3">
           {s.plans.map((p) => {

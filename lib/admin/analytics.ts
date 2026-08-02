@@ -1,3 +1,4 @@
+import type { SubscriptionStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 
 /**
@@ -18,10 +19,25 @@ export type PlatformStats = {
   users: number;
   conversations: { total: number; active: number };
   messages: { total: number; byAi: number; aiSharePct: number };
-  orders: { total: number; revenue: number };
+  /** What tenants sold to *their* customers — not the platform's own income. */
+  tenantSales: { orders: number; total: number };
   leads: { total: number; converted: number };
   channelsConnected: number;
   products: number;
+  /**
+   * The platform's own money, which is a different thing entirely from
+   * tenantSales and is the number the owner actually cares about.
+   */
+  income: {
+    /** Monthly recurring revenue: the plan price of every active subscription. */
+    mrr: number;
+    collectedThisMonth: number;
+    collectedTotal: number;
+    failedThisMonth: number;
+    pending: number;
+  };
+  /** How many tenants are trialing, paying, overdue or gone. */
+  subscriptions: { trial: number; active: number; pastDue: number; cancelled: number };
   plans: { name: string; key: string; price: number; subscribers: number }[];
   /** New businesses per month, oldest first — a simple growth line. */
   growth: { month: string; count: number }[];
@@ -29,6 +45,14 @@ export type PlatformStats = {
 
 function startOfMonth(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1));
+}
+
+/** groupBy omits statuses with no rows, so a missing one means zero. */
+function countByStatus(
+  rows: { status: SubscriptionStatus; _count: number }[],
+  status: SubscriptionStatus,
+): number {
+  return rows.find((r) => r.status === status)?._count ?? 0;
 }
 
 export async function getPlatformStats(): Promise<PlatformStats> {
@@ -52,6 +76,12 @@ export async function getPlatformStats(): Promise<PlatformStats> {
     products,
     planRows,
     recentBusinesses,
+    activeSubs,
+    subsByStatus,
+    paidThisMonth,
+    paidTotal,
+    failedThisMonth,
+    pendingPayments,
   ] = await Promise.all([
     prisma.business.count(),
     prisma.business.count({ where: { createdAt: { gte: monthStart } } }),
@@ -78,6 +108,22 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       where: { createdAt: { gte: windowStart } },
       select: { createdAt: true },
     }),
+
+    // MRR is built from the plans people are actually on, not from what they
+    // once paid — a cancelled tenant stops counting the moment they cancel.
+    prisma.subscription.findMany({
+      where: { status: "ACTIVE" },
+      select: { plan: { select: { price: true } } },
+    }),
+    prisma.subscription.groupBy({ by: ["status"], _count: true }),
+
+    prisma.payment.aggregate({
+      where: { status: "PAID", paidAt: { gte: monthStart } },
+      _sum: { amount: true },
+    }),
+    prisma.payment.aggregate({ where: { status: "PAID" }, _sum: { amount: true } }),
+    prisma.payment.count({ where: { status: "FAILED", date: { gte: monthStart } } }),
+    prisma.payment.count({ where: { status: "PENDING" } }),
   ]);
 
   // Bucket by month in JS rather than raw SQL — the row count here is small and
@@ -102,10 +148,23 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       byAi: aiMessages,
       aiSharePct: messages > 0 ? Math.round((aiMessages / messages) * 100) : 0,
     },
-    orders: { total: orderAgg._count, revenue: orderAgg._sum.total ?? 0 },
+    tenantSales: { orders: orderAgg._count, total: orderAgg._sum.total ?? 0 },
     leads: { total: leads, converted: convertedLeads },
     channelsConnected,
     products,
+    income: {
+      mrr: activeSubs.reduce((sum, s) => sum + s.plan.price, 0),
+      collectedThisMonth: paidThisMonth._sum.amount ?? 0,
+      collectedTotal: paidTotal._sum.amount ?? 0,
+      failedThisMonth,
+      pending: pendingPayments,
+    },
+    subscriptions: {
+      trial: countByStatus(subsByStatus, "TRIAL"),
+      active: countByStatus(subsByStatus, "ACTIVE"),
+      pastDue: countByStatus(subsByStatus, "PAST_DUE"),
+      cancelled: countByStatus(subsByStatus, "CANCELLED"),
+    },
     plans: planRows.map((p) => ({
       key: p.key,
       name: p.name,
