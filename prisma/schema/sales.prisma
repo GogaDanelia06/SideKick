@@ -18,6 +18,12 @@ model Conversation {
 
   @@index([businessId, createdAt])
   @@index([channelId])
+  /// The AI service identifies a chat by the customer's id on its platform
+  /// (a Facebook PSID, a phone number). This is what lets it ask for "the
+  /// conversation with this customer" and get the same one back on a retry
+  /// instead of a duplicate. Rows with no customerRef never collide, so
+  /// conversations created in the dashboard are unaffected.
+  @@unique([businessId, customerRef])
 }
 
 model Message {

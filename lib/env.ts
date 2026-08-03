@@ -8,6 +8,10 @@ const schema = z.object({
   AUTH_URL: z.string().url().optional(),
   AUTH_GOOGLE_ID: z.string().optional(),
   AUTH_GOOGLE_SECRET: z.string().optional(),
+  // Optional on purpose: unset means /api/agent/* is closed, which is the right
+  // state for an environment the AI service has not been pointed at. Required
+  // here would break every deploy that has no AI integration yet.
+  AI_SERVICE_TOKEN: z.string().min(32, "AI_SERVICE_TOKEN must be at least 32 characters").optional(),
 });
 
 type Env = z.infer<typeof schema>;

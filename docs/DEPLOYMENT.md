@@ -33,6 +33,7 @@ three environments (Production, Preview, Development) unless noted.
 | `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | The "Sign in with Google" button. Without them the provider is not registered and the button does nothing useful. |
 | `RESEND_API_KEY` | Real email delivery — but only after `deliver()` is implemented. See [Email](#email). |
 | `MAIL_FROM` | Sender address. Defaults to `Sidekick <noreply@sidekick.ge>`. |
+| `AI_SERVICE_TOKEN` | The `/api/agent/*` endpoints the AI service writes through. 32+ characters; generate with `openssl rand -hex 32`. Unset means the whole surface answers `503`, which is right for an environment the AI service is not pointed at. Rotating it is one variable change — tell the AI team before you do. See [AGENT-API.md](AGENT-API.md). |
 
 Validation lives in `lib/env.ts` and runs **lazily**, at request time. This is
 deliberate: `next build` imports every route to collect page data, so eager

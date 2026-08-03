@@ -114,6 +114,37 @@ login form can show a lockout message rather than "wrong password".
 
 ---
 
+### `/api/agent/*`
+
+The AI service's write surface: `conversations`, `messages`, `leads`, `orders`
+and `context`. Bearer-authenticated with `AI_SERVICE_TOKEN`; every request names
+a `businessId` that is checked against a real business before anything is
+written.
+
+This exists so the AI service does not hold database write grants. A Postgres
+role cannot enforce tenant isolation, cannot price an order, and cannot turn a
+malformed request into a `400` — these handlers do all three. Order totals in
+particular are computed from the merchant's own product rows and a `price` in
+the request body is ignored, for the same reason `amountFor` recomputes plan
+prices in `lib/billing/checkout.ts`.
+
+Unset `AI_SERVICE_TOKEN` closes the whole surface with a `503`, which is the
+correct state for an environment the AI service has not been pointed at.
+
+Full request and response shapes, written for the AI team rather than for us:
+**[docs/AGENT-API.md](AGENT-API.md)**.
+
+---
+
+### `GET /api/stats/live`
+
+The figures behind the live counters on the landing page. Public, no auth, and
+deliberately narrow: it returns only the counters an admin has actually put on
+the site, never the whole registry. One round of counting is cached for ten
+seconds and shared across every open tab.
+
+---
+
 ## Server Actions
 
 Defined in `lib/dashboard/actions.ts` (`"use server"`). Called directly from
