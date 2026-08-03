@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
 import { FOOTER } from "@/lib/content/footer";
+import { track } from "@/lib/analytics/track";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 export function Footer() {
@@ -30,7 +31,19 @@ export function Footer() {
               {t(FOOTER.linksHeading)}
             </h4>
             {FOOTER.links.map((l) => (
-              <Link key={l.href + t(l.label)} href={l.href} className="mb-2.5 block text-sm text-muted hover:text-ink">
+              <Link
+                key={l.href + t(l.label)}
+                href={l.href}
+                onClick={() =>
+                  track("footer_link_click", {
+                    // The Georgian label, so the report reads the same as the site.
+                    link_name: l.label.ka,
+                    link_url: l.href,
+                    link_type: l.href.startsWith("http") ? "external" : "internal",
+                  })
+                }
+                className="mb-2.5 block text-sm text-muted hover:text-ink"
+              >
                 {t(l.label)}
               </Link>
             ))}

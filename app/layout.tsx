@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { IBM_Plex_Mono, Inter, Noto_Sans_Georgian } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { themeScript } from "@/lib/theme/theme-script";
 import { OG_IMAGE, SITE, VERIFICATION } from "@/lib/seo/site";
 import { Analytics } from "@/components/seo/Analytics";
+import { PageViews } from "@/components/seo/PageViews";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const mono = IBM_Plex_Mono({
@@ -76,6 +78,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Providers>{children}</Providers>
         <Analytics />
+        <Suspense>
+          <PageViews />
+        </Suspense>
       </body>
     </html>
   );

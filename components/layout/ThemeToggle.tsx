@@ -2,6 +2,7 @@
 
 import { IconMoon, IconSun } from "@tabler/icons-react";
 import { useTheme } from "@/lib/theme/useTheme";
+import { track } from "@/lib/analytics/track";
 
 export function ThemeToggle() {
   const { theme, toggle } = useTheme();
@@ -10,7 +11,10 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      onClick={toggle}
+      onClick={() => {
+        toggle();
+        track("theme_change");
+      }}
       aria-label="Toggle color theme"
       className="grid size-[34px] place-items-center rounded-sm border border-border text-muted transition-colors hover:text-ink"
     >

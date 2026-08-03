@@ -9,6 +9,7 @@ import { useChat } from "@/hooks/useChat";
 import { CHAT } from "@/lib/content/chat";
 import { BRAND } from "@/lib/content/common";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { track } from "@/lib/analytics/track";
 
 export function ChatWidget() {
   const { t } = useLanguage();
@@ -53,7 +54,13 @@ export function ChatWidget() {
       <button
         type="button"
         aria-label={t(CHAT.ariaChat)}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() =>
+          setOpen((o) => {
+            // Only the opening counts; closing is not an engagement signal.
+            if (!o) track("chat_widget_opened");
+            return !o;
+          })
+        }
         className="fixed bottom-6 right-6 z-[60] grid size-14 place-items-center rounded-full bg-primary text-white"
       >
         <IconMessageChatbot size={24} />

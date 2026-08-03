@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -13,6 +13,7 @@ import { REGISTER } from "@/lib/content/auth";
 import { DASH } from "@/lib/dashboard/routes";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { track } from "@/lib/analytics/track";
 
 export function RegisterForm() {
   const { t } = useLanguage();
@@ -28,6 +29,11 @@ export function RegisterForm() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  // Reaching the form is the start of the funnel; completing it is the end.
+  useEffect(() => {
+    track("registration_started");
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,6 +59,7 @@ export function RegisterForm() {
     await signIn("credentials", { email: String(payload.email), password, redirect: false });
     setPending(false);
     setSent(true);
+    track("registration_completed");
   }
 
   return (

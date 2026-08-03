@@ -9,6 +9,7 @@ import {
   IconPackage,
 } from "@tabler/icons-react";
 import { getPlatformStats } from "@/lib/admin/analytics";
+import { getTrafficReport } from "@/lib/analytics/report";
 import { AdminHeading } from "@/components/admin/ui/AdminHeading";
 import { BiText } from "@/components/admin/ui/BiText";
 import type { Bilingual } from "@/lib/content/types";
@@ -77,8 +78,9 @@ function SubCount({ label, count, tone }: { label: Bilingual; count: number; ton
 }
 
 export default async function AdminAnalyticsPage() {
-  const s = await getPlatformStats();
+  const [s, traffic] = await Promise.all([getPlatformStats(), getTrafficReport()]);
   const maxGrowth = Math.max(1, ...s.growth.map((g) => g.count));
+  const maxDaily = Math.max(1, ...traffic.daily.map((d) => d.views));
 
   return (
     <>
@@ -264,6 +266,90 @@ export default async function AdminAnalyticsPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Traffic — the questions "how many people came" and "what did they do",
+          answered from our own counters rather than from Google. */}
+      <div className="mt-6 rounded-lg border border-border bg-card p-5">
+        <BiText
+          as="h2"
+          className="mb-1 text-base font-semibold"
+          value={{ ka: "ვიზიტები და ქმედებები", en: "Visits and actions" }}
+        />
+        <BiText
+          as="p"
+          className="mb-4 text-[12px] text-faint"
+          value={{ ka: "ბოლო 30 დღე.", en: "Last 30 days." }}
+        />
+
+        {traffic.empty ? (
+          <BiText
+            as="p"
+            className="py-6 text-center text-sm text-muted"
+            value={{
+              ka: "ჯერ არაფერი დაფიქსირებულა — ციფრები პირველი ვიზიტებიდან გაჩნდება.",
+              en: "Nothing recorded yet — figures appear once visitors arrive.",
+            }}
+          />
+        ) : (
+          <>
+            <div className="mb-6 flex h-[110px] items-end gap-[3px]">
+              {traffic.daily.map((d) => (
+                <div
+                  key={d.day}
+                  title={`${d.day}: ${fmt(d.views)}`}
+                  className="flex-1 rounded-t-[2px] bg-blue"
+                  style={{ height: `${Math.max(2, (d.views / maxDaily) * 100)}%` }}
+                />
+              ))}
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div>
+                <BiText
+                  as="h3"
+                  className="mb-2 text-[13px] font-semibold"
+                  value={{ ka: "ქმედებები", en: "Actions" }}
+                />
+                <div className="flex flex-col">
+                  {traffic.events.map(({ event, last30, last7 }) => (
+                    <div
+                      key={event.name}
+                      className="flex items-baseline justify-between border-b border-border2 py-2 text-[13px] last:border-0"
+                    >
+                      <BiText className="text-muted" value={event.label} />
+                      <span className="flex items-baseline gap-3">
+                        <span className="font-mono">{fmt(last30)}</span>
+                        <span className="w-[70px] text-right text-[11px] text-faint">
+                          {fmt(last7)} / 7დღე
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <BiText
+                  as="h3"
+                  className="mb-2 text-[13px] font-semibold"
+                  value={{ ka: "ყველაზე ნახვადი გვერდები", en: "Most visited pages" }}
+                />
+                <div className="flex flex-col">
+                  {traffic.topPages.map((p) => (
+                    <div
+                      key={p.path}
+                      className="flex items-baseline justify-between border-b border-border2 py-2 text-[13px] last:border-0"
+                    >
+                      <span className="truncate font-mono text-muted">{p.path}</span>
+                      <span className="font-mono">{fmt(p.views)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <p className="mt-4 text-[12px] text-faint">

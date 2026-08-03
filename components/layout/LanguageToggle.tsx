@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { IconCheck, IconChevronDown } from "@tabler/icons-react";
 import { LOCALES } from "@/lib/i18n/config";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { track } from "@/lib/analytics/track";
 
 export function LanguageToggle() {
   const { locale, setLocale } = useLanguage();
@@ -38,6 +39,7 @@ export function LanguageToggle() {
                 onClick={() => {
                   setLocale(l.code);
                   setOpen(false);
+                  track("language_changed");
                 }}
                 className={clsx(
                   "flex w-full items-center gap-2 rounded-sm px-[11px] py-2.5 text-left text-sm",

@@ -20,11 +20,14 @@ export function Button({
   className,
   children,
   ...rest
-}: CommonProps & (({ href: string }) | (ComponentProps<"button"> & { href?: undefined }))) {
+}: CommonProps &
+  // The link variant accepts onClick too — a button that navigates still
+  // sometimes needs to report the click before the page changes.
+  (({ href: string; onClick?: () => void }) | (ComponentProps<"button"> & { href?: undefined }))) {
   const cls = clsx(BASE, VARIANTS[variant], className);
   if ("href" in rest && rest.href) {
     return (
-      <Link href={rest.href} className={cls}>
+      <Link href={rest.href} onClick={rest.onClick} className={cls}>
         {children}
       </Link>
     );

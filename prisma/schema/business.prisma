@@ -245,6 +245,27 @@ model PageSeo {
   updatedAt     DateTime @default(now()) @updatedAt
 }
 
+/// One day's count of one event on one page.
+///
+/// Deliberately aggregated rather than a row per hit: a busy site would write
+/// millions of rows to answer a question that only ever needs a total, and raw
+/// hits invite storing things — a session, an address — that would turn this
+/// into personal data. One row per day per event per path stays tiny and can
+/// never be traced back to a visitor.
+model AnalyticsDaily {
+  id    String   @id @default(cuid())
+  /// Midnight UTC of the day being counted.
+  day   DateTime @db.Date
+  /// A name from TRACKED_EVENTS; anything else is rejected before it gets here.
+  name  String
+  /// The page it happened on. Empty for events that aren't page-specific.
+  path  String   @default("")
+  count Int      @default(0)
+
+  @@unique([day, name, path])
+  @@index([name, day])
+}
+
 /// How-to videos shown to every tenant under "Tutorials" in the dashboard.
 /// Platform-owned, not tenant-owned: businesses read these, only the admin
 /// panel writes them, so all customers see the same up-to-date guidance.

@@ -9,6 +9,7 @@ import { CTA_BANNER } from "@/lib/content/home";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
+import { track } from "@/lib/analytics/track";
 
 export type CtaContent = {
   badge?: Bilingual;
@@ -42,7 +43,7 @@ export function CtaBanner({ content = {} }: { content?: CtaContent }) {
           <p className="mx-auto mb-6 max-w-[620px] text-muted">
             {t(content.text ?? CTA_BANNER.text)}
           </p>
-          <Button href={content.url || ROUTES.start}>
+          <Button href={content.url || ROUTES.start} onClick={() => track("dashboard_button_click")}>
             <IconArrowRight size={18} />
             {t(content.button ?? ACTIONS.learnMore)}
           </Button>

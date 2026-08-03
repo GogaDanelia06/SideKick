@@ -7,6 +7,7 @@ import { startPlanCheckout } from "@/lib/dashboard/actions";
 import { BILLING_PERIODS, periodPrice, periodSavingPct } from "@/lib/content/packages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
+import { track } from "@/lib/analytics/track";
 
 const BANKS: Record<PaymentProvider, string> = {
   BOG: "საქართველოს ბანკი",
@@ -102,7 +103,11 @@ export function PlanCheckout({
               key={p.id}
               type="button"
               disabled={pending || !canManage}
-              onClick={() => { setPlanKey(p.key); setError(null); }}
+              onClick={() => {
+                setPlanKey(p.key);
+                setError(null);
+                track("pricing_plan_selected", { plan: p.key });
+              }}
               className={`flex items-center justify-between rounded-[8px] border px-3.5 py-3 text-left text-[13px] disabled:opacity-60 ${
                 chosen ? "border-primary bg-green-surface" : "border-border hover:border-blue"
               }`}
