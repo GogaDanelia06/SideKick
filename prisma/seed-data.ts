@@ -4,10 +4,12 @@ export const PLANS = [
   { key: "premium", name: "პრემიუმი", nameEn: "Premium", price: 199, msgLimit: -1, channelCap: -1, userCap: -1, productCap: -1, featured: false },
 ];
 
+// Counted, not claimed. `value` is only the fallback for a counter that fails,
+// which is why these read as plausible rather than as round marketing numbers.
 export const SITE_STATS = [
-  { key: "total_users", labelKa: "მომხმარებელი ჯამში", labelEn: "Users in total", value: "1,200+", order: 0 },
-  { key: "active_chats_today", labelKa: "აქტიური ჩატი დღეს", labelEn: "Active chats today", value: "8,540", order: 1 },
-  { key: "revenue", labelKa: "გაყიდული პროდუქცია ბოტებით", labelEn: "Products sold via bots", value: "2.4M₾", order: 2 },
+  { key: "total_users", labelKa: "მომხმარებელი ჯამში", labelEn: "Users in total", source: "users", value: "0", order: 0 },
+  { key: "active_chats_today", labelKa: "აქტიური ჩატი დღეს", labelEn: "Active chats today", source: "conversationsToday", value: "0", order: 1 },
+  { key: "revenue", labelKa: "გაყიდული პროდუქცია ბოტებით", labelEn: "Products sold via bots", source: "revenue", value: "0₾", order: 2 },
 ];
 
 export const PRODUCTS = [

@@ -11,8 +11,12 @@ import {
 import { getPlatformStats } from "@/lib/admin/analytics";
 import { getTrafficReport } from "@/lib/analytics/report";
 import { AdminHeading } from "@/components/admin/ui/AdminHeading";
+import { LiveRefresh } from "@/components/admin/ui/LiveRefresh";
 import { BiText } from "@/components/admin/ui/BiText";
 import type { Bilingual } from "@/lib/content/types";
+
+// The figures are counted per request; nothing here may be cached between them.
+export const dynamic = "force-dynamic";
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 
@@ -126,6 +130,7 @@ export default async function AdminAnalyticsPage() {
           ka: "ჯამური მაჩვენებლები ყველა კლიენტზე. მიმოწერების შიგთავსი აქ არ ჩანს — მხოლოდ რიცხვები.",
           en: "Aggregate figures across every tenant. No conversation content is shown here — numbers only.",
         }}
+        aside={<LiveRefresh />}
       />
 
       {/* Income first — it is the platform owner's own money, and the reason

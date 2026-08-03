@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { LiveDot, LiveFigure } from "./LiveFigure";
 import type { HeroStatView } from "@/lib/site/content";
 
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
@@ -14,18 +15,32 @@ function format(n: number): string {
     : rounded.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
+function Frame({ value, label, live }: { value: React.ReactNode; label: string; live?: boolean }) {
+  return (
+    <div>
+      <div className="font-mono text-[22px] font-medium tabular-nums">{value}</div>
+      <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted">
+        {label}
+        {live ? <LiveDot /> : null}
+      </div>
+    </div>
+  );
+}
+
 /**
- * A figure that drifts upward to make the hero panel feel live.
+ * A figure that drifts upward to make the hero panel feel busy.
  *
- * Starts at the admin's base value and adds a random amount from their range at
- * a random interval from their range. Randomness on both axes is what stops it
- * looking like a mechanical counter.
+ * This is the fallback for a figure with no counter behind it: it starts at the
+ * admin's base value and adds a random amount from their range at a random
+ * interval from their range. It is decoration, and it is the reason the source
+ * picker exists — anything a visitor might read as a measurement should be
+ * counted, not drifted.
  *
  * Honours `prefers-reduced-motion`: the number simply sits at its base value,
  * which is also what the server renders — so there is no hydration mismatch and
  * no motion for people who asked not to have any.
  */
-export function AnimatedStat({ stat }: { stat: HeroStatView }) {
+function DriftStat({ stat }: { stat: HeroStatView }) {
   const { t } = useLanguage();
   const [value, setValue] = useState(stat.baseValue);
 
@@ -44,12 +59,37 @@ export function AnimatedStat({ stat }: { stat: HeroStatView }) {
   }, [stat.changeMin, stat.changeMax, stat.intervalMinMs, stat.intervalMaxMs]);
 
   return (
-    <div>
-      <div className="font-mono text-[22px] font-medium tabular-nums">
-        {format(value)}
-        {stat.suffix}
-      </div>
-      <div className="mt-0.5 text-[11px] text-muted">{t(stat.label)}</div>
-    </div>
+    <Frame
+      value={
+        <>
+          {format(value)}
+          {stat.suffix}
+        </>
+      }
+      label={t(stat.label)}
+    />
   );
+}
+
+/** The same slot, filled with a figure the platform actually counted. */
+function CountedStat({ stat }: { stat: HeroStatView }) {
+  const { t } = useLanguage();
+  return (
+    <Frame
+      live
+      value={
+        <LiveFigure
+          source={stat.source}
+          initial={stat.baseValue}
+          format={stat.format}
+          suffix={stat.suffix}
+        />
+      }
+      label={t(stat.label)}
+    />
+  );
+}
+
+export function AnimatedStat({ stat }: { stat: HeroStatView }) {
+  return stat.source ? <CountedStat stat={stat} /> : <DriftStat stat={stat} />;
 }

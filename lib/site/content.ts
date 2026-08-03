@@ -1,11 +1,19 @@
 import { prisma } from "@/lib/db";
-import { findStatSource } from "@/lib/site/statSources";
-import { log } from "@/lib/logger";
+import { countStat, findStatSource } from "@/lib/site/statSources";
+import { formatStat, type StatFormat } from "@/lib/site/statFormat";
 import type { Bilingual } from "@/lib/content/types";
 import { PLAN_SUPPORT, type Package } from "@/lib/content/packages";
 import type { FaqItem } from "@/lib/content/faq";
 
-export type SiteStatView = { value: string; label: Bilingual };
+export type SiteStatView = {
+  value: string;
+  label: Bilingual;
+  /** Set when the figure is counted; the browser keeps it up to date. */
+  source: string;
+  /** The raw count behind `value`, so the browser can animate to the next one. */
+  n: number | null;
+  format: StatFormat;
+};
 
 /**
  * The figures in the landing strip.
@@ -14,6 +22,10 @@ export type SiteStatView = { value: string; label: Bilingual };
  * A source that no longer exists in the registry falls back to the stored value
  * rather than disappearing, so removing a counter from the code never blanks a
  * figure on the public page.
+ *
+ * The raw number travels alongside the formatted one. Rendering the real figure
+ * server-side is what makes the first paint correct; the raw number is what the
+ * browser needs to count up from when the next visitor signs up.
  */
 export async function getSiteStats(): Promise<SiteStatView[]> {
   const rows = await prisma.siteStat.findMany({ orderBy: { order: "asc" } });
@@ -21,19 +33,25 @@ export async function getSiteStats(): Promise<SiteStatView[]> {
   return Promise.all(
     rows.map(async (r) => {
       const source = r.source ? findStatSource(r.source) : undefined;
-      let value = r.value;
-
-      if (source) {
-        try {
-          value = await source.compute();
-        } catch (err) {
-          // A counter that fails must not take the whole page down; the stored
-          // value is stale but harmless, and the error is worth knowing about.
-          log.error("live stat could not be counted", err, { source: r.source });
-        }
+      if (!source) {
+        return {
+          value: r.value,
+          label: { ka: r.labelKa, en: r.labelEn },
+          source: "",
+          n: null,
+          format: "number" as StatFormat,
+        };
       }
 
-      return { value, label: { ka: r.labelKa, en: r.labelEn } };
+      const n = await countStat(source);
+      return {
+        // A failed count keeps the stored figure — stale, but not a blank slot.
+        value: n === null ? r.value : formatStat(n, source.format),
+        label: { ka: r.labelKa, en: r.labelEn },
+        source: r.source,
+        n,
+        format: source.format,
+      };
     }),
   );
 }
@@ -140,6 +158,10 @@ export async function getSiteValue(key: string): Promise<string | null> {
 
 export type HeroStatView = {
   label: Bilingual;
+  /** A counter key — when set, the drift settings below are ignored. */
+  source: string;
+  format: StatFormat;
+  /** The real count for a sourced figure; the admin's start value otherwise. */
   baseValue: number;
   changeMin: number;
   changeMax: number;
@@ -160,13 +182,29 @@ export type HeroSlideView = {
   stats: HeroStatView[];
 };
 
-/** Published slides with their animated figures, in order. */
+/**
+ * Published slides with their figures, in order.
+ *
+ * Every distinct counter used across the carousel is read once, not once per
+ * figure — two slides showing "users registered" cost one query between them.
+ */
 export async function getHeroSlides(): Promise<HeroSlideView[]> {
   const rows = await prisma.heroSlide.findMany({
     where: { published: true },
     orderBy: { order: "asc" },
     include: { stats: { orderBy: { order: "asc" } } },
   });
+
+  const keys = [...new Set(rows.flatMap((s) => s.stats.map((t) => t.source)).filter(Boolean))];
+  const counted = new Map<string, number>();
+  await Promise.all(
+    keys.map(async (key) => {
+      const source = findStatSource(key);
+      if (!source) return;
+      const n = await countStat(source);
+      if (n !== null) counted.set(key, n);
+    }),
+  );
 
   return rows.map((s) => ({
     mediaUrl: s.mediaUrl,
@@ -177,15 +215,25 @@ export async function getHeroSlides(): Promise<HeroSlideView[]> {
     text: { ka: s.textKa, en: s.textEn || s.textKa },
     ctaLabel: s.ctaLabelKa ? { ka: s.ctaLabelKa, en: s.ctaLabelEn || s.ctaLabelKa } : null,
     ctaUrl: s.ctaUrl,
-    stats: s.stats.map((t) => ({
-      label: { ka: t.labelKa, en: t.labelEn || t.labelKa },
-      baseValue: t.baseValue,
-      changeMin: t.changeMin,
-      changeMax: t.changeMax,
-      intervalMinMs: t.intervalMinMs,
-      intervalMaxMs: t.intervalMaxMs,
-      suffix: t.suffix,
-    })),
+    stats: s.stats.map((t) => {
+      // An unknown or uncountable source degrades to a plain figure rather than
+      // to an empty box: the label still makes sense next to the stored number.
+      const live = t.source ? counted.get(t.source) : undefined;
+      const source = t.source ? findStatSource(t.source) : undefined;
+      const isLive = live !== undefined;
+
+      return {
+        label: { ka: t.labelKa, en: t.labelEn || t.labelKa },
+        source: isLive ? t.source : "",
+        format: source?.format ?? ("number" as StatFormat),
+        baseValue: isLive ? live : t.baseValue,
+        changeMin: t.changeMin,
+        changeMax: t.changeMax,
+        intervalMinMs: t.intervalMinMs,
+        intervalMaxMs: t.intervalMaxMs,
+        suffix: t.suffix,
+      };
+    }),
   }));
 }
 

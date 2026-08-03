@@ -34,6 +34,18 @@ function field(fd: FormData, name: string): string {
  */
 type StatData = { value: string; source: string; labelKa: string; labelEn: string };
 
+type SlideStatData = {
+  labelKa: string;
+  labelEn: string;
+  source: string;
+  suffix: string;
+  baseValue: number;
+  changeMin: number;
+  changeMax: number;
+  intervalMinMs: number;
+  intervalMaxMs: number;
+};
+
 function siteStatFields(fd: FormData): { data: StatData } | { error: string } {
   const source = field(fd, "source");
   if (source && !STAT_SOURCE_KEYS.includes(source)) return { error: "unknown_source" };
@@ -373,7 +385,35 @@ function num(fd: FormData, key: string, fallback: number): number {
   return Number.isFinite(n) ? n : fallback;
 }
 
-function statFields(fd: FormData) {
+/**
+ * One figure inside a carousel slide: counted, or drifting.
+ *
+ * A counted figure keeps the drift settings at zero rather than ignoring them,
+ * so switching a figure back to hand-made later starts from a clean, obviously
+ * static state instead of resurrecting numbers nobody remembers setting.
+ */
+function slideStatFields(fd: FormData): { data: SlideStatData } | { error: string } {
+  const source = field(fd, "source");
+  if (source && !STAT_SOURCE_KEYS.includes(source)) return { error: "unknown_source" };
+
+  const labelKa = field(fd, "labelKa");
+  const labelEn = field(fd, "labelEn");
+  if (!labelKa || !labelEn) return { error: "label_required" };
+
+  const common = { labelKa, labelEn, source, suffix: field(fd, "suffix") };
+  if (source) {
+    return {
+      data: {
+        ...common,
+        baseValue: 0,
+        changeMin: 0,
+        changeMax: 0,
+        intervalMinMs: 2000,
+        intervalMaxMs: 6000,
+      },
+    };
+  }
+
   // Ranges are normalised so min never exceeds max — otherwise the animation
   // would pick from an empty interval and freeze.
   const changeA = num(fd, "changeMin", 0);
@@ -381,25 +421,25 @@ function statFields(fd: FormData) {
   const intervalA = Math.max(200, num(fd, "intervalMinMs", 2000));
   const intervalB = Math.max(200, num(fd, "intervalMaxMs", 6000));
   return {
-    labelKa: field(fd, "labelKa"),
-    labelEn: field(fd, "labelEn"),
-    baseValue: num(fd, "baseValue", 0),
-    changeMin: Math.min(changeA, changeB),
-    changeMax: Math.max(changeA, changeB),
-    intervalMinMs: Math.min(intervalA, intervalB),
-    intervalMaxMs: Math.max(intervalA, intervalB),
-    suffix: field(fd, "suffix"),
+    data: {
+      ...common,
+      baseValue: num(fd, "baseValue", 0),
+      changeMin: Math.min(changeA, changeB),
+      changeMax: Math.max(changeA, changeB),
+      intervalMinMs: Math.min(intervalA, intervalB),
+      intervalMaxMs: Math.max(intervalA, intervalB),
+    },
   };
 }
 
 export async function createSlideStat(slideId: string, fd: FormData): Promise<AdminResult> {
   await requireAdmin();
-  const data = statFields(fd);
-  if (!data.labelKa || !data.labelEn) return { ok: false, error: "label_required" };
+  const parsed = slideStatFields(fd);
+  if ("error" in parsed) return { ok: false, error: parsed.error };
 
   const max = await prisma.heroSlideStat.aggregate({ where: { slideId }, _max: { order: true } });
   await prisma.heroSlideStat.create({
-    data: { ...data, slideId, order: (max._max.order ?? -1) + 1 },
+    data: { ...parsed.data, slideId, order: (max._max.order ?? -1) + 1 },
   });
   revalidateHero();
   return { ok: true };
@@ -407,10 +447,10 @@ export async function createSlideStat(slideId: string, fd: FormData): Promise<Ad
 
 export async function updateSlideStat(id: string, fd: FormData): Promise<AdminResult> {
   await requireAdmin();
-  const data = statFields(fd);
-  if (!data.labelKa || !data.labelEn) return { ok: false, error: "label_required" };
+  const parsed = slideStatFields(fd);
+  if ("error" in parsed) return { ok: false, error: parsed.error };
 
-  await prisma.heroSlideStat.update({ where: { id }, data });
+  await prisma.heroSlideStat.update({ where: { id }, data: parsed.data });
   revalidateHero();
   return { ok: true };
 }

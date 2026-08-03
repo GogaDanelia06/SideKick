@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { createStat, updateStat, deleteStat, moveStat } from "@/lib/admin/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { StatSourceOption } from "@/lib/site/statFormat";
 import type { Bilingual } from "@/lib/content/types";
 
 const INPUT =
@@ -40,6 +41,7 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
   const { t } = useLanguage();
   const [source, setSource] = useState(initial?.source ?? "");
   const auto = source !== "";
+  const picked = sources.find((s) => s.key === source);
 
   return (
     <div className="grid gap-2.5">
@@ -56,7 +58,7 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
           <option value="">{t({ ka: "ხელით ჩაწერილი", en: "Typed by hand" })}</option>
           {sources.map((s) => (
             <option key={s.key} value={s.key}>
-              {t(s.label)}
+              {t(s.label)} — {s.value}
             </option>
           ))}
         </select>
@@ -90,16 +92,14 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
       {auto ? (
         <p className="text-[12px] text-green">
           {t({
-            ka: "ციფრი ბაზიდან წაიკითხება ყოველ ჯერზე — ხელით შეცვლა აღარ სჭირდება.",
-            en: "Read from the database on every visit — nothing to keep up to date.",
+            ka: `ახლა: ${picked?.value ?? "—"}. ციფრი ბაზიდან იკითხება და საიტზე თვითონ განახლდება — ხელით შეცვლა აღარ სჭირდება.`,
+            en: `Right now: ${picked?.value ?? "—"}. Read from the database and refreshed on the site by itself — nothing to keep up to date.`,
           })}
         </p>
       ) : null}
     </div>
   );
 }
-
-export type StatSourceOption = { key: string; label: Bilingual };
 
 export function StatsEditor({
   stats,
@@ -211,8 +211,10 @@ export function StatsEditor({
               </form>
             ) : (
               <div className="flex items-center gap-4">
-                <div className="font-mono text-2xl font-medium">
-                  {s.source ? <span className="text-[15px] text-green">auto</span> : s.value}
+                {/* The real figure, not the word "auto" — the point of a counted
+                    stat is being able to see what the site is showing. */}
+                <div className="font-mono text-2xl font-medium tabular-nums">
+                  {s.source ? (sources.find((o) => o.key === s.source)?.value ?? "—") : s.value}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm">{s.labelKa}</div>
@@ -222,6 +224,11 @@ export function StatsEditor({
                       : s.labelEn}
                   </div>
                 </div>
+                {s.source ? (
+                  <span className="shrink-0 rounded-full bg-green-surface px-2 py-0.5 text-[11px] text-green">
+                    {t({ ka: "ცოცხალი", en: "Live" })}
+                  </span>
+                ) : null}
                 <div className="flex items-center gap-1">
                   <button
                     type="button"

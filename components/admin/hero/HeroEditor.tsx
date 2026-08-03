@@ -24,6 +24,7 @@ import {
 } from "@/lib/admin/actions";
 import { MediaField } from "@/components/admin/ui/MediaField";
 import { SlideStats } from "./SlideStats";
+import type { StatSourceOption } from "@/lib/site/statFormat";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 
@@ -114,9 +115,11 @@ function SlideFields({ initial }: { initial?: SlideWithStats }) {
 export function HeroEditor({
   slides,
   intervalSeconds,
+  sources,
 }: {
   slides: SlideWithStats[];
   intervalSeconds: number;
+  sources: StatSourceOption[];
 }) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();
@@ -262,7 +265,7 @@ export function HeroEditor({
                     </button>
                   </div>
                 </div>
-                <SlideStats slideId={s.id} stats={s.stats} />
+                <SlideStats slideId={s.id} stats={s.stats} sources={sources} />
               </>
             )}
           </div>

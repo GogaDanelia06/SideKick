@@ -160,16 +160,21 @@ model HeroSlide {
   @@index([order])
 }
 
-/// A single animated figure inside a slide's mock panel. The figure starts at
-/// `baseValue` and ticks by a random amount in [changeMin, changeMax] every
-/// random interval in [intervalMinMs, intervalMaxMs] — which is what makes the
-/// hero look alive without inventing a fake total.
+/// A single figure inside a slide's panel.
+///
+/// With a `source` it is the real platform count, re-read while the visitor is
+/// on the page, so it moves when an actual customer signs up. Without one it
+/// falls back to the older behaviour: it starts at `baseValue` and drifts by a
+/// random amount in [changeMin, changeMax] every random interval in
+/// [intervalMinMs, intervalMaxMs] — decorative, and clearly not a measurement.
 model HeroSlideStat {
   id            String    @id @default(cuid())
   slideId       String
   order         Int       @default(0)
   labelKa       String
   labelEn       String
+  /// A key from STAT_SOURCES, or "" for the hand-made drifting figure.
+  source        String    @default("")
   baseValue     Float     @default(0)
   changeMin     Float     @default(0)
   changeMax     Float     @default(0)

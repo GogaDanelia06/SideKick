@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ADMIN_PAGES, findAdminPage } from "@/lib/admin/pages";
 import { findGroup, findLegalDoc, legalTitleKey } from "@/lib/site/textKeys";
-import { STAT_SOURCES } from "@/lib/site/statSources";
+import { statSourceOptions } from "@/lib/site/statSources";
 import { getHeroIntervalMs } from "@/lib/site/content";
 import { SITE } from "@/lib/seo/site";
 import { PageEditor, type SectionData } from "@/components/admin/PageEditor";
@@ -30,29 +30,31 @@ export default async function AdminPageEditor({
   for (const section of page.sections) {
     switch (section.kind) {
       case "carousel": {
-        const [slides, intervalMs] = await Promise.all([
+        const [slides, intervalMs, sources] = await Promise.all([
           prisma.heroSlide.findMany({
             orderBy: { order: "asc" },
             include: { stats: { orderBy: { order: "asc" } } },
           }),
           getHeroIntervalMs(),
+          statSourceOptions(),
         ]);
         data[section.key] = {
           kind: "carousel",
           slides,
           intervalSeconds: Math.round(intervalMs / 1000),
+          sources,
         };
         break;
       }
 
       case "stats": {
-        data[section.key] = {
-          kind: "stats",
-          stats: await prisma.siteStat.findMany({ orderBy: { order: "asc" } }),
-          // Only the key and label cross into the client; the query functions
-          // stay on the server.
-          sources: STAT_SOURCES.map((s) => ({ key: s.key, label: s.label })),
-        };
+        // Only the key, label and current value cross into the client; the
+        // query functions stay on the server.
+        const [stats, sources] = await Promise.all([
+          prisma.siteStat.findMany({ orderBy: { order: "asc" } }),
+          statSourceOptions(),
+        ]);
+        data[section.key] = { kind: "stats", stats, sources };
         break;
       }
 
