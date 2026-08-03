@@ -15,6 +15,9 @@ export function PageViews() {
   const pathname = usePathname();
 
   useEffect(() => {
+    // The owner reading their own control panel is not traffic. Counting it
+    // would inflate every figure on the very page they are looking at.
+    if (pathname.startsWith("/admin")) return;
     track("page_view");
   }, [pathname]);
 

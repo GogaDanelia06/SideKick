@@ -77,6 +77,42 @@ function SubCount({ label, count, tone }: { label: Bilingual; count: number; ton
   );
 }
 
+function PageList({
+  title,
+  pages,
+  note,
+}: {
+  title: Bilingual;
+  pages: { path: string; views: number }[];
+  note?: Bilingual;
+}) {
+  return (
+    <div>
+      <BiText as="h3" className="mb-2 text-[13px] font-semibold" value={title} />
+      {pages.length === 0 ? (
+        <BiText
+          as="p"
+          className="py-2 text-[12px] text-faint"
+          value={{ ka: "ჯერ არაფერი", en: "Nothing yet" }}
+        />
+      ) : (
+        <div className="flex flex-col">
+          {pages.map((p) => (
+            <div
+              key={p.path}
+              className="flex items-baseline justify-between border-b border-border2 py-2 text-[13px] last:border-0"
+            >
+              <span className="truncate font-mono text-muted">{p.path}</span>
+              <span className="font-mono">{p.views.toLocaleString("en-US")}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {note ? <BiText as="p" className="mt-1.5 text-[11px] text-faint" value={note} /> : null}
+    </div>
+  );
+}
+
 export default async function AdminAnalyticsPage() {
   const [s, traffic] = await Promise.all([getPlatformStats(), getTrafficReport()]);
   const maxGrowth = Math.max(1, ...s.growth.map((g) => g.count));
@@ -293,16 +329,60 @@ export default async function AdminAnalyticsPage() {
           />
         ) : (
           <>
+            <div className="mb-1 flex items-baseline gap-2">
+              <span className="font-mono text-[26px] font-medium leading-none">
+                {fmt(traffic.totalViews)}
+              </span>
+              <BiText
+                className="text-[12px] text-muted"
+                value={{ ka: "გვერდის ნახვა", en: "page views" }}
+              />
+            </div>
             <div className="mb-6 flex h-[110px] items-end gap-[3px]">
               {traffic.daily.map((d) => (
                 <div
                   key={d.day}
                   title={`${d.day}: ${fmt(d.views)}`}
-                  className="flex-1 rounded-t-[2px] bg-blue"
+                  className="flex-1 rounded-t-[2px] bg-blue transition-opacity hover:opacity-70"
                   style={{ height: `${Math.max(2, (d.views / maxDaily) * 100)}%` }}
                 />
               ))}
             </div>
+            <div className="mb-6 flex justify-between text-[11px] text-faint">
+              <span>{traffic.daily[0]?.day}</span>
+              <span>{traffic.daily.at(-1)?.day}</span>
+            </div>
+
+            {/* The funnel is the one thing here that answers "is the site
+                working" rather than "how busy was it". */}
+            {traffic.funnel.length > 0 ? (
+              <div className="mb-6 rounded-[8px] border border-border2 bg-soft p-4">
+                <BiText
+                  as="h3"
+                  className="mb-3 text-[13px] font-semibold"
+                  value={{ ka: "რეგისტრაციის გზა", en: "Sign-up funnel" }}
+                />
+                <div className="flex flex-col gap-2">
+                  {traffic.funnel.map((step) => (
+                    <div key={step.event.name} className="flex items-baseline gap-3 text-[13px]">
+                      <span className="w-[52px] shrink-0 font-mono text-[15px]">
+                        {fmt(step.count)}
+                      </span>
+                      <BiText className="flex-1 text-muted" value={step.event.label} />
+                      {step.ofPrevious !== null ? (
+                        <span
+                          className={`font-mono text-[12px] ${
+                            step.ofPrevious >= 50 ? "text-green" : "text-amber"
+                          }`}
+                        >
+                          {step.ofPrevious}%
+                        </span>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
 
             <div className="grid gap-6 lg:grid-cols-2">
               <div>
@@ -320,7 +400,7 @@ export default async function AdminAnalyticsPage() {
                       <BiText className="text-muted" value={event.label} />
                       <span className="flex items-baseline gap-3">
                         <span className="font-mono">{fmt(last30)}</span>
-                        <span className="w-[70px] text-right text-[11px] text-faint">
+                        <span className="w-[64px] text-right text-[11px] text-faint">
                           {fmt(last7)} / 7დღე
                         </span>
                       </span>
@@ -329,23 +409,19 @@ export default async function AdminAnalyticsPage() {
                 </div>
               </div>
 
-              <div>
-                <BiText
-                  as="h3"
-                  className="mb-2 text-[13px] font-semibold"
-                  value={{ ka: "ყველაზე ნახვადი გვერდები", en: "Most visited pages" }}
+              <div className="flex flex-col gap-5">
+                <PageList
+                  title={{ ka: "საიტის გვერდები", en: "Public pages" }}
+                  pages={traffic.publicPages}
                 />
-                <div className="flex flex-col">
-                  {traffic.topPages.map((p) => (
-                    <div
-                      key={p.path}
-                      className="flex items-baseline justify-between border-b border-border2 py-2 text-[13px] last:border-0"
-                    >
-                      <span className="truncate font-mono text-muted">{p.path}</span>
-                      <span className="font-mono">{fmt(p.views)}</span>
-                    </div>
-                  ))}
-                </div>
+                <PageList
+                  title={{ ka: "აპლიკაციაში", en: "Inside the app" }}
+                  pages={traffic.appPages}
+                  note={{
+                    ka: "ავტორიზებული მომხმარებლების ეკრანები — მარკეტინგულ ციფრს არ ერევა.",
+                    en: "Signed-in screens — kept out of the marketing figures.",
+                  }}
+                />
               </div>
             </div>
           </>

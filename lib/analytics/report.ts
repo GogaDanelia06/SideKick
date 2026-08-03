@@ -9,15 +9,29 @@ export type EventTotals = {
 
 export type PageTotals = { path: string; views: number };
 
+/** One step of the sign-up funnel, with how many of the previous step got here. */
+export type FunnelStep = { event: TrackedEvent; count: number; ofPrevious: number | null };
+
 export type TrafficReport = {
   events: EventTotals[];
-  /** Busiest pages over the last 30 days. */
-  topPages: PageTotals[];
+  /** Marketing pages — what the public actually sees. */
+  publicPages: PageTotals[];
+  /** Pages behind the login, kept apart so they can't flatter the traffic. */
+  appPages: PageTotals[];
+  totalViews: number;
   /** Page views per day, oldest first — a 30-day line. */
   daily: { day: string; views: number }[];
+  funnel: FunnelStep[];
   /** True until anything has ever been recorded. */
   empty: boolean;
 };
+
+/** Anything under here is someone using the product, not visiting the site. */
+const APP_PREFIXES = ["/dashboard", "/login", "/register", "/forgot", "/reset", "/start"];
+
+function isAppPath(path: string): boolean {
+  return APP_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
+}
 
 function daysAgo(n: number): Date {
   const d = new Date();
@@ -56,10 +70,28 @@ export async function getTrafficReport(): Promise<TrafficReport> {
     if (r.name !== "page_view" || !r.path) continue;
     byPath.set(r.path, (byPath.get(r.path) ?? 0) + r.count);
   }
-  const topPages = [...byPath.entries()]
+  const ranked = [...byPath.entries()]
     .map(([path, views]) => ({ path, views }))
-    .sort((a, b) => b.views - a.views)
-    .slice(0, 10);
+    .sort((a, b) => b.views - a.views);
+
+  const publicPages = ranked.filter((p) => !isAppPath(p.path)).slice(0, 8);
+  const appPages = ranked.filter((p) => isAppPath(p.path)).slice(0, 8);
+
+  // How many people made it from one step to the next. The rate is against the
+  // step before, not the top — that's what shows where people actually drop.
+  const funnelNames = ["registration_started", "registration_completed", "pricing_plan_selected"];
+  const funnel: FunnelStep[] = [];
+  for (const name of funnelNames) {
+    const entry = events.find((e) => e.event.name === name);
+    if (!entry) continue;
+    const previous = funnel.at(-1);
+    funnel.push({
+      event: entry.event,
+      count: entry.last30,
+      ofPrevious:
+        previous && previous.count > 0 ? Math.round((entry.last30 / previous.count) * 100) : null,
+    });
+  }
 
   // Every day in the window, including the quiet ones — gaps in a chart read
   // as missing data rather than as no traffic.
@@ -73,8 +105,11 @@ export async function getTrafficReport(): Promise<TrafficReport> {
 
   return {
     events,
-    topPages,
+    publicPages,
+    appPages,
+    totalViews: sum((r) => r.name === "page_view"),
     daily: [...perDay.entries()].map(([day, views]) => ({ day, views })),
+    funnel,
     empty: rows.length === 0,
   };
 }
