@@ -56,7 +56,7 @@ function SlideFields({ initial }: { initial?: SlideWithStats }) {
         <select name="mock" defaultValue={initial?.mock ?? ""} className={INPUT}>
           <option value="">{t({ ka: "— არცერთი —", en: "— none —" })}</option>
           <option value="chat">{t({ ka: "ჩატი", en: "Chat" })}</option>
-          <option value="dashboard">{t({ ka: "დაშბორდი", en: "Dashboard" })}</option>
+          <option value="dashboard">{t({ ka: "დეშბორდი", en: "Dashboard" })}</option>
           <option value="tester">{t({ ka: "ტესტერი", en: "Tester" })}</option>
         </select>
       </label>

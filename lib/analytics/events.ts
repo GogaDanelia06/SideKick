@@ -42,7 +42,7 @@ export const TRACKED_EVENTS: TrackedEvent[] = [
   },
   {
     name: "dashboard_button_click",
-    label: ka("დაშბორდის ღილაკი", "Dashboard button click"),
+    label: ka("დეშბორდის ღილაკი", "Dashboard button click"),
     group: "funnel",
   },
 
