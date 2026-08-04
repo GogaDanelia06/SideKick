@@ -224,7 +224,7 @@ export function SlideStats({
                   {picked ? (
                     <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-green-surface px-2 py-0.5 text-[11px] text-green">
                       <IconBolt size={11} />
-                      {t({ ka: "ცოცხალი", en: "Live" })}
+                      {t({ ka: "ლაივ", en: "Live" })}
                     </span>
                   ) : (
                     <span className="shrink-0 text-[11px] text-faint">

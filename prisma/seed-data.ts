@@ -4,12 +4,45 @@ export const PLANS = [
   { key: "premium", name: "პრემიუმი", nameEn: "Premium", price: 199, msgLimit: -1, channelCap: -1, userCap: -1, productCap: -1, featured: false },
 ];
 
-// Counted, not claimed. `value` is only the fallback for a counter that fails,
-// which is why these read as plausible rather than as round marketing numbers.
+// One of each mode, so whoever opens the admin panel sees what the three
+// choices do rather than reading about them. Any figure can be switched to any
+// mode under "ციფრების ზოლი" — none of this is fixed in code.
+//
+// The AUTO figure starts where the original hand-typed strip did and climbs on
+// its own, which is what the landing-page spec asks for. The counted one beside
+// it is the honest alternative wherever the platform can actually measure.
 export const SITE_STATS = [
-  { key: "total_users", labelKa: "მომხმარებელი ჯამში", labelEn: "Users in total", source: "users", value: "0", order: 0 },
-  { key: "active_chats_today", labelKa: "აქტიური ჩატი დღეს", labelEn: "Active chats today", source: "conversationsToday", value: "0", order: 1 },
-  { key: "revenue", labelKa: "გაყიდული პროდუქცია ბოტებით", labelEn: "Products sold via bots", source: "revenue", value: "0₾", order: 2 },
+  {
+    key: "total_users",
+    labelKa: "მომხმარებელი ჯამში",
+    labelEn: "Users in total",
+    mode: "LIVE" as const,
+    source: "users",
+    value: "0",
+    order: 0,
+  },
+  {
+    key: "active_chats_today",
+    labelKa: "აქტიური ჩატი დღეს",
+    labelEn: "Active chats today",
+    mode: "AUTO" as const,
+    value: "",
+    baseValue: 8540,
+    changeMin: 1,
+    changeMax: 4,
+    intervalMinMs: 60_000,
+    intervalMaxMs: 300_000,
+    order: 1,
+  },
+  {
+    key: "revenue",
+    labelKa: "გაყიდული პროდუქცია ბოტებით",
+    labelEn: "Products sold via bots",
+    mode: "MANUAL" as const,
+    value: "2.4M",
+    suffix: "₾",
+    order: 2,
+  },
 ];
 
 export const PRODUCTS = [

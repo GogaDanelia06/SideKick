@@ -138,10 +138,21 @@ Full request and response shapes, written for the AI team rather than for us:
 
 ### `GET /api/stats/live`
 
-The figures behind the live counters on the landing page. Public, no auth, and
-deliberately narrow: it returns only the counters an admin has actually put on
-the site, never the whole registry. One round of counting is cached for ten
-seconds and shared across every open tab.
+Every figure on the landing page that does not stay still. Public, no auth, and
+deliberately narrow: it returns only what an admin has actually put on the site,
+never the whole counter registry.
+
+Two kinds share the payload. Counters read from the database are keyed by their
+`STAT_SOURCES` key. Drifting figures — the strip's AUTO mode — are keyed
+`auto:<statKey>`, and this endpoint is where their next step is drawn.
+
+That draw happens here rather than in the browser on purpose. Rolling the dice
+client-side means two visitors see two different numbers and a refresh sends the
+figure back to its start value, which is exactly how a visitor works out the
+number is invented. The running value lives in `SiteStat.autoValue`, so there is
+one figure for everybody. See `lib/site/autoStat.ts`.
+
+One round of work is cached for ten seconds and shared across every open tab.
 
 ---
 

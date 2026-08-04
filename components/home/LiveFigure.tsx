@@ -97,7 +97,7 @@ export function LiveDot() {
   const { t } = useLanguage();
   return (
     <span
-      title={t({ ka: "ცოცხალი მონაცემი", en: "Live figure" })}
+      title={t({ ka: "ლაივ მონაცემი", en: "Live figure" })}
       className="inline-flex size-[7px] shrink-0 rounded-full bg-green"
     >
       <span className="size-full animate-ping rounded-full bg-green opacity-75" />

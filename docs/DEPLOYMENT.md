@@ -34,6 +34,7 @@ three environments (Production, Preview, Development) unless noted.
 | `RESEND_API_KEY` | Real email delivery — but only after `deliver()` is implemented. See [Email](#email). |
 | `MAIL_FROM` | Sender address. Defaults to `Sidekick <noreply@sidekick.ge>`. |
 | `AI_SERVICE_TOKEN` | The `/api/agent/*` endpoints the AI service writes through. 32+ characters; generate with `openssl rand -hex 32`. Unset means the whole surface answers `503`, which is right for an environment the AI service is not pointed at. Rotating it is one variable change — tell the AI team before you do. See [AGENT-API.md](AGENT-API.md). |
+| `BLOB_READ_WRITE_TOKEN` | Uploading images and video in the admin panel. **Do not set this by hand** — Vercel injects it when a Blob store is connected. See [File storage](#file-storage). |
 
 Validation lives in `lib/env.ts` and runs **lazily**, at request time. This is
 deliberate: `next build` imports every route to collect page data, so eager
@@ -145,6 +146,39 @@ Nothing else changes — every caller already goes through `sendMail()`.
 
 ---
 
+## File storage
+
+Hero slide images and video, and the About photo, are uploaded through the admin
+panel. Where the bytes land is decided in `lib/admin/storage.ts`:
+
+- **Development** — written to `public/uploads/`, which is git-ignored. The
+  panel is fully usable on a laptop with nothing configured.
+- **Production** — Vercel Blob. A serverless filesystem is read-only, and
+  anything written to one instance would not exist on the next, so the local
+  path is never taken here.
+
+With no Blob store connected, uploads answer `501` and the admin panel shows
+"ფაილების საცავი არ არის დაკავშირებული" beside a URL field that still works.
+That is a deliberate fallback, not a broken state: an admin can host an image
+anywhere and paste the link.
+
+**To enable uploading:**
+
+1. Vercel → the project → **Storage** → **Create Database** → **Blob**
+2. Name it and create it
+3. Connect it to the project, for **Production, Preview and Development**
+4. **Redeploy.** Vercel injects `BLOB_READ_WRITE_TOKEN` on connection, but only
+   builds started afterwards receive it
+
+No code change is needed — `put()` reads the token from the environment, and
+production switches to the Blob path the moment it is present.
+
+Uploads are capped at 8MB and restricted to formats a browser renders inline
+(`app/api/admin/upload/route.ts`). An upload endpoint that accepts arbitrary
+files is a liability, so widening that list is a decision, not a tweak.
+
+---
+
 ## Post-deploy checklist
 
 | Check | Expected |
@@ -159,6 +193,7 @@ Nothing else changes — every caller already goes through `sendMail()`.
 | `/robots.txt` | disallows `/dashboard` and `/api` |
 | Rich Results Test on `/`, `/pricing`, `/contact` | Organization, SoftwareApplication, FAQPage detected |
 | Six failed logins in a row | sixth shows the lockout message, not "wrong password" |
+| Upload an image in the admin hero editor | it appears in the slide; no "საცავი არ არის დაკავშირებული" warning |
 | Delete the test account | database back to real data only |
 
 ---

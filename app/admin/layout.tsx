@@ -14,8 +14,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { userId } = await requireAdmin();
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true },
+    select: { name: true, email: true },
   });
 
-  return <AdminShell email={user?.email ?? ""}>{children}</AdminShell>;
+  // Same fallback chain as the tenant dashboard's account menu, so the same
+  // person is labelled the same way in both places.
+  const name = user?.name?.trim() || user?.email?.split("@")[0] || "—";
+
+  return (
+    <AdminShell name={name} email={user?.email ?? ""}>
+      {children}
+    </AdminShell>
+  );
 }

@@ -2,7 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import type { ChannelType } from "@prisma/client";
+import type { ChannelType, StatMode } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 import { ADMIN_PAGES } from "@/lib/admin/pages";
@@ -26,13 +26,27 @@ function field(fd: FormData, name: string): string {
 }
 
 /**
- * A stat is either counted or typed.
+ * A strip figure is typed, counted, or drifting — exactly one of the three.
  *
- * With a source, the typed value is cleared so a stale number can't linger and
- * reappear if the source is later removed. Without one, a value is required —
- * an empty figure would render a blank slot in the strip.
+ * The fields belonging to the other two modes are reset rather than left in
+ * place, so a figure switched from counted back to typed cannot resurrect a
+ * number nobody remembers setting.
  */
-type StatData = { value: string; source: string; labelKa: string; labelEn: string };
+type StatData = {
+  mode: StatMode;
+  value: string;
+  source: string;
+  labelKa: string;
+  labelEn: string;
+  suffix: string;
+  baseValue: number;
+  changeMin: number;
+  changeMax: number;
+  intervalMinMs: number;
+  intervalMaxMs: number;
+  autoValue: number | null;
+  autoNextAt: Date | null;
+};
 
 type SlideStatData = {
   labelKa: string;
@@ -46,18 +60,66 @@ type SlideStatData = {
   intervalMaxMs: number;
 };
 
-function siteStatFields(fd: FormData): { data: StatData } | { error: string } {
-  const source = field(fd, "source");
-  if (source && !STAT_SOURCE_KEYS.includes(source)) return { error: "unknown_source" };
+/** Shortest interval an admin may set, so a figure cannot flicker. */
+const MIN_INTERVAL_S = 5;
 
+function siteStatFields(fd: FormData): { data: StatData } | { error: string } {
   const labelKa = field(fd, "labelKa");
   const labelEn = field(fd, "labelEn");
   if (!labelKa || !labelEn) return { error: "all_fields_required" };
 
-  const value = field(fd, "value");
-  if (!source && !value) return { error: "value_or_source_required" };
+  const mode = field(fd, "mode");
+  if (mode !== "MANUAL" && mode !== "LIVE" && mode !== "AUTO") return { error: "bad_mode" };
 
-  return { data: { value: source ? "" : value, source, labelKa, labelEn } };
+  const suffix = field(fd, "suffix");
+  const blank = {
+    labelKa,
+    labelEn,
+    suffix,
+    value: "",
+    source: "",
+    baseValue: 0,
+    changeMin: 0,
+    changeMax: 0,
+    intervalMinMs: 60_000,
+    intervalMaxMs: 300_000,
+    // Wiping the running state is what makes a saved start value take effect.
+    // Without it an admin would change "start from 1200", see nothing move, and
+    // reasonably conclude the field does nothing.
+    autoValue: null,
+    autoNextAt: null,
+  };
+
+  if (mode === "LIVE") {
+    const source = field(fd, "source");
+    if (!source || !STAT_SOURCE_KEYS.includes(source)) return { error: "unknown_source" };
+    return { data: { ...blank, mode, source } };
+  }
+
+  if (mode === "MANUAL") {
+    const value = field(fd, "value");
+    if (!value) return { error: "value_required" };
+    return { data: { ...blank, mode, value } };
+  }
+
+  // Ranges are normalised so min never exceeds max — a reversed pair would pick
+  // from an empty interval and freeze the figure.
+  const changeA = num(fd, "changeMin", 0);
+  const changeB = num(fd, "changeMax", 0);
+  const secondsA = Math.max(MIN_INTERVAL_S, num(fd, "intervalMinS", 60));
+  const secondsB = Math.max(MIN_INTERVAL_S, num(fd, "intervalMaxS", 300));
+
+  return {
+    data: {
+      ...blank,
+      mode,
+      baseValue: num(fd, "baseValue", 0),
+      changeMin: Math.min(changeA, changeB),
+      changeMax: Math.max(changeA, changeB),
+      intervalMinMs: Math.min(secondsA, secondsB) * 1000,
+      intervalMaxMs: Math.max(secondsA, secondsB) * 1000,
+    },
+  };
 }
 
 export async function createStat(fd: FormData): Promise<AdminResult> {

@@ -22,57 +22,74 @@ const INPUT =
 const ERRORS: Record<string, Bilingual> = {
   all_fields_required: { ka: "შეავსეთ ყველა ველი", en: "Fill in every field" },
   not_found: { ka: "ვერ მოიძებნა", en: "Not found" },
-  unknown_source: { ka: "უცნობი წყარო", en: "Unknown source" },
-  value_or_source_required: {
-    ka: "ჩაწერე ციფრი ან აირჩიე ავტომატური წყარო",
-    en: "Type a figure or pick an automatic source",
-  },
+  unknown_source: { ka: "აირჩიე მთვლელი", en: "Pick a counter" },
+  bad_mode: { ka: "აირჩიე ციფრის ტიპი", en: "Pick how the figure works" },
+  value_required: { ka: "ჩაწერე ციფრი", en: "Type a figure" },
 };
 
-type Fields = { value: string; source: string; labelKa: string; labelEn: string };
+const SMALL = "h-9 w-full rounded-[8px] border border-input bg-canvas px-2.5 text-[13px] outline-none focus:border-blue";
+const FIELD_LABEL = "mb-1 block text-[10px] uppercase tracking-wide text-faint";
+
+type Mode = "MANUAL" | "LIVE" | "AUTO";
+
+type Fields = {
+  mode: Mode;
+  value: string;
+  source: string;
+  labelKa: string;
+  labelEn: string;
+  suffix: string;
+  baseValue: number;
+  changeMin: number;
+  changeMax: number;
+  intervalMinMs: number;
+  intervalMaxMs: number;
+};
+
+const MODES: { key: Mode; label: Bilingual; hint: Bilingual }[] = [
+  {
+    key: "MANUAL",
+    label: { ka: "ხელით", en: "By hand" },
+    hint: {
+      ka: "რასაც ჩაწერ, ის ჩანს. არ იცვლება.",
+      en: "Whatever you type is what shows. It never changes.",
+    },
+  },
+  {
+    key: "AUTO",
+    label: { ka: "ავტომატური ზრდა", en: "Automatic growth" },
+    hint: {
+      ka: "იწყება საწყისი ციფრიდან და თვითონ იზრდება მითითებულ დიაპაზონებში. ციფრი სერვერზე ინახება, ამიტომ ყველა ვიზიტორი ერთსა და იმავეს ხედავს და გვერდის განახლება მას თავიდან არ იწყებს.",
+      en: "Starts at the start value and climbs by itself within the ranges below. The figure is kept on the server, so every visitor sees the same one and a refresh does not restart it.",
+    },
+  },
+  {
+    key: "LIVE",
+    label: { ka: "ლაივ მთვლელი", en: "Live counter" },
+    hint: {
+      ka: "ნამდვილი ციფრი ბაზიდან. საიტზე მწვანე წერტილით აღინიშნება.",
+      en: "A real figure from the database. Marked with a green dot on the site.",
+    },
+  },
+];
 
 /**
- * Counted or typed, never both.
+ * One figure in the strip: typed, drifting, or counted.
  *
- * Picking a source disables the figure box rather than hiding it, so it stays
- * obvious that the number is now coming from somewhere else.
+ * The three modes are tabs rather than a dropdown because they are not variants
+ * of one thing — each brings its own fields, and seeing which fields appear is
+ * the fastest way to understand what the mode does.
  */
 function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourceOption[] }) {
   const { t } = useLanguage();
-  const [source, setSource] = useState(initial?.source ?? "");
-  const auto = source !== "";
+  const [mode, setMode] = useState<Mode>(initial?.mode ?? "MANUAL");
+  const [source, setSource] = useState(initial?.source ?? sources[0]?.key ?? "");
   const picked = sources.find((s) => s.key === source);
+  const active = MODES.find((m) => m.key === mode);
 
   return (
-    <div className="grid gap-2.5">
-      <label className="block">
-        <span className="mb-1 block text-[12px] font-medium text-muted">
-          {t({ ka: "საიდან მოდის ციფრი", en: "Where the figure comes from" })}
-        </span>
-        <select
-          name="source"
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-          className={INPUT}
-        >
-          <option value="">{t({ ka: "ხელით ჩაწერილი", en: "Typed by hand" })}</option>
-          {sources.map((s) => (
-            <option key={s.key} value={s.key}>
-              {t(s.label)} — {s.value}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <div className="grid gap-2.5 sm:grid-cols-[140px_1fr_1fr]">
-        <input
-          name="value"
-          required={!auto}
-          disabled={auto}
-          defaultValue={initial?.value}
-          placeholder={auto ? t({ ka: "ავტომატური", en: "Automatic" }) : t({ ka: "ციფრი", en: "Figure" })}
-          className={`${INPUT} disabled:opacity-50`}
-        />
+    <div className="grid gap-3">
+      <div className="grid gap-2.5 sm:grid-cols-2">
         <input
           name="labelKa"
           required
@@ -89,13 +106,138 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
         />
       </div>
 
-      {auto ? (
-        <p className="text-[12px] text-green">
-          {t({
-            ka: `ახლა: ${picked?.value ?? "—"}. ციფრი ბაზიდან იკითხება და საიტზე თვითონ განახლდება — ხელით შეცვლა აღარ სჭირდება.`,
-            en: `Right now: ${picked?.value ?? "—"}. Read from the database and refreshed on the site by itself — nothing to keep up to date.`,
-          })}
-        </p>
+      <input type="hidden" name="mode" value={mode} />
+      <div className="flex flex-wrap gap-1.5">
+        {MODES.map((m) => (
+          <button
+            key={m.key}
+            type="button"
+            onClick={() => setMode(m.key)}
+            className={`h-8 rounded-[8px] border px-3 text-[12px] font-medium transition-colors ${
+              mode === m.key
+                ? "border-blue bg-blue-surface text-blue"
+                : "border-border text-muted hover:text-ink"
+            }`}
+          >
+            {t(m.label)}
+          </button>
+        ))}
+      </div>
+      {active ? <p className="text-[12px] text-muted">{t(active.hint)}</p> : null}
+
+      {mode === "MANUAL" ? (
+        <div className="grid gap-2.5 sm:grid-cols-[1fr_120px]">
+          <input
+            name="value"
+            required
+            defaultValue={initial?.value}
+            placeholder={t({ ka: "ციფრი, მაგ. 1,200+", en: "Figure, e.g. 1,200+" })}
+            className={INPUT}
+          />
+          <input
+            name="suffix"
+            defaultValue={initial?.suffix}
+            placeholder={t({ ka: "სუფიქსი", en: "Suffix" })}
+            className={INPUT}
+          />
+        </div>
+      ) : null}
+
+      {mode === "LIVE" ? (
+        <>
+          <select
+            name="source"
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            className={INPUT}
+          >
+            {sources.map((s) => (
+              <option key={s.key} value={s.key}>
+                {t(s.label)} — {s.value}
+              </option>
+            ))}
+          </select>
+          <p className="text-[12px] text-green">
+            {t({
+              ka: `ახლა: ${picked?.value ?? "—"}. ხელით შეცვლა აღარ სჭირდება.`,
+              en: `Right now: ${picked?.value ?? "—"}. Nothing to keep up to date.`,
+            })}
+          </p>
+        </>
+      ) : null}
+
+      {mode === "AUTO" ? (
+        <div className="grid gap-2.5 rounded-[8px] border border-border2 bg-soft p-3">
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            <label className="block">
+              <span className={FIELD_LABEL}>{t({ ka: "საწყისი ციფრი", en: "Start value" })}</span>
+              <input
+                name="baseValue"
+                type="number"
+                step="any"
+                defaultValue={initial?.baseValue ?? 1000}
+                className={SMALL}
+              />
+            </label>
+            <label className="block">
+              <span className={FIELD_LABEL}>{t({ ka: "სუფიქსი", en: "Suffix" })}</span>
+              <input name="suffix" defaultValue={initial?.suffix} placeholder="₾ / % / +" className={SMALL} />
+            </label>
+          </div>
+
+          <div>
+            <span className={FIELD_LABEL}>
+              {t({ ka: "რამდენით გაიზარდოს (დიაპაზონი)", en: "How much it grows (range)" })}
+            </span>
+            <div className="grid grid-cols-2 gap-2.5">
+              <input
+                name="changeMin"
+                type="number"
+                step="any"
+                defaultValue={initial?.changeMin ?? 1}
+                className={SMALL}
+              />
+              <input
+                name="changeMax"
+                type="number"
+                step="any"
+                defaultValue={initial?.changeMax ?? 3}
+                className={SMALL}
+              />
+            </div>
+          </div>
+
+          <div>
+            <span className={FIELD_LABEL}>
+              {t({ ka: "რა სიხშირით, წამებში (დიაპაზონი)", en: "How often, in seconds (range)" })}
+            </span>
+            <div className="grid grid-cols-2 gap-2.5">
+              <input
+                name="intervalMinS"
+                type="number"
+                min={5}
+                defaultValue={Math.round((initial?.intervalMinMs ?? 60_000) / 1000)}
+                className={SMALL}
+              />
+              <input
+                name="intervalMaxS"
+                type="number"
+                min={5}
+                defaultValue={Math.round((initial?.intervalMaxMs ?? 300_000) / 1000)}
+                className={SMALL}
+              />
+            </div>
+          </div>
+
+          {/* Saving restarts the figure, and an admin who does not know that
+              will change the start value, see nothing, and try again. */}
+          <p className="text-[12px] text-amber">
+            {t({
+              ka: "შენახვისას ციფრი თავიდან იწყებს ზრდას საწყისი ციფრიდან.",
+              en: "Saving restarts the figure from its start value.",
+            })}
+          </p>
+        </div>
       ) : null}
     </div>
   );
@@ -126,12 +268,10 @@ export function StatsEditor({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* These are fixed figures. The ones that tick upward on their own are a
-          different thing entirely, and this is where people look for them. */}
       <p className="rounded-[8px] border border-border2 bg-soft px-3.5 py-2.5 text-[12px] text-muted">
         {t({
-          ka: "ეს არის სტატიკური ციფრების ზოლი — რასაც ჩაწერ, ის ჩანს. ცოცხალი, თავისით მზარდი ციფრები „მთავარი კარუსელის“ სექციაშია, სლაიდის შიგნით.",
-          en: "A static strip — whatever you type is what shows. The figures that climb on their own live under “Hero carousel”, inside a slide.",
+          ka: "მთავარი გვერდის ქვედა ზოლი. თითოეული ციფრი სამი ტიპიდან ერთია — ხელით ჩაწერილი, ავტომატურად მზარდი, ან ნამდვილი მთვლელი ბაზიდან.",
+          en: "The strip at the bottom of the landing page. Each figure is one of three kinds — typed by hand, growing automatically, or a real counter from the database.",
         })}
       </p>
 
@@ -189,7 +329,19 @@ export function StatsEditor({
                 action={(fd) => run(() => updateStat(s.id, fd), () => setEditing(null))}
               >
                 <StatFields
-                  initial={{ value: s.value, source: s.source, labelKa: s.labelKa, labelEn: s.labelEn }}
+                  initial={{
+                    mode: s.mode,
+                    value: s.value,
+                    source: s.source,
+                    labelKa: s.labelKa,
+                    labelEn: s.labelEn,
+                    suffix: s.suffix,
+                    baseValue: s.baseValue,
+                    changeMin: s.changeMin,
+                    changeMax: s.changeMax,
+                    intervalMinMs: s.intervalMinMs,
+                    intervalMaxMs: s.intervalMaxMs,
+                  }}
                   sources={sources}
                 />
                 <div className="mt-3 flex justify-end gap-2">
@@ -211,22 +363,34 @@ export function StatsEditor({
               </form>
             ) : (
               <div className="flex items-center gap-4">
-                {/* The real figure, not the word "auto" — the point of a counted
-                    stat is being able to see what the site is showing. */}
+                {/* The figure the site is showing right now — for a counted or
+                    drifting stat that is the whole point of the row. */}
                 <div className="font-mono text-2xl font-medium tabular-nums">
-                  {s.source ? (sources.find((o) => o.key === s.source)?.value ?? "—") : s.value}
+                  {s.mode === "LIVE"
+                    ? (sources.find((o) => o.key === s.source)?.value ?? "—")
+                    : s.mode === "AUTO"
+                      ? Math.round(s.autoValue ?? s.baseValue).toLocaleString("en-US")
+                      : s.value}
+                  {s.suffix}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm">{s.labelKa}</div>
                   <div className="truncate text-[13px] text-muted">
-                    {s.source
+                    {s.mode === "LIVE"
                       ? t(sources.find((o) => o.key === s.source)?.label ?? { ka: s.source, en: s.source })
-                      : s.labelEn}
+                      : s.mode === "AUTO"
+                        ? `+${s.changeMin}…${s.changeMax} / ${Math.round(s.intervalMinMs / 1000)}–${Math.round(s.intervalMaxMs / 1000)}${t({ ka: "წმ", en: "s" })}`
+                        : s.labelEn}
                   </div>
                 </div>
-                {s.source ? (
+                {s.mode === "LIVE" ? (
                   <span className="shrink-0 rounded-full bg-green-surface px-2 py-0.5 text-[11px] text-green">
-                    {t({ ka: "ცოცხალი", en: "Live" })}
+                    {t({ ka: "ლაივ", en: "Live" })}
+                  </span>
+                ) : null}
+                {s.mode === "AUTO" ? (
+                  <span className="shrink-0 rounded-full bg-soft px-2 py-0.5 text-[11px] text-muted">
+                    {t({ ka: "ავტომატური", en: "Automatic" })}
                   </span>
                 ) : null}
                 <div className="flex items-center gap-1">

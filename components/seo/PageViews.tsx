@@ -14,10 +14,9 @@ import { track } from "@/lib/analytics/track";
 export function PageViews() {
   const pathname = usePathname();
 
+  // Admin pages are excluded inside `track` itself, so every event obeys the
+  // same rule rather than each caller remembering it.
   useEffect(() => {
-    // The owner reading their own control panel is not traffic. Counting it
-    // would inflate every figure on the very page they are looking at.
-    if (pathname.startsWith("/admin")) return;
     track("page_view");
   }, [pathname]);
 

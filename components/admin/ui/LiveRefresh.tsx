@@ -39,7 +39,7 @@ export function LiveRefresh() {
       </span>
       {at
         ? t({ ka: `განახლდა ${at}`, en: `Updated ${at}` })
-        : t({ ka: "ცოცხალი — თვითონ განახლდება", en: "Live — refreshes itself" })}
+        : t({ ka: "ლაივ — თვითონ განახლდება", en: "Live — refreshes itself" })}
     </span>
   );
 }

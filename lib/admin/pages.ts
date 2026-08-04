@@ -87,7 +87,7 @@ export const ADMIN_PAGES: AdminPage[] = [
       // that live inside a carousel slide.
       {
         key: "stats",
-        label: ka("ციფრების ზოლი (სტატიკური)", "Stats strip (static)"),
+        label: ka("ციფრების ზოლი", "Stats strip"),
         icon: IconChartBar,
         kind: "stats",
       },

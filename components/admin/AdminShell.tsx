@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { signOut } from "next-auth/react";
-import { IconBolt, IconExternalLink, IconLogout, IconMenu2 } from "@tabler/icons-react";
+import { IconBolt, IconMenu2 } from "@tabler/icons-react";
 import { AdminNav } from "./AdminNav";
-import { LanguageToggle } from "@/components/layout/LanguageToggle";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { DASH } from "@/lib/dashboard/routes";
+import { AdminProfileMenu } from "./AdminProfileMenu";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-export function AdminShell({ email, children }: { email: string; children: React.ReactNode }) {
+export function AdminShell({
+  name,
+  email,
+  children,
+}: {
+  name: string;
+  email: string;
+  children: React.ReactNode;
+}) {
   const { t } = useLanguage();
   const [drawer, setDrawer] = useState(false);
 
@@ -26,24 +30,9 @@ export function AdminShell({ email, children }: { email: string; children: React
     </div>
   );
 
-  const footer = (
-    <div className="border-t border-border2 p-3">
-      <div className="mb-2 px-1.5 text-[11px] text-muted">{email}</div>
-      <Link
-        href={DASH.home}
-        className="mb-0.5 flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-ink hover:bg-soft"
-      >
-        <IconExternalLink size={16} /> {t({ ka: "დაშბორდზე დაბრუნება", en: "Back to dashboard" })}
-      </Link>
-      <button
-        type="button"
-        onClick={() => signOut({ callbackUrl: "/login" })}
-        className="flex w-full items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-ink hover:bg-soft"
-      >
-        <IconLogout size={16} /> {t({ ka: "გასვლა", en: "Sign out" })}
-      </button>
-    </div>
-  );
+  // Language, theme, the way back to the dashboard and signing out all live in
+  // here — the same menu, in the same corner, as the tenant dashboard.
+  const footer = <AdminProfileMenu name={name} email={email} />;
 
   return (
     <div className="dash-scope flex min-h-screen bg-canvas text-ink">
@@ -73,10 +62,6 @@ export function AdminShell({ email, children }: { email: string; children: React
           <span className="rounded-full border border-ink/30 bg-soft px-2 py-0.5 text-[11px] font-semibold">
             {t({ ka: "ადმინი", en: "Admin" })}
           </span>
-          <div className="ml-auto flex items-center gap-1.5">
-            <LanguageToggle />
-            <ThemeToggle />
-          </div>
         </div>
 
         {/* Full width, like the tenant dashboard — the section rail sits right

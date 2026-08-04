@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { countStat, findStatSource } from "@/lib/site/statSources";
 import { formatStat, type StatFormat } from "@/lib/site/statFormat";
+import { autoKey, readAutoStat } from "@/lib/site/autoStat";
 import type { Bilingual } from "@/lib/content/types";
 import { PLAN_SUPPORT, type Package } from "@/lib/content/packages";
 import type { FaqItem } from "@/lib/content/faq";
@@ -8,49 +9,89 @@ import type { FaqItem } from "@/lib/content/faq";
 export type SiteStatView = {
   value: string;
   label: Bilingual;
-  /** Set when the figure is counted; the browser keeps it up to date. */
-  source: string;
-  /** The raw count behind `value`, so the browser can animate to the next one. */
+  /**
+   * `counted` is a real measurement and says so on the page. `auto` moves but
+   * measures nothing, so it is never badged as live — marking an invented
+   * number as a real one would mislead the visitor and, worse, the owner.
+   */
+  kind: "fixed" | "counted" | "auto";
+  /**
+   * The key this figure is published under, or "" when it never moves.
+   *
+   * Counter keys and drifting figures' `auto:` keys share this field because
+   * the browser treats them identically: it keeps whatever is keyed current and
+   * does not care where the number came from.
+   */
+  liveKey: string;
+  /** The raw number behind `value`, so the browser can count up to the next. */
   n: number | null;
   format: StatFormat;
+  suffix: string;
 };
+
+/** Every figure that stays still, whatever the reason. */
+function fixed(
+  r: { value: string; labelKa: string; labelEn: string; suffix: string },
+): SiteStatView {
+  return {
+    value: r.value,
+    label: { ka: r.labelKa, en: r.labelEn },
+    kind: "fixed",
+    liveKey: "",
+    n: null,
+    format: "number",
+    suffix: r.suffix,
+  };
+}
 
 /**
  * The figures in the landing strip.
  *
- * A row with a `source` is counted live; one without shows what an admin typed.
- * A source that no longer exists in the registry falls back to the stored value
- * rather than disappearing, so removing a counter from the code never blanks a
- * figure on the public page.
+ * Three kinds, chosen per figure in the admin panel: typed by hand, counted
+ * from the database, or drifting upward from a start value. Only the first is
+ * static, and any of the other two degrades to it rather than to a blank slot —
+ * a counter that has been removed from the code, or a query that failed, still
+ * shows a number with its label.
  *
  * The raw number travels alongside the formatted one. Rendering the real figure
  * server-side is what makes the first paint correct; the raw number is what the
- * browser needs to count up from when the next visitor signs up.
+ * browser counts up from when it next changes.
  */
 export async function getSiteStats(): Promise<SiteStatView[]> {
   const rows = await prisma.siteStat.findMany({ orderBy: { order: "asc" } });
 
   return Promise.all(
-    rows.map(async (r) => {
-      const source = r.source ? findStatSource(r.source) : undefined;
-      if (!source) {
+    rows.map(async (r): Promise<SiteStatView> => {
+      if (r.mode === "AUTO") {
+        const n = await readAutoStat(r);
         return {
-          value: r.value,
+          value: formatStat(n, "number"),
           label: { ka: r.labelKa, en: r.labelEn },
-          source: "",
-          n: null,
-          format: "number" as StatFormat,
+          kind: "auto",
+          liveKey: autoKey(r.key),
+          n,
+          format: "number",
+          suffix: r.suffix,
         };
       }
 
+      if (r.mode !== "LIVE") return fixed(r);
+
+      const source = r.source ? findStatSource(r.source) : undefined;
+      if (!source) return fixed(r);
+
       const n = await countStat(source);
+      // A failed count keeps the stored figure — stale, but not a blank slot.
+      if (n === null) return fixed(r);
+
       return {
-        // A failed count keeps the stored figure — stale, but not a blank slot.
-        value: n === null ? r.value : formatStat(n, source.format),
+        value: formatStat(n, source.format),
         label: { ka: r.labelKa, en: r.labelEn },
-        source: r.source,
+        kind: "counted",
+        liveKey: r.source,
         n,
         format: source.format,
+        suffix: r.suffix,
       };
     }),
   );

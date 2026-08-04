@@ -23,6 +23,11 @@ declare global {
 export function track(name: string, props?: EventProps): void {
   if (typeof window === "undefined") return;
 
+  // The owner working in their own control panel is not marketing traffic.
+  // Their language and theme clicks would otherwise inflate the very figures
+  // they are about to read on the analytics screen.
+  if (window.location.pathname.startsWith("/admin")) return;
+
   window.gtag?.("event", name, props as Record<string, unknown> | undefined);
 
   void fetch("/api/track", {
