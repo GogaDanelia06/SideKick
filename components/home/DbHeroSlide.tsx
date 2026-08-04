@@ -7,6 +7,7 @@ import { ACTIONS } from "@/lib/content/common";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AnimatedStat } from "./AnimatedStat";
+import { MOCKS, mockKey } from "./mocks/registry";
 import type { HeroSlideView } from "@/lib/site/content";
 
 /**
@@ -30,7 +31,14 @@ function Title({ text }: { text: string }) {
   );
 }
 
-/** The right-hand panel: uploaded media, or the slide's animated figures. */
+/**
+ * The right-hand panel, in the order the editor promises.
+ *
+ * Uploaded media wins, then the built-in animation, then the slide's figures.
+ * That matches the dropdown's own wording — "ჩაშენებული ანიმაცია (თუ მედია არ
+ * არის)" — and it is why the three choices had no effect before: the mock was
+ * saved to the database and then never read on the way back out.
+ */
 function Panel({ slide }: { slide: HeroSlideView }) {
   if (slide.mediaUrl) {
     return slide.mediaType === "video" ? (
@@ -50,6 +58,12 @@ function Panel({ slide }: { slide: HeroSlideView }) {
         className="w-full rounded-lg border border-border object-cover"
       />
     );
+  }
+
+  const key = mockKey(slide.mock);
+  if (key) {
+    const Mock = MOCKS[key];
+    return <Mock />;
   }
 
   if (slide.stats.length > 0) {

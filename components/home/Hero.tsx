@@ -1,25 +1,16 @@
 "use client";
 
-import type { ComponentType } from "react";
 import clsx from "clsx";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { Container } from "@/components/ui/Container";
 import { HeroSlide } from "./HeroSlide";
 import { HeroDots } from "./HeroDots";
 import { Stats } from "./Stats";
-import { ChatMock } from "./mocks/ChatMock";
-import { DashboardMock } from "./mocks/DashboardMock";
-import { TesterMock } from "./mocks/TesterMock";
+import { MOCKS } from "./mocks/registry";
 import { DbHeroSlide } from "./DbHeroSlide";
-import { HERO_INTERVAL_MS, HERO_SLIDES, type HeroMock } from "@/lib/content/hero";
+import { HERO_INTERVAL_MS, HERO_SLIDES } from "@/lib/content/hero";
 import type { HeroSlideView, SiteStatView } from "@/lib/site/content";
 import { useCarousel } from "@/hooks/useCarousel";
-
-const MOCKS: Record<HeroMock, ComponentType> = {
-  chat: ChatMock,
-  dashboard: DashboardMock,
-  tester: TesterMock,
-};
 
 function Arrow({ side, onClick }: { side: "left" | "right"; onClick: () => void }) {
   const Icon = side === "left" ? IconChevronLeft : IconChevronRight;

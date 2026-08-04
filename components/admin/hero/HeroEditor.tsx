@@ -52,13 +52,26 @@ function SlideFields({ initial }: { initial?: SlideWithStats }) {
       />
 
       <label className="block">
-        <span className={LABEL}>{t({ ka: "ჩაშენებული ანიმაცია (თუ მედია არ არის)", en: "Built-in animation (when no media)" })}</span>
+        {/* The panel shows exactly one thing. Saying which wins here is the
+            difference between "I picked it and nothing changed" and a choice. */}
+        <span className={LABEL}>
+          {t({
+            ka: "ჩაშენებული ანიმაცია — ჩანს მაშინ, თუ მედია არ არის ატვირთული",
+            en: "Built-in animation — shown when no media is uploaded",
+          })}
+        </span>
         <select name="mock" defaultValue={initial?.mock ?? ""} className={INPUT}>
           <option value="">{t({ ka: "— არცერთი —", en: "— none —" })}</option>
           <option value="chat">{t({ ka: "ჩატი", en: "Chat" })}</option>
           <option value="dashboard">{t({ ka: "დეშბორდი", en: "Dashboard" })}</option>
           <option value="tester">{t({ ka: "ტესტერი", en: "Tester" })}</option>
         </select>
+        <p className="mt-1.5 text-[12px] text-faint">
+          {t({
+            ka: "მარჯვენა პანელზე ერთი რამ ჩანს: ჯერ მედია, შემდეგ ანიმაცია, ბოლოს — ქვემოთ დამატებული ციფრები.",
+            en: "The right-hand panel shows one thing: media first, then the animation, and the figures below only if neither is set.",
+          })}
+        </p>
       </label>
 
       <div className="grid gap-2.5 sm:grid-cols-2">
