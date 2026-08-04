@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { IconArrowRight, IconBolt, IconMailCheck, IconMailFast } from "@tabler/icons-react";
+import { IconArrowRight, IconBolt, IconCircleCheck, IconUserPlus } from "@tabler/icons-react";
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
 import { OrDivider } from "./OrDivider";
@@ -15,7 +15,7 @@ import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { track } from "@/lib/analytics/track";
 
-export function RegisterForm() {
+export function RegisterForm({ google }: { google: boolean }) {
   const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -75,12 +75,16 @@ export function RegisterForm() {
         </>
       }
     >
-      <GoogleButton label={t(REGISTER.google)} onClick={() => signIn("google", { callbackUrl })} />
-      <OrDivider />
+      {google ? (
+        <>
+          <GoogleButton label={t(REGISTER.google)} onClick={() => signIn("google", { callbackUrl })} />
+          <OrDivider />
+        </>
+      ) : null}
       {sent ? (
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-3 rounded-md border border-blue-ring bg-blue-surface p-4">
-            <IconMailCheck size={22} className="shrink-0 text-green" />
+            <IconCircleCheck size={22} className="shrink-0 text-green" />
             <p className="text-sm leading-relaxed text-blue-ink">{t(REGISTER.sent)}</p>
           </div>
           <button
@@ -112,7 +116,7 @@ export function RegisterForm() {
             disabled={pending}
             className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white disabled:opacity-60"
           >
-            <IconMailFast size={18} />
+            <IconUserPlus size={18} />
             {pending ? "…" : t(REGISTER.submit)}
           </button>
         </form>

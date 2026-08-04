@@ -15,7 +15,7 @@ import { DASH } from "@/lib/dashboard/routes";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-export function LoginForm() {
+export function LoginForm({ google }: { google: boolean }) {
   const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -60,12 +60,17 @@ export function LoginForm() {
         </>
       }
     >
-      <GoogleButton
-        label={t(LOGIN.google)}
-        onClick={() => signIn("google", { callbackUrl })}
-      />
-
-      <OrDivider />
+      {/* Hidden rather than disabled when the provider is not configured: a
+          greyed-out button still reads as "this should work". */}
+      {google ? (
+        <>
+          <GoogleButton
+            label={t(LOGIN.google)}
+            onClick={() => signIn("google", { callbackUrl })}
+          />
+          <OrDivider />
+        </>
+      ) : null}
 
       <form className="flex flex-col gap-3.5" onSubmit={onSubmit}>
         <Field

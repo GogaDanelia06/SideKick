@@ -7,6 +7,7 @@ import { getContext } from "@/lib/session";
 import { can, requirePermission } from "@/lib/auth/permissions";
 import { availableProviders, parseProvider } from "@/lib/payments";
 import { isAllowedMonths, startCheckout } from "@/lib/billing/checkout";
+import { checkLimit } from "@/lib/billing/limits";
 import { log } from "@/lib/logger";
 import { DASH } from "./routes";
 
@@ -17,6 +18,14 @@ export type TeamResult = ActionResult;
 export async function setChannelConnected(channelId: string, connected: boolean) {
   const ctx = await requirePermission("channels:write");
   if (!ctx) return;
+
+  // Only connecting is capped. Disconnecting must always work, or a tenant who
+  // hits their ceiling could never get back under it.
+  if (connected) {
+    const verdict = await checkLimit(ctx.businessId, "channels");
+    if (!verdict.allowed) return;
+  }
+
   await prisma.channel.updateMany({
     where: { id: channelId, businessId: ctx.businessId },
     data: {
@@ -123,6 +132,10 @@ export async function createProduct(data: FormData) {
   const name = str(data, "name");
   const code = str(data, "code");
   if (!name || !code) return;
+
+  const verdict = await checkLimit(ctx.businessId, "products");
+  if (!verdict.allowed) return;
+
   await prisma.product.create({
     data: {
       businessId: ctx.businessId, name, code,
@@ -250,6 +263,11 @@ export async function addTeamMember(data: FormData): Promise<TeamResult> {
     where: { userId_businessId: { userId: user.id, businessId: ctx.businessId } },
   });
   if (existing) return { ok: false, error: "already_member" };
+
+  // Checked after the duplicate test so re-inviting someone already on the team
+  // reports the real reason rather than blaming the plan.
+  const verdict = await checkLimit(ctx.businessId, "users");
+  if (!verdict.allowed) return { ok: false, error: "plan_limit" };
 
   await prisma.membership.create({
     data: { userId: user.id, businessId: ctx.businessId, role },

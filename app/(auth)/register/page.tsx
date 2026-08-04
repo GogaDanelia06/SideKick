@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { RegisterForm } from "@/components/auth/RegisterForm";
+import { googleSignInEnabled } from "@/lib/auth/providers";
 
 export const metadata: Metadata = { title: "რეგისტრაცია" };
 
@@ -9,7 +10,7 @@ export default function RegisterPage() {
   // boundary for the page to still prerender — same as the login page.
   return (
     <Suspense>
-      <RegisterForm />
+      <RegisterForm google={googleSignInEnabled()} />
     </Suspense>
   );
 }

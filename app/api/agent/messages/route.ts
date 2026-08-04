@@ -9,6 +9,7 @@ import {
   requireStr,
 } from "@/lib/agent/auth";
 import { ownedConversation } from "@/lib/agent/conversation";
+import { checkLimit, countMessage } from "@/lib/billing/limits";
 
 export const dynamic = "force-dynamic";
 
@@ -40,10 +41,31 @@ export async function POST(request: Request) {
   const conversation = await ownedConversation(auth.businessId, conversationId);
   if (isDenial(conversation)) return conversation.response;
 
+  // Only what the AI produces counts against the plan. Refusing to record what
+  // a customer already said would lose the tenant's own inbox history over a
+  // billing matter, and the customer never agreed to the plan in the first
+  // place. The 402 tells the AI service to stop answering this tenant.
+  if (sender === "AI") {
+    const verdict = await checkLimit(auth.businessId, "messages");
+    if (!verdict.allowed) {
+      return NextResponse.json(
+        {
+          error: "message_limit_reached",
+          message: `The ${verdict.planName} plan allows ${verdict.limit} AI messages and ${verdict.used} have been used. This reply was not recorded. Customer messages are still accepted — stop generating answers for this business until the plan is upgraded.`,
+          limit: verdict.limit,
+          used: verdict.used,
+        },
+        { status: 402 },
+      );
+    }
+  }
+
   const message = await prisma.message.create({
     data: { conversationId: conversation.id, sender, text },
     select: { id: true, createdAt: true },
   });
+
+  if (sender === "AI") await countMessage(auth.businessId);
 
   // A chat with traffic in it is no longer "new". Left alone once a human has
   // marked it DONE — reopening someone's closed conversation is their call.

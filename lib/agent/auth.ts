@@ -2,6 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
+import { consume } from "@/lib/security/rateLimit";
 import { log } from "@/lib/logger";
 
 /**
@@ -85,6 +86,20 @@ export async function authenticate(
   if (!business) {
     log.warn("agent API named an unknown business", { businessId });
     return { response: NextResponse.json({ error: "unknown businessId" }, { status: 403 }) };
+  }
+
+  // A ceiling on what one tenant can write per minute. The token is otherwise
+  // the only thing between a leak and unlimited writes to leads and orders, and
+  // it is a single shared secret held by another company.
+  const limit = await consume("agent", business.id);
+  if (!limit.ok) {
+    log.warn("agent API rate limited", { businessId: business.id });
+    return {
+      response: NextResponse.json(
+        { error: "rate_limited", retryAfterSec: limit.retryAfterSec },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfterSec) } },
+      ),
+    };
   }
 
   return { businessId: business.id };

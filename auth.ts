@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { clear, clientIp, consume } from "@/lib/security/rateLimit";
 import { authConfig } from "./auth.config";
+import { googleSignInEnabled } from "@/lib/auth/providers";
 
 export class RateLimitedSignin extends CredentialsSignin {
   code = "rate_limited";
@@ -38,7 +39,10 @@ const providers: Provider[] = [
   }),
 ];
 
-if (process.env.AUTH_GOOGLE_ID) providers.push(Google);
+// Same predicate the login and register pages use to decide whether to show the
+// button. Registering the provider on an id alone would leave a button that
+// leads to a Google error page, and half-configured is worse than off.
+if (googleSignInEnabled()) providers.push(Google);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,

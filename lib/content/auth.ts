@@ -33,10 +33,13 @@ export const REGISTER = {
   company: { ka: "კომპანიის დასახელება", en: "Company name" },
   industry: { ka: "საქმიანობის სფერო", en: "Industry" },
   optional: { ka: "(არასავალდებულო)", en: "(optional)" },
-  submit: { ka: "რეგისტრაცია და ვერიფიკაცია", en: "Sign up & verify" },
+  submit: { ka: "რეგისტრაცია", en: "Sign up" },
+  // Says what actually happened. This used to promise a verification link that
+  // was never sent — the account is created and usable straight away, so people
+  // sat waiting for an email that did not exist.
   sent: {
-    ka: "ვერიფიკაციის ბმული გამოგზავნილია მაილზე. ლინკზე დაჭერით ავტომატურად გადახვალ სამართავ პანელის დეშბორდზე.",
-    en: "A verification link has been sent to your email. Clicking it takes you straight to your dashboard.",
+    ka: "ანგარიში შექმნილია. შეგიძლია დაიწყო მუშაობა.",
+    en: "Your account is ready. You can start right away.",
   },
   haveAccount: { ka: "უკვე გაქვს ანგარიში?", en: "Already have an account?" },
   signIn: { ka: "შესვლა", en: "Sign in" },
