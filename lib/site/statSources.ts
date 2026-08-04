@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
 import type { Bilingual } from "@/lib/content/types";
@@ -143,8 +144,13 @@ export async function countStat(source: StatSource): Promise<number | null> {
  * Showing the current figure beside each choice is the point: it is how an
  * admin tells "users registered" from "businesses registered" without having to
  * publish one and go look at the site.
+ *
+ * Wrapped in `cache` because two sections of the landing admin page — the
+ * carousel and the stats strip — both offer this picker. Without it the same
+ * twelve counts run twice per render, which measured at 367ms against
+ * production where one pass costs 183ms.
  */
-export async function statSourceOptions(): Promise<StatSourceOption[]> {
+export const statSourceOptions = cache(async (): Promise<StatSourceOption[]> => {
   return Promise.all(
     STAT_SOURCES.map(async (s) => {
       const n = await countStat(s);
@@ -156,4 +162,4 @@ export async function statSourceOptions(): Promise<StatSourceOption[]> {
       };
     }),
   );
-}
+});

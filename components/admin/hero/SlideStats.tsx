@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useOptimistic, useRef, useState, useTransition } from "react";
 import type { HeroSlideStat } from "@prisma/client";
 import { IconBolt, IconPlus, IconTrash, IconX } from "@tabler/icons-react";
 import { createSlideStat, updateSlideStat, deleteSlideStat } from "@/lib/admin/actions";
@@ -158,6 +158,13 @@ export function SlideStats({
   const [editing, setEditing] = useState<string | null>(null);
   const addRef = useRef<HTMLFormElement>(null);
 
+  // The figure disappears on click rather than after the round trip; React puts
+  // it back by itself if the delete fails.
+  const [visible, removeOptimistic] = useOptimistic(
+    stats,
+    (rows: HeroSlideStat[], id: string) => rows.filter((r) => r.id !== id),
+  );
+
   function run(fn: () => Promise<{ ok: boolean }>, onDone?: () => void) {
     start(async () => {
       const res = await fn();
@@ -165,11 +172,18 @@ export function SlideStats({
     });
   }
 
+  function remove(id: string) {
+    start(async () => {
+      removeOptimistic(id);
+      await deleteSlideStat(id);
+    });
+  }
+
   return (
     <div className="mt-3 rounded-[8px] border border-border2 bg-soft p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[12px] font-semibold text-muted">
-          {t({ ka: "ციფრები სლაიდზე", en: "Figures on the slide" })} · {stats.length}
+          {t({ ka: "ციფრები სლაიდზე", en: "Figures on the slide" })} · {visible.length}
         </span>
         <button
           type="button"
@@ -197,7 +211,7 @@ export function SlideStats({
       ) : null}
 
       <div className="flex flex-col gap-1.5">
-        {stats.map((s) => {
+        {visible.map((s) => {
           const picked = s.source ? sources.find((o) => o.key === s.source) : undefined;
           return (
             <div key={s.id} className="rounded-[8px] border border-border bg-card p-2.5">
@@ -237,7 +251,7 @@ export function SlideStats({
                   <button
                     type="button"
                     disabled={pending}
-                    onClick={() => run(() => deleteSlideStat(s.id))}
+                    onClick={() => remove(s.id)}
                     aria-label={t({ ka: "წაშლა", en: "Delete" })}
                     className="grid size-7 shrink-0 place-items-center rounded-[6px] border border-border text-red hover:border-red disabled:opacity-40"
                   >

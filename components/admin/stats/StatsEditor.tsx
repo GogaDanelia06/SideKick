@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useOptimistic, useRef, useState, useTransition } from "react";
 import type { SiteStat } from "@prisma/client";
 import {
   IconAlertTriangle,
@@ -257,12 +257,33 @@ export function StatsEditor({
   const [error, setError] = useState<string | null>(null);
   const addRef = useRef<HTMLFormElement>(null);
 
+  /**
+   * The row leaves the list the moment it is clicked.
+   *
+   * Deleting means a round trip to Frankfurt and then a re-render of the whole
+   * page, so waiting for the server before removing the row is most of a second
+   * where nothing appears to happen and people click again. React puts the row
+   * back on its own if the action fails, and the error below says why.
+   */
+  const [visible, removeOptimistic] = useOptimistic(stats, (rows: SiteStat[], id: string) =>
+    rows.filter((r) => r.id !== id),
+  );
+
   function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
     setError(null);
     start(async () => {
       const res = await fn();
       if (!res.ok) setError(res.error ?? "error");
       else onDone?.();
+    });
+  }
+
+  function remove(id: string) {
+    setError(null);
+    start(async () => {
+      removeOptimistic(id);
+      const res = await deleteStat(id);
+      if (!res.ok) setError(res.error ?? "error");
     });
   }
 
@@ -277,7 +298,7 @@ export function StatsEditor({
 
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted">
-          {stats.length} {t({ ka: "მაჩვენებელი", en: "stats" })}
+          {visible.length} {t({ ka: "მაჩვენებელი", en: "stats" })}
         </span>
         <button
           type="button"
@@ -315,14 +336,14 @@ export function StatsEditor({
         </form>
       ) : null}
 
-      {stats.length === 0 && !adding ? (
+      {visible.length === 0 && !adding ? (
         <div className="rounded-lg border border-border bg-card px-6 py-10 text-center text-sm text-muted">
           {t({ ka: "ჯერ არცერთი მაჩვენებელი. საიტზე სექცია არ ჩანს.", en: "No stats yet. The section is hidden on the site." })}
         </div>
       ) : null}
 
       <div className="flex flex-col gap-2.5">
-        {stats.map((s, i) => (
+        {visible.map((s, i) => (
           <div key={s.id} className="rounded-lg border border-border bg-card p-4">
             {editing === s.id ? (
               <form
@@ -424,7 +445,7 @@ export function StatsEditor({
                   <button
                     type="button"
                     disabled={pending}
-                    onClick={() => run(() => deleteStat(s.id))}
+                    onClick={() => remove(s.id)}
                     aria-label={t({ ka: "წაშლა", en: "Delete" })}
                     className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40"
                   >
