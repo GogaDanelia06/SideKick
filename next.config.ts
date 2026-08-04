@@ -16,11 +16,25 @@ const isDev = process.env.NODE_ENV !== "production";
  *     script-src  + https://connect.facebook.net
  *     img-src     + https://www.facebook.com
  */
+/**
+ * Where admin uploads are served from.
+ *
+ * Note this is a host, not the `blob:` scheme beside it — those are unrelated
+ * things that happen to share a word. `blob:` covers object URLs the browser
+ * makes locally; this covers files the admin panel actually uploaded. Without
+ * it every uploaded image and video is blocked by the browser, on the public
+ * landing page as well as in the editor.
+ */
+const BLOB_HOST = "https://*.public.blob.vercel-storage.com";
+
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://img.youtube.com https://*.googleusercontent.com",
+  `img-src 'self' data: blob: ${BLOB_HOST} https://img.youtube.com https://*.googleusercontent.com`,
+  // Hero slides can be video, and <video> is governed by media-src — which was
+  // absent, so it fell back to default-src 'self' and blocked them.
+  `media-src 'self' ${BLOB_HOST}`,
   "font-src 'self' data:",
   `connect-src 'self'${isDev ? " ws: http://localhost:*" : ""}`,
   "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
