@@ -9,9 +9,11 @@ const INPUT =
   "w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-blue";
 
 const ERRORS: Record<string, Bilingual> = {
+  // Names the place to go, not just the problem — whoever sees this is the
+  // person who can fix it, and "not configured" alone tells them nothing.
   not_configured: {
-    ka: "ატვირთვა ჯერ არ არის კონფიგურირებული — ჩასვი ბმული ქვემოთ.",
-    en: "Upload is not configured yet — paste a URL below instead.",
+    ka: "ფაილების საცავი არ არის დაკავშირებული (Vercel → Storage → Blob). ამასობაში ჩასვი ბმული ქვემოთ.",
+    en: "File storage is not connected (Vercel → Storage → Blob). Paste a URL below in the meantime.",
   },
   bad_type: { ka: "დაუშვებელი ფორმატი", en: "Unsupported file type" },
   too_large: { ka: "ფაილი 8MB-ზე დიდია", en: "File is larger than 8MB" },

@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
 import { isPlatformAdmin } from "@/lib/auth/admin";
+import { storeMedia } from "@/lib/admin/storage";
 import { log } from "@/lib/logger";
 
 /**
  * Media upload for admin content (carousel slides, about photo).
  *
- * Stored in Vercel Blob. When no token is configured the endpoint says so
- * plainly and the admin UI falls back to pasting a URL — the panel stays usable
- * before storage is set up rather than failing in a confusing way.
+ * Where the bytes land is `lib/admin/storage.ts`'s problem — Vercel Blob in
+ * production, the local disk in development. This route's job is deciding what
+ * is allowed through: an admin, a format a browser can render, under the size
+ * cap. When storage is genuinely unconfigured it says so plainly and the admin
+ * UI falls back to pasting a URL, rather than failing in a confusing way.
  */
 
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -40,17 +42,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      {
-        error: "not_configured",
-        message:
-          "File storage is not configured. Add BLOB_READ_WRITE_TOKEN in Vercel (Storage → Blob), or paste a URL instead.",
-      },
-      { status: 501 },
-    );
-  }
-
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File)) {
@@ -65,19 +56,25 @@ export async function POST(req: Request) {
   }
 
   try {
-    // `addRandomSuffix` keeps uploads from overwriting each other and makes the
-    // final URL unguessable from the original filename.
-    const blob = await put(`admin/${Date.now()}.${EXT[file.type] ?? "bin"}`, file, {
-      access: "public",
-      addRandomSuffix: true,
-      contentType: file.type,
-    });
+    const stored = await storeMedia(file, EXT[file.type] ?? "bin", file.type);
+
+    if ("error" in stored) {
+      return NextResponse.json(
+        {
+          error: "not_configured",
+          message:
+            "File storage is not configured. Create a Blob store in Vercel (Storage → Blob) and connect it to this project, or paste a URL instead.",
+        },
+        { status: 501 },
+      );
+    }
+
     return NextResponse.json({
-      url: blob.url,
+      url: stored.url,
       type: file.type.startsWith("video/") ? "video" : "image",
     });
   } catch (err) {
-    const errorId = log.error("blob upload failed", err);
+    const errorId = log.error("media upload failed", err);
     return NextResponse.json({ error: "upload_failed", errorId }, { status: 500 });
   }
 }

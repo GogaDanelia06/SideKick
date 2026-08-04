@@ -32,3 +32,6 @@ next-env.d.ts
 # env
 .env
 .env*.local
+
+# media uploaded through the admin panel in development
+/public/uploads
