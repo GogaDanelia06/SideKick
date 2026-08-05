@@ -27,6 +27,9 @@ export function RegisterForm({ google }: { google: boolean }) {
   const callbackUrl = requested?.startsWith("/") ? requested : DASH.home;
 
   const [sent, setSent] = useState(false);
+  // True when a confirmation link went out, which means we must NOT sign the
+  // person in — the credentials provider rejects an unconfirmed address.
+  const [needsVerify, setNeedsVerify] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -56,7 +59,14 @@ export function RegisterForm({ google }: { google: boolean }) {
       setPending(false);
       return setError(data.error ?? t({ ka: "რეგისტრაცია ვერ მოხერხდა", en: "Registration failed" }));
     }
-    await signIn("credentials", { email: String(payload.email), password, redirect: false });
+    const data = (await res.json().catch(() => ({}))) as { verify?: boolean };
+    if (data.verify) {
+      setNeedsVerify(true);
+    } else {
+      // No mail provider configured, so the account was activated outright and
+      // signing straight in is the friendlier path.
+      await signIn("credentials", { email: String(payload.email), password, redirect: false });
+    }
     setPending(false);
     setSent(true);
     track("registration_completed");
@@ -85,16 +95,27 @@ export function RegisterForm({ google }: { google: boolean }) {
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-3 rounded-md border border-blue-ring bg-blue-surface p-4">
             <IconCircleCheck size={22} className="shrink-0 text-green" />
-            <p className="text-sm leading-relaxed text-blue-ink">{t(REGISTER.sent)}</p>
+            <p className="text-sm leading-relaxed text-blue-ink">
+              {t(needsVerify ? REGISTER.checkInbox : REGISTER.sent)}
+            </p>
           </div>
-          <button
-            type="button"
-            onClick={() => { router.push(callbackUrl); router.refresh(); }}
-            className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white"
-          >
-            {t({ ka: "გადადი დეშბორდზე", en: "Go to dashboard" })}
-            <IconArrowRight size={18} />
-          </button>
+          {needsVerify ? (
+            <Link
+              href={ROUTES.login}
+              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm border border-input text-sm font-medium text-ink"
+            >
+              {t(REGISTER.signIn)}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { router.push(callbackUrl); router.refresh(); }}
+              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white"
+            >
+              {t({ ka: "გადადი დეშბორდზე", en: "Go to dashboard" })}
+              <IconArrowRight size={18} />
+            </button>
+          )}
         </div>
       ) : (
         <form className="flex flex-col gap-3.5" onSubmit={onSubmit}>

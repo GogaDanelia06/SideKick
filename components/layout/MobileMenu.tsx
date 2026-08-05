@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useDismiss } from "@/hooks/useDismiss";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -16,8 +17,10 @@ export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
+  const ref = useDismiss<HTMLDivElement>(open, close);
+
   return (
-    <div className="md:hidden">
+    <div ref={ref} className="md:hidden">
       <button
         type="button"
         aria-label="Menu"
@@ -29,13 +32,6 @@ export function MobileMenu() {
       </button>
       {open ? (
         <>
-          <button
-            type="button"
-            aria-hidden
-            tabIndex={-1}
-            onClick={close}
-            className="fixed inset-0 top-16 z-40 cursor-default bg-black/40"
-          />
           <nav className="fixed inset-x-0 top-16 z-50 flex flex-col gap-1 border-b border-border bg-card p-4 shadow-[0_12px_28px_rgba(0,0,0,0.28)]">
             {NAV_ITEMS.map((item) => (
               <Link

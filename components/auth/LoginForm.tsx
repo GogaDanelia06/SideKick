@@ -26,6 +26,14 @@ export function LoginForm({ google }: { google: boolean }) {
   const requested = searchParams.get("callbackUrl");
   const callbackUrl = requested?.startsWith("/") ? requested : DASH.home;
 
+  // Where /api/auth/verify sends people after they click the link in their mail.
+  const verify = searchParams.get("verify");
+  const notice =
+    verify === "ok" ? LOGIN.verifyOk
+    : verify === "already" ? LOGIN.verifyAlready
+    : verify === "invalid" ? LOGIN.verifyInvalid
+    : null;
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -39,7 +47,11 @@ export function LoginForm({ google }: { google: boolean }) {
 
     if (!res?.ok || res.error) {
       setPending(false);
-      return setError(t(res?.code === "rate_limited" ? LOGIN.rateLimited : LOGIN.invalid));
+      const reason =
+        res?.code === "rate_limited" ? LOGIN.rateLimited
+        : res?.code === "unverified_email" ? LOGIN.unverified
+        : LOGIN.invalid;
+      return setError(t(reason));
     }
 
     router.push(callbackUrl);
@@ -100,6 +112,17 @@ export function LoginForm({ google }: { google: boolean }) {
           </Link>
         </div>
 
+        {notice ? (
+          <p
+            className={`rounded-sm border px-3 py-2.5 text-[13px] ${
+              verify === "invalid"
+                ? "border-amber bg-amber-surface text-amber"
+                : "border-green bg-green-surface text-green"
+            }`}
+          >
+            {t(notice)}
+          </p>
+        ) : null}
         {error ? <p className="text-[13px] text-red">{error}</p> : null}
 
         <button

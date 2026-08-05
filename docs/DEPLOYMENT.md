@@ -31,7 +31,7 @@ three environments (Production, Preview, Development) unless noted.
 | Variable | Enables |
 | --- | --- |
 | `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | The "Sign in with Google" button. Without them the provider is not registered and the button does nothing useful. |
-| `RESEND_API_KEY` | Real email delivery — but only after `deliver()` is implemented. See [Email](#email). |
+| `RESEND_API_KEY` | Real email delivery. Unset means messages print to the console, password-reset links never arrive, and new accounts skip confirmation. See [Email](#email). |
 | `MAIL_FROM` | Sender address. Defaults to `Sidekick <noreply@sidekick.ge>`. |
 | `AI_SERVICE_TOKEN` | The `/api/agent/*` endpoints the AI service writes through. 32+ characters; generate with `openssl rand -hex 32`. Unset means the whole surface answers `503`, which is right for an environment the AI service is not pointed at. Rotating it is one variable change — tell the AI team before you do. See [AGENT-API.md](AGENT-API.md). |
 | `BLOB_READ_WRITE_TOKEN` | Uploading images and video in the admin panel. **Do not set this by hand** — Vercel injects it when a Blob store is connected. See [File storage](#file-storage). |
@@ -127,22 +127,38 @@ Use the **direct** URL, not the pooled one.
 
 ## Email
 
-`lib/mail/send.ts` currently logs messages to the server console instead of
-sending them. The password-reset flow is otherwise complete and working — the
-link is generated, hashed, stored and validated correctly; it just is not
-delivered.
+`lib/mail/send.ts` sends through **Resend**, over their HTTP API with plain
+`fetch` — no SDK, so there is no dependency to keep current and swapping
+provider means editing one function.
+
+With `RESEND_API_KEY` unset it prints messages to the server console instead.
+That is what makes local work possible without an account, and it is also what
+two features check before deciding policy:
+
+- **Password reset** — the link is generated, hashed, stored and validated
+  either way. Only delivery depends on the key.
+- **Email verification** — new accounts are activated immediately while mail is
+  unconfigured. An unverified account nobody can confirm is a door with no key,
+  so the address is trusted rather than the person locked out. The same fallback
+  applies if the provider accepts the signup but refuses the message; the
+  failure is logged.
 
 **To go live:**
 
-1. Create an account with a provider (the file has a worked Resend example) and
-   verify the sending domain — DKIM and SPF records on `sidekick.ge`. Without a
-   verified domain, reset emails land in spam.
-2. Add `RESEND_API_KEY` and `MAIL_FROM` to Vercel.
-3. Implement `deliver()` in `lib/mail/send.ts`. The commented example is
-   complete; it needs to be uncommented and the placeholder `console.warn`
-   removed.
+1. Create a Resend account and **verify the sending domain** — the DKIM and SPF
+   records they give you, added to `sidekick.ge`. Without a verified domain,
+   mail lands in spam or is refused outright, and that refusal is the single
+   most common reason this appears not to work.
+2. Add `RESEND_API_KEY` and `MAIL_FROM` to Vercel. `MAIL_FROM` must be on the
+   domain you just verified.
+3. Redeploy.
 
-Nothing else changes — every caller already goes through `sendMail()`.
+Nothing else changes — every caller already goes through `sendMail()`. The
+moment the key is present, registration starts requiring confirmation and
+sign-in refuses unconfirmed addresses with `unverified_email`.
+
+Existing accounts are unaffected: they already carry `emailVerified`, and this
+is never applied retroactively.
 
 ---
 

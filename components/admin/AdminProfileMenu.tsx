@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useDismiss } from "@/hooks/useDismiss";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
@@ -31,20 +32,12 @@ export function AdminProfileMenu({ name, email }: { name: string; email: string 
   const { t, locale, toggle: toggleLang } = useLanguage();
   const { theme, toggle: toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const ref = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
   return (
-    <div className="relative border-t border-border2 p-3">
+    <div ref={ref} className="relative border-t border-border2 p-3">
       {open ? (
         <>
-          {/* Clicking anywhere else closes it, which is what people expect from
-              a menu and what stops it lingering behind a navigation. */}
-          <button
-            type="button"
-            aria-hidden
-            tabIndex={-1}
-            onClick={() => setOpen(false)}
-            className="fixed inset-0 z-30 cursor-default"
-          />
           <div className="absolute inset-x-3 bottom-[calc(100%-4px)] z-40 rounded-[10px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
             <div className="mb-1 border-b border-border2 px-2.5 pb-2 pt-1">
               <div className="truncate text-[13px] font-semibold">{name}</div>

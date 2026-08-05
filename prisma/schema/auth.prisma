@@ -12,6 +12,7 @@ model User {
   sessions      Session[]
   memberships   Membership[]
   resetTokens   PasswordResetToken[]
+  verifyTokens  EmailVerificationToken[]
 }
 
 model Account {
@@ -41,6 +42,25 @@ model Session {
 }
 
 model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// Proves someone can read the address they signed up with.
+///
+/// Only the SHA-256 hash is stored, exactly as for password resets: the link in
+/// the inbox is the secret, and a database leak must not hand anyone a working
+/// one. Longer-lived than a reset token because a signup confirmation often
+/// waits until the next time the person checks their mail.
+model EmailVerificationToken {
   id        String    @id @default(cuid())
   userId    String
   tokenHash String    @unique

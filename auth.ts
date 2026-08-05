@@ -13,6 +13,11 @@ export class RateLimitedSignin extends CredentialsSignin {
   code = "rate_limited";
 }
 
+/** The password was right, but the address has never been confirmed. */
+export class UnverifiedEmail extends CredentialsSignin {
+  code = "unverified_email";
+}
+
 const providers: Provider[] = [
   Credentials({
     credentials: { email: {}, password: {} },
@@ -32,6 +37,10 @@ const providers: Provider[] = [
       if (!user?.passwordHash) return null;
       const ok = await bcrypt.compare(password, user.passwordHash);
       if (!ok) return null;
+
+      // Checked only after the password, so the answer never reveals whether an
+      // address is registered to someone who does not know its password.
+      if (!user.emailVerified) throw new UnverifiedEmail();
 
       await Promise.all([clear("login", email), clear("loginIp", ip)]);
       return { id: user.id, name: user.name, email: user.email };
