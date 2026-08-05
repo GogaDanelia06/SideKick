@@ -89,6 +89,16 @@ export function SeoEditor({
         </p>
       </div>
 
+      {/* Written generically because the heading lives in a different section on
+          every page — the carousel here, a text group there. Naming one would be
+          wrong on the others. */}
+      <p className="rounded-[8px] border border-border2 bg-soft px-3.5 py-2.5 text-[12px] text-muted">
+        {t({
+          ka: "აქ მხოლოდ ის იცვლება, რასაც საძიებო სისტემა ხედავს. გვერდზე დაწერილი დიდი სათაური (H1) და ტექსტები ამავე გვერდის სხვა სექციებშია.",
+          en: "This section only changes what search engines see. The large heading (H1) and the text on the page itself live in the other sections of this same page.",
+        })}
+      </p>
+
       {error ? (
         <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
           <IconAlertTriangle size={16} className="shrink-0" />
@@ -108,6 +118,14 @@ export function SeoEditor({
           placeholder={defaults.title}
           className={INPUT}
         />
+        {/* The title tag and the on-page heading are different things that read
+            alike, and confusing them sends people hunting in the wrong section. */}
+        <span className="mt-1 block text-[11px] text-faint">
+          {t({
+            ka: "ეს ჩანს Google-ის შედეგებში და ბრაუზერის ჩანართზე — არა თვით გვერდზე.",
+            en: "This appears in Google results and the browser tab — not on the page itself.",
+          })}
+        </span>
       </label>
 
       <label className="block">
@@ -124,9 +142,14 @@ export function SeoEditor({
         />
       </label>
 
-      <div className="rounded-[8px] border border-border2 bg-soft p-4">
-        <div className="mb-1 text-[11px] uppercase tracking-wide text-faint">
-          {t({ ka: "გადახედვა Google-ში", en: "Google preview" })}
+      {/* People try to type in here. Saying it only mirrors the fields above —
+          and dimming it — is cheaper than explaining it a second time. */}
+      <div className="select-none rounded-[8px] border border-dashed border-border2 bg-soft p-4 opacity-90">
+        <div className="mb-1 flex items-center justify-between text-[11px] uppercase tracking-wide text-faint">
+          <span>{t({ ka: "გადახედვა Google-ში", en: "Google preview" })}</span>
+          <span className="normal-case tracking-normal">
+            {t({ ka: "მხოლოდ საჩვენებლად", en: "preview only" })}
+          </span>
         </div>
         <div className="truncate text-[15px] text-blue">{shownTitle}</div>
         <div className="text-[12px] text-green">
@@ -134,6 +157,12 @@ export function SeoEditor({
           {path === "/" ? "" : path}
         </div>
         <div className="mt-0.5 line-clamp-2 text-[13px] text-muted">{shownDesc}</div>
+        <p className="mt-2.5 border-t border-border2 pt-2 text-[11px] text-faint">
+          {t({
+            ka: "ეს არის ის, რასაც Google აჩვენებს. შესაცვლელად გამოიყენე ზემოთ მოცემული ველები.",
+            en: "This is what Google shows. Edit it with the fields above.",
+          })}
+        </p>
       </div>
 
       <div className="grid gap-4 border-t border-border2 pt-5 sm:grid-cols-2">
