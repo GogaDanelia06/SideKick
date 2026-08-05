@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useOptimistic, useRef, useState, useTransition } from "react";
 import clsx from "clsx";
 import {
   IconAlertTriangle,
@@ -117,6 +117,22 @@ export function BoxesEditor({ kind, items }: { kind: BoxKind; items: BoxItem[] }
   const [error, setError] = useState<string | null>(null);
   const addRef = useRef<HTMLFormElement>(null);
 
+  // The row goes the moment it is clicked rather than after the round trip
+  // and the re-render that follows it. React restores it if the server refuses.
+  const [visible, removeOptimistic] = useOptimistic(
+    items,
+    (rows: BoxItem[], id: string) => rows.filter((r) => r.id !== id),
+  );
+
+  function remove(id: string) {
+    setError(null);
+    start(async () => {
+      removeOptimistic(id);
+      const res = await deleteBox(kind, id);
+      if (!res.ok) setError(res.error ?? "error");
+    });
+  }
+
   function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
     setError(null);
     start(async () => {
@@ -171,7 +187,7 @@ export function BoxesEditor({ kind, items }: { kind: BoxKind; items: BoxItem[] }
       ) : null}
 
       <div className="flex flex-col gap-2.5">
-        {items.map((b, i) => {
+        {visible.map((b, i) => {
           const Ico = resolveIcon(b.icon);
           return (
             <div key={b.id} className="rounded-lg border border-border bg-card p-4">
@@ -211,7 +227,7 @@ export function BoxesEditor({ kind, items }: { kind: BoxKind; items: BoxItem[] }
                     <button type="button" disabled={pending} onClick={() => { setEditing(b.id); setError(null); }} aria-label={t({ ka: "რედაქტირება", en: "Edit" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
                       <IconPencil size={15} />
                     </button>
-                    <button type="button" disabled={pending} onClick={() => run(() => deleteBox(kind, b.id))} aria-label={t({ ka: "წაშლა", en: "Delete" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
+                    <button type="button" disabled={pending} onClick={() => remove(b.id)} aria-label={t({ ka: "წაშლა", en: "Delete" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
                       <IconTrash size={15} />
                     </button>
                   </div>

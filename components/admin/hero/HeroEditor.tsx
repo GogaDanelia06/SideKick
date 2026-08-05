@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useOptimistic, useRef, useState, useTransition } from "react";
 import type { HeroSlide, HeroSlideStat } from "@prisma/client";
 import {
   IconAlertTriangle,
@@ -142,6 +142,22 @@ export function HeroEditor({
   const [savedInterval, setSavedInterval] = useState(false);
   const addRef = useRef<HTMLFormElement>(null);
 
+  // The row goes the moment it is clicked rather than after the round trip
+  // and the re-render that follows it. React restores it if the server refuses.
+  const [visible, removeOptimistic] = useOptimistic(
+    slides,
+    (rows: SlideWithStats[], id: string) => rows.filter((r) => r.id !== id),
+  );
+
+  function remove(id: string) {
+    setError(null);
+    start(async () => {
+      removeOptimistic(id);
+      const res = await deleteSlide(id);
+      if (!res.ok) setError(res.error ?? "error");
+    });
+  }
+
   function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
     setError(null);
     start(async () => {
@@ -229,7 +245,7 @@ export function HeroEditor({
       ) : null}
 
       <div className="flex flex-col gap-2.5">
-        {slides.map((s, i) => (
+        {visible.map((s, i) => (
           <div key={s.id} className="rounded-lg border border-border bg-card p-4">
             {editing === s.id ? (
               <form action={(fd) => run(() => updateSlide(s.id, fd), () => setEditing(null))}>
@@ -273,7 +289,7 @@ export function HeroEditor({
                     <button type="button" disabled={pending} onClick={() => { setEditing(s.id); setError(null); }} aria-label={t({ ka: "რედაქტირება", en: "Edit" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
                       <IconPencil size={15} />
                     </button>
-                    <button type="button" disabled={pending} onClick={() => run(() => deleteSlide(s.id))} aria-label={t({ ka: "წაშლა", en: "Delete" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
+                    <button type="button" disabled={pending} onClick={() => remove(s.id)} aria-label={t({ ka: "წაშლა", en: "Delete" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
                       <IconTrash size={15} />
                     </button>
                   </div>

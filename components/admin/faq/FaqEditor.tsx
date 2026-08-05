@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useOptimistic, useRef, useState, useTransition } from "react";
 import type { SiteFaq } from "@prisma/client";
 import {
   IconAlertTriangle,
@@ -54,6 +54,22 @@ export function FaqEditor({ faqs }: { faqs: SiteFaq[] }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const addRef = useRef<HTMLFormElement>(null);
+
+  // The row goes the moment it is clicked rather than after the round trip
+  // and the re-render that follows it. React restores it if the server refuses.
+  const [visible, removeOptimistic] = useOptimistic(
+    faqs,
+    (rows: SiteFaq[], id: string) => rows.filter((r) => r.id !== id),
+  );
+
+  function remove(id: string) {
+    setError(null);
+    start(async () => {
+      removeOptimistic(id);
+      const res = await deleteFaq(id);
+      if (!res.ok) setError(res.error ?? "error");
+    });
+  }
 
   function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
     setError(null);
@@ -109,7 +125,7 @@ export function FaqEditor({ faqs }: { faqs: SiteFaq[] }) {
       ) : null}
 
       <div className="flex flex-col gap-2.5">
-        {faqs.map((f, i) => (
+        {visible.map((f, i) => (
           <div key={f.id} className="rounded-lg border border-border bg-card p-4">
             {editing === f.id ? (
               <form action={(fd) => run(() => updateFaq(f.id, fd), () => setEditing(null))}>
@@ -144,7 +160,7 @@ export function FaqEditor({ faqs }: { faqs: SiteFaq[] }) {
                   <button type="button" disabled={pending} onClick={() => { setEditing(f.id); setError(null); }} aria-label={t({ ka: "რედაქტირება", en: "Edit" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
                     <IconPencil size={15} />
                   </button>
-                  <button type="button" disabled={pending} onClick={() => run(() => deleteFaq(f.id))} aria-label={t({ ka: "წაშლა", en: "Delete" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
+                  <button type="button" disabled={pending} onClick={() => remove(f.id)} aria-label={t({ ka: "წაშლა", en: "Delete" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
                     <IconTrash size={15} />
                   </button>
                 </div>

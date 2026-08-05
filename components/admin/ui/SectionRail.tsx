@@ -24,7 +24,11 @@ export function SectionRail({
   const { t } = useLanguage();
 
   return (
-    <div className="rounded-lg border border-border bg-card p-3 lg:sticky lg:top-4">
+    // `min-w-0` is what makes the horizontal scroller below actually scroll. A
+    // grid child defaults to `min-width: auto`, so without it this box refuses
+    // to shrink under its buttons, grows to their full width, and takes the
+    // whole admin page sideways with it.
+    <div className="min-w-0 rounded-lg border border-border bg-card p-3 lg:sticky lg:top-4">
       <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
         {t({ ka: "სექციები", en: "Sections" })}
       </div>
