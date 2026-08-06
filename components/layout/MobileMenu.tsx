@@ -47,7 +47,7 @@ export function MobileMenu() {
               </Link>
             ))}
             <Link
-              href={ROUTES.login}
+              href={ROUTES.account}
               onClick={close}
               className="mt-1 inline-flex items-center gap-2 rounded-sm border border-input px-3 py-3 text-sm font-medium text-ink"
             >

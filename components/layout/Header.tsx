@@ -33,7 +33,7 @@ export function Header() {
           <ThemeToggle />
 
           <Link
-            href={ROUTES.login}
+            href={ROUTES.account}
             className="hidden h-[34px] items-center gap-2 rounded-sm border border-input px-3.5 text-sm font-medium text-ink md:inline-flex"
           >
             <IconUserCircle size={17} />

@@ -69,7 +69,7 @@ export function PackageCard({
       </span>
 
       <Button
-        href={ROUTES.register}
+        href={ROUTES.start}
         variant={pkg.featured ? "primary" : "outline"}
         className="my-5 w-full"
       >

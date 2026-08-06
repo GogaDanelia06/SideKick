@@ -28,7 +28,7 @@ export function HeroSlide({ slide, mock }: { slide: Slide; mock: ReactNode }) {
         </h1>
         <p className="max-w-[520px] text-[17px] text-muted">{t(slide.sub)}</p>
         <div className="mt-7 flex flex-wrap gap-3">
-          <Button href={ROUTES.register}>
+          <Button href={ROUTES.try}>
             <IconRocket size={18} />
             {t(ACTIONS.tryFree)}
           </Button>

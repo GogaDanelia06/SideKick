@@ -7,6 +7,10 @@ export const ROUTES = {
   register: "/register",
   /** Sends the visitor to billing, signing them up first if they aren't yet. */
   start: "/start",
+  /** The dashboard when signed in, the login page when not. */
+  account: "/account",
+  /** The dashboard when signed in, the sign-up form when not. */
+  try: "/try",
   forgot: "/forgot",
   reset: "/reset",
   terms: "/terms",
