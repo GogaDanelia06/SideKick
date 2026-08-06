@@ -26,7 +26,11 @@ const LOGIN_VALIDATION_MESSAGES = {
   passwordRequired: { ka: "პაროლი სავალდებულოა", en: "Password is required" },
 } as const;
 
-export function LoginForm() {
+type LoginFormProps = {
+  google: boolean;
+};
+
+export function LoginForm({ google }: LoginFormProps) {
   const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -101,12 +105,16 @@ export function LoginForm() {
         </>
       }
     >
-      <GoogleButton
-        label={t(LOGIN.google)}
-        onClick={() => signIn("google", { callbackUrl })}
-      />
+      {google ? (
+        <>
+          <GoogleButton
+            label={t(LOGIN.google)}
+            onClick={() => signIn("google", { callbackUrl })}
+          />
 
-      <OrDivider />
+          <OrDivider />
+        </>
+      ) : null}
 
       <form className="flex flex-col gap-3.5" onSubmit={onSubmit} noValidate>
         <Field
