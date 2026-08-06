@@ -77,7 +77,11 @@ const REGISTER_VALIDATION_MESSAGES = {
   },
 } as const;
 
-export function RegisterForm() {
+type RegisterFormProps = {
+  google: boolean;
+};
+
+export function RegisterForm({ google }: RegisterFormProps) {
   const { t } = useLanguage();
   const router = useRouter();
   const [sent, setSent] = useState(false);
@@ -206,12 +210,16 @@ export function RegisterForm() {
         </>
       }
     >
-      <GoogleButton
-        label={t(REGISTER.google)}
-        onClick={() => signIn("google", { callbackUrl: DASH.home })}
-      />
+      {google ? (
+        <>
+          <GoogleButton
+            label={t(REGISTER.google)}
+            onClick={() => signIn("google", { callbackUrl: DASH.home })}
+          />
 
-      <OrDivider />
+          <OrDivider />
+        </>
+      ) : null}
 
       {sent ? (
         <div className="flex flex-col gap-4">
