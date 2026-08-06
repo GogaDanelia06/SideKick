@@ -34,9 +34,23 @@ model Message {
   createdAt      DateTime      @default(now())
   deliveryStatus String?
   stoppedReason  String?
+  /// The platform's own id for this message — Meta calls it `mid`.
+  ///
+  /// Meta re-sends an event whenever we fail to answer 200 within five seconds,
+  /// and a slow database write is enough to miss that. Without a key to
+  /// recognise the repeat by, the retry lands as a second copy: the tenant sees
+  /// the customer say the same thing twice and the AI answers it twice.
+  ///
+  /// Null for anything typed in the dashboard or written by the AI, which have
+  /// no platform id and arrive exactly once.
+  externalId     String?
   conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId, createdAt])
+  /// Scoped to the conversation rather than global so the constraint stays true
+  /// even if two platforms ever hand us the same id. Nulls repeat, so dashboard
+  /// and AI messages are unaffected.
+  @@unique([conversationId, externalId])
 }
 
 model Lead {

@@ -23,7 +23,11 @@ export const FOOTER = {
     { label: { ka: "წესები და პირობები", en: "Terms & conditions" }, href: ROUTES.terms },
     { label: { ka: "კონფიდენციალურობა", en: "Privacy policy" }, href: ROUTES.privacy },
     { label: { ka: "მონაცემთა დაცვა", en: "Data protection" }, href: ROUTES.dataProtection },
-    { label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" }, href: ROUTES.register },
+    // Not /register: the label offers signing in too, and a customer who
+    // already has an account was being shown a sign-up form. /account sends
+    // them to the dashboard and everyone else to the login page, which has its
+    // own link across to registration.
+    { label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" }, href: ROUTES.account },
   ] satisfies FooterLink[],
   copyright: {
     ka: "© 2026 Sidekick. ყველა უფლება დაცულია.",
