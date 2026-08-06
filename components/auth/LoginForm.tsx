@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { IconBolt } from "@tabler/icons-react";
-
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
 import { OrDivider } from "./OrDivider";
@@ -15,47 +14,77 @@ import { DASH } from "@/lib/dashboard/routes";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-export function LoginForm({ google }: { google: boolean }) {
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type LoginField = "email" | "password";
+type LoginErrorKey = "emailRequired" | "emailInvalid" | "passwordRequired";
+type LoginErrors = Partial<Record<LoginField, LoginErrorKey>>;
+
+const LOGIN_VALIDATION_MESSAGES = {
+  emailRequired: { ka: "ელფოსტა სავალდებულოა", en: "Email is required" },
+  emailInvalid: { ka: "შეიყვანეთ სწორი ელფოსტა", en: "Enter a valid email address" },
+  passwordRequired: { ka: "პაროლი სავალდებულოა", en: "Password is required" },
+} as const;
+
+export function LoginForm() {
   const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<LoginErrors>({});
   const [pending, setPending] = useState(false);
 
   const requested = searchParams.get("callbackUrl");
   const callbackUrl = requested?.startsWith("/") ? requested : DASH.home;
 
-  // Where /api/auth/verify sends people after they click the link in their mail.
-  const verify = searchParams.get("verify");
-  const notice =
-    verify === "ok" ? LOGIN.verifyOk
-    : verify === "already" ? LOGIN.verifyAlready
-    : verify === "invalid" ? LOGIN.verifyInvalid
-    : null;
+  function clearFieldError(field: LoginField) {
+    setFieldErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+    setError(null);
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setPending(true);
 
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "").trim();
     const password = String(formData.get("password") ?? "");
+    const errors: LoginErrors = {};
 
-    const res = await signIn("credentials", { email, password, redirect: false });
+    if (!email) errors.email = "emailRequired";
+    else if (!EMAIL_PATTERN.test(email)) errors.email = "emailInvalid";
 
-    if (!res?.ok || res.error) {
-      setPending(false);
-      const reason =
-        res?.code === "rate_limited" ? LOGIN.rateLimited
-        : res?.code === "unverified_email" ? LOGIN.unverified
-        : LOGIN.invalid;
-      return setError(t(reason));
+    if (!password) errors.password = "passwordRequired";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
     }
 
-    router.push(callbackUrl);
-    router.refresh();
+    setFieldErrors({});
+    setPending(true);
+
+    try {
+      const res = await signIn("credentials", { email, password, redirect: false });
+
+      if (!res?.ok || res.error) {
+        return setError(
+          t(res?.code === "rate_limited" ? LOGIN.rateLimited : LOGIN.invalid),
+        );
+      }
+
+      router.push(callbackUrl);
+      router.refresh();
+    } catch {
+      setError(t(LOGIN.invalid));
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -72,24 +101,22 @@ export function LoginForm({ google }: { google: boolean }) {
         </>
       }
     >
-      {/* Hidden rather than disabled when the provider is not configured: a
-          greyed-out button still reads as "this should work". */}
-      {google ? (
-        <>
-          <GoogleButton
-            label={t(LOGIN.google)}
-            onClick={() => signIn("google", { callbackUrl })}
-          />
-          <OrDivider />
-        </>
-      ) : null}
+      <GoogleButton
+        label={t(LOGIN.google)}
+        onClick={() => signIn("google", { callbackUrl })}
+      />
 
-      <form className="flex flex-col gap-3.5" onSubmit={onSubmit}>
+      <OrDivider />
+
+      <form className="flex flex-col gap-3.5" onSubmit={onSubmit} noValidate>
         <Field
           name="email"
           label={t(LOGIN.email)}
           type="email"
           placeholder="you@company.com"
+          autoComplete="email"
+          error={fieldErrors.email ? t(LOGIN_VALIDATION_MESSAGES[fieldErrors.email]) : undefined}
+          onChange={() => clearFieldError("email")}
           required
         />
 
@@ -98,6 +125,9 @@ export function LoginForm({ google }: { google: boolean }) {
           label={t(LOGIN.password)}
           type="password"
           placeholder="••••••••"
+          autoComplete="current-password"
+          error={fieldErrors.password ? t(LOGIN_VALIDATION_MESSAGES[fieldErrors.password]) : undefined}
+          onChange={() => clearFieldError("password")}
           required
         />
 
@@ -112,23 +142,12 @@ export function LoginForm({ google }: { google: boolean }) {
           </Link>
         </div>
 
-        {notice ? (
-          <p
-            className={`rounded-sm border px-3 py-2.5 text-[13px] ${
-              verify === "invalid"
-                ? "border-amber bg-amber-surface text-amber"
-                : "border-green bg-green-surface text-green"
-            }`}
-          >
-            {t(notice)}
-          </p>
-        ) : null}
         {error ? <p className="text-[13px] text-red">{error}</p> : null}
 
         <button
           type="submit"
           disabled={pending}
-          className="h-[42px] rounded-sm bg-primary text-sm font-medium text-white disabled:opacity-60"
+          className="h-[42px] rounded-sm bg-primary text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           {pending ? "…" : t(LOGIN.submit)}
         </button>

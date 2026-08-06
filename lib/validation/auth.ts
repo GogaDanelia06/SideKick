@@ -1,28 +1,49 @@
 import { z } from "zod";
 
+const NAME_PATTERN = /^[A-Za-zÀ-ÖØ-öø-ÿა-ჰ' -]+$/;
+const PHONE_PATTERN = /^\+?[0-9\s().-]+$/;
+
 export const passwordSchema = z
   .string()
   .min(8, "პაროლი უნდა იყოს მინიმუმ 8 სიმბოლო")
-  .regex(/[a-zA-Zა-ჰ]/, "პაროლი უნდა შეიცავდეს ასო-ნიშანს")
-  .regex(/[0-9]/, "პაროლი უნდა შეიცავდეს ციფრს");
+  .regex(/[A-Za-zა-ჰ]/, "პაროლი უნდა შეიცავდეს მინიმუმ ერთ ასოს")
+  .regex(/[0-9]/, "პაროლი უნდა შეიცავდეს მინიმუმ ერთ ციფრს");
 
 export const registerSchema = z.object({
-  firstName: z.string().trim().min(1, "სახელი სავალდებულოა"),
-  lastName: z.string().trim().optional().default(""),
-  email: z.string().email("არასწორი მეილი"),
+  firstName: z
+    .string()
+    .trim()
+    .min(1, "სახელი სავალდებულოა")
+    .regex(NAME_PATTERN, "სახელი შეიცავს დაუშვებელ სიმბოლოებს"),
+  lastName: z
+    .string()
+    .trim()
+    .refine((value) => !value || NAME_PATTERN.test(value), {
+      message: "გვარი შეიცავს დაუშვებელ სიმბოლოებს",
+    })
+    .optional()
+    .default(""),
+  email: z.string().trim().email("არასწორი ელფოსტა"),
   password: passwordSchema,
-  phone: z.string().trim().optional(),
-  company: z.string().trim().optional(),
-  field: z.string().trim().optional(),
+  phone: z
+    .string()
+    .trim()
+    .refine((value) => !value || PHONE_PATTERN.test(value), {
+      message: "არასწორი ტელეფონის ნომერი",
+    })
+    .optional()
+    .default(""),
+  company: z.string().trim().max(120, "კომპანიის სახელი ძალიან გრძელია").optional().default(""),
+  field: z.string().trim().max(120, "საქმიანობის სფერო ძალიან გრძელია").optional().default(""),
 });
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
+  email: z.string().trim().min(1, "ელფოსტა სავალდებულოა").email("არასწორი ელფოსტა"),
+  password: z.string().min(1, "პაროლი სავალდებულოა"),
 });
 
 export const forgotSchema = z.object({
-  email: z.string().email("არასწორი მეილი"),
+  email: z.string().trim().email("არასწორი ელფოსტა"),
 });
 
 export const resetSchema = z
@@ -31,7 +52,7 @@ export const resetSchema = z
     password: passwordSchema,
     repeatPassword: z.string(),
   })
-  .refine((d) => d.password === d.repeatPassword, {
+  .refine((data) => data.password === data.repeatPassword, {
     message: "პაროლები არ ემთხვევა",
     path: ["repeatPassword"],
   });

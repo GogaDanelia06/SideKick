@@ -20,15 +20,30 @@ model Product {
 }
 
 model Channel {
-  id            String         @id @default(cuid())
-  businessId    String
-  type          ChannelType
-  status        ChannelStatus  @default(OFF)
-  connected     Boolean        @default(false)
-  tokens        String?
-  lastSyncAt    DateTime?
+  id         String        @id @default(cuid())
+  businessId String
+  type       ChannelType
+  status     ChannelStatus @default(OFF)
+  connected  Boolean       @default(false)
+  tokens     String?
+  /// The account's id on the platform itself — a Facebook Page id for FACEBOOK.
+  ///
+  /// Meta's webhook says which *page* an event happened on and never which
+  /// business, so without this an inbound message has no tenant to belong to.
+  /// It is the whole routing key: page id -> channel -> business.
+  ///
+  /// Null until the page is actually linked, which is why the type is optional
+  /// and why the webhook treats "no match" as a message for somebody else.
+  externalId String?
+  lastSyncAt DateTime?
+
   business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
   conversations Conversation[]
 
   @@unique([businessId, type])
+  /// One page belongs to one tenant. Without this a page id typed into two
+  /// accounts would make routing ambiguous, and a tenant could quietly capture
+  /// another's conversations by claiming their page. Postgres lets nulls repeat,
+  /// so unlinked channels are unaffected.
+  @@unique([type, externalId])
 }
