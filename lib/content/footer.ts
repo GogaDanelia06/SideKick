@@ -24,8 +24,8 @@ export const FOOTER = {
   },
 
   aboutHeading: {
-    ka: "ჩვენს შესახებ",
-    en: "About us",
+    ka: "..... .....",
+    en: ".... ....",
   },
 
   infoHeading: {
@@ -39,11 +39,9 @@ export const FOOTER = {
   },
 
   aboutLinks: [
-        {
-      label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" },
-      href: ROUTES.account,
-    },
+    { label: { ka: "ჩვენს შესახებ", en: "About us" }, href: ROUTES.about },
     { label: { ka: "ფასები", en: "Pricing" }, href: ROUTES.pricing },
+    {label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" },href: ROUTES.account,},
     { label: { ka: "FAQ", en: "FAQ" }, href: `${ROUTES.contact}#faq` },
   ] satisfies FooterLink[],
 
