@@ -2,12 +2,18 @@ import { z } from "zod";
 
 const NAME_PATTERN = /^[A-Za-zÀ-ÖØ-öø-ÿა-ჰ' -]+$/;
 const PHONE_PATTERN = /^\+?[0-9\s().-]+$/;
+const PASSWORD_NUMBER_OR_SYMBOL_PATTERN =
+  /[0-9]|[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/;
 
 export const passwordSchema = z
   .string()
   .min(8, "პაროლი უნდა იყოს მინიმუმ 8 სიმბოლო")
-  .regex(/[A-Za-zა-ჰ]/, "პაროლი უნდა შეიცავდეს მინიმუმ ერთ ასოს")
-  .regex(/[0-9]/, "პაროლი უნდა შეიცავდეს მინიმუმ ერთ ციფრს");
+  .regex(/[a-z]/, "პაროლი უნდა შეიცავდეს მინიმუმ ერთ პატარა ასოს")
+  .regex(/[A-Z]/, "პაროლი უნდა შეიცავდეს მინიმუმ ერთ დიდ ასოს")
+  .regex(
+    PASSWORD_NUMBER_OR_SYMBOL_PATTERN,
+    "პაროლი უნდა შეიცავდეს მინიმუმ ერთ ციფრს ან სპეციალურ სიმბოლოს",
+  );
 
 export const registerSchema = z.object({
   firstName: z
