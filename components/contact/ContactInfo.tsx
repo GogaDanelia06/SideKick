@@ -5,6 +5,13 @@ import { CONTACT_INFO } from "@/lib/content/contact";
 import { SOCIALS, SOCIAL_LABEL } from "@/lib/content/social";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
+const SOCIAL_HOVER: Record<string, string> = {
+  Facebook: "hover:border-[#1877F2] hover:text-[#1877F2]",
+  Instagram: "hover:border-[#E4405F] hover:text-[#E4405F]",
+  WhatsApp: "hover:border-[#25D366] hover:text-[#25D366]",
+  LinkedIn: "hover:border-[#0A66C2] hover:text-[#0A66C2]",
+};
+
 export function ContactInfo() {
   const { t } = useLanguage();
 
@@ -15,6 +22,7 @@ export function ContactInfo() {
           <div className="grid size-11 shrink-0 place-items-center rounded-[10px] bg-blue-surface text-blue">
             <item.icon size={21} />
           </div>
+
           <div>
             <div className="text-[12px] text-muted">{t(item.label)}</div>
             <a href={item.href} className="font-mono text-[15px] font-medium">
@@ -23,17 +31,23 @@ export function ContactInfo() {
           </div>
         </Card>
       ))}
+
       <Card className="p-5">
         <div className="mb-3 text-[12px] text-muted">{t(SOCIAL_LABEL)}</div>
+
         <div className="flex gap-2.5">
-          {SOCIALS.map((s) => (
+          {SOCIALS.map((social) => (
             <a
-              key={s.label}
-              href={s.href}
-              aria-label={s.label}
-              className="grid size-[38px] place-items-center rounded-sm border border-border text-muted hover:text-ink"
+              key={social.label}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={social.label}
+              className={`grid size-[38px] place-items-center rounded-sm border border-border text-muted transition-colors duration-200 ${
+                SOCIAL_HOVER[social.label] ?? "hover:text-ink"
+              }`}
             >
-              <s.icon size={18} />
+              <social.icon size={18} />
             </a>
           ))}
         </div>

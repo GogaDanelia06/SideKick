@@ -8,6 +8,7 @@ import { Logo } from "@/components/ui/Logo";
 import { track } from "@/lib/analytics/track";
 import { FOOTER } from "@/lib/content/footer";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { ROUTES } from "@/lib/routes";
 
 export function Footer() {
   const { t } = useLanguage();
@@ -29,9 +30,12 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.04em] text-muted">
-              {t(FOOTER.linksHeading)}
-            </h4>
+<Link
+  href={ROUTES.about}
+  className="mb-4 block text-[13px] font-semibold uppercase tracking-[0.04em] text-muted hover:text-ink"
+>
+  {t(FOOTER.linksHeading)}
+</Link>
 
             {FOOTER.links.map((link) => (
               <Link
