@@ -39,7 +39,10 @@ export const FOOTER = {
   },
 
   aboutLinks: [
-    { label: { ka: "ჩვენს შესახებ", en: "About us" }, href: ROUTES.about },
+        {
+      label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" },
+      href: ROUTES.account,
+    },
     { label: { ka: "ფასები", en: "Pricing" }, href: ROUTES.pricing },
     { label: { ka: "FAQ", en: "FAQ" }, href: `${ROUTES.contact}#faq` },
   ] satisfies FooterLink[],
@@ -57,10 +60,7 @@ export const FOOTER = {
       label: { ka: "მონაცემთა დაცვა", en: "Data protection" },
       href: ROUTES.dataProtection,
     },
-    {
-      label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" },
-      href: ROUTES.account,
-    },
+
   ] satisfies FooterLink[],
 
   contact: [
