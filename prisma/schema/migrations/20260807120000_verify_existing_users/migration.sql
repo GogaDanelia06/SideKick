@@ -1,0 +1,13 @@
+-- Email verification was added to sign-in after these accounts already existed,
+-- and nothing backfilled them. The gate reads `emailVerified IS NULL` as "never
+-- confirmed", so every account created before the feature was locked out of a
+-- product it had been using -- a regression introduced by the check, not a
+-- decision anyone made about those users.
+--
+-- Safe to grant wholesale: registration writes `emailVerified` immediately when
+-- no mail provider is configured, which is the case here, so a NULL today can
+-- only mean the row predates verification.
+--
+-- Dated from `createdAt` rather than now(), so the record says when the account
+-- actually became usable instead of when this migration happened to run.
+UPDATE "User" SET "emailVerified" = "createdAt" WHERE "emailVerified" IS NULL;
