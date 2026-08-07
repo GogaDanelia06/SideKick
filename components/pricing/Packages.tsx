@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { IconGift, IconTag } from "@tabler/icons-react";
+
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PackageCard } from "./PackageCard";
@@ -15,27 +16,29 @@ import {
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 
-/** `free` overrides the shipped free-period copy when the admin has set it. */
 export function Packages({
   packages,
   free,
 }: {
   packages: Package[];
-  free?: { badge?: Bilingual; title?: Bilingual; text?: Bilingual };
+  free?: {
+    badge?: Bilingual;
+    title?: Bilingual;
+    text?: Bilingual;
+  };
 }) {
   const { t } = useLanguage();
   const [period, setPeriod] = useState(BILLING_PERIODS[0]);
 
   return (
-    <section id="packages" className="scroll-mt-20 pb-16 pt-10">
+    <section id="pricing" className="scroll-mt-24 pb-16 pt-8">
       <Container>
-        <div className="mb-8 text-center">
-          <SectionHeading
-            badge={PACKAGES_HEADING.badge}
-            badgeIcon={IconTag}
-            title={PACKAGES_HEADING.title}
-          />
-        </div>
+        <SectionHeading
+          badge={PACKAGES_HEADING.badge}
+          badgeIcon={IconTag}
+          title={PACKAGES_HEADING.title}
+          sub={PACKAGES_HEADING.sub}
+        />
 
         <div className="mb-8 flex justify-center">
           <PeriodSwitch value={period} onChange={setPeriod} />
@@ -57,6 +60,7 @@ export function Packages({
             <IconGift size={18} />
             {t(free?.title ?? FREE_PERIOD.bannerTitle)}
           </div>
+
           <p className="mx-auto max-w-[680px] text-sm leading-relaxed text-muted">
             {t(free?.text ?? FREE_PERIOD.bannerText)}
           </p>

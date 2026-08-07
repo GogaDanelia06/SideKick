@@ -40,7 +40,7 @@ export const FOOTER = {
 
   aboutLinks: [
     { label: { ka: "ჩვენს შესახებ", en: "About us" }, href: ROUTES.about },
-    { label: { ka: "ფასები", en: "Pricing" }, href: ROUTES.pricing },
+    {label: { ka: "ფასები", en: "Pricing" },href: `${ROUTES.pricing}#pricing`,},
     {label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" },href: ROUTES.account,},
     { label: { ka: "FAQ", en: "FAQ" }, href: `${ROUTES.contact}#faq` },
   ] satisfies FooterLink[],
