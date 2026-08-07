@@ -4,9 +4,10 @@ Facebook delivers messages to `POST /api/webhooks/messenger`. Sidekick checks
 they really came from Meta, files them under the right tenant, and tells the AI
 service there is something to answer.
 
-This is the inbound half. The outbound half — sending the AI's reply back to the
-customer through Meta's Send API — is **not built yet**; see [What is still
-missing](#what-is-still-missing).
+Replies travel back out the same way: an `AI` or `OPERATOR` message posted to
+`/api/agent/messages` is delivered to the customer through Meta's Send API, and
+the result comes back in that call's `delivery` field. See [Sending
+replies](#sending-replies).
 
 - [The five-second rule](#the-five-second-rule)
 - [Environment variables](#environment-variables)
@@ -14,6 +15,7 @@ missing](#what-is-still-missing).
 - [Connecting a tenant's page](#connecting-a-tenants-page)
 - [What the AI service receives](#what-the-ai-service-receives)
 - [What is dropped, and why](#what-is-dropped-and-why)
+- [Sending replies](#sending-replies)
 - [What is still missing](#what-is-still-missing)
 
 ---
@@ -126,16 +128,52 @@ message is already committed on Sidekick's side, so nothing is lost.
 
 ---
 
+## Sending replies
+
+There is no separate endpoint for this. The AI posts its answer to
+`POST /api/agent/messages` as it already does, and Sidekick passes it on:
+
+```
+AI service → POST /api/agent/messages (sender: "AI")
+           → stored
+           → POST graph.facebook.com/v25.0/{pageId}/messages
+           → { "delivery": { "status": "SENT" } } back to the AI service
+```
+
+Doing it here rather than in the AI service is deliberate: the Page Access Token
+is a per-tenant credential we hold, and handing a copy to another system would
+mean two places to rotate it and two places it can leak from.
+
+**Requires `Channel.accessToken`** — the Page Access Token. A page linked by
+hand has an id but no token, so it can receive messages and not answer them. The
+`delivery` field returns `null` in that state rather than pretending to fail.
+
+### The 24-hour window
+
+Messenger only allows a business to reply **within 24 hours** of the customer's
+last message. After that Meta refuses with code `1545041`, which Sidekick
+reports as `WINDOW_CLOSED` rather than `FAILED` — it is policy, not a fault, and
+retrying cannot help until the customer writes again.
+
+`Message.deliveryStatus` records the outcome per message, so the merchant's
+inbox can show what actually reached the customer.
+
+---
+
 ## What is still missing
 
-1. **Sending replies back.** Meta's Send API needs a Page access token per page.
-   Nothing here stores or uses one yet, so the AI can read a conversation but
-   cannot answer it through Facebook.
-2. **A connection screen.** Tenants cannot link their own page — the dashboard's
-   channel toggle sets `connected` but collects no page id. Doing it properly
-   means Facebook Login for Business, then storing the page id and its token.
+1. **A connection screen.** Tenants cannot link their own page — the dashboard's
+   channel toggle sets `connected` but collects neither the page id nor its
+   token. Doing it properly means Facebook Login for Business, which supplies
+   **both** in one flow.
+2. **App Review.** Until Meta approves `pages_messaging`, the app only works on
+   pages belonging to someone with a role in it. That is enough to test and not
+   enough to sell. It is the longest lead time in this project and it belongs to
+   whoever owns the Meta app.
 3. **Instagram and WhatsApp.** `ChannelType` has both. Instagram sends a
    different `object` and a different event shape, so it needs its own route
    rather than a flag on this one.
 4. **The AI team's endpoint.** `AI_SERVICE_WEBHOOK_URL` and its token are not
    set anywhere yet.
+5. **Attachments.** Images and files arrive with no text and are ignored in both
+   directions.

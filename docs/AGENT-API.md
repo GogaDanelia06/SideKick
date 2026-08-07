@@ -94,11 +94,34 @@ the whole exchange.
 | `text` | string | yes | |
 
 ```json
-{ "messageId": "cmsd9…", "createdAt": "2026-08-03T13:22:55.155Z" }
+{
+  "messageId": "cmsd9…",
+  "createdAt": "2026-08-03T13:22:55.155Z",
+  "delivery": { "status": "SENT" }
+}
 ```
 
 A conversation moves from `NEW` to `ACTIVE` on its first message. One a human
 has closed stays closed.
+
+#### `delivery` — did the customer actually get it?
+
+An `AI` or `OPERATOR` message is not just recorded, it is **sent on to the
+customer** through Messenger. This field is what happened.
+
+| `status` | Meaning | What to do |
+| --- | --- | --- |
+| `SENT` | Delivered to Meta | Nothing |
+| `WINDOW_CLOSED` | Messenger only allows a reply within 24 hours of the customer's last message, and that has passed | Stop composing for this chat. It is policy, not a fault — retrying cannot help until the customer writes again |
+| `FAILED` | Meta refused, or was unreachable. `detail` carries their wording | Worth one retry; tell us if it persists |
+| `null` | Nowhere to send to — a conversation started in the dashboard, or a page whose owner has not finished connecting it | Nothing. Not a failure |
+
+`CUSTOMER` messages always return `null` here: they are a record of what the
+person already said, and sending it back would be repeating their own words to
+them.
+
+A delivery problem never fails the request. The message is stored either way —
+losing the merchant's history over a Messenger outage would help nobody.
 
 ---
 

@@ -10,6 +10,7 @@ import {
 } from "@/lib/agent/auth";
 import { ownedConversation } from "@/lib/agent/conversation";
 import { checkLimit, countMessage } from "@/lib/billing/limits";
+import { deliverOutbound } from "@/lib/channels/send";
 
 export const dynamic = "force-dynamic";
 
@@ -74,5 +75,25 @@ export async function POST(request: Request) {
     data: { status: "ACTIVE" },
   });
 
-  return NextResponse.json({ messageId: message.id, createdAt: message.createdAt });
+  // Everything above only wrote to our own database. Without this the AI would
+  // hold a fluent conversation that the customer never sees a word of.
+  //
+  // `CUSTOMER` is excluded because it is a record of what they already said —
+  // sending it back would be us repeating their own words to them.
+  //
+  // Awaited rather than deferred: there is no five-second deadline here, and
+  // the caller can act on the answer — stop composing follow-ups once the
+  // window has closed, retry later on a failure. A silent send would leave them
+  // guessing. It cannot fail the request, though: the message is saved, and
+  // losing that over a delivery problem would help nobody.
+  const delivery =
+    sender === "CUSTOMER" ? null : await deliverOutbound(conversation.id, message.id, text);
+
+  return NextResponse.json({
+    messageId: message.id,
+    createdAt: message.createdAt,
+    // Null means there was nowhere to send it — a dashboard conversation, or a
+    // page whose owner has not finished connecting it. Not a failure.
+    delivery: delivery ? { status: delivery.status, detail: delivery.detail } : null,
+  });
 }

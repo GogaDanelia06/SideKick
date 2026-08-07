@@ -25,7 +25,16 @@ model Channel {
   type       ChannelType
   status     ChannelStatus @default(OFF)
   connected  Boolean       @default(false)
-  tokens     String?
+  /// The Page Access Token, which is what lets us send a reply back.
+  ///
+  /// Receiving needs nothing but the app secret; sending needs a credential for
+  /// this specific page, issued when its owner connects it. So a channel can be
+  /// perfectly able to take messages in and unable to answer them, and that is
+  /// exactly the state a page linked by hand is in.
+  ///
+  /// Was called `tokens` and never read by anything. Renamed rather than left
+  /// alongside a new field: one clearly named column beats two vague ones.
+  accessToken String?
   /// The account's id on the platform itself — a Facebook Page id for FACEBOOK.
   ///
   /// Meta's webhook says which *page* an event happened on and never which
