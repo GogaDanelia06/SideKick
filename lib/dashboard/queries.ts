@@ -1,4 +1,4 @@
-import type { ChannelType } from "@prisma/client";
+import type { ChannelType, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 
 export function getLeads(businessId: string) {
@@ -15,9 +15,30 @@ export function getProducts(businessId: string) {
   });
 }
 
+/**
+ * The fields the channel screens draw, and nothing else.
+ *
+ * Named and shared so the list stays in one place. Spelling it out matters more
+ * than it looks: `Channel` now holds `accessToken`, the credential that lets us
+ * post as the merchant's Facebook page, and these rows are handed to client
+ * components. Anything selected here is serialised into the HTML, so a bare
+ * `findMany()` would publish that token to the browser.
+ */
+const CHANNEL_FIELDS = {
+  id: true,
+  type: true,
+  status: true,
+  connected: true,
+  lastSyncAt: true,
+} as const;
+
+/** What the channel screens receive — deliberately not the whole `Channel`. */
+export type ChannelSummary = Prisma.ChannelGetPayload<{ select: typeof CHANNEL_FIELDS }>;
+
 export function getChannels(businessId: string) {
   return prisma.channel.findMany({
     where: { businessId },
+    select: CHANNEL_FIELDS,
     orderBy: { type: "asc" },
   });
 }
@@ -142,10 +163,24 @@ export async function getHomeOverview(businessId: string) {
       where: { businessId, createdAt: yesterday, status: counted },
     }),
     prisma.subscription.findUnique({ where: { businessId }, include: { plan: true } }),
-    prisma.channel.findMany({ where: { businessId }, orderBy: { type: "asc" } }),
+    prisma.channel.findMany({
+      where: { businessId },
+      select: CHANNEL_FIELDS,
+      orderBy: { type: "asc" },
+    }),
     prisma.message.findMany({
       where: { stoppedReason: { not: null }, conversation: { businessId } },
-      include: { conversation: { include: { channel: true } } },
+      // Only the channel's type is read below. `include` would have pulled the
+      // whole row — access token included — through to the page.
+      select: {
+        id: true,
+        text: true,
+        stoppedReason: true,
+        createdAt: true,
+        conversation: {
+          select: { customerName: true, channel: { select: { type: true } } },
+        },
+      },
       orderBy: { createdAt: "desc" },
       take: 5,
     }),

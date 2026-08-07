@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { Channel, ChannelType } from "@prisma/client";
+import type { ChannelType } from "@prisma/client";
+// Not `Channel`: the page deliberately fetches a subset, so the access token
+// never reaches this client component and therefore never reaches the browser.
+import type { ChannelSummary } from "@/lib/dashboard/queries";
 import {
   IconBrandFacebook,
   IconBrandInstagram,
@@ -56,7 +59,13 @@ function Guide({ guide }: { guide: ChannelGuideView }) {
   );
 }
 
-export function ChannelsView({ channels, guides }: { channels: Channel[]; guides: Guides }) {
+export function ChannelsView({
+  channels,
+  guides,
+}: {
+  channels: ChannelSummary[];
+  guides: Guides;
+}) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();
   const [open, setOpen] = useState<string | null>(null);

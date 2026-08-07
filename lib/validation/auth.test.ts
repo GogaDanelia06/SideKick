@@ -2,12 +2,12 @@ import { describe, it, expect } from "vitest";
 import { passwordSchema, registerSchema, resetSchema, forgotSchema } from "./auth";
 
 describe("passwordSchema", () => {
-  it("accepts an 8-char password with a letter and a digit", () => {
-    expect(passwordSchema.safeParse("abcdef12").success).toBe(true);
+  it("accepts 8 characters with lower case, upper case and a digit", () => {
+    expect(passwordSchema.safeParse("Abcdef12").success).toBe(true);
   });
 
-  it("accepts Georgian letters as the letter requirement", () => {
-    expect(passwordSchema.safeParse("გამარჯობა1").success).toBe(true);
+  it("accepts a symbol in place of the digit", () => {
+    expect(passwordSchema.safeParse("Abcdefg!").success).toBe(true);
   });
 
   it("rejects the classic weak password", () => {
@@ -15,20 +15,32 @@ describe("passwordSchema", () => {
   });
 
   it("rejects fewer than 8 characters", () => {
-    expect(passwordSchema.safeParse("abc123").success).toBe(false);
+    expect(passwordSchema.safeParse("Abc123!").success).toBe(false);
   });
 
-  it("rejects all-letters (no digit)", () => {
-    expect(passwordSchema.safeParse("abcdefgh").success).toBe(false);
+  it("rejects letters with no digit or symbol", () => {
+    expect(passwordSchema.safeParse("Abcdefgh").success).toBe(false);
   });
 
-  it("rejects all-digits (no letter)", () => {
+  it("rejects digits with no letters", () => {
     expect(passwordSchema.safeParse("12345678").success).toBe(false);
   });
 
+  it("rejects one case on its own", () => {
+    expect(passwordSchema.safeParse("abcdef12").success).toBe(false);
+    expect(passwordSchema.safeParse("ABCDEF12").success).toBe(false);
+  });
+
   it("counts length at exactly the 8-char boundary", () => {
-    expect(passwordSchema.safeParse("abcdef1").success).toBe(false);
-    expect(passwordSchema.safeParse("abcdef12").success).toBe(true);
+    expect(passwordSchema.safeParse("Abcdef1").success).toBe(false);
+    expect(passwordSchema.safeParse("Abcdef12").success).toBe(true);
+  });
+
+  // Georgian has no upper and lower case, so requiring both rules out a
+  // password written in the product's own language. Recorded as the behaviour
+  // that ships, not as an endorsement — see the note in the handover docs.
+  it("rejects a password written only in Georgian", () => {
+    expect(passwordSchema.safeParse("გამარჯობა1").success).toBe(false);
   });
 });
 
@@ -36,7 +48,7 @@ describe("registerSchema", () => {
   const valid = {
     firstName: "Nino",
     email: "nino@example.com",
-    password: "abcdef12",
+    password: "Abcdef12",
   };
 
   it("accepts a minimal valid registration", () => {
@@ -72,19 +84,19 @@ describe("resetSchema", () => {
   const token = "a".repeat(64);
 
   it("accepts a matching password pair with a long-enough token", () => {
-    const r = resetSchema.safeParse({ token, password: "abcdef12", repeatPassword: "abcdef12" });
+    const r = resetSchema.safeParse({ token, password: "Abcdef12", repeatPassword: "Abcdef12" });
     expect(r.success).toBe(true);
   });
 
   it("rejects when the two passwords differ", () => {
-    const r = resetSchema.safeParse({ token, password: "abcdef12", repeatPassword: "abcdef13" });
+    const r = resetSchema.safeParse({ token, password: "Abcdef12", repeatPassword: "Abcdef13" });
     expect(r.success).toBe(false);
     if (!r.success) expect(r.error.issues[0]?.path).toContain("repeatPassword");
   });
 
   it("rejects a short token", () => {
     expect(
-      resetSchema.safeParse({ token: "short", password: "abcdef12", repeatPassword: "abcdef12" })
+      resetSchema.safeParse({ token: "short", password: "Abcdef12", repeatPassword: "Abcdef12" })
         .success,
     ).toBe(false);
   });

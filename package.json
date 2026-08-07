@@ -18,7 +18,7 @@
     "predev": "prisma generate",
     "dev": "next dev",
     "prebuild": "prisma generate",
-    "build": "next build",
+    "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
