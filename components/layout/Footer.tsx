@@ -4,73 +4,93 @@ import Link from "next/link";
 
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
-
-import { track } from "@/lib/analytics/track";
 import { FOOTER } from "@/lib/content/footer";
+import { track } from "@/lib/analytics/track";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import { ROUTES } from "@/lib/routes";
+
+function FooterHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h4 className="mb-5">
+      <span className="inline-block border-b-2 border-primary pb-2 text-base font-semibold text-ink">
+        {children}
+      </span>
+    </h4>
+  );
+}
 
 export function Footer() {
   const { t } = useLanguage();
 
-  return (
-    <footer className="mt-6 border-t border-border bg-sidebar pb-7 pt-[52px]">
-      <Container>
-        <div className="mb-9 grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
-          <div>
-            <Logo className="mb-3" />
+  const trackLink = (label: string, href: string) =>
+    track("footer_link_click", {
+      link_name: label,
+      link_url: href,
+      link_type: href.startsWith("http") ? "external" : "internal",
+    });
 
-            <p className="max-w-[280px] text-sm text-muted">
+  return (
+    <footer className="mt-6 border-t border-border bg-sidebar pb-7 pt-14">
+      <Container>
+        <div className="mb-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <Logo className="mb-4" />
+            <p className="max-w-[280px] text-sm leading-7 text-muted">
               {t(FOOTER.tagline)}
             </p>
-
-            <p className="mt-2 text-sm text-muted">
-              {t(FOOTER.company)}
-            </p>
+            <p className="mt-3 text-sm text-muted">{t(FOOTER.company)}</p>
           </div>
 
           <div>
-<Link
-  href={ROUTES.about}
-  className="mb-4 block text-[13px] font-semibold uppercase tracking-[0.04em] text-muted hover:text-ink"
->
-  {t(FOOTER.linksHeading)}
-</Link>
-
-            {FOOTER.links.map((link) => (
+            <FooterHeading>{t(FOOTER.aboutHeading)}</FooterHeading>
+            {FOOTER.aboutLinks.map((link) => (
               <Link
-                key={link.href + t(link.label)}
+                key={link.href}
                 href={link.href}
-                onClick={() =>
-                  track("footer_link_click", {
-                    link_name: link.label.ka,
-                    link_url: link.href,
-                    link_type: link.href.startsWith("http")
-                      ? "external"
-                      : "internal",
-                  })
-                }
-                className="mb-2.5 block text-sm text-muted hover:text-ink"
+                onClick={() => trackLink(link.label.ka, link.href)}
+                className="mb-3 block text-sm text-muted transition hover:text-ink"
               >
                 {t(link.label)}
               </Link>
             ))}
           </div>
 
-          <div className="flex flex-col gap-2.5 text-sm text-muted md:items-end md:text-right">
-            {FOOTER.contact.map((contact) => (
-              <a
-                key={contact.value}
-                href={contact.href}
-                className="hover:text-ink"
+          <div>
+            <FooterHeading>{t(FOOTER.infoHeading)}</FooterHeading>
+            {FOOTER.infoLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => trackLink(link.label.ka, link.href)}
+                className="mb-3 block text-sm text-muted transition hover:text-ink"
               >
-                {t(contact.label)} : {contact.value}
-              </a>
+                {t(link.label)}
+              </Link>
             ))}
+          </div>
+
+          <div>
+            <FooterHeading>{t(FOOTER.contactHeading)}</FooterHeading>
+            <div className="flex flex-col gap-3 text-sm text-muted">
+              {FOOTER.contact.map((item) => (
+                <a
+                  key={item.value}
+                  href={item.href}
+                  target={item.href.startsWith("http") ? "_blank" : undefined}
+                  rel={
+                    item.href.startsWith("http")
+                      ? "noopener noreferrer"
+                      : undefined
+                  }
+                  className="transition hover:text-ink"
+                >
+                  {t(item.label)} : {item.value}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-border pt-[22px] text-center text-[13px] text-muted">
+        <div className="border-t border-border pt-6 text-center text-[13px] text-muted">
           {t(FOOTER.copyright)}
         </div>
       </Container>

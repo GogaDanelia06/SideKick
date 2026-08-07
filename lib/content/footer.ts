@@ -1,8 +1,16 @@
 import { ROUTES } from "@/lib/routes";
 import type { Bilingual } from "./types";
 
-type FooterLink = { label: Bilingual; href: string };
-type ContactLine = { label: Bilingual; value: string; href: string };
+type FooterLink = {
+  label: Bilingual;
+  href: string;
+};
+
+type ContactLine = {
+  label: Bilingual;
+  value: string;
+  href: string;
+};
 
 export const FOOTER = {
   tagline: {
@@ -14,6 +22,46 @@ export const FOOTER = {
     ka: 'შპს "საიდქიქ"',
     en: "Sidekick LLC",
   },
+
+  aboutHeading: {
+    ka: "ჩვენს შესახებ",
+    en: "About us",
+  },
+
+  infoHeading: {
+    ka: "ინფორმაცია",
+    en: "Information",
+  },
+
+  contactHeading: {
+    ka: "კონტაქტი",
+    en: "Contact",
+  },
+
+  aboutLinks: [
+    { label: { ka: "ჩვენს შესახებ", en: "About us" }, href: ROUTES.about },
+    { label: { ka: "ფასები", en: "Pricing" }, href: ROUTES.pricing },
+    { label: { ka: "FAQ", en: "FAQ" }, href: `${ROUTES.contact}#faq` },
+  ] satisfies FooterLink[],
+
+  infoLinks: [
+    {
+      label: { ka: "წესები და პირობები", en: "Terms & conditions" },
+      href: ROUTES.terms,
+    },
+    {
+      label: { ka: "კონფიდენციალურობა", en: "Privacy policy" },
+      href: ROUTES.privacy,
+    },
+    {
+      label: { ka: "მონაცემთა დაცვა", en: "Data protection" },
+      href: ROUTES.dataProtection,
+    },
+    {
+      label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" },
+      href: ROUTES.account,
+    },
+  ] satisfies FooterLink[],
 
   contact: [
     {
@@ -37,38 +85,6 @@ export const FOOTER = {
       href: "https://www.instagram.com/sidekickge/",
     },
   ] satisfies ContactLine[],
-
-  linksHeading: {
-    ka: "ჩვენს შესახებ",
-    en: "About",
-  },
-
-  links: [
-    {
-      label: { ka: "ფასები", en: "Pricing" },
-      href: ROUTES.pricing,
-    },
-    {
-      label: { ka: "FAQ", en: "FAQ" },
-      href: `${ROUTES.contact}#faq`,
-    },
-    {
-      label: { ka: "წესები და პირობები", en: "Terms & conditions" },
-      href: ROUTES.terms,
-    },
-    {
-      label: { ka: "კონფიდენციალურობა", en: "Privacy policy" },
-      href: ROUTES.privacy,
-    },
-    {
-      label: { ka: "მონაცემთა დაცვა", en: "Data protection" },
-      href: ROUTES.dataProtection,
-    },
-    {
-      label: { ka: "რეგისტრაცია / ლოგინ", en: "Sign up / Sign in" },
-      href: ROUTES.account,
-    },
-  ] satisfies FooterLink[],
 
   copyright: {
     ka: "© 2026 Sidekick. ყველა უფლება დაცულია.",
