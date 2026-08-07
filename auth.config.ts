@@ -10,13 +10,21 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const { pathname } = nextUrl;
 
-      if (pathname.startsWith("/admin")) {
-        if (!auth?.user) return false;
-        if (!auth.user.isAdmin) return Response.redirect(new URL("/", nextUrl));
-        return true;
+      // Signed in or not is the only question this layer can answer honestly.
+      //
+      // It used to decide admin access here as well, from `isAdmin` on the
+      // token — a value copied in at sign-in and then believed for a week. That
+      // is wrong in both directions: granting someone the flag left them shut
+      // out until they happened to sign in again, and taking it away left them
+      // an admin for seven days. It reads the session, and the session is a
+      // snapshot.
+      //
+      // `requireAdmin()` in the admin layout asks the database instead, and
+      // every page under /admin goes through it. Middleware runs on the edge
+      // where that query is not available, so the check belongs there, not here.
+      if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
+        return !!auth?.user;
       }
-
-      if (pathname.startsWith("/dashboard")) return !!auth?.user;
       return true;
     },
 
