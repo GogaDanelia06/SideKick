@@ -111,6 +111,8 @@ export function RegisterForm({ google }: RegisterFormProps) {
   const { t } = useLanguage();
   const router = useRouter();
   const [sent, setSent] = useState(false);
+  /** Registered, but waiting on the customer to open the link we emailed. */
+  const [needsVerification, setNeedsVerification] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<RegisterErrors>({});
   const [pending, setPending] = useState(false);
@@ -220,6 +222,16 @@ export function RegisterForm({ google }: RegisterFormProps) {
         return;
       }
 
+      // The server says whether it sent a confirmation link. When it did, the
+      // account is meant to stay shut until the customer opens it — so signing
+      // in here would be asking for a refusal we already know is coming, and
+      // reporting that refusal as if the registration had gone wrong.
+      const data = await res.json().catch(() => ({}));
+      if (data.verify) {
+        setNeedsVerification(true);
+        return;
+      }
+
       const signInResult = await signIn("credentials", {
         email,
         password,
@@ -274,7 +286,25 @@ export function RegisterForm({ google }: RegisterFormProps) {
         </>
       ) : null}
 
-      {sent ? (
+      {needsVerification ? (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-start gap-3 rounded-md border border-blue-ring bg-blue-surface p-4">
+            <IconMailCheck size={22} className="shrink-0 text-green" />
+            <p className="text-sm leading-relaxed text-blue-ink">{t(REGISTER.checkInbox)}</p>
+          </div>
+
+          {/* Sign in, not "go to dashboard": the account does not open until the
+              link is used, and a button that cannot work yet reads as a fault
+              in the site rather than a step still to do. */}
+          <Link
+            href={ROUTES.login}
+            className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm border border-border text-sm font-medium"
+          >
+            {t(REGISTER.signIn)}
+            <IconArrowRight size={18} />
+          </Link>
+        </div>
+      ) : sent ? (
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-3 rounded-md border border-blue-ring bg-blue-surface p-4">
             <IconMailCheck size={22} className="shrink-0 text-green" />
