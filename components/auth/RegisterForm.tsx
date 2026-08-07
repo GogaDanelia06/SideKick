@@ -19,6 +19,7 @@ import { REGISTER } from "@/lib/content/auth";
 import { DASH } from "@/lib/dashboard/routes";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { RegisterTrialNotice } from "./RegisterTrialNotice";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const NAME_PATTERN = /^[A-Za-zÀ-ÖØ-öø-ÿა-ჰ' -]+$/;
@@ -276,6 +277,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
         </>
       }
     >
+      <RegisterTrialNotice />
       {google ? (
         <>
           <GoogleButton

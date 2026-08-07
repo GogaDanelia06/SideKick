@@ -432,15 +432,6 @@ export default async function AdminAnalyticsPage() {
           </>
         )}
       </div>
-
-      <p className="mt-4 text-[12px] text-faint">
-        <BiText
-          value={{
-            ka: "შენიშვნა: კლიენტების მიმოწერების შიგთავსზე წვდომა შეგნებულად არ არის — ის მათი მომხმარებლების პერსონალური მონაცემია.",
-            en: "Note: access to tenants' conversation content is deliberately excluded — it is their customers' personal data.",
-          }}
-        />
-      </p>
     </>
   );
 }
