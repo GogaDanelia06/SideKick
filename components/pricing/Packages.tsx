@@ -37,7 +37,6 @@ export function Packages({
           badge={PACKAGES_HEADING.badge}
           badgeIcon={IconTag}
           title={PACKAGES_HEADING.title}
-          sub={PACKAGES_HEADING.sub}
         />
 
         <div className="mb-8 flex justify-center">
