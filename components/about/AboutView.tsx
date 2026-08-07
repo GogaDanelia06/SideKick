@@ -1,17 +1,20 @@
 "use client";
 
+import Link from "next/link";
 import { IconPhoto, IconUsers } from "@tabler/icons-react";
+
 import { Badge } from "@/components/ui/Badge";
 import { Container } from "@/components/ui/Container";
 import { ABOUT } from "@/lib/content/about";
-import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
+import { useLanguage } from "@/lib/i18n/useLanguage";
+import { ROUTES } from "@/lib/routes";
 
-/**
- * The About page. Every piece of copy here can be replaced from the admin
- * panel; when it hasn't been, the drafted text in lib/content/about.ts shows
- * instead — so the page is never blank and never needs a deploy to change.
- */
+const TRY_FREE = {
+  ka: "სცადე უფასოდ",
+  en: "Try for free",
+} as const;
+
 export function AboutView({
   title,
   body,
@@ -23,8 +26,6 @@ export function AboutView({
 }) {
   const { t } = useLanguage();
 
-  // Paragraphs are separated by a blank line, the same convention the legal
-  // sections use, so an admin only has to learn it once.
   const paragraphs = body
     ? t(body)
         .split(/\n\s*\n/)
@@ -71,10 +72,21 @@ export function AboutView({
             ? paragraphs.map((p, i) => <p key={i}>{p}</p>)
             : ABOUT.paragraphs.map((p, i) => (
                 <p key={i}>
-                  {p.strong ? <b className="font-semibold text-ink">{t(p.strong)} </b> : null}
+                  {p.strong ? (
+                    <b className="font-semibold text-ink">{t(p.strong)} </b>
+                  ) : null}
                   {t(p.text)}
                 </p>
               ))}
+        </div>
+
+        <div className="mt-8">
+          <Link
+            href={ROUTES.try}
+            className="inline-flex h-11 items-center justify-center rounded-sm bg-primary px-6 text-sm font-medium text-white transition hover:opacity-90"
+          >
+            {t(TRY_FREE)}
+          </Link>
         </div>
       </Container>
     </section>
