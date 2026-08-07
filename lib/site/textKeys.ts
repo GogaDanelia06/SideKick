@@ -15,8 +15,15 @@ import type { Bilingual } from "@/lib/content/types";
 export type TextField = {
   key: string;
   label: Bilingual;
-  /** `long` renders a textarea, `short` an input, `url`/`email`/`tel` are single-line with hints. */
-  kind: "short" | "long" | "url" | "email" | "tel";
+  /**
+   * `long` renders a textarea, `short` an input, `url`/`email`/`tel` are
+   * single-line with hints, and `media` gives the upload-or-paste picker.
+   *
+   * `media` still stores a plain URL in the same place as the rest — uploading
+   * only saves the admin the trip to a file host first. Nothing about the
+   * storage changes, which is why no field of its own was needed for it.
+   */
+  kind: "short" | "long" | "url" | "email" | "tel" | "media";
   /** Only Georgian is edited for this key (e.g. a phone number or a URL). */
   singleLang?: boolean;
   hint?: Bilingual;
@@ -98,10 +105,16 @@ const ABOUT: TextGroup = {
     { key: "about_body", label: ka("ტექსტი", "Text"), kind: "long" },
     {
       key: "about_image",
-      label: ka("ფოტოს ბმული", "Photo URL"),
-      kind: "url",
+      label: ka("ფოტო", "Photo"),
+      kind: "media",
       singleLang: true,
-      hint: ka("ატვირთვა მალე დაემატება — ჯერ ბმული ჩასვი", "Upload coming soon — paste a URL for now"),
+      // The frame is a wide 300px-tall band and the image is cropped to fill
+      // it, so a portrait photo loses its top and bottom. Saying the size here
+      // is cheaper than letting someone discover that on the live page.
+      hint: ka(
+        "რეკომენდებული: 1600×500 (განივი). სურათი მოიჭრება ჩარჩოს შესავსებად.",
+        "Recommended: 1600×500 (landscape). The image is cropped to fill the frame.",
+      ),
     },
   ],
 };

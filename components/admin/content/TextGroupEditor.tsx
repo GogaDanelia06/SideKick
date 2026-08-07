@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { IconAlertTriangle, IconCheck, IconExternalLink } from "@tabler/icons-react";
 import { saveTextGroup } from "@/lib/admin/actions";
+import { MediaField } from "@/components/admin/ui/MediaField";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { TextGroup } from "@/lib/site/textKeys";
 
@@ -56,10 +57,19 @@ export function TextGroupEditor({ group, values }: { group: TextGroup; values: V
             <div key={f.key}>
               <div className="mb-1.5 flex items-baseline justify-between">
                 <span className="text-[13px] font-medium">{t(f.label)}</span>
-                {f.hint ? <span className="text-[11px] text-faint">{t(f.hint)}</span> : null}
+                {/* A media field carries the hint under the picker instead, next
+                    to the upload button it is actually advising about. */}
+                {f.hint && f.kind !== "media" ? (
+                  <span className="text-[11px] text-faint">{t(f.hint)}</span>
+                ) : null}
               </div>
 
-              {f.singleLang ? (
+              {f.kind === "media" ? (
+                // No `typeName`: the value saved is a plain URL, exactly as it
+                // was when this field only accepted a pasted link, so nothing
+                // downstream had to learn a new shape.
+                <MediaField name={f.key} initialUrl={v.ka} imagesOnly note={f.hint} />
+              ) : f.singleLang ? (
                 <Field
                   name={f.key}
                   type={type}

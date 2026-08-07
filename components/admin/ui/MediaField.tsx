@@ -33,11 +33,26 @@ export function MediaField({
   typeName,
   initialUrl,
   initialType,
+  imagesOnly = false,
+  note,
 }: {
   name: string;
-  typeName: string;
+  /**
+   * Where to record whether the file is an image or a video. Optional: some
+   * places store only the URL, and submitting a value nothing reads would be a
+   * field to explain later for no benefit.
+   */
+  typeName?: string;
   initialUrl?: string | null;
   initialType?: string | null;
+  /**
+   * Refuses video. Set it wherever the page draws the result with `<img>` —
+   * an accepted upload that renders as a broken frame is worse than a refusal
+   * at the moment of choosing.
+   */
+  imagesOnly?: boolean;
+  /** Replaces the standing advice under the field, which is slide-specific. */
+  note?: Bilingual;
 }) {
   const { t } = useLanguage();
   const [url, setUrl] = useState(initialUrl ?? "");
@@ -73,12 +88,16 @@ export function MediaField({
   return (
     <div>
       <span className="mb-1 block text-[11px] uppercase tracking-wide text-faint">
-        {t({ ka: "ფოტო ან ვიდეო", en: "Photo or video" })}
+        {imagesOnly
+          ? t({ ka: "ფოტო", en: "Photo" })
+          : t({ ka: "ფოტო ან ვიდეო", en: "Photo or video" })}
       </span>
 
       {/* Values the form actually submits. */}
       <input type="hidden" name={name} value={url} />
-      <input type="hidden" name={typeName} value={url ? (isVideo ? "video" : "image") : ""} />
+      {typeName ? (
+        <input type="hidden" name={typeName} value={url ? (isVideo ? "video" : "image") : ""} />
+      ) : null}
 
       {url ? (
         <div className="mb-2 flex items-center gap-3 rounded-[8px] border border-border bg-soft p-2">
@@ -115,7 +134,7 @@ export function MediaField({
         <input
           ref={fileRef}
           type="file"
-          accept="image/*,video/mp4,video/webm"
+          accept={imagesOnly ? "image/*" : "image/*,video/mp4,video/webm"}
           className="hidden"
           onChange={(e) => {
             const f = e.target.files?.[0];
@@ -139,10 +158,12 @@ export function MediaField({
         </p>
       ) : (
         <p className="mt-1.5 text-[12px] text-faint">
-          {t({
-            ka: "ცარიელი რომ დატოვო, სლაიდზე ჩაშენებული ანიმაცია გამოჩნდება. მაქს. 8MB.",
-            en: "Leave empty to use the slide's built-in animation. Max 8MB.",
-          })}
+          {t(
+            note ?? {
+              ka: "ცარიელი რომ დატოვო, სლაიდზე ჩაშენებული ანიმაცია გამოჩნდება. მაქს. 8MB.",
+              en: "Leave empty to use the slide's built-in animation. Max 8MB.",
+            },
+          )}
           <IconPhoto size={12} className="ml-1 inline" />
         </p>
       )}
