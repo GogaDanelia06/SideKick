@@ -4,7 +4,7 @@ export type FaqItem = { question: Bilingual; answer: Bilingual };
 
 export const FAQ_HEADING = {
   badge: { ka: "ხშირად დასმული", en: "FAQ" },
-  title: { ka: "ხშირად დასმული კითხვები", en: "Frequently asked questions" },
+  title: { ka: "FAQ", en: "Frequently asked questions" },
   sub: {
     ka: "ყველაფერი, რაც უნდა იცოდე Sidekick-ის შესახებ",
     en: "Everything you need to know about Sidekick",

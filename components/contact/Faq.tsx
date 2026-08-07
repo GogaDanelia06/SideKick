@@ -15,7 +15,7 @@ export function Faq({ faqs }: { faqs: FaqItem[] }) {
   if (faqs.length === 0) return null;
 
   return (
-    <section className="pb-16">
+    <section id="faq" className="pb-16">
       <Container className="max-w-[820px]">
         <SectionHeading
           badge={FAQ_HEADING.badge}

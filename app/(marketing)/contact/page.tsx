@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 
 const crumbs: Crumb[] = [
   HOME_CRUMB,
-  { label: { ka: "კონტაქტი", en: "Contact" }, href: "/contact" },
+  { label: { ka: "კონტაქტი", en: "Contact" }, href: "/contact#faq" },
 ];
 
 export default async function ContactPage() {
