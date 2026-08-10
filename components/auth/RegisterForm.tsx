@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import {
   IconArrowRight,
@@ -16,7 +16,7 @@ import { GoogleButton } from "./GoogleButton";
 import { OrDivider } from "./OrDivider";
 import { Field } from "@/components/ui/Field";
 import { REGISTER } from "@/lib/content/auth";
-import { DASH } from "@/lib/dashboard/routes";
+import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { RegisterTrialNotice } from "./RegisterTrialNotice";
@@ -111,6 +111,19 @@ type RegisterFormProps = {
 export function RegisterForm({ google }: RegisterFormProps) {
   const { t } = useLanguage();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  /**
+   * Where to land once the account exists.
+   *
+   * `/start` — what the pricing page's "get started" button goes through —
+   * sends `?callbackUrl=/dashboard/billing`, because somebody who just picked a
+   * plan is trying to pay for it. This form used to ignore the parameter and
+   * push the dashboard home instead, so the plan they chose was dropped on the
+   * floor and they arrived somewhere they had not asked for.
+   */
+  const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
+
   const [sent, setSent] = useState(false);
   /** Registered, but waiting on the customer to open the link we emailed. */
   const [needsVerification, setNeedsVerification] = useState(false);
@@ -282,7 +295,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
         <>
           <GoogleButton
             label={t(REGISTER.google)}
-            onClick={() => signIn("google", { callbackUrl: DASH.home })}
+            onClick={() => signIn("google", { callbackUrl })}
           />
           <OrDivider />
         </>
@@ -298,8 +311,10 @@ export function RegisterForm({ google }: RegisterFormProps) {
           {/* Sign in, not "go to dashboard": the account does not open until the
               link is used, and a button that cannot work yet reads as a fault
               in the site rather than a step still to do. */}
+          {/* Carries the destination across, so someone who opens the link
+              later still ends up where they were originally heading. */}
           <Link
-            href={ROUTES.login}
+            href={`${ROUTES.login}?callbackUrl=${encodeURIComponent(callbackUrl)}`}
             className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm border border-border text-sm font-medium"
           >
             {t(REGISTER.signIn)}
@@ -318,12 +333,15 @@ export function RegisterForm({ google }: RegisterFormProps) {
           <button
             type="button"
             onClick={() => {
-              router.push(DASH.home);
+              router.push(callbackUrl);
               router.refresh();
             }}
             className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white"
           >
-            {t({ ka: "გადადი დეშბორდზე", en: "Go to dashboard" })}
+            {/* Not "go to dashboard" any more: the destination now depends on
+                where the customer set out from — billing, if they came from a
+                plan — and a button that names the wrong screen is its own bug. */}
+            {t({ ka: "გაგრძელება", en: "Continue" })}
             <IconArrowRight size={18} />
           </button>
         </div>

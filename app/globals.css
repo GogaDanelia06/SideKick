@@ -95,6 +95,46 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/**
+ * Give every control back the hand cursor.
+ *
+ * Tailwind v4's Preflight sets `button { cursor: default }` — it follows the
+ * raw HTML spec, where a hand means "this navigates". v3 left the browser
+ * default of `pointer` alone, so upgrading silently turned every button in the
+ * app into something that looks dead on hover: the theme toggle, the carousel
+ * arrows and dots, the language menu, the chat launcher, all 160-odd of them.
+ * Links kept their pointer, which is what made the inconsistency obvious —
+ * two controls side by side, one of them feeling broken.
+ *
+ * Done here rather than by adding `cursor-pointer` to every call site: this is
+ * a browser default we want back, not a per-button design decision, and 160
+ * copies of it is 160 chances to forget one on the next component.
+ *
+ * `:disabled` is excluded and handled below, otherwise a button that cannot be
+ * pressed still invites the press.
+ */
+@layer base {
+  button:not(:disabled),
+  select:not(:disabled),
+  summary,
+  [role="button"]:not([aria-disabled="true"]),
+  label:has(> input[type="checkbox"]:not(:disabled)),
+  label:has(> input[type="radio"]:not(:disabled)) {
+    cursor: pointer;
+  }
+
+  /* The refusal has to be visible before the click, not after it. Applies to
+     the label too, so a disabled checkbox does not offer a live hit area. */
+  button:disabled,
+  select:disabled,
+  textarea:disabled,
+  input:disabled,
+  [role="button"][aria-disabled="true"],
+  label:has(> input:disabled) {
+    cursor: not-allowed;
+  }
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }

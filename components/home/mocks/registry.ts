@@ -19,6 +19,24 @@ export const MOCKS: Record<HeroMock, ComponentType> = {
 };
 
 /**
+ * Wrapper class for a mounted mock. Apply it wherever one is rendered.
+ *
+ * A mock is a *picture* of the product, drawn in real markup so it inherits the
+ * theme. That is worth keeping, but it costs the one thing a screenshot gets
+ * right for free: a screenshot cannot be mistaken for the real control.
+ *
+ * `cursor-default` is what buys that back. Without it these panels inherit
+ * `cursor: auto`, and over text a browser resolves that to the I-beam — so the
+ * tester panel's search box grew a text caret on hover and read as a field you
+ * could type a question into. It is a div. Nothing happens, and the visitor is
+ * left thinking the demo is broken rather than that it was never a demo.
+ *
+ * Set on the wrapper rather than inside each mock so a fourth one cannot ship
+ * without it.
+ */
+export const MOCK_FRAME = "w-full cursor-default";
+
+/**
  * Narrows whatever is stored on the slide to a key we can actually render.
  *
  * The column is a plain string, so a value from an older build — or a hand-run

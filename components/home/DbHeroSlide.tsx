@@ -14,7 +14,7 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { HeroSlideView } from "@/lib/site/content";
 
 import { AnimatedStat } from "./AnimatedStat";
-import { MOCKS, mockKey } from "./mocks/registry";
+import { MOCKS, MOCK_FRAME, mockKey } from "./mocks/registry";
 
 const SHELL = "flex w-full items-center justify-center rounded-lg border border-border bg-card";
 
@@ -87,7 +87,7 @@ function Panel({ slide }: { slide: HeroSlideView }) {
 
     return (
       <div className={CONTENT_FRAME}>
-        <div className="w-full">
+        <div className={MOCK_FRAME}>
           <Mock />
         </div>
       </div>

@@ -5,6 +5,7 @@ import { IconRocket } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { MOCK_FRAME } from "./mocks/registry";
 import { ACTIONS } from "@/lib/content/common";
 import type { HeroSlide as Slide } from "@/lib/content/hero";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -59,7 +60,7 @@ export function HeroSlide({
       </div>
 
       <div className="flex h-[300px] items-center justify-center overflow-hidden md:h-[360px]">
-        <div className="w-full">
+        <div className={MOCK_FRAME}>
           {mock}
         </div>
       </div>

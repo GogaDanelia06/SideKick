@@ -10,7 +10,7 @@ import { GoogleButton } from "./GoogleButton";
 import { OrDivider } from "./OrDivider";
 import { Field } from "@/components/ui/Field";
 import { LOGIN } from "@/lib/content/auth";
-import { DASH } from "@/lib/dashboard/routes";
+import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
@@ -38,8 +38,7 @@ export function LoginForm({ google }: LoginFormProps) {
   const [fieldErrors, setFieldErrors] = useState<LoginErrors>({});
   const [pending, setPending] = useState(false);
 
-  const requested = searchParams.get("callbackUrl");
-  const callbackUrl = requested?.startsWith("/") ? requested : DASH.home;
+  const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
 
   function clearFieldError(field: LoginField) {
     setFieldErrors((current) => {
