@@ -27,11 +27,6 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
           >
             <item.icon size={18} className="w-5 shrink-0" />
             <span className="flex-1">{t(item.label)}</span>
-            {item.badge ? (
-              <span className="rounded-full bg-red px-[7px] py-px text-[11px] font-semibold text-white">
-                {item.badge}
-              </span>
-            ) : null}
           </Link>
         );
       })}

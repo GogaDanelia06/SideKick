@@ -12,7 +12,7 @@ export function HeroDots({
   onSelect: (i: number) => void;
 }) {
   return (
-    <div className="mt-6 flex justify-center gap-2.5">
+    <div className="flex justify-center gap-2.5">
       {Array.from({ length: count }).map((_, i) => (
         <button
           key={i}

@@ -40,6 +40,24 @@ function Arrow({
   );
 }
 
+function Stepper({ side, onClick }: { side: "left" | "right"; onClick: () => void }) {
+  const Icon = side === "left" ? IconChevronLeft : IconChevronRight;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={side === "left" ? "Previous slide" : "Next slide"}
+      className={clsx(
+        "grid size-9 shrink-0 place-items-center rounded-full",
+        "border border-input bg-card text-ink xl:hidden",
+      )}
+    >
+      <Icon size={18} />
+    </button>
+  );
+}
+
 export function Hero({
   stats,
   slides = [],
@@ -66,7 +84,12 @@ export function Hero({
             </>
           )}
 
-          <div className="h-[620px] md:h-[430px]">
+          {/* A floor, not a ceiling. As a fixed height this squeezed the grid
+              into exactly 620px on a phone — the panel was handed 300px for
+              429px of content and the rest was cut off. `min-h` still stops the
+              page jumping as slides of different lengths come and go, which is
+              what the fixed height was for, while letting a tall slide finish. */}
+          <div className="min-h-[620px] md:min-h-[430px]">
             {useDb ? (
               <DbHeroSlide slide={slides[carousel.index]!} />
             ) : (
@@ -75,13 +98,18 @@ export function Hero({
           </div>
         </div>
 
-        <Stats stats={stats} />
+        {/* Directly under the slides, above the figures.
+            These used to sit below the stats strip, which put an unrelated row
+            of numbers between a control and the thing it controls — a reader
+            has no reason to connect an arrow to a carousel that ended two
+            blocks earlier. */}
+        <div className="mt-6 flex items-center justify-center gap-3">
+          {count > 1 && <Stepper side="left" onClick={carousel.prev} />}
+          <HeroDots count={count} index={carousel.index} onSelect={carousel.goTo} />
+          {count > 1 && <Stepper side="right" onClick={carousel.next} />}
+        </div>
 
-        <HeroDots
-          count={count}
-          index={carousel.index}
-          onSelect={carousel.goTo}
-        />
+        <Stats stats={stats} />
       </Container>
     </section>
   );

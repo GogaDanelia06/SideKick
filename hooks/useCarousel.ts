@@ -14,9 +14,9 @@ export function useCarousel(count: number, intervalMs = 0) {
 
   useEffect(() => {
     if (intervalMs <= 0) return;
-    const id = setInterval(() => setIndex((i) => (i + 1) % count), intervalMs);
-    return () => clearInterval(id);
-  }, [count, intervalMs]);
+    const id = setTimeout(() => setIndex((i) => (i + 1) % count), intervalMs);
+    return () => clearTimeout(id);
+  }, [count, intervalMs, index]);
 
   return { index, goTo, next, prev };
 }
