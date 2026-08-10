@@ -6,7 +6,8 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual, IconType } from "@/lib/content/types";
 
 type Props = {
-  badge: Bilingual | string;
+  /** Omit for a section that reads better as a plain heading. */
+  badge?: Bilingual | string;
   badgeIcon?: IconType;
   title: Bilingual;
   sub?: Bilingual;
@@ -26,14 +27,17 @@ export function SectionHeading({
 }: Props) {
   const { t } = useLanguage();
   const Heading = as;
-  const badgeText = typeof badge === "string" ? badge : t(badge);
+  const badgeText = badge === undefined ? null : typeof badge === "string" ? badge : t(badge);
 
   return (
     <div className={clsx(align === "center" && "text-center")}>
-      <Badge icon={badgeIcon}>{badgeText}</Badge>
+      {badgeText === null ? null : <Badge icon={badgeIcon}>{badgeText}</Badge>}
       <Heading
         className={clsx(
-          "mt-3 font-semibold tracking-tight",
+          // The gap only exists to clear the badge, so without one it would be
+          // an unexplained space above the first thing on the section.
+          badgeText === null ? null : "mt-3",
+          "font-semibold tracking-tight",
           size === "xl"
             ? "text-[30px] leading-tight sm:text-[40px] sm:leading-[1.15]"
             : "text-2xl leading-snug sm:text-3xl",

@@ -1,7 +1,5 @@
 "use client";
 
-import { IconHelpCircle } from "@tabler/icons-react";
-
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -17,12 +15,7 @@ export function Faq({ faqs }: { faqs: FaqItem[] }) {
   return (
     <section id="faq" className="pb-16">
       <Container className="max-w-[820px]">
-        <SectionHeading
-          badge={FAQ_HEADING.badge}
-          badgeIcon={IconHelpCircle}
-          title={FAQ_HEADING.title}
-          sub={FAQ_HEADING.sub}
-        />
+        <SectionHeading title={FAQ_HEADING.title} sub={FAQ_HEADING.sub} />
 
         <div className="mt-6 flex flex-col gap-3">
           {faqs.map((item, i) => (

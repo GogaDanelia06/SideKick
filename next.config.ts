@@ -34,7 +34,13 @@ const csp = [
   `img-src 'self' data: blob: ${BLOB_HOST} https://img.youtube.com https://*.googleusercontent.com`,
   // Hero slides can be video, and <video> is governed by media-src — which was
   // absent, so it fell back to default-src 'self' and blocked them.
-  `media-src 'self' ${BLOB_HOST}`,
+  //
+  // `blob:` is for the chat's attachment preview. A video a visitor picks is
+  // shown straight from an object URL and never uploaded, so without this the
+  // preview is blocked while the image beside it works — img-src has carried
+  // blob: all along, which is exactly the kind of mismatch that reads as a
+  // broken feature rather than a policy.
+  `media-src 'self' blob: ${BLOB_HOST}`,
   "font-src 'self' data:",
   `connect-src 'self'${isDev ? " ws: http://localhost:*" : ""}`,
   "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",

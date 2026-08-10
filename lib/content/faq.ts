@@ -3,8 +3,11 @@ import type { Bilingual } from "./types";
 export type FaqItem = { question: Bilingual; answer: Bilingual };
 
 export const FAQ_HEADING = {
-  badge: { ka: "ხშირად დასმული", en: "FAQ" },
-  title: { ka: "FAQ", en: "Frequently asked questions" },
+  // No badge: it read "ხშირად დასმული" above a title of "FAQ", so the Georgian
+  // wording sat in the label and the heading itself was an English acronym —
+  // the wrong way round on a Georgian-first site. The full phrase is the title
+  // now, which leaves the badge with nothing left to say.
+  title: { ka: "ხშირად დასმული კითხვები", en: "Frequently asked questions" },
   sub: {
     ka: "ყველაფერი, რაც უნდა იცოდე Sidekick-ის შესახებ",
     en: "Everything you need to know about Sidekick",

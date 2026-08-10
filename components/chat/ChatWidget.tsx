@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconCircleFilled, IconMessageChatbot, IconRobot, IconX } from "@tabler/icons-react";
 import { ChatBubble } from "./ChatBubble";
 import { ChatInput } from "./ChatInput";
+import { ChatTyping } from "./ChatTyping";
 import { useChat } from "@/hooks/useChat";
-import { CHAT } from "@/lib/content/chat";
+import { CHAT, CHAT_CHIPS } from "@/lib/content/chat";
 import { BRAND } from "@/lib/content/common";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { track } from "@/lib/analytics/track";
@@ -14,7 +15,16 @@ import { track } from "@/lib/analytics/track";
 export function ChatWidget() {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
-  const { messages, send } = useChat(t(CHAT.widgetGreeting));
+  const { messages, typing, send, sendFile } = useChat(t(CHAT.widgetGreeting));
+  const threadRef = useRef<HTMLDivElement>(null);
+
+  // The thread is only 260px tall, so the third message already pushes the
+  // newest one out of sight — and the typing dots with it. Runs on `open` too,
+  // so re-opening the widget shows where the conversation left off.
+  useEffect(() => {
+    const el = threadRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, typing, open]);
 
   return (
     <>
@@ -42,12 +52,36 @@ export function ChatWidget() {
                 <IconX size={18} />
               </button>
             </header>
-            <div className="flex max-h-[260px] flex-col gap-2.5 overflow-auto p-4">
+            <div ref={threadRef} className="flex max-h-[260px] flex-col gap-2.5 overflow-auto p-4">
               {messages.map((m) => (
                 <ChatBubble key={m.id} message={m} aiTone="blue" />
               ))}
+              {typing ? <ChatTyping aiTone="blue" /> : null}
             </div>
-            <ChatInput placeholder={t(CHAT.widgetPlaceholder)} onSend={send} />
+
+            {/* Only while the thread is untouched. Once someone has asked
+                something of their own, three canned questions under their
+                conversation are clutter, not help. */}
+            {messages.length === 1 ? (
+              <div className="flex flex-wrap gap-2 px-4 pb-1">
+                {CHAT_CHIPS.map((chip, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => send(t(chip))}
+                    className="rounded-full border border-blue-border bg-blue-surface px-3 py-1.5 text-[12px] font-medium text-blue"
+                  >
+                    {t(chip)}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            <ChatInput
+              placeholder={t(CHAT.widgetPlaceholder)}
+              onSend={send}
+              onFile={sendFile}
+            />
           </motion.div>
         ) : null}
       </AnimatePresence>

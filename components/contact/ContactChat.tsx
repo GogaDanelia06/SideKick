@@ -1,27 +1,32 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { IconCircleFilled, IconRobot } from "@tabler/icons-react";
+import { IconCircleFilled, IconPaperclip, IconRobot, IconSend } from "@tabler/icons-react";
 import { ChatBubble } from "@/components/chat/ChatBubble";
-import { ChatInput } from "@/components/chat/ChatInput";
-import { useChat } from "@/hooks/useChat";
-import { CHAT } from "@/lib/content/chat";
+import { CHAT, CHAT_CHIPS } from "@/lib/content/chat";
 import { BRAND } from "@/lib/content/common";
-import { CONTACT_CHIPS, CONTACT_SEED } from "@/lib/content/contact";
+import { CONTACT_PREVIEW, CONTACT_SEED } from "@/lib/content/contact";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
+/**
+ * A picture of the assistant at work, on the contact page.
+ *
+ * This used to be a second working chat, identical to the floating widget a few
+ * hundred pixels away — two inputs for one conversation, and the page's own one
+ * lost its history the moment you navigated. Now there is one real chat (the
+ * widget) and this illustrates it.
+ *
+ * Nothing here is interactive, and the markup says so rather than merely looking
+ * static: the suggested questions are spans and the composer below is a drawing
+ * of one, so the keyboard has nothing to land on and a screen reader announces
+ * no controls. `cursor-default` is the same treatment the hero mocks get —
+ * without it the bubbles inherit `cursor: auto`, which resolves to the I-beam
+ * over text and reads as a field.
+ */
 export function ContactChat() {
   const { t } = useLanguage();
-  const { messages, send } = useChat(t(CONTACT_SEED));
-  const threadRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = threadRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages]);
 
   return (
-    <div className="flex h-[600px] max-h-[80vh] flex-col overflow-hidden rounded-lg border border-border bg-card">
+    <div className="flex cursor-default flex-col overflow-hidden rounded-lg border border-border bg-card">
       <header className="flex items-center gap-2.5 border-b border-border p-4">
         <span className="grid size-[38px] place-items-center rounded-full bg-blue-surface text-blue">
           <IconRobot size={19} />
@@ -34,24 +39,41 @@ export function ContactChat() {
           </div>
         </div>
       </header>
-      <div ref={threadRef} className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-4">
-        {messages.map((m) => (
-          <ChatBubble key={m.id} message={m} />
+
+      <div className="flex flex-col gap-2.5 p-4">
+        <ChatBubble message={{ id: "seed", role: "ai", text: t(CONTACT_SEED) }} />
+        {CONTACT_PREVIEW.map((m, i) => (
+          <ChatBubble key={i} message={{ id: `p${i}`, role: m.role, text: t(m.text) }} />
         ))}
       </div>
+
       <div className="flex flex-wrap gap-2 px-4 pb-3">
-        {CONTACT_CHIPS.map((chip, i) => (
-          <button
+        {CHAT_CHIPS.map((chip, i) => (
+          <span
             key={i}
-            type="button"
-            onClick={() => send(t(chip))}
             className="rounded-full border border-blue-border bg-blue-surface px-3 py-1.5 text-[12px] font-medium text-blue"
           >
             {t(chip)}
-          </button>
+          </span>
         ))}
       </div>
-      <ChatInput placeholder={t(CHAT.contactPlaceholder)} onSend={send} />
+
+      {/* The composer, drawn rather than built — it finishes the picture, since a
+          chat that stops at the last bubble looks cut off rather than static.
+          Classes track ChatInput so the illustration keeps matching the real
+          thing. `aria-hidden` because announcing a text field that cannot be
+          typed into is worse than announcing nothing at all. */}
+      <div aria-hidden className="flex gap-2 border-t border-border p-3">
+        <span className="grid w-10 shrink-0 place-items-center rounded-sm border border-input text-muted">
+          <IconPaperclip size={18} />
+        </span>
+        <span className="min-w-0 flex-1 truncate rounded-sm border border-input bg-bg px-3 py-2.5 text-sm text-muted">
+          {t(CHAT.contactPlaceholder)}
+        </span>
+        <span className="grid w-11 shrink-0 place-items-center rounded-sm bg-primary text-white">
+          <IconSend size={18} />
+        </span>
+      </div>
     </div>
   );
 }
