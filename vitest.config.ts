@@ -5,10 +5,10 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     environment: "node",
-    // `app/` is included so route handlers can be tested next to the route they
-    // belong to. Without it such a file is collected by nothing and passes by
-    // never running, which is worse than having no test at all.
-    include: ["lib/**/*.test.ts", "app/**/*.test.ts"],
+    // Anywhere a test file can sensibly live, so none is collected by nothing
+    // and passes by never running — worse than having no test at all. Both
+    // `app/` and `hooks/` were added after a test sat there silently ignored.
+    include: ["{lib,app,hooks,components}/**/*.test.{ts,tsx}"],
     globals: true,
   },
 });
