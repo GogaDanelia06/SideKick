@@ -51,6 +51,7 @@ beforeEach(() => {
   process.env.META_VERIFY_TOKEN = VERIFY_TOKEN;
   record.mockResolvedValue({
     businessId: "b1",
+    channel: "FACEBOOK" as const,
     conversationId: "conv1",
     messageId: "m1",
     isNew: true,
@@ -104,7 +105,58 @@ describe("POST — receiving messages", () => {
       senderId: "PSID_1",
       text: "გამარჯობა",
       externalId: "mid_1",
+      platform: "page",
     });
+  });
+
+  it("files an Instagram delivery under the Instagram channel", async () => {
+    // The two arrive at this one URL, so the envelope's `object` is the only
+    // thing saying which. Getting it wrong would look for an Instagram id among
+    // Facebook pages, find nothing, and drop a real customer's message as if it
+    // belonged to a stranger's page.
+    const raw = JSON.stringify({
+      object: "instagram",
+      entry: [
+        {
+          id: "IGID_1",
+          messaging: [{ sender: { id: "IGSID_1" }, message: { mid: "mid_ig", text: "გამარჯობა" } }],
+        },
+      ],
+    });
+    const res = await POST(post(raw, sign(raw)));
+
+    expect(res.status).toBe(200);
+    expect(record).toHaveBeenCalledWith("INSTAGRAM", {
+      pageId: "IGID_1",
+      senderId: "IGSID_1",
+      text: "გამარჯობა",
+      externalId: "mid_ig",
+      platform: "instagram",
+    });
+  });
+
+  it("tells the AI service which channel to answer on", async () => {
+    // It replies through us, so this is what decides whether the answer goes to
+    // Instagram or to Messenger.
+    record.mockResolvedValue({
+      businessId: "b1",
+      channel: "INSTAGRAM",
+      conversationId: "conv9",
+      messageId: "m9",
+      isNew: true,
+    });
+    const raw = JSON.stringify({
+      object: "instagram",
+      entry: [
+        {
+          id: "IGID_1",
+          messaging: [{ sender: { id: "IGSID_1" }, message: { mid: "mid_ig", text: "ჰეი" } }],
+        },
+      ],
+    });
+    await POST(post(raw, sign(raw)));
+
+    expect(notify).toHaveBeenCalledWith(expect.objectContaining({ channel: "INSTAGRAM" }));
   });
 
   it("refuses an unsigned request", async () => {
@@ -172,6 +224,7 @@ describe("POST — receiving messages", () => {
       .mockRejectedValueOnce(new Error("boom"))
       .mockResolvedValueOnce({
         businessId: "b1",
+        channel: "FACEBOOK" as const,
         conversationId: "conv2",
         messageId: "m2",
         isNew: true,
@@ -213,6 +266,7 @@ describe("POST — receiving messages", () => {
     // customer answered twice for one question.
     record.mockResolvedValue({
       businessId: "b1",
+      channel: "FACEBOOK" as const,
       conversationId: "conv1",
       messageId: "m1",
       isNew: false,

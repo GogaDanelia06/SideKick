@@ -1,6 +1,6 @@
 import { after } from "next/server";
 import { log } from "@/lib/logger";
-import { parseMessagingEvents, tokensMatch, verifySignature } from "@/lib/channels/meta";
+import { PLATFORMS, parseMessagingEvents, tokensMatch, verifySignature } from "@/lib/channels/meta";
 import { recordInbound, type RecordedMessage } from "@/lib/channels/inbound";
 import { notifyAgent } from "@/lib/channels/notify";
 
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
 
   for (const message of messages) {
     try {
-      const result = await recordInbound("FACEBOOK", message);
+      const result = await recordInbound(PLATFORMS[message.platform], message);
       // A repeat of one we already have is the retry path working. Storing it
       // was a no-op and telling the AI again would double the reply.
       if (result?.isNew) recorded.push(result);
@@ -141,7 +141,7 @@ export async function POST(request: Request) {
         businessId: result.businessId,
         conversationId: result.conversationId,
         messageId: result.messageId,
-        channel: "FACEBOOK",
+        channel: result.channel,
       });
     }
   });

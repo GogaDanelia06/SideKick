@@ -98,7 +98,7 @@ export function LoginForm({ google }: LoginFormProps) {
       // either way, and the cost is a cookie that outlives the window rather
       // than a broken login.
       if (!remember) {
-        await fetch("/api/auth/remember", { method: "POST" }).catch(() => {});
+        await fetch("/api/session/remember", { method: "POST" }).catch(() => {});
       }
 
       router.push(callbackUrl);

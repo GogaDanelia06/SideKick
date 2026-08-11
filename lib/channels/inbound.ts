@@ -4,6 +4,8 @@ import type { InboundMessage } from "./meta";
 
 export type RecordedMessage = {
   businessId: string;
+  /** Which channel it arrived on, so the AI is told where to answer. */
+  channel: ChannelType;
   conversationId: string;
   messageId: string;
   /** False when this exact platform message had already been stored. */
@@ -66,6 +68,7 @@ export async function recordInbound(
   if (existing) {
     return {
       businessId: channel.businessId,
+      channel: type,
       conversationId: conversation.id,
       messageId: existing.id,
       isNew: false,
@@ -99,6 +102,7 @@ export async function recordInbound(
     if (!winner) throw new Error("message insert failed");
     return {
       businessId: channel.businessId,
+      channel: type,
       conversationId: conversation.id,
       messageId: winner.id,
       isNew: false,
@@ -115,6 +119,7 @@ export async function recordInbound(
 
   return {
     businessId: channel.businessId,
+    channel: type,
     conversationId: conversation.id,
     messageId,
     isNew: true,

@@ -85,7 +85,13 @@ describe("tokensMatch()", () => {
 describe("parseMessagingEvents()", () => {
   it("pulls out the page, the sender, the text and the mid", () => {
     expect(parseMessagingEvents(JSON.parse(delivery([message()])))).toEqual([
-      { pageId: "PAGE_1", senderId: "PSID_1", text: "გამარჯობა", externalId: "mid_1" },
+      {
+        pageId: "PAGE_1",
+        senderId: "PSID_1",
+        text: "გამარჯობა",
+        externalId: "mid_1",
+        platform: "page",
+      },
     ]);
   });
 
@@ -140,8 +146,38 @@ describe("parseMessagingEvents()", () => {
     ]);
   });
 
-  it("refuses a delivery for another platform", () => {
-    const body = delivery([message()]).replace('"object":"page"', '"object":"instagram"');
+  it("reads an Instagram delivery, which is the same shape with a different object", () => {
+    // Instagram sends `entry[].messaging[]` exactly like a Page does — the ids
+    // mean IGID and IGSID rather than page and PSID, but nothing here has to
+    // know that. Only `platform` differs, and it is what routes the reply back.
+    const body = delivery([message()], "IGID_1").replace('"object":"page"', '"object":"instagram"');
+    expect(parseMessagingEvents(JSON.parse(body))).toEqual([
+      {
+        pageId: "IGID_1",
+        senderId: "PSID_1",
+        text: "გამარჯობა",
+        externalId: "mid_1",
+        platform: "instagram",
+      },
+    ]);
+  });
+
+  it("skips an Instagram echo too", () => {
+    const body = delivery([message({ is_echo: true })], "IGID_1").replace(
+      '"object":"page"',
+      '"object":"instagram"',
+    );
+    expect(parseMessagingEvents(JSON.parse(body))).toEqual([]);
+  });
+
+  it("refuses a delivery for a platform we do not handle", () => {
+    // WhatsApp comes through the same app but in a different envelope entirely
+    // — `entry[].changes[]`, not `messaging[]`. Accepting the object would mean
+    // reading fields that are not there and silently storing nothing.
+    const body = delivery([message()]).replace(
+      '"object":"page"',
+      '"object":"whatsapp_business_account"',
+    );
     expect(parseMessagingEvents(JSON.parse(body))).toEqual([]);
   });
 

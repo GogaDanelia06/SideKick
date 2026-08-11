@@ -21,6 +21,12 @@ export const dynamic = "force-dynamic";
  * Chunked cookies are handled because a large session is split across
  * `…session-token.0`, `.1` and so on, and leaving one chunk persistent would
  * store half a credential.
+ *
+ * Lives under `/api/session` rather than `/api/auth`, where it would sit inside
+ * Auth.js's `[...nextauth]` catch-all. A static segment does win over a catch-all
+ * today, so it worked there — but it worked by a routing precedence rule rather
+ * than by design, and an Auth.js route named `remember` would have swallowed it
+ * with nothing to show for the change but a box that had stopped working.
  */
 export async function POST() {
   // Only for someone who is actually signed in: without this, anybody could

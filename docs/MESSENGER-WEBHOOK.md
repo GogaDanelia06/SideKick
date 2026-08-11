@@ -1,8 +1,8 @@
 # Messenger webhook — how customer messages reach Sidekick
 
-Facebook delivers messages to `POST /api/webhooks/messenger`. Sidekick checks
-they really came from Meta, files them under the right tenant, and tells the AI
-service there is something to answer.
+Facebook **and Instagram** deliver messages to `POST /api/webhooks/messenger`.
+Sidekick checks they really came from Meta, files them under the right tenant,
+and tells the AI service there is something to answer.
 
 Replies travel back out the same way: an `AI` or `OPERATOR` message posted to
 `/api/agent/messages` is delivered to the customer through Meta's Send API, and
@@ -12,6 +12,7 @@ replies](#sending-replies).
 - [The five-second rule](#the-five-second-rule)
 - [Environment variables](#environment-variables)
 - [Setting the app up in Meta](#setting-the-app-up-in-meta)
+- [Instagram](#instagram)
 - [Connecting a tenant's page](#connecting-a-tenants-page)
 - [What the AI service receives](#what-the-ai-service-receives)
 - [What is dropped, and why](#what-is-dropped-and-why)
@@ -75,15 +76,57 @@ matches. A `403` at this step means the two tokens differ.
 
 ---
 
+## Instagram
+
+**No second endpoint.** Instagram messages arrive at this same URL, because they
+belong to the same Meta app. The envelope is identical to Messenger's —
+`entry[].messaging[]`, `sender.id`, `message.mid`, `message.text`, `is_echo` —
+and the only difference is the `object` at the top:
+
+| | `object` | `entry[].id` | `sender.id` | Channel |
+| --- | --- | --- | --- | --- |
+| Messenger | `"page"` | Page id | PSID | `FACEBOOK` |
+| Instagram | `"instagram"` | Instagram account id (IGID) | IGSID | `INSTAGRAM` |
+
+That one field is what decides which channel the message is filed under and,
+through it, which channel the reply goes back out on. Replies use the same
+Page Access Token and the same `/{id}/messages` call.
+
+To turn it on in Meta:
+
+1. The Instagram account must be **professional** (Business or Creator) and
+   **linked to the Facebook Page**. A personal account cannot receive this.
+2. In the **Instagram app** → Settings → Messages and story replies → **Message
+   controls** → turn on **"Allow access to messages"**. This is the step most
+   often missed; without it Meta accepts the subscription and then sends
+   nothing.
+3. App Dashboard → **Products → Instagram → API setup with Instagram login** (or
+   Webhooks → Instagram) → the same Callback URL and Verify Token as above.
+4. Subscribe to the `messages` field for Instagram as well — subscribing on the
+   Messenger product does not cover it.
+5. Permissions: `instagram_basic`, `instagram_manage_messages` and
+   `pages_manage_metadata`, submitted in the **same App Review** as
+   `pages_messaging`.
+
+Note the ids are per-surface. A customer who writes on both Instagram and
+Messenger has two different ids, so they are two conversations, not one. Merging
+them would need Meta's identity APIs and their permission, and guessing at it
+would show one customer another's messages.
+
+---
+
 ## Connecting a tenant's page
 
-Meta's delivery names the **Page**, never the business. The routing key is
-`Channel.externalId`: page id → channel → business.
+Meta's delivery names the **Page** or the **Instagram account**, never the
+business. The routing key is the pair `(Channel.type, Channel.externalId)`:
+`FACEBOOK` + page id, or `INSTAGRAM` + IGID → channel → business.
 
-Today that column has to be filled in directly — there is no screen for it yet,
-which is the main gap listed below. A channel only accepts messages when
-`connected` is true, so switching a channel off in the dashboard really does
-stop the AI answering for that tenant.
+Every business is provisioned with a row per channel already, so connecting one
+means filling in `externalId`, `accessToken` and `connected` on the row that is
+there — not creating one. Today that has to be done directly in the database;
+there is no screen for it yet, which is the main gap listed below. A channel only
+accepts messages when `connected` is true, so switching a channel off in the
+dashboard really does stop the AI answering for that tenant.
 
 ---
 
@@ -104,6 +147,10 @@ Content-Type: application/json
   "channel": "FACEBOOK"
 }
 ```
+
+`channel` is `"FACEBOOK"` or `"INSTAGRAM"`, taken from the delivery rather than
+assumed. It is worth reading: the same customer on the two surfaces is two
+conversations, and the reply goes back where the question came from.
 
 Deliberately thin. The message text is **not** duplicated here — read it, and
 the rest of the conversation, from `/api/agent/context`. One source of truth
@@ -166,13 +213,15 @@ inbox can show what actually reached the customer.
    channel toggle sets `connected` but collects neither the page id nor its
    token. Doing it properly means Facebook Login for Business, which supplies
    **both** in one flow.
-2. **App Review.** Until Meta approves `pages_messaging`, the app only works on
-   pages belonging to someone with a role in it. That is enough to test and not
-   enough to sell. It is the longest lead time in this project and it belongs to
-   whoever owns the Meta app.
-3. **Instagram and WhatsApp.** `ChannelType` has both. Instagram sends a
-   different `object` and a different event shape, so it needs its own route
-   rather than a flag on this one.
+2. **App Review.** Until Meta approves `pages_messaging` and
+   `instagram_manage_messages`, the app only works on pages and accounts
+   belonging to someone with a role in it. That is enough to test and not enough
+   to sell. It is the longest lead time in this project and it belongs to whoever
+   owns the Meta app.
+3. **WhatsApp.** `ChannelType` has it, and it is genuinely a different
+   integration: a different envelope (`entry[].changes[]`, not `messaging[]`), a
+   different Send API, and message templates instead of a 24-hour window. It is
+   refused here rather than half-read.
 4. **The AI team's endpoint.** `AI_SERVICE_WEBHOOK_URL` and its token are not
    set anywhere yet.
 5. **Attachments.** Images and files arrive with no text and are ignored in both

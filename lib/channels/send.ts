@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
+import type { ChannelType } from "@prisma/client";
 
 /**
  * Graph API version. Pinned rather than floating: Meta changes response shapes
@@ -22,6 +23,9 @@ const TIMEOUT_MS = 10_000;
 const WINDOW_CLOSED_CODE = 1545041;
 
 export type DeliveryStatus = "SENT" | "WINDOW_CLOSED" | "FAILED";
+
+/** Channels the Send API can answer on. */
+const SENDABLE = new Set<ChannelType>(["FACEBOOK", "INSTAGRAM"]);
 
 export type DeliveryResult = {
   status: DeliveryStatus;
@@ -121,7 +125,10 @@ export async function deliverOutbound(
   if (
     !conversation?.customerRef ||
     !channel ||
-    channel.type !== "FACEBOOK" ||
+    // Instagram replies go out the same way and on the same Page Access Token —
+    // only the id in the path differs, and that is already `externalId`.
+    // WhatsApp is not here: it is a different API, not a different id.
+    !SENDABLE.has(channel.type) ||
     !channel.connected ||
     !channel.externalId ||
     !channel.accessToken

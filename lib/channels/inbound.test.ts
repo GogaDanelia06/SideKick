@@ -26,6 +26,7 @@ const MSG: InboundMessage = {
   senderId: "PSID_1",
   text: "გამარჯობა",
   externalId: "mid_1",
+  platform: "page",
 };
 
 const connectedChannel = { id: "ch1", businessId: "b1", connected: true };
@@ -46,6 +47,7 @@ describe("recordInbound()", () => {
 
     expect(result).toEqual({
       businessId: "b1",
+      channel: "FACEBOOK",
       conversationId: "conv1",
       messageId: "m1",
       isNew: true,
@@ -109,6 +111,7 @@ describe("recordInbound()", () => {
 
     expect(result).toEqual({
       businessId: "b1",
+      channel: "FACEBOOK",
       conversationId: "conv1",
       messageId: "m1",
       isNew: false,

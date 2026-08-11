@@ -1,21 +1,41 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 /**
+ * Which Meta surface a delivery came from.
+ *
+ * Both arrive at the same callback URL, because they belong to the same app.
+ * The only thing that distinguishes them is the `object` at the top of the
+ * envelope, so it is read once here rather than guessed at further in.
+ */
+export const PLATFORMS = { page: "FACEBOOK", instagram: "INSTAGRAM" } as const;
+
+export type MetaPlatform = keyof typeof PLATFORMS;
+
+/**
  * One customer message, lifted out of Meta's nested envelope.
  *
- * Flattened on purpose: everything downstream cares about who wrote, on which
- * page, and what they said. Keeping Meta's shape any further into the codebase
- * would spread its quirks — echoes, delivery receipts, `entry[].messaging[]` —
- * across code that has no reason to know about them.
+ * Flattened on purpose: everything downstream cares about who wrote, where, and
+ * what they said. Keeping Meta's shape any further into the codebase would
+ * spread its quirks — echoes, delivery receipts, `entry[].messaging[]` — across
+ * code that has no reason to know about them.
  */
 export type InboundMessage = {
-  /** The Facebook Page id. Routes the message to a tenant. */
+  /**
+   * The account the message arrived at — a Facebook Page id, or an Instagram
+   * professional account id. Either way it is what routes to a tenant.
+   */
   pageId: string;
-  /** The customer's page-scoped id (PSID). Identifies the chat. */
+  /**
+   * The customer's id as that platform scopes it: a PSID on Facebook, an IGSID
+   * on Instagram. Both are per-account, so neither identifies a person across
+   * two merchants.
+   */
   senderId: string;
   text: string;
   /** Meta's `mid`. The key that makes a retry land on the same row. */
   externalId: string;
+  /** Which surface it came from, so the reply goes back the same way. */
+  platform: MetaPlatform;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -84,10 +104,13 @@ export function tokensMatch(given: string, expected: string): boolean {
 export function parseMessagingEvents(payload: unknown): InboundMessage[] {
   const out: InboundMessage[] = [];
 
-  // Instagram and WhatsApp deliveries have their own `object` and their own
-  // event shapes. Refusing them here keeps this function honest about being
-  // page-only rather than quietly mis-reading a sibling platform.
-  if (!isRecord(payload) || payload.object !== "page") return out;
+  // Facebook and Instagram send the same envelope with a different `object`, so
+  // both are read here. WhatsApp is not: its events have a different shape
+  // entirely, and accepting it would mean quietly mis-reading them.
+  if (!isRecord(payload)) return out;
+
+  const platform = typeof payload.object === "string" ? payload.object : "";
+  if (!(platform in PLATFORMS)) return out;
   if (!Array.isArray(payload.entry)) return out;
 
   for (const entry of payload.entry) {
@@ -111,7 +134,7 @@ export function parseMessagingEvents(payload: unknown): InboundMessage[] {
       // customer never wrote into the tenant's inbox.
       if (!senderId || !externalId || !text) continue;
 
-      out.push({ pageId, senderId, text, externalId });
+      out.push({ pageId, senderId, text, externalId, platform: platform as MetaPlatform });
     }
   }
 

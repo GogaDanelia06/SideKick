@@ -17,7 +17,7 @@ beforeEach(() => {
   getAll.mockReturnValue([{ name: "authjs.session-token", value: "jwt-value" }]);
 });
 
-describe("POST /api/auth/remember", () => {
+describe("POST /api/session/remember", () => {
   it("refuses a caller who is not signed in", async () => {
     vi.mocked(auth).mockResolvedValue(null as never);
 
