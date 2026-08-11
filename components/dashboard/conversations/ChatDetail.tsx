@@ -46,9 +46,12 @@ const REPLY_NOTICE: Record<string, Bilingual> = {
 export function ChatDetail({
   chat,
   onBack,
+  onSent,
 }: {
   chat: ConversationDetail | null;
   onBack: () => void;
+  /** Hands the stored reply back so the thread shows it without a refetch. */
+  onSent: (message: ConversationDetail["messages"][number]) => void;
 }) {
   const { t } = useLanguage();
   const [, start] = useTransition();
@@ -73,6 +76,7 @@ export function ChatDetail({
       // Cleared on success even when delivery fell short: the message is in the
       // thread, and leaving it in the box invites sending it a second time.
       setDraft("");
+      onSent(res.message);
 
       if (res.delivery === "WINDOW_CLOSED") setNotice({ key: "window_closed", tone: "warn" });
       else if (res.delivery === "FAILED") setNotice({ key: "failed", tone: "error" });

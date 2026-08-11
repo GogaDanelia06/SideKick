@@ -44,7 +44,13 @@ describe("sendOperatorReply()", () => {
   it("records the reply as OPERATOR and sends it on", async () => {
     const res = await sendOperatorReply("conv1", "დიახ, გვაქვს");
 
-    expect(res).toEqual({ ok: true, delivery: "SENT" });
+    expect(res).toEqual({
+      ok: true,
+      delivery: "SENT",
+      // Handed straight back so the open thread can show the reply without
+      // asking the server for the conversation again.
+      message: { id: "m1", sender: "OPERATOR", text: "დიახ, გვაქვს", stoppedReason: null },
+    });
     expect(msgCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: { conversationId: "conv1", sender: "OPERATOR", text: "დიახ, გვაქვს" },
@@ -91,7 +97,7 @@ describe("sendOperatorReply()", () => {
     // would have them type it again and send the customer a duplicate.
     deliver.mockResolvedValue({ status: "WINDOW_CLOSED" } as never);
 
-    expect(await sendOperatorReply("conv1", "hi")).toEqual({
+    expect(await sendOperatorReply("conv1", "hi")).toMatchObject({
       ok: true,
       delivery: "WINDOW_CLOSED",
     });
@@ -100,6 +106,6 @@ describe("sendOperatorReply()", () => {
   it("reports null delivery for a channel with nowhere to send", async () => {
     deliver.mockResolvedValue(null);
 
-    expect(await sendOperatorReply("conv1", "hi")).toEqual({ ok: true, delivery: null });
+    expect(await sendOperatorReply("conv1", "hi")).toMatchObject({ ok: true, delivery: null });
   });
 });

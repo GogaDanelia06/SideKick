@@ -387,7 +387,12 @@ export async function cancelSubscription(): Promise<TeamResult> {
 }
 
 export type ReplyResult =
-  | { ok: true; delivery: DeliveryStatus | null }
+  | {
+      ok: true;
+      delivery: DeliveryStatus | null;
+      /** The stored reply, so the open thread can show it without refetching. */
+      message: { id: string; sender: "OPERATOR"; text: string; stoppedReason: null };
+    }
   | { ok: false; error: string };
 
 /**
@@ -436,5 +441,9 @@ export async function sendOperatorReply(
   const delivery = await deliverOutbound(conversation.id, message.id, body);
 
   revalidatePath(DASH.conversations);
-  return { ok: true, delivery: delivery?.status ?? null };
+  return {
+    ok: true,
+    delivery: delivery?.status ?? null,
+    message: { id: message.id, sender: "OPERATOR", text: body, stoppedReason: null },
+  };
 }
