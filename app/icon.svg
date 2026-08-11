@@ -1,5 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="26.4 26.7 78 78">
-  <rect x="26.4" y="26.7" width="78" height="78" rx="16" fill="#238636"/>
+  <style>
+    /* #04030c is the ink the logo file uses for its own letterforms, so this is
+       the brand black rather than one picked to look close.
+
+       The stroke only appears in a dark browser: a black tile on dark chrome is
+       a hole where the icon should be, and at 16px the letters alone are not
+       enough to find the tab by. It stays invisible on light, where the tile
+       already has all the edge it needs. */
+    .tile { fill: #04030c; stroke: none; }
+    @media (prefers-color-scheme: dark) {
+      .tile { stroke: #3d4148; stroke-width: 3; }
+    }
+  </style>
+  <rect class="tile" x="26.4" y="26.7" width="78" height="78" rx="16"/>
   <g fill="#ffffff">
     <path d="M50.14,92.09c-5.16,0-9.07-1.15-11.74-3.45-2.66-2.3-3.99-5.73-3.99-10.28v-3.22h11v1.37c0,2.59.43,4.53,1.3,5.82.86,1.28,2.38,1.93,4.55,1.93,1.84,0,3.26-.5,4.26-1.49s1.49-2.4,1.49-4.22c0-1.38-.3-2.54-.89-3.5-.6-.96-1.48-1.8-2.64-2.52l-8.58-5.25c-4.06-2.52-6.7-4.84-7.92-6.95-1.21-2.11-1.82-4.79-1.82-8.04,0-4.39,1.49-7.78,4.47-10.18,2.98-2.39,7.2-3.59,12.66-3.59,4.88,0,8.6,1.05,11.16,3.14,2.56,2.09,3.84,5.63,3.84,10.63v1.79h-10.61v-1.23c0-4.48-1.74-6.73-5.22-6.73-1.61,0-2.89.52-3.84,1.56-.95,1.04-1.42,2.43-1.42,4.19,0,1.07.26,2.08.79,3.01.53.93,1.36,1.76,2.5,2.49l10.47,6.69c2.8,1.75,4.83,3.57,6.1,5.45,1.26,1.88,1.89,4.44,1.89,7.69,0,4.97-1.46,8.71-4.38,11.19-2.92,2.49-7.39,3.73-13.42,3.73Z"/>
     <g transform="translate(-113 0)"><path d="M183.12,39.34v22.77l18.32-22.77h7.46l-18.88,23.4,19.93,28.41h-8.44l-18.39-27.04v27.04h-6.59v-51.81h6.59Z"/></g>
