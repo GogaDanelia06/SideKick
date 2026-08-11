@@ -56,6 +56,7 @@ export function LoginForm({ google }: LoginFormProps) {
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "").trim();
     const password = String(formData.get("password") ?? "");
+    const remember = formData.get("remember") === "on";
     const errors: LoginErrors = {};
 
     if (!email) errors.email = "emailRequired";
@@ -78,6 +79,17 @@ export function LoginForm({ google }: LoginFormProps) {
         return setError(
           t(res?.code === "rate_limited" ? LOGIN.rateLimited : LOGIN.invalid),
         );
+      }
+
+      // Sessions are seven days by configuration. Someone who did not ask to be
+      // remembered gets that cut back to the life of the browser window, which
+      // is what the box beneath the password field has always promised.
+      //
+      // Failure here is not worth stopping the sign-in for: they are logged in
+      // either way, and the cost is a cookie that outlives the window rather
+      // than a broken login.
+      if (!remember) {
+        await fetch("/api/auth/remember", { method: "POST" }).catch(() => {});
       }
 
       router.push(callbackUrl);
@@ -138,7 +150,7 @@ export function LoginForm({ google }: LoginFormProps) {
 
         <div className="flex items-center justify-between text-[13px]">
           <label className="flex items-center gap-2 text-muted">
-            <input type="checkbox" className="accent-[var(--primary)]" />
+            <input name="remember" type="checkbox" className="accent-[var(--primary)]" />
             {t(LOGIN.remember)}
           </label>
 
