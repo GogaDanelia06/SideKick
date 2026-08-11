@@ -27,7 +27,7 @@ export function MobileDrawer({ open, onClose, account }: { open: boolean; onClos
         )}
       >
         <div className="flex h-[60px] items-center gap-2.5 border-b border-border2 px-[18px] text-base font-semibold">
-          <Wordmark className="h-[18px]" />
+          <Wordmark className="h-[28px]" tagline />
           <button type="button" onClick={onClose} aria-label="Close menu" className="ml-auto text-muted">
             <IconX size={20} />
           </button>

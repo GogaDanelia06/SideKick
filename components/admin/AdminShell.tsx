@@ -21,7 +21,7 @@ export function AdminShell({
 
   const brand = (
     <div className="flex h-[60px] items-center gap-2.5 border-b border-border2 px-[18px] text-base font-semibold">
-      <Wordmark className="h-[18px]" />
+      <Wordmark className="h-[28px]" tagline />
       <span className="ml-auto rounded-full border border-ink/30 bg-soft px-2 py-0.5 text-[11px] font-semibold text-ink">
         {t({ ka: "ადმინი", en: "Admin" })}
       </span>

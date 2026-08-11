@@ -14,7 +14,7 @@ export function Sidebar({ className, account }: { className?: string; account: A
     >
       <div className="flex h-[60px] items-center gap-2.5 border-b border-border2 px-[18px] text-base font-semibold">
         {/* The mark spells the name, so the word beside it would say it twice. */}
-        <Wordmark className="h-[18px]" />
+        <Wordmark className="h-[28px]" tagline />
         <span className="ml-auto rounded-full border border-border bg-soft px-2 py-0.5 text-[11px] font-medium text-muted">
           Admin
         </span>
