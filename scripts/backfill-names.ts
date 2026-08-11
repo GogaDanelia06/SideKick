@@ -11,25 +11,49 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function main() {
   const dryRun = process.argv.includes("--dry-run");
 
-  const pending = await prisma.conversation.findMany({
-    where: {
-      customerName: null,
-      customerRef: { not: null },
-      // Only the two surfaces with a profile API behind them. A website chat
-      // has no Meta id to look up.
-      channel: { type: { in: ["FACEBOOK", "INSTAGRAM"] }, accessToken: { not: null } },
-    },
+  // Deliberately unfiltered beyond "has no name". Narrowing to channels that
+  // hold a token would hide the most likely reason a chat is nameless behind a
+  // cheerful "nothing to do", and send whoever ran this looking at Meta instead
+  // of at the row in front of them.
+  const nameless = await prisma.conversation.findMany({
+    where: { customerName: null, customerRef: { not: null } },
     select: {
       id: true,
       customerRef: true,
       createdAt: true,
-      channel: { select: { type: true } },
+      channel: { select: { type: true, accessToken: true } },
     },
     orderBy: { createdAt: "desc" },
   });
 
+  if (nameless.length === 0) {
+    console.log("nothing to do — every chat with a customer id already has a name.");
+    return;
+  }
+
+  // Only the two surfaces with a profile API behind them, and only where we
+  // hold the token that opens it. A website chat has no Meta id to look up.
+  const isMeta = (t?: string) => t === "FACEBOOK" || t === "INSTAGRAM";
+  const pending = nameless.filter((c) => isMeta(c.channel?.type) && c.channel?.accessToken);
+  const blocked = nameless.filter((c) => !pending.includes(c));
+
+  if (blocked.length > 0) {
+    console.log(`${blocked.length} chat(s) cannot be looked up:\n`);
+    for (const c of blocked) {
+      const why = !isMeta(c.channel?.type)
+        ? `channel is ${c.channel?.type ?? "not set"} — no profile API`
+        : "channel has no accessToken — nothing to authenticate the lookup with";
+      console.log(`  ${c.customerRef}  ${why}`);
+    }
+    console.log(
+      "\nA missing accessToken is the usual one, and it is a setup gap rather\n" +
+        "than a Meta problem: the Page Access Token has to be stored on the\n" +
+        "channel row. Replies cannot go out without it either.\n",
+    );
+  }
+
   if (pending.length === 0) {
-    console.log("nothing to do — every chat with a Meta id already has a name.");
+    console.log("no chat is in a state where Meta could be asked.");
     return;
   }
 
