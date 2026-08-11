@@ -447,3 +447,45 @@ export async function sendOperatorReply(
     message: { id: message.id, sender: "OPERATOR", text: body, stoppedReason: null },
   };
 }
+
+/**
+ * Turns an open conversation into a lead.
+ *
+ * The mark in the chat header showed whether a lead existed and did nothing
+ * when pressed, so the one moment a merchant is most likely to want one — while
+ * reading what the customer just asked for — was the one place they could not
+ * make one. It links back to the conversation, so the lead carries its own
+ * evidence rather than a name typed from memory.
+ *
+ * `conversationId` is unique on `Lead`, which is what stops a second press
+ * creating a duplicate; the existing one is returned instead.
+ */
+export async function createLeadFromConversation(
+  conversationId: string,
+): Promise<ActionResult & { created?: boolean }> {
+  const ctx = await requirePermission("leads:write");
+  if (!ctx) return { ok: false, error: "forbidden" };
+
+  const conversation = await prisma.conversation.findFirst({
+    where: { id: conversationId, businessId: ctx.businessId },
+    select: { id: true, customerName: true, channel: { select: { type: true } }, lead: { select: { id: true } } },
+  });
+  if (!conversation) return { ok: false, error: "not_found" };
+  if (conversation.lead) return { ok: true, created: false };
+
+  await prisma.lead.create({
+    data: {
+      businessId: ctx.businessId,
+      conversationId: conversation.id,
+      // Facebook gives a page-scoped id, not a name, so this is often empty.
+      // Left blank rather than filled with the id: a lead list of numbers is
+      // worse than one a merchant knows to complete.
+      name: conversation.customerName?.trim() || null,
+      source: conversation.channel?.type ?? "manual",
+    },
+  });
+
+  revalidatePath(DASH.leads);
+  revalidatePath(DASH.conversations);
+  return { ok: true, created: true };
+}

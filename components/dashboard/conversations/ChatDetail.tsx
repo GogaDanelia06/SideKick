@@ -11,7 +11,11 @@ import {
   IconUserPlus,
 } from "@tabler/icons-react";
 import { Switch } from "@/components/dashboard/ui/Switch";
-import { sendOperatorReply, setConversationAi } from "@/lib/dashboard/actions";
+import {
+  createLeadFromConversation,
+  sendOperatorReply,
+  setConversationAi,
+} from "@/lib/dashboard/actions";
 import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { ConversationDetail } from "@/lib/dashboard/queries";
 import type { Bilingual } from "@/lib/content/types";
@@ -47,17 +51,36 @@ export function ChatDetail({
   chat,
   onBack,
   onSent,
+  onLead,
 }: {
   chat: ConversationDetail | null;
   onBack: () => void;
   /** Hands the stored reply back so the thread shows it without a refetch. */
   onSent: (message: ConversationDetail["messages"][number]) => void;
+  /** Marks this chat as having a lead, once one has been made. */
+  onLead: () => void;
 }) {
   const { t } = useLanguage();
   const [, start] = useTransition();
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [notice, setNotice] = useState<{ key: string; tone: "warn" | "error" } | null>(null);
+  const [makingLead, setMakingLead] = useState(false);
+
+  async function makeLead() {
+    if (!chat || chat.hasLead) return;
+    setMakingLead(true);
+    setNotice(null);
+    try {
+      const res = await createLeadFromConversation(chat.id);
+      if (!res.ok) setNotice({ key: res.error in REPLY_NOTICE ? res.error : "error", tone: "error" });
+      else onLead();
+    } catch {
+      setNotice({ key: "error", tone: "error" });
+    } finally {
+      setMakingLead(false);
+    }
+  }
 
   async function reply() {
     const text = draft.trim();
@@ -128,10 +151,34 @@ export function ChatDetail({
           </div>
         </div>
 
-        <span className={clsx(MARK, chat.hasLead ? "border-green bg-green-surface text-green" : "border-border text-muted")}>
+        <button
+          type="button"
+          disabled={chat.hasLead || makingLead}
+          onClick={() => void makeLead()}
+          title={t(
+            chat.hasLead
+              ? { ka: "ამ მიმოწერას უკვე აქვს ლიდი", en: "This conversation already has a lead" }
+              : { ka: "შექმენი ლიდი ამ მიმოწერიდან", en: "Create a lead from this conversation" },
+          )}
+          className={clsx(
+            MARK,
+            chat.hasLead
+              ? "cursor-default border-green bg-green-surface text-green"
+              : "border-border text-muted hover:border-green hover:text-green disabled:opacity-60",
+          )}
+        >
           <IconUserPlus size={15} /> {t({ ka: "ლიდი", en: "Lead" })}
-        </span>
-        <span className={clsx(MARK, chat.hasOrder ? "border-blue bg-blue-surface text-blue" : "border-border text-muted")}>
+        </button>
+        <span
+          // Not a button. Making an order means choosing products and
+          // quantities, which is a form and not a single press — so this stays
+          // what it always was: a sign of whether one exists.
+          title={t({
+            ka: "შეკვეთა იქმნება შეკვეთების გვერდიდან",
+            en: "Orders are created from the orders page",
+          })}
+          className={clsx(MARK, chat.hasOrder ? "border-blue bg-blue-surface text-blue" : "border-border text-muted")}
+        >
           <IconShoppingCart size={15} /> {t({ ka: "შეკვეთა", en: "Order" })}
         </span>
 

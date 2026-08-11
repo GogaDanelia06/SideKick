@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import type { ChannelType } from "@prisma/client";
 import { ChatList } from "./ChatList";
@@ -17,9 +16,6 @@ export function ConversationsView({
   selected: ConversationDetail | null;
   channel: ChannelType | null;
 }) {
-  const router = useRouter();
-  const params = useSearchParams();
-
   const [openId, setOpenId] = useState<string | null>(selected?.id ?? null);
 
   /**
@@ -39,6 +35,22 @@ export function ConversationsView({
   );
 
   const chat = openId ? (cache[openId] ?? null) : null;
+
+  /**
+   * Which channel the list is narrowed to, decided here rather than on the
+   * server.
+   *
+   * Going through the server meant a full page load for a filter over rows the
+   * browser was already holding — the wait was the same as opening the inbox
+   * from scratch, for a click that changes nothing but what is shown.
+   *
+   * The list arrives capped at a hundred conversations, so on an inbox larger
+   * than that this narrows the hundred most recent rather than fetching the
+   * hundred most recent of one channel. No merchant is near that yet, and the
+   * exchange is a filter that answers instantly.
+   */
+  const [filter, setFilter] = useState<ChannelType | null>(channel);
+  const shown = filter ? conversations.filter((c) => c.channelType === filter) : conversations;
 
   async function open(id: string | null) {
     setOpenId(id);
@@ -64,18 +76,18 @@ export function ConversationsView({
     <div className="grid gap-4 lg:h-[calc(100vh-7rem)] lg:min-h-[520px] lg:grid-cols-[340px_1fr]">
       <div className={clsx("min-h-0 lg:h-full", openId && "hidden lg:block")}>
         <ChatList
-          conversations={conversations}
+          conversations={shown}
           selectedId={openId}
-          channel={channel}
+          channel={filter}
           onSelect={(id) => void open(id)}
           onChannel={(c) => {
-            // A filter change does reload the page: which conversations belong
-            // in the list is the server's answer to give, not ours.
-            const q = new URLSearchParams(params.toString());
-            if (c) q.set("channel", c);
-            else q.delete("channel");
-            q.delete("c");
-            router.push(`?${q.toString()}`, { scroll: false });
+            setFilter(c);
+            const url = new URL(window.location.href);
+            if (c) url.searchParams.set("channel", c);
+            else url.searchParams.delete("channel");
+            url.searchParams.delete("c");
+            window.history.replaceState(null, "", url);
+            setOpenId(null);
           }}
         />
       </div>
@@ -83,6 +95,13 @@ export function ConversationsView({
         <ChatDetail
           chat={chat}
           onBack={() => void open(null)}
+          onLead={() =>
+            setCache((current) => {
+              const open = openId && current[openId];
+              if (!open) return current;
+              return { ...current, [openId]: { ...open, hasLead: true } };
+            })
+          }
           onSent={(message) =>
             setCache((current) => {
               const open = openId && current[openId];
