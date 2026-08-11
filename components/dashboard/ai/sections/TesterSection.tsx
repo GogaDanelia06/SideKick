@@ -26,8 +26,8 @@ export function TesterSection() {
 
       <AiModuleNotice
         text={{
-          ka: "ქვემოთ ნაჩვენებია სატესტო მაგალითი. ლაივ პასუხების გენერაცია საჭიროებს AI მოდულს — ინტერფეისი მზადაა და ჩაირთვება მოდულის დამატებისთანავე.",
-          en: "The exchange below is a sample. Generating live replies requires the AI module — the interface is ready and switches on as soon as that module is added.",
+          ka: "ქვემოთ ნაჩვენებია სატესტო მაგალითი. ლაივ პასუხების გენერაცია საჭიროებს AI მოდულს.",
+          en: "The exchange below is a sample. Generating live replies requires the AI module.",
         }}
       />
 
