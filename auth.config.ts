@@ -1,4 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
+import { sessionIsStale } from "@/lib/auth/sessionExpiry";
 
 export const authConfig = {
   trustHost: true,
@@ -23,7 +24,10 @@ export const authConfig = {
       // every page under /admin goes through it. Middleware runs on the edge
       // where that query is not available, so the check belongs there, not here.
       if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
-        return !!auth?.user;
+        if (!auth?.user) return false;
+        // A session cookie the browser restored after being closed still looks
+        // valid here, so age is the only thing that gives it away.
+        return !sessionIsStale(auth.user);
       }
       return true;
     },
@@ -34,6 +38,9 @@ export const authConfig = {
         session.user.businessId = token.businessId as string | undefined;
         session.user.role = token.role as string | undefined;
         session.user.isAdmin = (token.isAdmin as boolean | undefined) ?? false;
+        // Needed by `authorized` above, which sees the session and not the token.
+        session.user.remember = token.remember as boolean | undefined;
+        session.user.startedAt = token.startedAt as number | undefined;
       }
       return session;
     },

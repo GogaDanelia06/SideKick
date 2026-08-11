@@ -73,7 +73,16 @@ export function LoginForm({ google }: LoginFormProps) {
     setPending(true);
 
     try {
-      const res = await signIn("credentials", { email, password, redirect: false });
+      const res = await signIn("credentials", {
+        email,
+        password,
+        // Sent into the token, not just used to rewrite the cookie afterwards:
+        // a browser that restores session cookies hands the rewritten one back
+        // as if nothing happened, so the choice has to live somewhere the server
+        // reads. See lib/auth/sessionExpiry.ts.
+        remember: remember ? "1" : "0",
+        redirect: false,
+      });
 
       if (!res?.ok || res.error) {
         return setError(

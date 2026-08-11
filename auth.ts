@@ -20,7 +20,7 @@ export class UnverifiedEmail extends CredentialsSignin {
 
 const providers: Provider[] = [
   Credentials({
-    credentials: { email: {}, password: {} },
+    credentials: { email: {}, password: {}, remember: {} },
     async authorize(creds, request) {
       const email = String(creds?.email ?? "").toLowerCase().trim();
       const password = String(creds?.password ?? "");
@@ -43,7 +43,16 @@ const providers: Provider[] = [
       if (!user.emailVerified) throw new UnverifiedEmail();
 
       await Promise.all([clear("login", email), clear("loginIp", ip)]);
-      return { id: user.id, name: user.name, email: user.email };
+      // The form sends the "remember me" choice as a string, like every other
+      // credential field. Anything other than an explicit yes is a no, so a
+      // request that omits it gets the shorter session rather than the longer
+      // one — the safe direction for a field a caller controls.
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        remember: String(creds?.remember ?? "") === "1",
+      };
     },
   }),
 ];
@@ -62,6 +71,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user?.id) {
         token.uid = user.id;
+
+        // Stamped once, at sign-in, and never refreshed — see
+        // lib/auth/sessionExpiry.ts for why a sliding stamp would undo the
+        // session cookie. Google has no `authorize()` to carry the choice, so
+        // an OAuth sign-in is treated as not remembered, which is also what
+        // closes the gap where that button ignored the box entirely.
+        token.remember = user.remember === true;
+        token.startedAt = Date.now();
         const [m, account] = await Promise.all([
           prisma.membership.findFirst({
             where: { userId: user.id },

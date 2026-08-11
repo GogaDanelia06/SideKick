@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
+import { sessionIsStale } from "@/lib/auth/sessionExpiry";
 
 export type Ctx = { userId: string; businessId: string; role: string };
 
@@ -29,6 +30,11 @@ export async function getContext(): Promise<Ctx | null> {
   const userId = session?.user?.id;
   const businessId = session?.user?.businessId;
   if (!userId || !businessId) return null;
+
+  // Middleware checks this too, but it cannot be the only place: it runs on the
+  // edge for page navigations, and a Server Action reaching straight for the
+  // context never passes through it.
+  if (sessionIsStale(session.user)) return null;
 
   // A cookie naming somebody who is gone is treated as no cookie at all. Left
   // unchecked it is worse than a signed-out visitor: the pages load, then fail
