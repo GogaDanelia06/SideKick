@@ -47,6 +47,15 @@ immediately because no mail provider is configured — see 8.1.
 | 2.7 | Cross-tenant write attempt changes nothing | ✅ | *Tested:* crafted request under a foreign id affected 0 rows |
 | 2.8 | Same action denied/allowed correctly across roles | ✅ | *Tested:* one crafted request replayed under OWNER/OPERATOR/VIEWER matched the matrix |
 | 2.9 | UI hides controls a role can't use (convenience only) | ✅ | `can()` passed to views; server remains the real control |
+| 2.10 | A session not asked to be remembered ends on its own | ✅ | `lib/auth/idle.ts` — 30 min idle; `lib/auth/sessionExpiry.ts` — 8 h absolute |
+
+> **On session lifetime (2.10):** quitting the browser cannot sign anyone out.
+> No signal reaches the server when a window closes, and Chrome and Safari hand
+> the same session cookie back when they restore. Two server-side rules stand in
+> for it, and only when "remember me" was left unticked: **30 minutes idle**
+> (a signed `sk.seen` cookie refreshed by middleware) and an **8 hour absolute
+> cap** (`startedAt` in the token). Ticking "remember me" keeps the full 7 days,
+> which is the whole point of the box.
 
 > **Known trade-off (2.3):** the role lives in the session JWT, so a role change
 > takes effect only on next sign-in (up to 7 days). Fix options in

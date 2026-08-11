@@ -1,5 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
-import { sessionIsStale } from "@/lib/auth/sessionExpiry";
+import { gateAllows } from "@/lib/auth/gate";
 
 export const authConfig = {
   trustHost: true,
@@ -8,28 +8,10 @@ export const authConfig = {
   providers: [],
   callbacks: {
 
+    // The rule itself lives in `gateAllows` because middleware needs the same
+    // answer, and a second copy of it here would be free to drift.
     authorized({ auth, request: { nextUrl } }) {
-      const { pathname } = nextUrl;
-
-      // Signed in or not is the only question this layer can answer honestly.
-      //
-      // It used to decide admin access here as well, from `isAdmin` on the
-      // token — a value copied in at sign-in and then believed for a week. That
-      // is wrong in both directions: granting someone the flag left them shut
-      // out until they happened to sign in again, and taking it away left them
-      // an admin for seven days. It reads the session, and the session is a
-      // snapshot.
-      //
-      // `requireAdmin()` in the admin layout asks the database instead, and
-      // every page under /admin goes through it. Middleware runs on the edge
-      // where that query is not available, so the check belongs there, not here.
-      if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
-        if (!auth?.user) return false;
-        // A session cookie the browser restored after being closed still looks
-        // valid here, so age is the only thing that gives it away.
-        return !sessionIsStale(auth.user);
-      }
-      return true;
+      return gateAllows(nextUrl.pathname, auth?.user);
     },
 
     session({ session, token }) {
