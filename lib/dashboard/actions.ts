@@ -254,24 +254,54 @@ export async function addTeamMember(data: FormData): Promise<TeamResult> {
   const role = String(data.get("role") ?? "VIEWER") as Role;
   if (!email) return { ok: false, error: "email_required" };
 
-  const user = await prisma.user.upsert({
-    where: { email },
-    update: name ? { name } : {},
-    create: { email, name },
-  });
+  // Looked up, never upserted.
+  //
+  // This used to create the account first and check the plan afterwards, so a
+  // team that had hit its user cap got "plan_limit" *and* a leftover User row
+  // with no membership — and because registration refuses an address that
+  // already exists, that address could then never be signed up at all. A
+  // refusal has to leave nothing behind.
+  const found = await prisma.user.findUnique({ where: { email }, select: { id: true } });
 
-  const existing = await prisma.membership.findUnique({
-    where: { userId_businessId: { userId: user.id, businessId: ctx.businessId } },
-  });
-  if (existing) return { ok: false, error: "already_member" };
+  if (found) {
+    const existing = await prisma.membership.findUnique({
+      where: { userId_businessId: { userId: found.id, businessId: ctx.businessId } },
+    });
+    // Checked before the plan so re-inviting someone already on the team reports
+    // the real reason rather than blaming the plan.
+    if (existing) return { ok: false, error: "already_member" };
+  }
 
-  // Checked after the duplicate test so re-inviting someone already on the team
-  // reports the real reason rather than blaming the plan.
   const verdict = await checkLimit(ctx.businessId, "users");
   if (!verdict.allowed) return { ok: false, error: "plan_limit" };
 
+  // The name is deliberately not written for someone who already has an account.
+  // `upsert`'s update branch used to set it, which let the owner of one business
+  // rename a person who belongs to another — their own name, changed by a
+  // stranger, with nothing in the interface to show it had happened.
+  const userId =
+    found?.id ??
+    (
+      await prisma.user.create({
+        data: {
+          email,
+          name,
+          // An invited colleague has no password, and the only way to get one is
+          // the reset link — which goes to this address. So inbox control is
+          // still proven before they can sign in, and the owner vouching for
+          // them stands in for the confirmation step they never went through.
+          //
+          // Left null, `authorize()` throws UnverifiedEmail after they set a
+          // password, and there is no resend route: the invitation was a
+          // permanent lock-out with no way in.
+          emailVerified: new Date(),
+        },
+        select: { id: true },
+      })
+    ).id;
+
   await prisma.membership.create({
-    data: { userId: user.id, businessId: ctx.businessId, role },
+    data: { userId, businessId: ctx.businessId, role },
   });
   revalidatePath(DASH.team);
   return { ok: true };
@@ -473,17 +503,26 @@ export async function createLeadFromConversation(
   if (!conversation) return { ok: false, error: "not_found" };
   if (conversation.lead) return { ok: true, created: false };
 
-  await prisma.lead.create({
-    data: {
-      businessId: ctx.businessId,
-      conversationId: conversation.id,
-      // Facebook gives a page-scoped id, not a name, so this is often empty.
-      // Left blank rather than filled with the id: a lead list of numbers is
-      // worse than one a merchant knows to complete.
-      name: conversation.customerName?.trim() || null,
-      source: conversation.channel?.type ?? "manual",
-    },
-  });
+  try {
+    await prisma.lead.create({
+      data: {
+        businessId: ctx.businessId,
+        conversationId: conversation.id,
+        // Facebook gives a page-scoped id, not a name, so this is often empty.
+        // Left blank rather than filled with the id: a lead list of numbers is
+        // worse than one a merchant knows to complete.
+        name: conversation.customerName?.trim() || null,
+        source: conversation.channel?.type ?? "manual",
+      },
+    });
+  } catch {
+    // The unique index on `conversationId` fired, which means a second press
+    // arrived while this one was still working. The check above cannot prevent
+    // that on its own — it only reads — so the constraint is what actually
+    // holds, and this is where its verdict gets honoured. Without it a
+    // double-click showed the merchant an error for a lead that was created.
+    return { ok: true, created: false };
+  }
 
   revalidatePath(DASH.leads);
   revalidatePath(DASH.conversations);
