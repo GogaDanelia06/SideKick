@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { IconBolt, IconMenu2 } from "@tabler/icons-react";
+import { IconMenu2 } from "@tabler/icons-react";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { AdminNav } from "./AdminNav";
 import { AdminProfileMenu } from "./AdminProfileMenu";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -20,10 +21,7 @@ export function AdminShell({
 
   const brand = (
     <div className="flex h-[60px] items-center gap-2.5 border-b border-border2 px-[18px] text-base font-semibold">
-      <span className="grid size-7 place-items-center rounded-lg bg-ink text-canvas">
-        <IconBolt size={16} />
-      </span>
-      Sidekick
+      <Wordmark className="h-[18px]" />
       <span className="ml-auto rounded-full border border-ink/30 bg-soft px-2 py-0.5 text-[11px] font-semibold text-ink">
         {t({ ka: "ადმინი", en: "Admin" })}
       </span>

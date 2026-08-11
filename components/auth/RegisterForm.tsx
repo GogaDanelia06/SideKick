@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import {
   IconArrowRight,
-  IconBolt,
   IconMailCheck,
   IconMailFast,
 } from "@tabler/icons-react";
@@ -277,7 +276,6 @@ export function RegisterForm({ google }: RegisterFormProps) {
 
   return (
     <AuthShell
-      icon={IconBolt}
       width={480}
       title={REGISTER.title}
       sub={REGISTER.sub}

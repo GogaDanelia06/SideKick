@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { SITE } from "@/lib/seo/site";
+import { WORDMARK_PATHS, WORDMARK_VIEWBOX } from "@/lib/content/wordmark";
 
 export const alt = SITE.title;
 export const size = { width: 1200, height: 630 };
@@ -20,29 +21,17 @@ export default function OpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "22px" }}>
-          <div
-            style={{
-              display: "flex",
-              width: "96px",
-              height: "96px",
-              borderRadius: "20px",
-              background: "#238636",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg
-              width="52"
-              height="52"
-              viewBox="0 0 24 24"
-              fill="#ffffff"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M13 2 L4 13 h6 l-1 9 l9 -12 h-6 z" />
-            </svg>
-          </div>
-          <span style={{ fontSize: "52px", fontWeight: 700, color: "#e6edf3" }}>Sidekick</span>
+        {/* The real wordmark, drawn from its own paths.
+            This is generated at the edge by Satori, which has no access to the
+            app's fonts — so the tagline is left off here rather than rendered
+            in whatever it falls back to. The letters are outlines and carry no
+            such risk. */}
+        <div style={{ display: "flex" }}>
+          <svg width="420" height="83" viewBox={WORDMARK_VIEWBOX} fill="#e6edf3">
+            {WORDMARK_PATHS.map((d, i) => (
+              <path key={i} d={d} />
+            ))}
+          </svg>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>

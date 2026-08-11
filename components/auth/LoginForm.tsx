@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { IconBolt } from "@tabler/icons-react";
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
 import { OrDivider } from "./OrDivider";
@@ -92,7 +91,6 @@ export function LoginForm({ google }: LoginFormProps) {
 
   return (
     <AuthShell
-      icon={IconBolt}
       title={LOGIN.title}
       sub={LOGIN.sub}
       footer={

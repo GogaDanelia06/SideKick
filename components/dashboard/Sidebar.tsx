@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { IconBolt } from "@tabler/icons-react";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { NavList } from "./NavList";
 import { ProfileMenu } from "./ProfileMenu";
 import type { Account } from "@/lib/dashboard/queries";
@@ -13,10 +13,8 @@ export function Sidebar({ className, account }: { className?: string; account: A
       )}
     >
       <div className="flex h-[60px] items-center gap-2.5 border-b border-border2 px-[18px] text-base font-semibold">
-        <span className="grid size-7 place-items-center rounded-lg bg-primary text-white">
-          <IconBolt size={16} />
-        </span>
-        Sidekick
+        {/* The mark spells the name, so the word beside it would say it twice. */}
+        <Wordmark className="h-[18px]" />
         <span className="ml-auto rounded-full border border-border bg-soft px-2 py-0.5 text-[11px] font-medium text-muted">
           Admin
         </span>

@@ -1,7 +1,8 @@
 "use client";
 
 import clsx from "clsx";
-import { IconBolt, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { NavList } from "./NavList";
 import { ProfileMenu } from "./ProfileMenu";
 import type { Account } from "@/lib/dashboard/queries";
@@ -26,10 +27,7 @@ export function MobileDrawer({ open, onClose, account }: { open: boolean; onClos
         )}
       >
         <div className="flex h-[60px] items-center gap-2.5 border-b border-border2 px-[18px] text-base font-semibold">
-          <span className="grid size-7 place-items-center rounded-lg bg-primary text-white">
-            <IconBolt size={16} />
-          </span>
-          Sidekick
+          <Wordmark className="h-[18px]" />
           <button type="button" onClick={onClose} aria-label="Close menu" className="ml-auto text-muted">
             <IconX size={20} />
           </button>
