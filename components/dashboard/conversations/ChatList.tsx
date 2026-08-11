@@ -145,13 +145,18 @@ export function ChatList({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5">
-                    <span className="text-[13px] font-semibold">{c.name}</span>
+                    {/* min-w-0 so a long name gives way instead of shoving the
+                        time out of the row — real names are longer than the
+                        column, and the full one is in the chat header anyway. */}
+                    <span title={c.name} className="min-w-0 truncate text-[13px] font-semibold">
+                      {c.name}
+                    </span>
                     {al ? (
-                      <span className={clsx("grid size-[17px] place-items-center rounded-full", al.cls)}>
+                      <span className={clsx("grid size-[17px] shrink-0 place-items-center rounded-full", al.cls)}>
                         <al.icon size={12} />
                       </span>
                     ) : null}
-                    <span className="ml-auto text-[11px] text-faint">{t(ago(c.minutesAgo))}</span>
+                    <span className="ml-auto shrink-0 pl-1 text-[11px] text-faint">{t(ago(c.minutesAgo))}</span>
                   </span>
                   <span className="block truncate text-xs text-muted">{c.preview}</span>
                 </span>
