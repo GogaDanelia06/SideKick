@@ -49,11 +49,14 @@ const REPLY_NOTICE: Record<string, Bilingual> = {
 
 export function ChatDetail({
   chat,
+  loading = false,
   onBack,
   onSent,
   onLead,
 }: {
   chat: ConversationDetail | null;
+  /** The header is drawn from the list row while the messages are on their way. */
+  loading?: boolean;
   onBack: () => void;
   /** Hands the stored reply back so the thread shows it without a refetch. */
   onSent: (message: ConversationDetail["messages"][number]) => void;
@@ -194,7 +197,16 @@ export function ChatDetail({
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto bg-soft p-4">
-        {chat.messages.length === 0 ? (
+        {loading ? (
+          // Three grey bars in the shape of a conversation. Saying "no messages"
+          // while they are still being fetched would be wrong, and an empty
+          // panel reads as though the click had not registered.
+          <div className="flex flex-col gap-3" aria-busy="true">
+            <span className="skeleton h-9 w-[55%] rounded-[13px]" />
+            <span className="skeleton ml-auto h-9 w-[45%] rounded-[13px]" />
+            <span className="skeleton h-12 w-[65%] rounded-[13px]" />
+          </div>
+        ) : chat.messages.length === 0 ? (
           <p className="m-auto text-sm text-muted">
             {t({ ka: "შეტყობინებები არ არის", en: "No messages" })}
           </p>

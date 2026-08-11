@@ -34,7 +34,34 @@ export function ConversationsView({
     selected ? { [selected.id]: selected } : {},
   );
 
-  const chat = openId ? (cache[openId] ?? null) : null;
+  /**
+   * The open chat, drawn from whatever is known right now.
+   *
+   * The list row already carries the name, the channel, the AI switch and
+   * whether there is a lead or an order — everything in the header. Only the
+   * messages have to be fetched, so the chat opens at once and fills in, rather
+   * than showing an empty panel that reads as though nothing was selected.
+   */
+  const cached = openId ? cache[openId] : undefined;
+  const row = openId ? conversations.find((c) => c.id === openId) : undefined;
+
+  const chat: ConversationDetail | null =
+    cached ??
+    (row
+      ? {
+          id: row.id,
+          name: row.name,
+          initials: row.initials,
+          channelType: row.channelType,
+          status: row.status,
+          aiEnabled: row.aiEnabled,
+          hasLead: row.ring === "lead" || row.ring === "order",
+          hasOrder: row.ring === "order",
+          messages: [],
+        }
+      : null);
+
+  const loading = Boolean(openId) && !cached;
 
   /**
    * Which channel the list is narrowed to, decided here rather than on the
@@ -94,6 +121,7 @@ export function ConversationsView({
       <div className={clsx("min-h-0 lg:h-full", !openId && "hidden lg:block")}>
         <ChatDetail
           chat={chat}
+          loading={loading}
           onBack={() => void open(null)}
           onLead={() =>
             setCache((current) => {

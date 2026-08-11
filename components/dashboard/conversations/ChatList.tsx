@@ -19,6 +19,22 @@ const ALERT: Record<"wait" | "aierr" | "aioff", { icon: IconType; cls: string }>
   aioff: { icon: IconRobotOff, cls: "bg-soft text-muted" },
 };
 
+/**
+ * What the rings and badges on each row mean.
+ *
+ * Built from the same `RING` and `ALERT` maps the rows use, so a colour cannot
+ * be changed in one place and explained wrongly in the other. Without this the
+ * marks are just colours: nothing on the screen said that an orange ring meant
+ * a lead.
+ */
+const LEGEND: { cls: string; icon?: IconType; label: Bilingual }[] = [
+  { cls: RING.lead, label: { ka: "ლიდი", en: "Lead" } },
+  { cls: RING.order, label: { ka: "შეკვეთა", en: "Order" } },
+  { cls: ALERT.wait.cls, icon: ALERT.wait.icon, label: { ka: "ელოდება ადამიანს", en: "Waiting for a human" } },
+  { cls: ALERT.aierr.cls, icon: ALERT.aierr.icon, label: { ka: "AI შეცდომა", en: "AI error" } },
+  { cls: ALERT.aioff.cls, icon: ALERT.aioff.icon, label: { ka: "AI გათიშული", en: "AI off" } },
+];
+
 function ago(mins: number): Bilingual {
   if (mins < 1) return { ka: "ახლა", en: "now" };
   if (mins < 60) return { ka: `${mins} წთ`, en: `${mins} min` };
@@ -72,6 +88,21 @@ export function ChatList({
             </button>
           );
         })}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-border2 px-3 py-2">
+        {LEGEND.map((item, i) => (
+          <span key={i} className="inline-flex items-center gap-1.5 text-[11px] text-muted">
+            {item.icon ? (
+              <span className={clsx("grid size-[14px] place-items-center rounded-full", item.cls)}>
+                <item.icon size={9} />
+              </span>
+            ) : (
+              <span className={clsx("size-[11px] rounded-full border-2", item.cls)} />
+            )}
+            {t(item.label)}
+          </span>
+        ))}
       </div>
 
       <div className="min-h-0 flex-1 overflow-auto">
