@@ -8,6 +8,7 @@ import { can, requirePermission } from "@/lib/auth/permissions";
 import { availableProviders, parseProvider } from "@/lib/payments";
 import { isAllowedMonths, startCheckout } from "@/lib/billing/checkout";
 import { checkLimit } from "@/lib/billing/limits";
+import { deliverOutbound, type DeliveryStatus } from "@/lib/channels/send";
 import { log } from "@/lib/logger";
 import { DASH } from "./routes";
 
@@ -383,4 +384,57 @@ export async function cancelSubscription(): Promise<TeamResult> {
 
   revalidatePath(DASH.billing);
   return { ok: true };
+}
+
+export type ReplyResult =
+  | { ok: true; delivery: DeliveryStatus | null }
+  | { ok: false; error: string };
+
+/**
+ * Sends a human's reply to a customer on the channel they wrote in on.
+ *
+ * This box sat disabled behind "replying requires the channel integration" for
+ * as long as there was no way to reach the customer. There is now: the page
+ * token is stored on the channel and `deliverOutbound` uses it, so a merchant
+ * can answer someone from the same screen where the message arrived rather than
+ * opening Facebook in another tab.
+ *
+ * The reply is recorded before it is sent. A message the customer received but
+ * the inbox never shows is worse than the reverse — the merchant would answer
+ * the same question twice, believing the first attempt had failed.
+ */
+export async function sendOperatorReply(
+  conversationId: string,
+  text: string,
+): Promise<ReplyResult> {
+  const ctx = await requirePermission("conversations:write");
+  if (!ctx) return { ok: false, error: "forbidden" };
+
+  const body = text.trim();
+  if (!body) return { ok: false, error: "empty" };
+
+  // Filtering by business as well as id is the point: an id from somewhere else
+  // must not let anyone write into another tenant's conversation.
+  const conversation = await prisma.conversation.findFirst({
+    where: { id: conversationId, businessId: ctx.businessId },
+    select: { id: true },
+  });
+  if (!conversation) return { ok: false, error: "not_found" };
+
+  const message = await prisma.message.create({
+    data: { conversationId: conversation.id, sender: "OPERATOR", text: body },
+    select: { id: true },
+  });
+
+  // A person typing an answer is not the AI spending the plan's allowance, so
+  // this is deliberately not counted against `msgLimit`.
+  await prisma.conversation.updateMany({
+    where: { id: conversation.id, status: "NEW" },
+    data: { status: "ACTIVE" },
+  });
+
+  const delivery = await deliverOutbound(conversation.id, message.id, body);
+
+  revalidatePath(DASH.conversations);
+  return { ok: true, delivery: delivery?.status ?? null };
 }

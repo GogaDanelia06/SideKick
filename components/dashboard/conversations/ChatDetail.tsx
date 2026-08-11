@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import clsx from "clsx";
 import {
   IconArrowLeft,
@@ -11,12 +11,37 @@ import {
   IconUserPlus,
 } from "@tabler/icons-react";
 import { Switch } from "@/components/dashboard/ui/Switch";
-import { setConversationAi } from "@/lib/dashboard/actions";
+import { sendOperatorReply, setConversationAi } from "@/lib/dashboard/actions";
 import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { ConversationDetail } from "@/lib/dashboard/queries";
+import type { Bilingual } from "@/lib/content/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const MARK = "inline-flex h-8 items-center gap-1.5 rounded-[6px] border px-3 text-xs font-medium";
+
+/**
+ * What to say when a reply is saved but does not reach the customer.
+ *
+ * Kept apart from the failures because the outcome is different: the message is
+ * in the thread either way, and only some of these are worth trying again.
+ */
+const REPLY_NOTICE: Record<string, Bilingual> = {
+  window_closed: {
+    ka: "პასუხი შენახულია, მაგრამ Messenger-მა არ მიიღო: კლიენტს 24 საათია არ მოუწერია. ხელახლა ცდა ვერ უშველის — დაელოდე, სანამ თვითონ დაგიკავშირდება.",
+    en: "Saved, but Messenger would not take it: the customer has not written for 24 hours. Trying again cannot help — wait until they message you.",
+  },
+  failed: {
+    ka: "პასუხი შენახულია, მაგრამ გაგზავნა ვერ მოხერხდა. სცადე ხელახლა.",
+    en: "Saved, but sending failed. Try again.",
+  },
+  not_delivered: {
+    ka: "პასუხი შენახულია. კლიენტთან არ გაგზავნილა — ეს არხი ჯერ არ არის ბოლომდე მიერთებული.",
+    en: "Saved. Not sent to the customer — this channel is not fully connected yet.",
+  },
+  forbidden: { ka: "ამის უფლება არ გაქვს.", en: "You do not have permission for this." },
+  not_found: { ka: "მიმოწერა ვერ მოიძებნა.", en: "Conversation not found." },
+  error: { ka: "ვერ შესრულდა. სცადე ხელახლა.", en: "Something went wrong. Try again." },
+};
 
 export function ChatDetail({
   chat,
@@ -26,7 +51,38 @@ export function ChatDetail({
   onBack: () => void;
 }) {
   const { t } = useLanguage();
-  const [pending, start] = useTransition();
+  const [, start] = useTransition();
+  const [draft, setDraft] = useState("");
+  const [sending, setSending] = useState(false);
+  const [notice, setNotice] = useState<{ key: string; tone: "warn" | "error" } | null>(null);
+
+  async function reply() {
+    const text = draft.trim();
+    if (!text || !chat) return;
+
+    setSending(true);
+    setNotice(null);
+    try {
+      const res = await sendOperatorReply(chat.id, text);
+
+      if (!res.ok) {
+        setNotice({ key: res.error in REPLY_NOTICE ? res.error : "error", tone: "error" });
+        return;
+      }
+
+      // Cleared on success even when delivery fell short: the message is in the
+      // thread, and leaving it in the box invites sending it a second time.
+      setDraft("");
+
+      if (res.delivery === "WINDOW_CLOSED") setNotice({ key: "window_closed", tone: "warn" });
+      else if (res.delivery === "FAILED") setNotice({ key: "failed", tone: "error" });
+      else if (res.delivery === null) setNotice({ key: "not_delivered", tone: "warn" });
+    } catch {
+      setNotice({ key: "error", tone: "error" });
+    } finally {
+      setSending(false);
+    }
+  }
 
   if (!chat) {
     return (
@@ -118,25 +174,44 @@ export function ChatDetail({
         )}
       </div>
 
-      <div className="flex items-center gap-2.5 border-t border-border2 p-3">
+      {notice ? (
+        <p
+          className={clsx(
+            "border-t px-3 py-2 text-[12px]",
+            notice.tone === "warn"
+              ? "border-amber bg-amber-surface text-amber"
+              : "border-red bg-red-surface text-red",
+          )}
+        >
+          {t(REPLY_NOTICE[notice.key])}
+        </p>
+      ) : null}
+
+      <form
+        className="flex items-center gap-2.5 border-t border-border2 p-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          reply();
+        }}
+      >
         <input
-          disabled
-          placeholder={t({
-            ka: "პასუხის გაგზავნა საჭიროებს არხის ინტეგრაციას",
-            en: "Replying requires the channel integration",
-          })}
-          className="min-w-0 flex-1 cursor-not-allowed rounded-[6px] border border-border bg-soft px-3 py-2.5 text-[13px] text-ink outline-none placeholder:text-faint"
+          value={draft}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            setNotice(null);
+          }}
+          disabled={sending}
+          placeholder={t({ ka: "დაწერე პასუხი…", en: "Write a reply…" })}
+          className="min-w-0 flex-1 rounded-[6px] border border-border bg-canvas px-3 py-2.5 text-[13px] text-ink outline-none focus:border-blue disabled:opacity-60 placeholder:text-faint"
         />
         <button
-          type="button"
-          disabled
-          title={t({ ka: "საჭიროებს არხის ინტეგრაციას", en: "Requires the channel integration" })}
-          className="inline-flex h-[38px] cursor-not-allowed items-center gap-1.5 rounded-[6px] bg-primary px-4 text-sm font-medium text-white opacity-50"
+          type="submit"
+          disabled={sending || !draft.trim()}
+          className="inline-flex h-[38px] items-center gap-1.5 rounded-[6px] bg-primary px-4 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           <IconSend size={16} /> {t({ ka: "გაგზავნა", en: "Send" })}
         </button>
-      </div>
-      {pending ? null : null}
+      </form>
     </div>
   );
 }
