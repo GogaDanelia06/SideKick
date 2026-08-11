@@ -10,6 +10,8 @@ export type RecordedMessage = {
   messageId: string;
   /** False when this exact platform message had already been stored. */
   isNew: boolean;
+  /** True while the chat still shows as "—" and could be given a real name. */
+  needsName: boolean;
 };
 
 /**
@@ -49,7 +51,7 @@ export async function recordInbound(
     // where it can be made conditional. The upsert is for getting the same row
     // back on a second message rather than for editing it.
     update: {},
-    select: { id: true },
+    select: { id: true, customerName: true },
   });
 
   // Postgres decides the duplicate, not a read-then-write in this process: two
@@ -69,6 +71,7 @@ export async function recordInbound(
     return {
       businessId: channel.businessId,
       channel: type,
+      needsName: !conversation.customerName,
       conversationId: conversation.id,
       messageId: existing.id,
       isNew: false,
@@ -103,6 +106,7 @@ export async function recordInbound(
     return {
       businessId: channel.businessId,
       channel: type,
+      needsName: !conversation.customerName,
       conversationId: conversation.id,
       messageId: winner.id,
       isNew: false,
@@ -120,6 +124,7 @@ export async function recordInbound(
   return {
     businessId: channel.businessId,
     channel: type,
+    needsName: !conversation.customerName,
     conversationId: conversation.id,
     messageId,
     isNew: true,

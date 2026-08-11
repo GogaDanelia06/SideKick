@@ -6,6 +6,7 @@ import { createHmac } from "node:crypto";
 vi.mock("next/server", () => ({ after: (fn: () => unknown) => fn() }));
 vi.mock("@/lib/channels/inbound", () => ({ recordInbound: vi.fn() }));
 vi.mock("@/lib/channels/notify", () => ({ notifyAgent: vi.fn().mockResolvedValue(undefined) }));
+vi.mock("@/lib/channels/profile", () => ({ nameCustomer: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/lib/logger", () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
@@ -13,9 +14,11 @@ vi.mock("@/lib/logger", () => ({
 import { GET, POST } from "./route";
 import { recordInbound } from "@/lib/channels/inbound";
 import { notifyAgent } from "@/lib/channels/notify";
+import { nameCustomer } from "@/lib/channels/profile";
 
 const record = vi.mocked(recordInbound);
 const notify = vi.mocked(notifyAgent);
+const name = vi.mocked(nameCustomer);
 
 const APP_SECRET = "meta-app-secret";
 const VERIFY_TOKEN = "our-verify-token-1234";
@@ -55,6 +58,7 @@ beforeEach(() => {
     conversationId: "conv1",
     messageId: "m1",
     isNew: true,
+    needsName: false,
   });
 });
 
@@ -144,6 +148,7 @@ describe("POST — receiving messages", () => {
       conversationId: "conv9",
       messageId: "m9",
       isNew: true,
+      needsName: false,
     });
     const raw = JSON.stringify({
       object: "instagram",
@@ -228,6 +233,7 @@ describe("POST — receiving messages", () => {
         conversationId: "conv2",
         messageId: "m2",
         isNew: true,
+        needsName: false,
       });
 
     const res = await POST(post(raw, sign(raw)));
@@ -246,6 +252,42 @@ describe("POST — receiving messages", () => {
     const raw = body();
 
     expect((await POST(post(raw, sign(raw)))).status).toBe(200);
+  });
+
+  it("looks up the customer's name once per chat, not once per message", async () => {
+    // Two messages from one person in a batch is normal, and each extra profile
+    // call is another round trip inside `after()` for the same answer.
+    record.mockResolvedValue({
+      businessId: "b1",
+      channel: "FACEBOOK" as const,
+      conversationId: "conv1",
+      messageId: "m1",
+      isNew: true,
+      needsName: true,
+    });
+    const raw = JSON.stringify({
+      object: "page",
+      entry: [
+        {
+          id: "PAGE_1",
+          messaging: [
+            { sender: { id: "PSID_1" }, message: { mid: "mid_1", text: "ერთი" } },
+            { sender: { id: "PSID_1" }, message: { mid: "mid_2", text: "ორი" } },
+          ],
+        },
+      ],
+    });
+    await POST(post(raw, sign(raw)));
+
+    expect(name).toHaveBeenCalledTimes(1);
+    expect(name).toHaveBeenCalledWith("conv1");
+  });
+
+  it("does not re-ask Meta for a name the chat already has", async () => {
+    const raw = body();
+    await POST(post(raw, sign(raw)));
+
+    expect(name).not.toHaveBeenCalled();
   });
 
   it("tells the AI service about a new message", async () => {
@@ -270,6 +312,7 @@ describe("POST — receiving messages", () => {
       conversationId: "conv1",
       messageId: "m1",
       isNew: false,
+      needsName: false,
     });
     const raw = body();
 

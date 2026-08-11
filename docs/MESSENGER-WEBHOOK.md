@@ -161,6 +161,39 @@ message is already committed on Sidekick's side, so nothing is lost.
 
 ---
 
+## Customer names
+
+Meta's delivery carries an id and nothing else — no name, no picture. Left at
+that, every chat in the inbox reads `—`, and a merchant cannot tell one customer
+from another.
+
+So after the response has gone, Sidekick asks Meta who the id belongs to:
+
+```
+GET /{PSID}?fields=first_name,last_name     (Facebook)
+GET /{IGSID}?fields=name,username           (Instagram)
+```
+
+and writes the answer to `Conversation.customerName`.
+
+- **Outside the request.** It is a second round trip and the webhook has five
+  seconds for everything.
+- **Once per conversation**, not per message, and only while the name is blank.
+- **Never overwrites.** A name set by the merchant or by the AI service through
+  `/api/agent/conversations` is a deliberate choice and outranks Facebook's.
+- **Failure is silent.** Deleted accounts, undisclosed profiles and a token that
+  has lost the permission all come back empty. The chat keeps its dash; the
+  message is stored and answerable either way.
+
+Instagram profiles often have no display name, so the handle is used instead —
+`lika_ge` in the inbox beats a dash.
+
+> Needs `pages_messaging`, so before App Review this only resolves for people
+> who hold a role in the Meta app. Existing conversations fill in by themselves
+> the next time that customer writes.
+
+---
+
 ## What is dropped, and why
 
 | Event | Response | Why |

@@ -3,6 +3,7 @@ import { log } from "@/lib/logger";
 import { PLATFORMS, parseMessagingEvents, tokensMatch, verifySignature } from "@/lib/channels/meta";
 import { recordInbound, type RecordedMessage } from "@/lib/channels/inbound";
 import { notifyAgent } from "@/lib/channels/notify";
+import { nameCustomer } from "@/lib/channels/profile";
 
 export const dynamic = "force-dynamic";
 
@@ -135,6 +136,14 @@ export async function POST(request: Request) {
   // deadline entirely. Sent even alongside a failure, because the messages that
   // did store are real and the customers who wrote them are waiting.
   after(async () => {
+    // Ask Meta who these people are, so the inbox shows names instead of a row
+    // of dashes. Deduped because a batch can carry several messages from one
+    // customer, and one blank name needs asking about once.
+    const unnamed = new Set(recorded.filter((r) => r.needsName).map((r) => r.conversationId));
+    for (const conversationId of unnamed) {
+      await nameCustomer(conversationId);
+    }
+
     for (const result of recorded) {
       await notifyAgent({
         event: "message.received",

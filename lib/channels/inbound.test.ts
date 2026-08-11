@@ -33,7 +33,7 @@ const connectedChannel = { id: "ch1", businessId: "b1", connected: true };
 
 beforeEach(() => {
   vi.clearAllMocks();
-  convUpsert.mockResolvedValue({ id: "conv1" } as never);
+  convUpsert.mockResolvedValue({ id: "conv1", customerName: null } as never);
   convUpdateMany.mockResolvedValue({ count: 1 } as never);
   msgFind.mockResolvedValue(null);
   msgCreate.mockResolvedValue({ id: "m1" } as never);
@@ -51,6 +51,7 @@ describe("recordInbound()", () => {
       conversationId: "conv1",
       messageId: "m1",
       isNew: true,
+      needsName: true,
     });
     expect(channelFind).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -115,6 +116,7 @@ describe("recordInbound()", () => {
       conversationId: "conv1",
       messageId: "m1",
       isNew: false,
+      needsName: true,
     });
     expect(msgCreate).not.toHaveBeenCalled();
   });
