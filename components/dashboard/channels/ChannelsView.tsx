@@ -15,7 +15,7 @@ import {
   IconWorld,
 } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
-import { ConnectMeta } from "./ConnectMeta";
+import { ConnectButton, ConnectResult } from "./ConnectMeta";
 import { setChannelConnected } from "@/lib/dashboard/actions";
 import { guideSteps, type ChannelGuideView } from "@/lib/dashboard/tutorials";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -78,12 +78,6 @@ export function ChannelsView({
         / {t({ ka: "თითო არხისთვის იხილეთ ინსტრუქცია მისაერთებლად.", en: "See the guide to connect each channel." })}
       </p>
 
-      {/* One grant covers Messenger and Instagram, so the button sits above the
-          list rather than on either row — putting it on one would imply the
-          other still needs its own. */}
-      <Panel className="p-4">
-        <ConnectMeta />
-      </Panel>
       {refusal ? <p className="text-[13px] text-red">{refusal}</p> : null}
 
       {channels.map((c) => {
@@ -104,6 +98,11 @@ export function ChannelsView({
             <span className={`rounded-full px-3 py-1 text-xs font-semibold ${c.connected ? "bg-green-surface text-green" : "bg-soft text-muted"}`}>
               {c.connected ? t({ ka: "დაკავშირებულია", en: "Connected" }) : t({ ka: "გათიშულია", en: "Disconnected" })}
             </span>
+            {!c.linked ? (
+              // Never authorised, so there is nothing to switch on — the only
+              // useful action is the grant itself.
+              <ConnectButton type={c.type} />
+            ) : (
             <button
               type="button"
               disabled={pending}
@@ -125,8 +124,11 @@ export function ChannelsView({
               }
               className={`h-9 rounded-[8px] px-4 text-sm font-medium disabled:opacity-60 ${c.connected ? "border border-border text-red" : "bg-primary text-white"}`}
             >
-              {c.connected ? t({ ka: "გათიშვა", en: "Disconnect" }) : t({ ka: "დაკავშირება", en: "Connect" })}
+              {c.connected ? t({ ka: "გათიშვა", en: "Disconnect" }) : t({ ka: "ჩართვა", en: "Turn on" })}
             </button>
+            )}
+
+            <ConnectResult type={c.type} />
 
             {/* No button at all when the admin hasn't written a guide yet —
                 better than a control that opens an empty panel. */}

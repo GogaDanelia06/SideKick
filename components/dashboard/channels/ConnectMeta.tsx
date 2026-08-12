@@ -1,31 +1,33 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { IconBrandFacebook } from "@tabler/icons-react";
+import type { ChannelType } from "@prisma/client";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 
 /**
- * Starts the Meta grant, and reports how the last one went.
+ * The per-channel "connect" control.
  *
- * One button for both surfaces because one grant covers both: Instagram
- * messaging runs on the Messenger Platform, so the credential that comes back
- * is the Page Access Token either way. Asking twice would be asking for the
- * same thing twice.
+ * One button per row rather than one for both, because Facebook and Instagram
+ * turned out to be two separate authorisations here: Messenger runs on Facebook
+ * Login with a Page token, while this Instagram account runs on **Instagram
+ * Login**, which has its own app credentials and its own token. A single button
+ * would promise something neither grant delivers.
  *
- * A plain link rather than a fetch — the flow is a full-page redirect out to
- * Facebook and back, and an XHR cannot carry someone through a consent screen.
+ * A plain link, not a fetch — the flow is a full-page redirect out to Meta and
+ * back, and an XHR cannot carry someone through a consent screen.
  */
+const START: Partial<Record<ChannelType, string>> = {
+  FACEBOOK: "/api/channels/instagram/start",
+};
+
 const RESULTS: Record<string, { tone: "ok" | "bad"; text: Bilingual }> = {
-  connected: {
-    tone: "ok",
-    text: { ka: "დაკავშირდა — Facebook და Instagram.", en: "Connected — Facebook and Instagram." },
-  },
+  connected: { tone: "ok", text: { ka: "დაკავშირდა.", en: "Connected." } },
   connected_no_ig: {
     tone: "ok",
     text: {
-      ka: "Facebook დაკავშირდა. Instagram ვერ მოიძებნა — ანგარიში professional უნდა იყოს და გვერდს მიბმული.",
-      en: "Facebook connected. No Instagram found — the account must be professional and linked to the Page.",
+      ka: "Facebook დაკავშირდა. Instagram ცალკე უნდა დაუკავშირდეს.",
+      en: "Facebook connected. Instagram connects separately.",
     },
   },
   cancelled: { tone: "bad", text: { ka: "დაკავშირება შეწყდა.", en: "Connection cancelled." } },
@@ -46,13 +48,13 @@ const RESULTS: Record<string, { tone: "ok" | "bad"; text: Bilingual }> = {
   bad_state: {
     tone: "bad",
     text: {
-      ka: "დაკავშირების მოთხოვნა ვერ დადასტურდა. დაიწყე თავიდან.",
-      en: "That connection request could not be verified. Please start again.",
+      ka: "მოთხოვნა ვერ დადასტურდა. დაიწყე თავიდან.",
+      en: "That request could not be verified. Please start again.",
     },
   },
   signed_out: {
     tone: "bad",
-    text: { ka: "სესია ამოიწურა. შედი და სცადე თავიდან.", en: "Your session expired. Sign in and try again." },
+    text: { ka: "სესია ამოიწურა. შედი და სცადე თავიდან.", en: "Your session expired. Sign in again." },
   },
   unconfigured: {
     tone: "bad",
@@ -60,33 +62,54 @@ const RESULTS: Record<string, { tone: "ok" | "bad"; text: Bilingual }> = {
   },
   exchange: {
     tone: "bad",
-    text: { ka: "Meta-მ კოდი არ მიიღო. სცადე თავიდან.", en: "Meta rejected the code. Please try again." },
+    text: { ka: "Meta-მ კოდი არ მიიღო. სცადე თავიდან.", en: "Meta rejected the code. Try again." },
   },
-  failed: {
-    tone: "bad",
-    text: { ka: "დაკავშირება ვერ მოხერხდა.", en: "The connection could not be completed." },
-  },
+  failed: { tone: "bad", text: { ka: "ვერ მოხერხდა.", en: "That did not work." } },
 };
 
-export function ConnectMeta() {
+/** Shown once, under the row whose connection was last attempted. */
+export function ConnectResult({ type }: { type: ChannelType }) {
   const { t } = useLanguage();
-  const result = RESULTS[useSearchParams().get("connect") ?? ""];
+  const params = useSearchParams();
+  const result = RESULTS[params.get("connect") ?? ""];
+  if (!result || params.get("channel") !== type) return null;
 
   return (
-    <div className="flex flex-col gap-2">
-      <a
-        href="/api/channels/instagram/start"
-        className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-[#1877f2] px-4 text-sm font-medium text-white"
-      >
-        <IconBrandFacebook size={18} />
-        {t({ ka: "დააკავშირე Facebook და Instagram", en: "Connect Facebook and Instagram" })}
-      </a>
+    <p className={`w-full text-[13px] ${result.tone === "ok" ? "text-green" : "text-red"}`}>
+      {t(result.text)}
+    </p>
+  );
+}
 
-      {result ? (
-        <p className={`text-[13px] ${result.tone === "ok" ? "text-green" : "text-red"}`}>
-          {t(result.text)}
-        </p>
-      ) : null}
-    </div>
+export function ConnectButton({ type }: { type: ChannelType }) {
+  const { t } = useLanguage();
+  const href = START[type];
+
+  // No authorisation flow for this channel yet. Shown rather than hidden so the
+  // row does not look broken, and disabled rather than dead-linked so nobody is
+  // sent to a consent screen that cannot complete.
+  if (!href) {
+    return (
+      <button
+        type="button"
+        disabled
+        title={t({
+          ka: "ავტორიზაცია ჯერ არ არის გამართული ამ არხისთვის",
+          en: "No sign-in flow is set up for this channel yet",
+        })}
+        className="h-9 cursor-not-allowed rounded-[8px] border border-border px-4 text-sm font-medium text-muted opacity-60"
+      >
+        {t({ ka: "დაკავშირება", en: "Connect" })}
+      </button>
+    );
+  }
+
+  return (
+    <a
+      href={href}
+      className="inline-flex h-9 items-center rounded-[8px] bg-primary px-4 text-sm font-medium text-white"
+    >
+      {t({ ka: "დაკავშირება", en: "Connect" })}
+    </a>
   );
 }

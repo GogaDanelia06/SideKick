@@ -18,7 +18,11 @@ export const dynamic = "force-dynamic";
  * that one has to match what is registered, character for character.
  */
 const back = (request: Request, status: string) =>
-  NextResponse.redirect(new URL(`${DASH.channels}?connect=${status}`, request.url));
+  // `channel` so the message lands under the row it belongs to. This flow is
+  // Facebook Login; Instagram here authorises separately and will carry its own.
+  NextResponse.redirect(
+    new URL(`${DASH.channels}?connect=${status}&channel=FACEBOOK`, request.url),
+  );
 
 /**
  * Where Meta returns the merchant after they grant access.

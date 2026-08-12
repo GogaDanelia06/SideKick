@@ -32,15 +32,26 @@ const CHANNEL_FIELDS = {
   lastSyncAt: true,
 } as const;
 
-/** What the channel screens receive — deliberately not the whole `Channel`. */
-export type ChannelSummary = Prisma.ChannelGetPayload<{ select: typeof CHANNEL_FIELDS }>;
+/**
+ * What the channel screens receive — deliberately not the whole `Channel`.
+ *
+ * `linked` rather than the id itself: the screen only needs to know whether a
+ * credential exists, so that is all it gets. Sending the Page or Instagram id
+ * would put it in the page source for no gain.
+ */
+export type ChannelSummary = Prisma.ChannelGetPayload<{ select: typeof CHANNEL_FIELDS }> & {
+  /** True once an authorisation has stored an account id for this channel. */
+  linked: boolean;
+};
 
-export function getChannels(businessId: string) {
-  return prisma.channel.findMany({
+export async function getChannels(businessId: string): Promise<ChannelSummary[]> {
+  const rows = await prisma.channel.findMany({
     where: { businessId },
-    select: CHANNEL_FIELDS,
+    select: { ...CHANNEL_FIELDS, externalId: true },
     orderBy: { type: "asc" },
   });
+
+  return rows.map(({ externalId, ...rest }) => ({ ...rest, linked: Boolean(externalId) }));
 }
 
 export function getTeam(businessId: string) {
