@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
+import { ResendVerification } from "./ResendVerification";
 import { OrDivider } from "./OrDivider";
 import { Field } from "@/components/ui/Field";
 import { LOGIN } from "@/lib/content/auth";
@@ -36,6 +37,7 @@ export function LoginForm({ google }: LoginFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<LoginErrors>({});
   const [pending, setPending] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
 
   const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
 
@@ -70,6 +72,7 @@ export function LoginForm({ google }: LoginFormProps) {
     }
 
     setFieldErrors({});
+    setUnverifiedEmail(null);
     setPending(true);
 
     try {
@@ -85,9 +88,22 @@ export function LoginForm({ google }: LoginFormProps) {
       });
 
       if (!res?.ok || res.error) {
-        return setError(
-          t(res?.code === "rate_limited" ? LOGIN.rateLimited : LOGIN.invalid),
-        );
+        // `unverified_email` used to fall through to "wrong email or password",
+        // which sends someone to reset a password that was never wrong. It is
+        // safe to be specific: the check runs *after* bcrypt, so seeing this
+        // message already means knowing the password.
+        const unverified = res?.code === "unverified_email";
+        const message = unverified
+          ? LOGIN.unverified
+          : res?.code === "rate_limited"
+            ? LOGIN.rateLimited
+            : LOGIN.invalid;
+
+        // Kept so the resend button below knows where to send it. Held only in
+        // this component's state, and only for an address whose password was
+        // just proven.
+        setUnverifiedEmail(unverified ? email : null);
+        return setError(t(message));
       }
 
       // Sessions are seven days by configuration. Someone who did not ask to be
@@ -168,7 +184,12 @@ export function LoginForm({ google }: LoginFormProps) {
           </Link>
         </div>
 
-        {error ? <p className="text-[13px] text-red">{error}</p> : null}
+        {error ? (
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[13px] text-red">{error}</p>
+            {unverifiedEmail ? <ResendVerification email={unverifiedEmail} /> : null}
+          </div>
+        ) : null}
 
         <button
           type="submit"

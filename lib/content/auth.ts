@@ -22,6 +22,14 @@ export const LOGIN = {
     ka: "ელფოსტა ჯერ არ არის დადასტურებული. შეამოწმე ფოსტა — გამოგზავნილია ბმული.",
     en: "Your email is not confirmed yet. Check your inbox — we sent you a link.",
   },
+  resend: { ka: "ბმულის ხელახლა გაგზავნა", en: "Send the link again" },
+  resending: { ka: "იგზავნება…", en: "Sending…" },
+  // Says "if" on purpose. The endpoint answers the same for an address with no
+  // account as for a real one, and promising delivery here would give that away.
+  resendDone: {
+    ka: "თუ ანგარიში არსებობს და ჯერ არ არის დადასტურებული, ბმული გაიგზავნა.",
+    en: "If that account exists and is not confirmed yet, the link has been sent.",
+  },
   verifyOk: {
     ka: "ელფოსტა დადასტურდა. ახლა შეგიძლია შეხვიდე.",
     en: "Email confirmed. You can sign in now.",
