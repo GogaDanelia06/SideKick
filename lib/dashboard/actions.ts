@@ -16,15 +16,39 @@ export type ActionResult = { ok: true } | { ok: false; error: string };
 
 export type TeamResult = ActionResult;
 
-export async function setChannelConnected(channelId: string, connected: boolean) {
+export type ChannelToggleResult =
+  | { ok: true }
+  | { ok: false; error: "forbidden" }
+  | { ok: false; error: "limit"; limit: number; used: number; planName: string };
+
+/**
+ * Switches a channel on or off.
+ *
+ * Reports why it refused instead of returning quietly. The silent version read
+ * as a broken button: a tenant at their plan's ceiling clicked "connect", saw
+ * nothing happen at all, and had no way to learn that the answer was "your plan
+ * allows one channel and it is already in use".
+ */
+export async function setChannelConnected(
+  channelId: string,
+  connected: boolean,
+): Promise<ChannelToggleResult> {
   const ctx = await requirePermission("channels:write");
-  if (!ctx) return;
+  if (!ctx) return { ok: false, error: "forbidden" };
 
   // Only connecting is capped. Disconnecting must always work, or a tenant who
   // hits their ceiling could never get back under it.
   if (connected) {
     const verdict = await checkLimit(ctx.businessId, "channels");
-    if (!verdict.allowed) return;
+    if (!verdict.allowed) {
+      return {
+        ok: false,
+        error: "limit",
+        limit: verdict.limit,
+        used: verdict.used,
+        planName: verdict.planName,
+      };
+    }
   }
 
   await prisma.channel.updateMany({
@@ -36,6 +60,7 @@ export async function setChannelConnected(channelId: string, connected: boolean)
     },
   });
   revalidatePath(DASH.channels);
+  return { ok: true };
 }
 
 export async function setOrderStatus(orderId: string, status: OrderStatus) {

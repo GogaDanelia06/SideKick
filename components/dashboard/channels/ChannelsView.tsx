@@ -70,6 +70,7 @@ export function ChannelsView({
   const { t } = useLanguage();
   const [pending, start] = useTransition();
   const [open, setOpen] = useState<string | null>(null);
+  const [refusal, setRefusal] = useState<string | null>(null);
 
   return (
     <div className="grid gap-3">
@@ -83,6 +84,8 @@ export function ChannelsView({
       <Panel className="p-4">
         <ConnectMeta />
       </Panel>
+      {refusal ? <p className="text-[13px] text-red">{refusal}</p> : null}
+
       {channels.map((c) => {
         const m = META[c.type];
         const guide = guides[c.type];
@@ -104,7 +107,22 @@ export function ChannelsView({
             <button
               type="button"
               disabled={pending}
-              onClick={() => start(() => setChannelConnected(c.id, !c.connected))}
+              onClick={() =>
+                start(async () => {
+                  setRefusal(null);
+                  const res = await setChannelConnected(c.id, !c.connected);
+                  // The plan ceiling is the common case and it used to look
+                  // like a dead button — say so where the click happened.
+                  if (!res.ok && res.error === "limit") {
+                    setRefusal(
+                      t({
+                        ka: `„${res.planName}" გეგმა ${res.limit} არხს უშვებს და ${res.used} უკვე ჩართულია. ჯერ სხვა გამორთე ან გეგმა შეცვალე.`,
+                        en: `The "${res.planName}" plan allows ${res.limit} channel(s) and ${res.used} are already on. Turn one off first, or change the plan.`,
+                      }),
+                    );
+                  }
+                })
+              }
               className={`h-9 rounded-[8px] px-4 text-sm font-medium disabled:opacity-60 ${c.connected ? "border border-border text-red" : "bg-primary text-white"}`}
             >
               {c.connected ? t({ ka: "გათიშვა", en: "Disconnect" }) : t({ ka: "დაკავშირება", en: "Connect" })}
