@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { AiConfig } from "@prisma/client";
-import { IconBrandYoutube, IconFileText, IconInfoCircle } from "@tabler/icons-react";
+import { IconBrandYoutube, IconFileText } from "@tabler/icons-react";
 import { saveAiPrompt } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { PromptAiActions } from "./PromptAiActions";
@@ -43,13 +43,6 @@ export function PromptSection({ config, aiReady }: { config: AiConfig | null; ai
           en: "You are [company]'s virtual assistant…",
         })}
         className={AREA}
-      />
-
-      <AiModuleNotice
-        text={{
-          ka: "პრომპტის შენახვა მუშაობს. „დააგენერირე“ და „დაარედაქტირე AI-ით“ საჭიროებს AI მოდულს, რომელიც ცალკე ეტაპია.",
-          en: "Saving the prompt works. “Generate” and “Refine with AI” require the AI module, which is a separate stage.",
-        }}
       />
     </SectionForm>
   );
