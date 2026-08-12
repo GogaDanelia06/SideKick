@@ -55,6 +55,8 @@ export function ChatDetail({
   onBack,
   onSent,
   onLead,
+  onAiChange,
+  onReleased,
 }: {
   chat: ConversationDetail | null;
   /** The header is drawn from the list row while the messages are on their way. */
@@ -64,6 +66,10 @@ export function ChatDetail({
   onSent: (message: ConversationDetail["messages"][number]) => void;
   /** Marks this chat as having a lead, once one has been made. */
   onLead: () => void;
+  /** Mirrors the AI switch into the parent's cache — see ConversationsView. */
+  onAiChange?: (aiEnabled: boolean) => void;
+  /** Same, for handing a paused conversation back to the bot. */
+  onReleased?: () => void;
 }) {
   const { t } = useLanguage();
   const [, start] = useTransition();
@@ -166,7 +172,8 @@ export function ChatDetail({
             onClick={() => {
               setReleasing(true);
               start(async () => {
-                await handBackToAi(chat.id);
+                const res = await handBackToAi(chat.id);
+                if (res.ok) onReleased?.();
                 setReleasing(false);
               });
             }}
@@ -218,7 +225,13 @@ export function ChatDetail({
           <IconRobot size={15} className="text-ai" /> AI
           <Switch
             on={chat.aiEnabled}
-            onToggle={() => start(() => setConversationAi(chat.id, !chat.aiEnabled))}
+            onToggle={() => {
+              const next = !chat.aiEnabled;
+              // Told to the parent first: the cache is what the header renders
+              // from, so waiting for the server would leave the switch still.
+              onAiChange?.(next);
+              start(() => setConversationAi(chat.id, next));
+            }}
             tone="ai"
             ariaLabel="AI"
           />

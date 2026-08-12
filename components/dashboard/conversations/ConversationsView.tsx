@@ -140,6 +140,24 @@ export function ConversationsView({
               return { ...current, [openId]: { ...open, messages: [...open.messages, message] } };
             })
           }
+          /* The cache wins over the freshly-rendered row, so a change the server
+             has already accepted is invisible until it is mirrored here. Without
+             these two the AI switch and the hand-back button look broken: the
+             database moves, the screen does not. */
+          onAiChange={(aiEnabled) =>
+            setCache((current) => {
+              const open = openId && current[openId];
+              if (!open) return current;
+              return { ...current, [openId]: { ...open, aiEnabled } };
+            })
+          }
+          onReleased={() =>
+            setCache((current) => {
+              const open = openId && current[openId];
+              if (!open) return current;
+              return { ...current, [openId]: { ...open, handedOver: false, aiEnabled: true } };
+            })
+          }
         />
       </div>
     </div>
