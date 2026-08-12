@@ -31,9 +31,20 @@ export async function POST(req: Request) {
 
   if (issued) {
     const link = absoluteUrl(`/reset?token=${issued.token}`);
-    await sendMail(passwordResetEmail(issued.user.email, link, issued.user.name));
+    const { sent } = await sendMail(passwordResetEmail(issued.user.email, link, issued.user.name));
+
+    // The answer below stays the same either way, so without this line a
+    // provider refusing every message looks exactly like success: the token is
+    // in the database, the form says "check your inbox", and nothing arrives.
+    // That is how a broken sender goes unnoticed for days.
+    if (!sent) {
+      log.error("password reset email could not be sent", undefined, { to: issued.user.email });
+    }
   }
 
+  // Deliberately identical for a known and an unknown address. Anything that
+  // differed — wording, status, even timing — would turn this endpoint into a
+  // way of asking which email addresses have accounts here.
   return NextResponse.json({ ok: true });
 }
 

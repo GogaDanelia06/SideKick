@@ -7,7 +7,16 @@ export type Mail = {
   text: string;
 };
 
-const MAIL_FROM = process.env.MAIL_FROM ?? "Sidekick <noreply@sidekick.ge>";
+/**
+ * The sending identity.
+ *
+ * On the subdomain, not the root, because that is what is verified with the
+ * provider — Resend adds its DKIM and SPF records under `send.` and checks the
+ * `from` against exactly that. Addressing the root instead is refused, and the
+ * refusal is easy to miss: it still delivers to the account owner's own inbox,
+ * so it looks like mail works until somebody else tries to reset a password.
+ */
+const MAIL_FROM = process.env.MAIL_FROM ?? "Sidekick <noreply@send.sidekick.ge>";
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
 
