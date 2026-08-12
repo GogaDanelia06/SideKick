@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { log } from "@/lib/logger";
 import type { ChannelType } from "@prisma/client";
 import type { InboundMessage } from "./meta";
 
@@ -35,9 +36,21 @@ export async function recordInbound(
   });
 
   // A channel that exists but is switched off is a deliberate "stop answering
-  // for me", so it is dropped as firmly as an unknown page. Storing it anyway
-  // would fill an inbox the tenant has asked to be quiet.
-  if (!channel?.connected) return null;
+  // for me", so it is dropped as firmly as an unknown account. Storing it
+  // anyway would fill an inbox the tenant has asked to be quiet.
+  //
+  // Said out loud, at info, because dropping silently makes two very different
+  // situations look identical from the outside: Meta never sent the event, and
+  // Meta sent it to an id we do not recognise. Without this line the only way
+  // to tell them apart is to guess.
+  if (!channel?.connected) {
+    log.info("inbound message dropped — no connected channel for this account", {
+      channelType: type,
+      accountId: msg.pageId,
+      known: Boolean(channel),
+    });
+    return null;
+  }
 
   const conversation = await prisma.conversation.upsert({
     where: {
