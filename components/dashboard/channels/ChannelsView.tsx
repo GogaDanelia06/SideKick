@@ -74,9 +74,6 @@ export function ChannelsView({
 
   return (
     <div className="grid gap-3">
-      <p className="text-sm text-blue">
-        / {t({ ka: "თითო არხისთვის იხილეთ ინსტრუქცია მისაერთებლად.", en: "See the guide to connect each channel." })}
-      </p>
 
       {refusal ? <p className="text-[13px] text-red">{refusal}</p> : null}
 

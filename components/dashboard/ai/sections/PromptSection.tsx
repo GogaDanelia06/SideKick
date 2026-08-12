@@ -21,13 +21,7 @@ export function PromptSection({ config, aiReady }: { config: AiConfig | null; ai
       action={saveAiPrompt}
       right={
         <div className="flex shrink-0 gap-2">
-          <button
-            type="button"
-            className="inline-flex h-8 items-center gap-1.5 rounded-[7px] border border-border px-3 text-xs text-muted hover:border-blue hover:text-ink"
-          >
-            <IconInfoCircle size={14} />
-            {t({ ka: "ინსტრუქცია", en: "Guide" })}
-          </button>
+
           <button
             type="button"
             className="inline-flex h-8 items-center gap-1.5 rounded-[7px] border border-red px-3 text-xs text-red hover:brightness-110"
