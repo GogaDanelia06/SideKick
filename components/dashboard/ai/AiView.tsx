@@ -112,7 +112,7 @@ export function AiView({
         {tab === "rules" && <RulesSection config={config} />}
         {tab === "prompt" && <PromptSection config={config} aiReady={aiReady} />}
         {tab === "languages" && <LanguagesSection config={config} />}
-        {tab === "tester" && <TesterSection />}
+        {tab === "tester" && <TesterSection aiReady={aiReady} />}
       </Panel>
     </div>
   );

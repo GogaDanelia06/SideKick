@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { requirePermission } from "@/lib/auth/permissions";
-import { buildPrompt, editPrompt, releaseToBot, aiConfigured } from "@/lib/ai/client";
+import { askAi, buildPrompt, editPrompt, releaseToBot, aiConfigured } from "@/lib/ai/client";
 import { DASH } from "@/lib/dashboard/routes";
 
 export type PromptResult =
@@ -82,4 +82,33 @@ export async function handBackToAi(conversationId: string): Promise<{ ok: boolea
 
   revalidatePath(DASH.conversations);
   return { ok: true };
+}
+
+export type TestReply =
+  | { ok: true; reply: string; handoff: boolean }
+  | { ok: false; error: "forbidden" | "unconfigured" | "empty" | "failed" };
+
+/**
+ * Asks the assistant a question without a customer involved.
+ *
+ * Nothing is written down: no conversation, no message, no delivery. This is a
+ * rehearsal of the prompt, and a merchant trying phrasings should not be
+ * filling their own inbox with their own experiments.
+ *
+ * The conversation id is per-business and constant, so the AI keeps one thread
+ * of context for the tester — and, being prefixed, it can never collide with a
+ * real conversation's cuid.
+ */
+export async function testAiReply(message: string): Promise<TestReply> {
+  const ctx = await requirePermission("ai:write");
+  if (!ctx) return { ok: false, error: "forbidden" };
+  if (!aiConfigured()) return { ok: false, error: "unconfigured" };
+
+  const text = message.trim();
+  if (!text) return { ok: false, error: "empty" };
+
+  const answer = await askAi(ctx.businessId, `tester-${ctx.businessId}`, text);
+  if (!answer) return { ok: false, error: "failed" };
+
+  return { ok: true, reply: answer.reply, handoff: answer.handoffRequested };
 }

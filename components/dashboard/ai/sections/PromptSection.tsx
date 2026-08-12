@@ -6,7 +6,7 @@ import { IconBrandYoutube, IconFileText } from "@tabler/icons-react";
 import { saveAiPrompt } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { PromptAiActions } from "./PromptAiActions";
-import { AREA, AiModuleNotice, SectionForm } from "../parts";
+import { AREA, SectionForm } from "../parts";
 
 export function PromptSection({ config, aiReady }: { config: AiConfig | null; aiReady: boolean }) {
   const { t } = useLanguage();
