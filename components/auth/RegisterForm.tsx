@@ -13,6 +13,7 @@ import {
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
 import { OrDivider } from "./OrDivider";
+import { ResendVerification } from "./ResendVerification";
 import { Field } from "@/components/ui/Field";
 import { REGISTER } from "@/lib/content/auth";
 import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
@@ -126,6 +127,10 @@ export function RegisterForm({ google }: RegisterFormProps) {
   const [sent, setSent] = useState(false);
   /** Registered, but waiting on the customer to open the link we emailed. */
   const [needsVerification, setNeedsVerification] = useState(false);
+  // Shown back to them, and used by the resend button. A mistyped address is
+  // the commonest reason the mail "never arrives", and it is invisible unless
+  // the address is put in front of them.
+  const [pendingEmail, setPendingEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<RegisterErrors>({});
   const [pending, setPending] = useState(false);
@@ -241,6 +246,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
       // reporting that refusal as if the registration had gone wrong.
       const data = await res.json().catch(() => ({}));
       if (data.verify) {
+        setPendingEmail(email);
         setNeedsVerification(true);
         return;
       }
@@ -303,7 +309,11 @@ export function RegisterForm({ google }: RegisterFormProps) {
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-3 rounded-md border border-blue-ring bg-blue-surface p-4">
             <IconMailCheck size={22} className="shrink-0 text-green" />
-            <p className="text-sm leading-relaxed text-blue-ink">{t(REGISTER.checkInbox)}</p>
+            <div className="flex flex-col gap-2">
+              <p className="text-sm leading-relaxed text-blue-ink">{t(REGISTER.checkInbox)}</p>
+              <p className="break-all text-sm font-medium text-blue-ink">{pendingEmail}</p>
+              <ResendVerification email={pendingEmail} />
+            </div>
           </div>
 
           {/* Sign in, not "go to dashboard": the account does not open until the
