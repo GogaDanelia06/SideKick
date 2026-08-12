@@ -36,7 +36,9 @@ const NAV: { key: Key; label: Bilingual; icon: IconType }[] = [
 export function AiView({
   config,
   business,
+  aiReady,
 }: {
+  aiReady: boolean;
   config: AiConfig | null;
   business: Business | null;
 }) {
@@ -108,7 +110,7 @@ export function AiView({
         {tab === "business" && <BusinessSection business={business} />}
         {tab === "character" && <CharacterSection config={config} />}
         {tab === "rules" && <RulesSection config={config} />}
-        {tab === "prompt" && <PromptSection config={config} />}
+        {tab === "prompt" && <PromptSection config={config} aiReady={aiReady} />}
         {tab === "languages" && <LanguagesSection config={config} />}
         {tab === "tester" && <TesterSection />}
       </Panel>

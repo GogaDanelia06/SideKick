@@ -1,14 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import type { AiConfig } from "@prisma/client";
-import { IconBrandYoutube, IconFileText, IconInfoCircle, IconSparkles, IconWand } from "@tabler/icons-react";
+import { IconBrandYoutube, IconFileText, IconInfoCircle } from "@tabler/icons-react";
 import { saveAiPrompt } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { PromptAiActions } from "./PromptAiActions";
 import { AREA, AiModuleNotice, SectionForm } from "../parts";
 
-export function PromptSection({ config }: { config: AiConfig | null }) {
+export function PromptSection({ config, aiReady }: { config: AiConfig | null; aiReady: boolean }) {
   const { t } = useLanguage();
-  const needsModule = t({ ka: "საჭიროებს AI მოდულს", en: "Requires the AI module" });
+  // Controlled from here so a generated prompt lands in the box the merchant is
+  // already looking at, instead of appearing only after a reload.
+  const [prompt, setPrompt] = useState(config?.prompt ?? "");
 
   return (
     <SectionForm
@@ -33,33 +37,13 @@ export function PromptSection({ config }: { config: AiConfig | null }) {
           </button>
         </div>
       }
-      extraActions={
-        <>
-          <button
-            type="button"
-            disabled
-            title={needsModule}
-            className="inline-flex h-10 cursor-not-allowed items-center gap-2 rounded-[8px] border border-ai px-4 text-[13px] font-medium text-ai opacity-60"
-          >
-            <IconSparkles size={16} />
-            {t({ ka: "დააგენერირე პრომპტი", en: "Generate prompt" })}
-          </button>
-          <button
-            type="button"
-            disabled
-            title={needsModule}
-            className="inline-flex h-10 cursor-not-allowed items-center gap-2 rounded-[8px] border border-border px-4 text-[13px] font-medium text-muted opacity-60"
-          >
-            <IconWand size={16} />
-            {t({ ka: "დაარედაქტირე AI-ით", en: "Refine with AI" })}
-          </button>
-        </>
-      }
+      extraActions={<PromptAiActions ready={aiReady} onPrompt={setPrompt} />}
     >
       <textarea
         name="prompt"
         rows={10}
-        defaultValue={config?.prompt ?? ""}
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
         placeholder={t({
           ka: "შენ ხარ [კომპანიის] ვირტუალური ასისტენტი…",
           en: "You are [company]'s virtual assistant…",

@@ -6,6 +6,7 @@ import {
   IconArrowLeft,
   IconMessage2,
   IconRobot,
+  IconRotateClockwise,
   IconSend,
   IconShoppingCart,
   IconUserPlus,
@@ -16,6 +17,7 @@ import {
   sendOperatorReply,
   setConversationAi,
 } from "@/lib/dashboard/actions";
+import { handBackToAi } from "@/lib/dashboard/aiActions";
 import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { ConversationDetail } from "@/lib/dashboard/queries";
 import type { Bilingual } from "@/lib/content/types";
@@ -69,6 +71,7 @@ export function ChatDetail({
   const [sending, setSending] = useState(false);
   const [notice, setNotice] = useState<{ key: string; tone: "warn" | "error" } | null>(null);
   const [makingLead, setMakingLead] = useState(false);
+  const [releasing, setReleasing] = useState(false);
 
   async function makeLead() {
     if (!chat || chat.hasLead) return;
@@ -153,6 +156,32 @@ export function ChatDetail({
                 : t({ ka: "მიმდინარე", en: "Ongoing" })}
           </div>
         </div>
+
+        {/* Only while a person is actually holding the chat. A permanent button
+            would invite handing back a conversation nobody had taken. */}
+        {chat.handedOver ? (
+          <button
+            type="button"
+            disabled={releasing}
+            onClick={() => {
+              setReleasing(true);
+              start(async () => {
+                await handBackToAi(chat.id);
+                setReleasing(false);
+              });
+            }}
+            title={t({
+              ka: "AI-მ ადამიანი მოითხოვა. დააბრუნე ბოტთან, როცა დაასრულებ.",
+              en: "The AI asked for a person. Hand it back when you are done.",
+            })}
+            className={clsx(MARK, "border-red bg-red-surface text-red disabled:opacity-60")}
+          >
+            <IconRotateClockwise size={15} />
+            {releasing
+              ? t({ ka: "ბრუნდება…", en: "Handing back…" })
+              : t({ ka: "დაუბრუნე AI-ს", en: "Give back to AI" })}
+          </button>
+        ) : null}
 
         <button
           type="button"

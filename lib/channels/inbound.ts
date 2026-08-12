@@ -12,6 +12,8 @@ export type RecordedMessage = {
   isNew: boolean;
   /** True while the chat still shows as "—" and could be given a real name. */
   needsName: boolean;
+  /** What the customer wrote. Carried so the AI can be asked without re-reading it. */
+  text: string;
 };
 
 /**
@@ -72,6 +74,7 @@ export async function recordInbound(
       businessId: channel.businessId,
       channel: type,
       needsName: !conversation.customerName,
+      text: msg.text,
       conversationId: conversation.id,
       messageId: existing.id,
       isNew: false,
@@ -107,6 +110,7 @@ export async function recordInbound(
       businessId: channel.businessId,
       channel: type,
       needsName: !conversation.customerName,
+      text: msg.text,
       conversationId: conversation.id,
       messageId: winner.id,
       isNew: false,
@@ -125,6 +129,7 @@ export async function recordInbound(
     businessId: channel.businessId,
     channel: type,
     needsName: !conversation.customerName,
+    text: msg.text,
     conversationId: conversation.id,
     messageId,
     isNew: true,

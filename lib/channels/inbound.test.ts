@@ -52,6 +52,7 @@ describe("recordInbound()", () => {
       messageId: "m1",
       isNew: true,
       needsName: true,
+      text: "გამარჯობა",
     });
     expect(channelFind).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -117,6 +118,7 @@ describe("recordInbound()", () => {
       messageId: "m1",
       isNew: false,
       needsName: true,
+      text: "გამარჯობა",
     });
     expect(msgCreate).not.toHaveBeenCalled();
   });

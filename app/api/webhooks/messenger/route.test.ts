@@ -7,6 +7,7 @@ vi.mock("next/server", () => ({ after: (fn: () => unknown) => fn() }));
 vi.mock("@/lib/channels/inbound", () => ({ recordInbound: vi.fn() }));
 vi.mock("@/lib/channels/notify", () => ({ notifyAgent: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/lib/channels/profile", () => ({ nameCustomer: vi.fn().mockResolvedValue(undefined) }));
+vi.mock("@/lib/ai/answer", () => ({ answerCustomer: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/lib/logger", () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
@@ -15,10 +16,12 @@ import { GET, POST } from "./route";
 import { recordInbound } from "@/lib/channels/inbound";
 import { notifyAgent } from "@/lib/channels/notify";
 import { nameCustomer } from "@/lib/channels/profile";
+import { answerCustomer } from "@/lib/ai/answer";
 
 const record = vi.mocked(recordInbound);
 const notify = vi.mocked(notifyAgent);
 const name = vi.mocked(nameCustomer);
+const answer = vi.mocked(answerCustomer);
 
 const APP_SECRET = "meta-app-secret";
 const VERIFY_TOKEN = "our-verify-token-1234";
@@ -59,6 +62,7 @@ beforeEach(() => {
     messageId: "m1",
     isNew: true,
     needsName: false,
+    text: "გამარჯობა",
   });
 });
 
@@ -149,6 +153,7 @@ describe("POST — receiving messages", () => {
       messageId: "m9",
       isNew: true,
       needsName: false,
+      text: "გამარჯობა",
     });
     const raw = JSON.stringify({
       object: "instagram",
@@ -234,6 +239,7 @@ describe("POST — receiving messages", () => {
         messageId: "m2",
         isNew: true,
         needsName: false,
+        text: "გამარჯობა",
       });
 
     const res = await POST(post(raw, sign(raw)));
@@ -264,6 +270,7 @@ describe("POST — receiving messages", () => {
       messageId: "m1",
       isNew: true,
       needsName: true,
+      text: "გამარჯობა",
     });
     const raw = JSON.stringify({
       object: "page",
@@ -290,6 +297,44 @@ describe("POST — receiving messages", () => {
     expect(name).not.toHaveBeenCalled();
   });
 
+  it("hands the customer's own words to the AI, not just an id", async () => {
+    // Their API answers in the same call and takes the text directly — it does
+    // not come back to read the message from us, so anything not passed here is
+    // simply not seen. The text comes off the stored record rather than the
+    // payload, which is what keeps a re-sent event from being re-read.
+    record.mockResolvedValue({
+      businessId: "b1",
+      channel: "FACEBOOK" as const,
+      conversationId: "conv1",
+      messageId: "m1",
+      isNew: true,
+      needsName: false,
+      text: "ფასი რა ღირს?",
+    });
+    const raw = body("ფასი რა ღირს?");
+    await POST(post(raw, sign(raw)));
+
+    expect(answer).toHaveBeenCalledWith("b1", "conv1", "ფასი რა ღირს?");
+  });
+
+  it("does not answer a message it already had", async () => {
+    // The retry path. Answering again would send the customer two replies to
+    // one question.
+    record.mockResolvedValue({
+      businessId: "b1",
+      channel: "FACEBOOK" as const,
+      conversationId: "conv1",
+      messageId: "m1",
+      isNew: false,
+      needsName: false,
+      text: "გამარჯობა",
+    });
+    const raw = body();
+    await POST(post(raw, sign(raw)));
+
+    expect(answer).not.toHaveBeenCalled();
+  });
+
   it("tells the AI service about a new message", async () => {
     const raw = body();
     await POST(post(raw, sign(raw)));
@@ -313,6 +358,7 @@ describe("POST — receiving messages", () => {
       messageId: "m1",
       isNew: false,
       needsName: false,
+      text: "გამარჯობა",
     });
     const raw = body();
 

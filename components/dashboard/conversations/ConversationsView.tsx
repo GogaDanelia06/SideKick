@@ -55,6 +55,9 @@ export function ConversationsView({
           channelType: row.channelType,
           status: row.status,
           aiEnabled: row.aiEnabled,
+          // The list already knows: "wait" is the same paused state the header
+          // reads, so the instant version does not have to guess or flicker.
+          handedOver: row.alert === "wait",
           hasLead: row.ring === "lead" || row.ring === "order",
           hasOrder: row.ring === "order",
           messages: [],

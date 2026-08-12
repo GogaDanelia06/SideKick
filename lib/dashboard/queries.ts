@@ -380,6 +380,10 @@ export async function getConversation(businessId: string, id: string) {
     channelType: c.channel?.type ?? null,
     status: c.status,
     aiEnabled: c.aiEnabled,
+    // Whether a person is currently holding this chat. Sent as a boolean rather
+    // than the date: the header only asks "is it paused", and a raw Date would
+    // have to be re-compared against the clock in the browser, where it drifts.
+    handedOver: Boolean(c.botPausedUntil && c.botPausedUntil > new Date()),
     hasLead: Boolean(c.lead),
     hasOrder: c.orders.length > 0,
     messages: c.messages.map((m) => ({

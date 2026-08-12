@@ -4,6 +4,7 @@ import { PLATFORMS, parseMessagingEvents, tokensMatch, verifySignature } from "@
 import { recordInbound, type RecordedMessage } from "@/lib/channels/inbound";
 import { notifyAgent } from "@/lib/channels/notify";
 import { nameCustomer } from "@/lib/channels/profile";
+import { answerCustomer } from "@/lib/ai/answer";
 
 export const dynamic = "force-dynamic";
 
@@ -145,6 +146,9 @@ export async function POST(request: Request) {
     }
 
     for (const result of recorded) {
+      // Kept for anyone subscribed to the push. It is a separate concern from
+      // the answer below: one announces that a message arrived, the other is
+      // the reply going back out.
       await notifyAgent({
         event: "message.received",
         businessId: result.businessId,
@@ -152,6 +156,11 @@ export async function POST(request: Request) {
         messageId: result.messageId,
         channel: result.channel,
       });
+
+      // The AI service answers in the same call rather than pushing to us
+      // later, so this is where the customer's reply is written and sent. Slow
+      // by nature, and safely so: the 200 went out before `after()` began.
+      await answerCustomer(result.businessId, result.conversationId, result.text);
     }
   });
 

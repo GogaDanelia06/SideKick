@@ -15,6 +15,7 @@ replies](#sending-replies).
 - [Instagram](#instagram)
 - [Connecting a tenant's page](#connecting-a-tenants-page)
 - [What the AI service receives](#what-the-ai-service-receives)
+- [Who answers](#who-answers)
 - [What is dropped, and why](#what-is-dropped-and-why)
 - [Sending replies](#sending-replies)
 - [What is still missing](#what-is-still-missing)
@@ -32,8 +33,8 @@ reply takes longer than the deadline, so waiting for it would guarantee a retry,
 and the retry would arrive while the first one was still thinking — the customer
 would be answered twice for one question.
 
-Instead the AI service is notified *after* the response is sent, and it fetches
-what it needs through the existing [Agent API](./AGENT-API.md).
+Instead everything slow happens *after* the response is sent — including asking
+the AI for its reply. See [Who answers](#who-answers).
 
 Every message carries Meta's own `mid`, stored on `Message.externalId`. That is
 what makes a re-send land on the same row instead of creating a second copy.
@@ -48,6 +49,9 @@ what makes a re-send land on the same row instead of creating a second copy.
 | `META_VERIFY_TOKEN` | to complete setup | A string **we invent**. It only has to match what is typed into the App Dashboard. 16+ characters. |
 | `AI_SERVICE_WEBHOOK_URL` | to notify the AI | Where we `POST` "a customer wrote in". Supplied by the AI team. |
 | `AI_SERVICE_WEBHOOK_TOKEN` | to notify the AI | Bearer token we send with that push, so they can tell it is us. 32+ characters. |
+| `AI_SERVICE_URL` | **to get replies** | Base URL of the AI service, e.g. `https://si-….on.aws`. Paths are appended to it. |
+| `AI_SERVICE_KEY` | **to get replies** | Their `SERVICE_API_KEY`, sent as `Authorization: Bearer`. |
+| `AI_SERVICE_TIMEOUT_MS` | no | How long to wait on a reply. Defaults to 45000 — a language model is not fast. |
 
 Until the last two are set, messages are still received and stored — they are
 just not announced. The log says so plainly:
@@ -161,6 +165,49 @@ message is already committed on Sidekick's side, so nothing is lost.
 
 ---
 
+## Who answers
+
+The AI service is **request/response, not a webhook**, and that is the fact that
+shapes this half of the system. We hand it one message and it hands the reply
+back in the same call:
+
+```
+POST {AI_SERVICE_URL}/businesses/{businessId}/messages
+Authorization: Bearer {AI_SERVICE_KEY}
+
+{ "conversation_id": "cms…", "message": "ფასი რა ღირს?" }
+   ↓
+{ "reply": "…", "handoff_requested": false, "handoff_reason": null }
+```
+
+Nothing arrives later and nothing is pushed to us. So whatever that call
+returns is the answer, and if it fails there is no reply coming at all — which
+is why a failure marks the chat rather than passing silently.
+
+It runs in `after()`, never inside the webhook request. A language model does
+not answer in five seconds.
+
+`lib/ai/answer.ts` then does the rest, in this order:
+
+1. **Refuses to speak over a person.** `aiEnabled: false` on the chat, or a
+   `botPausedUntil` still in the future, and nothing is sent.
+2. **Stores the reply, then delivers it.** Delivered-but-unrecorded would show
+   the customer an answer the merchant's inbox has no memory of.
+3. **Honours `handoff_requested`.** Sets `botPausedUntil` 24 hours out and
+   writes `handoff_reason` onto the message. That pair is what lights the
+   orange "waiting for a human" mark in the inbox.
+
+An operator hands it back with `handBackToAi()`, which calls their `release`
+endpoint **and** clears the pause. Doing only one leaves the two sides
+disagreeing about who is holding the conversation.
+
+The other two endpoints — `build-prompt` and `edit-prompt` — sit behind the
+buttons on the AI Assistant page. They generate text and store nothing, so the
+result is written to `AiConfig.prompt` on our side, into the same box the
+merchant can edit by hand.
+
+---
+
 ## Customer names
 
 Meta's delivery carries an id and nothing else — no name, no picture. Left at
@@ -255,7 +302,8 @@ inbox can show what actually reached the customer.
    integration: a different envelope (`entry[].changes[]`, not `messaging[]`), a
    different Send API, and message templates instead of a 24-hour window. It is
    refused here rather than half-read.
-4. **The AI team's endpoint.** `AI_SERVICE_WEBHOOK_URL` and its token are not
-   set anywhere yet.
+4. **`AI_SERVICE_WEBHOOK_URL`.** The push notice is a separate thing from the
+   reply, and nothing subscribes to it yet. The replies do not depend on it —
+   see [Who answers](#who-answers).
 5. **Attachments.** Images and files arrive with no text and are ignored in both
    directions.
