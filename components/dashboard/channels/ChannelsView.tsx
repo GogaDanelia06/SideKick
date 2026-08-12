@@ -15,6 +15,7 @@ import {
   IconWorld,
 } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
+import { ConnectMeta } from "./ConnectMeta";
 import { setChannelConnected } from "@/lib/dashboard/actions";
 import { guideSteps, type ChannelGuideView } from "@/lib/dashboard/tutorials";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -75,6 +76,13 @@ export function ChannelsView({
       <p className="text-sm text-blue">
         / {t({ ka: "თითო არხისთვის იხილეთ ინსტრუქცია მისაერთებლად.", en: "See the guide to connect each channel." })}
       </p>
+
+      {/* One grant covers Messenger and Instagram, so the button sits above the
+          list rather than on either row — putting it on one would imply the
+          other still needs its own. */}
+      <Panel className="p-4">
+        <ConnectMeta />
+      </Panel>
       {channels.map((c) => {
         const m = META[c.type];
         const guide = guides[c.type];
