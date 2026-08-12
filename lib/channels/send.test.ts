@@ -144,3 +144,42 @@ describe("deliverOutbound()", () => {
     });
   });
 });
+
+describe("which host each channel is answered on", () => {
+  it("sends an Instagram reply to graph.instagram.com, not graph.facebook.com", async () => {
+    // Instagram here runs on Instagram Login, a separate API from the Messenger
+    // Platform. Posting to graph.facebook.com returns "object does not exist" —
+    // verified against the live account. Getting this wrong means every
+    // Instagram reply silently fails to reach the customer.
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ message_id: "mid.ig" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await sendToMessenger("IGID_1", "IGA-token", "IGSID_1", "გამარჯობა", "INSTAGRAM");
+
+    expect(String(fetchMock.mock.calls[0][0])).toContain("https://graph.instagram.com/");
+  });
+
+  it("still sends a Facebook reply to graph.facebook.com", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ message_id: "mid.fb" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await sendToMessenger("PAGE_1", "EAA-token", "PSID_1", "გამარჯობა", "FACEBOOK");
+
+    expect(String(fetchMock.mock.calls[0][0])).toContain("https://graph.facebook.com/");
+  });
+
+  it("defaults to Facebook when no channel is named", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await sendToMessenger("PAGE_1", "tok", "PSID_1", "hi");
+
+    expect(String(fetchMock.mock.calls[0][0])).toContain("https://graph.facebook.com/");
+  });
+});

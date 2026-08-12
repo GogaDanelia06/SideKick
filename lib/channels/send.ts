@@ -38,10 +38,25 @@ export type DeliveryResult = {
 type GraphError = { message?: string; code?: number };
 
 /**
+ * Which host answers for which channel.
+ *
+ * Not cosmetic. Instagram here runs on **Instagram Login**, not the Messenger
+ * Platform, and the two are separate APIs that happen to share a request shape:
+ * a different host, a different kind of token (`IGA…` rather than a Page's
+ * `EAA…`), and a different id in the path. Sending an Instagram reply to
+ * graph.facebook.com fails with "object does not exist" — confirmed against
+ * the live account, not assumed.
+ */
+const HOSTS: Record<string, string> = {
+  FACEBOOK: "https://graph.facebook.com",
+  INSTAGRAM: "https://graph.instagram.com",
+};
+
+/**
  * Hands one text message to Meta for delivery.
  *
- * The page id is in the path and the token in the query string because that is
- * the shape Meta documents. `messaging_type: "RESPONSE"` declares this as an
+ * The account id is in the path and the token in the query string because that
+ * is the shape Meta documents. `messaging_type: "RESPONSE"` declares this as an
  * answer to something the customer said, which is what makes it allowed inside
  * the 24 hour window — omitting it gets the message refused.
  */
@@ -50,13 +65,15 @@ export async function sendToMessenger(
   accessToken: string,
   recipientId: string,
   text: string,
+  channelType: ChannelType = "FACEBOOK",
 ): Promise<DeliveryResult> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
     const res = await fetch(
-      `https://graph.facebook.com/${GRAPH_VERSION}/${pageId}/messages?access_token=${encodeURIComponent(accessToken)}`,
+      `${HOSTS[channelType] ?? HOSTS.FACEBOOK}/${GRAPH_VERSION}/${pageId}/messages` +
+        `?access_token=${encodeURIComponent(accessToken)}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -141,6 +158,7 @@ export async function deliverOutbound(
     channel.accessToken,
     conversation.customerRef,
     text,
+    channel.type,
   );
 
   await prisma.message.update({
