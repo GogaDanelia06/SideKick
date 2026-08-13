@@ -43,6 +43,17 @@ export async function recordInbound(
   // situations look identical from the outside: Meta never sent the event, and
   // Meta sent it to an id we do not recognise. Without this line the only way
   // to tell them apart is to guess.
+  // Meta's own "Test" button in the App Dashboard sends a sample payload with
+  // placeholder ids — "0" where a real account would be. It proves the webhook
+  // is reachable and nothing else, so it is called out by name: twice now it
+  // has been read as a real message that we lost.
+  if (msg.pageId === "0") {
+    log.info(
+      `ignored Meta's ${type} test payload (account id "0") — this is the Dashboard "Test" button, not a real message`,
+    );
+    return null;
+  }
+
   if (!channel?.connected) {
     // The id is in the message itself, not only in the context object. Log
     // viewers collapse structured fields by default, and the one number that
