@@ -40,6 +40,32 @@ function describe(payload: unknown): string {
   return `object=${String(top.object)} entry[0]={${inner}} first={${leaf}}`;
 }
 
+/** Bodies are small; this only guards against a pathological one. */
+const DEBUG_MAX_CHARS = 4_000;
+
+/**
+ * Writes the whole delivery to the log, verbatim.
+ *
+ * Off unless `DEBUG_WEBHOOK_BODY` is set, and meant to be switched off again as
+ * soon as the question it was turned on for is answered. What it prints is
+ * every word a customer wrote — turning it on leaves their messages sitting in
+ * a log aggregator, which is not where a merchant's inbox belongs.
+ *
+ * Deliberately before the signature check, because a delivery we *reject* is
+ * often the one worth reading: that is what an unexpected signing secret, or a
+ * forged request, actually looks like on the wire.
+ */
+function debugDelivery(request: Request, raw: string): void {
+  if (process.env.DEBUG_WEBHOOK_BODY !== "1") return;
+
+  log.warn("RAW WEBHOOK DELIVERY — debug logging is on, turn it off when done", {
+    userAgent: request.headers.get("user-agent"),
+    signature: request.headers.get("x-hub-signature-256"),
+    bytes: raw.length,
+    body: raw.slice(0, DEBUG_MAX_CHARS),
+  });
+}
+
 function safeParse(raw: string): unknown {
   try {
     return JSON.parse(raw);
@@ -108,6 +134,8 @@ export async function POST(request: Request) {
   // Read as raw text, not `request.json()`: the signature covers these exact
   // bytes, and re-serialising a parsed object produces different ones.
   const raw = await request.text();
+
+  debugDelivery(request, raw);
 
   const signature = request.headers.get("x-hub-signature-256");
   if (!verifySignature(raw, signature, secret, instagramSecret)) {
