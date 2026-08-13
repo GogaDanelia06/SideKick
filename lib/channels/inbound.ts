@@ -44,11 +44,14 @@ export async function recordInbound(
   // Meta sent it to an id we do not recognise. Without this line the only way
   // to tell them apart is to guess.
   if (!channel?.connected) {
-    log.info("inbound message dropped — no connected channel for this account", {
-      channelType: type,
-      accountId: msg.pageId,
-      known: Boolean(channel),
-    });
+    // The id is in the message itself, not only in the context object. Log
+    // viewers collapse structured fields by default, and the one number that
+    // resolves this is the one that was hidden behind a click.
+    log.info(
+      `inbound message dropped — no connected ${type} channel for account ${msg.pageId}` +
+        (channel ? " (channel exists but is switched off)" : " (no channel has this id)"),
+      { channelType: type, accountId: msg.pageId, known: Boolean(channel) },
+    );
     return null;
   }
 
