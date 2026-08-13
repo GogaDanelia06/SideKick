@@ -117,11 +117,9 @@ export function parseMessagingEvents(payload: unknown): InboundMessage[] {
     if (!isRecord(entry)) continue;
 
     const pageId = str(entry.id);
-    if (!pageId || !Array.isArray(entry.messaging)) continue;
+    if (!pageId) continue;
 
-    for (const event of entry.messaging) {
-      if (!isRecord(event)) continue;
-
+    for (const event of messagingEvents(entry)) {
       const message = isRecord(event.message) ? event.message : null;
       if (!message || message.is_echo === true) continue;
 
@@ -139,4 +137,36 @@ export function parseMessagingEvents(payload: unknown): InboundMessage[] {
   }
 
   return out;
+}
+
+/**
+ * The message events inside one entry, from either shape Meta uses.
+ *
+ * `messaging[]` is what the Messenger Platform sends. The Instagram API with
+ * Instagram Login can instead wrap the same object in `changes[]` with a
+ * `field` saying what it is — the payload underneath is identical.
+ *
+ * Reading only one of the two is the expensive kind of mistake: the delivery
+ * arrives, the signature checks out, we answer 200, and the message is dropped
+ * without a trace. Accepting both costs nothing, because anything that does not
+ * look like a message is discarded a few lines below either way.
+ */
+function messagingEvents(entry: Record<string, unknown>): Record<string, unknown>[] {
+  const events: Record<string, unknown>[] = [];
+
+  if (Array.isArray(entry.messaging)) {
+    for (const event of entry.messaging) if (isRecord(event)) events.push(event);
+  }
+
+  if (Array.isArray(entry.changes)) {
+    for (const change of entry.changes) {
+      if (!isRecord(change)) continue;
+      // Comments, mentions and story insights arrive here too, under their own
+      // field names. Only messages belong in an inbox.
+      if (change.field !== "messages") continue;
+      if (isRecord(change.value)) events.push(change.value);
+    }
+  }
+
+  return events;
 }

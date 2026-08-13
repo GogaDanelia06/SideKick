@@ -16,6 +16,31 @@ function text(body: string, status: number) {
 }
 
 /**
+ * The skeleton of a payload: which keys, in which order, nothing inside them.
+ *
+ * Deliberately not the body. Knowing that Meta sent `entry[].changes[]` rather
+ * than `entry[].messaging[]` is the whole diagnosis, and none of the words a
+ * customer typed are needed to see it.
+ */
+function describe(payload: unknown): string {
+  if (!payload || typeof payload !== "object") return typeof payload;
+  const top = payload as Record<string, unknown>;
+  const entry = Array.isArray(top.entry) && top.entry[0] ? top.entry[0] : null;
+  const inner = entry && typeof entry === "object" ? Object.keys(entry).join(",") : "—";
+
+  const first =
+    entry && typeof entry === "object"
+      ? ((entry as Record<string, unknown>).messaging ?? (entry as Record<string, unknown>).changes)
+      : null;
+  const leaf =
+    Array.isArray(first) && first[0] && typeof first[0] === "object"
+      ? Object.keys(first[0] as Record<string, unknown>).join(",")
+      : "—";
+
+  return `object=${String(top.object)} entry[0]={${inner}} first={${leaf}}`;
+}
+
+/**
  * The setup handshake.
  *
  * Meta calls this once, when the callback URL is saved in the App Dashboard,
@@ -98,7 +123,18 @@ export async function POST(request: Request) {
   }
 
   const messages = parseMessagingEvents(payload);
-  if (messages.length === 0) return text("ok", 200);
+
+  if (messages.length === 0) {
+    // Signed by Meta, and yet nothing we recognise. Mostly this is ordinary —
+    // an echo, a read receipt, a delivery confirmation — but it is also exactly
+    // what an unfamiliar payload shape looks like, and those two must not be
+    // indistinguishable. Silence here once cost a day of blaming the wrong side.
+    //
+    // The shape is logged, never the contents: enough to see how Meta wrapped
+    // it, without copying a customer's message into a second system's logs.
+    log.info("webhook delivery carried no readable message", { shape: describe(payload) });
+    return text("ok", 200);
+  }
 
   const started = Date.now();
   const recorded: RecordedMessage[] = [];
