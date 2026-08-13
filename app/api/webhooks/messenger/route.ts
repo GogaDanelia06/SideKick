@@ -40,14 +40,15 @@ function describe(payload: unknown): string {
   return `object=${String(top.object)} entry[0]={${inner}} first={${leaf}}`;
 }
 
-/**
- * The setup handshake.
- *
- * Meta calls this once, when the callback URL is saved in the App Dashboard,
- * and again whenever it is changed. It proves we meant to publish this endpoint
- * by asking us to echo a number back, which only somebody holding the verify
- * token can do.
- */
+function safeParse(raw: string): unknown {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+
 export async function GET(request: Request) {
   const expected = process.env.META_VERIFY_TOKEN;
   if (!expected) {
@@ -95,8 +96,11 @@ export async function GET(request: Request) {
  * function for why the retry is safe.
  */
 export async function POST(request: Request) {
+  // Two secrets, because Instagram Login is a separate app with its own. The
+  // Facebook one alone silently rejected every Instagram delivery.
   const secret = process.env.META_APP_SECRET;
-  if (!secret) {
+  const instagramSecret = process.env.INSTAGRAM_APP_SECRET;
+  if (!secret && !instagramSecret) {
     log.error("messenger webhook called with no META_APP_SECRET set");
     return text("webhook not configured", 503);
   }
@@ -105,11 +109,20 @@ export async function POST(request: Request) {
   // bytes, and re-serialising a parsed object produces different ones.
   const raw = await request.text();
 
-  if (!verifySignature(raw, request.headers.get("x-hub-signature-256"), secret)) {
+  const signature = request.headers.get("x-hub-signature-256");
+  if (!verifySignature(raw, signature, secret, instagramSecret)) {
     // Expected traffic on a public URL, so warn rather than error — but worth
     // recording, because a sudden run of these is either an attempt to inject
     // messages or an app secret that has been rotated on Meta's side.
-    log.warn("messenger webhook rejected an unsigned or mis-signed request");
+    //
+    // The envelope is named: a signed delivery we reject is indistinguishable
+    // from a stranger poking the URL until you can see it was Meta's own
+    // Instagram payload arriving under a secret we were not checking.
+    log.warn("messenger webhook rejected an unsigned or mis-signed request", {
+      hasSignature: Boolean(signature),
+      secretsTried: [secret && "meta", instagramSecret && "instagram"].filter(Boolean).join("+"),
+      shape: describe(safeParse(raw)),
+    });
     return text("bad signature", 403);
   }
 

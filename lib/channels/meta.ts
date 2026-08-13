@@ -62,16 +62,30 @@ function str(value: unknown): string | null {
 export function verifySignature(
   rawBody: string,
   header: string | null | undefined,
-  appSecret: string,
+  ...appSecrets: (string | undefined)[]
 ): boolean {
   if (!header?.startsWith("sha256=")) return false;
 
-  const expected = createHmac("sha256", appSecret).update(rawBody, "utf8").digest();
   // Buffer.from truncates at the first invalid pair rather than throwing, so a
   // malformed header shows up as a length mismatch instead of an exception.
   const given = Buffer.from(header.slice("sha256=".length), "hex");
 
-  return given.length === expected.length && timingSafeEqual(given, expected);
+  // Any one of them is enough, and more than one is the normal case here:
+  // Instagram Login signs with its **own** app secret, not the Facebook app's.
+  // Checking only the Facebook secret passes every Messenger delivery and
+  // rejects every Instagram one — which looks exactly like Meta sending
+  // nothing, because a rejected delivery is never seen again.
+  //
+  // Every configured secret is tried even after one matches, so the work done
+  // does not depend on which secret was right.
+  let matched = false;
+  for (const secret of appSecrets) {
+    if (!secret) continue;
+    const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest();
+    if (given.length === expected.length && timingSafeEqual(given, expected)) matched = true;
+  }
+
+  return matched;
 }
 
 /**

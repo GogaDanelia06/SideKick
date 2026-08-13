@@ -190,6 +190,35 @@ describe("parseMessagingEvents()", () => {
   });
 });
 
+describe("two app secrets", () => {
+  const IG_SECRET = "instagram-app-secret";
+
+  it("accepts a body signed with the second secret", () => {
+    // Instagram Login signs with its own app secret. Checking only the Facebook
+    // one passed every Messenger delivery and rejected every Instagram one —
+    // which is indistinguishable from Meta sending nothing at all, because a
+    // rejected delivery is never re-sent in a readable form.
+    const body = delivery([message()]);
+    expect(verifySignature(body, sign(body, IG_SECRET), SECRET, IG_SECRET)).toBe(true);
+  });
+
+  it("still accepts one signed with the first", () => {
+    const body = delivery([message()]);
+    expect(verifySignature(body, sign(body), SECRET, IG_SECRET)).toBe(true);
+  });
+
+  it("rejects a body signed with neither", () => {
+    const body = delivery([message()]);
+    expect(verifySignature(body, sign(body, "somebody-else"), SECRET, IG_SECRET)).toBe(false);
+  });
+
+  it("ignores secrets that are not configured", () => {
+    const body = delivery([message()]);
+    expect(verifySignature(body, sign(body), undefined, SECRET)).toBe(true);
+    expect(verifySignature(body, sign(body), undefined, undefined)).toBe(false);
+  });
+});
+
 describe("the two envelope shapes", () => {
   it("reads a message wrapped in changes[] as well as messaging[]", () => {
     // Instagram Login can deliver the same event under `changes[]` with a
