@@ -49,7 +49,15 @@ describe("sendOperatorReply()", () => {
       delivery: "SENT",
       // Handed straight back so the open thread can show the reply without
       // asking the server for the conversation again.
-      message: { id: "m1", sender: "OPERATOR", text: "დიახ, გვაქვს", stoppedReason: null },
+      message: {
+        id: "m1",
+        sender: "OPERATOR",
+        text: "დიახ, გვაქვს",
+        stoppedReason: null,
+        // Matched by shape, not value: it is the wall clock, and pinning it
+        // would make this test fail once a minute for no reason.
+        timeLabel: expect.stringMatching(/^\d{2}:\d{2}$/),
+      },
     });
     expect(msgCreate).toHaveBeenCalledWith(
       expect.objectContaining({

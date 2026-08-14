@@ -1,5 +1,6 @@
 import type { ChannelType, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { fmtDate, fmtTime } from "./time";
 
 export function getLeads(businessId: string) {
   return prisma.lead.findMany({
@@ -92,13 +93,6 @@ export async function getAiConfig(businessId: string) {
   return { config, faqs, business };
 }
 
-const TZ = "Asia/Tbilisi";
-const fmtDate = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit", month: "2-digit", year: "numeric", timeZone: TZ,
-});
-const fmtTime = new Intl.DateTimeFormat("en-GB", {
-  hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ,
-});
 
 export async function getOrders(businessId: string) {
   const [rows, grouped] = await Promise.all([
@@ -412,6 +406,11 @@ export async function getConversation(businessId: string, id: string) {
       sender: m.sender,
       text: m.text,
       stoppedReason: m.stoppedReason,
+      // Formatted here, in the merchant's timezone, rather than handed over as
+      // a Date. A Date crossing to the browser is rendered in whatever timezone
+      // the viewer's laptop is set to, so a shop in Tbilisi reading their inbox
+      // from abroad would see every message stamped an hour or four off.
+      timeLabel: fmtTime.format(m.createdAt),
     })),
   };
 }

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import type { LeadStatus, OrderStatus, Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { fmtTime } from "./time";
 import { getContext } from "@/lib/session";
 import { can, requirePermission } from "@/lib/auth/permissions";
 import { availableProviders, parseProvider } from "@/lib/payments";
@@ -446,7 +447,13 @@ export type ReplyResult =
       ok: true;
       delivery: DeliveryStatus | null;
       /** The stored reply, so the open thread can show it without refetching. */
-      message: { id: string; sender: "OPERATOR"; text: string; stoppedReason: null };
+      message: {
+        id: string;
+        sender: "OPERATOR";
+        text: string;
+        stoppedReason: null;
+        timeLabel: string;
+      };
     }
   | { ok: false; error: string };
 
@@ -499,7 +506,16 @@ export async function sendOperatorReply(
   return {
     ok: true,
     delivery: delivery?.status ?? null,
-    message: { id: message.id, sender: "OPERATOR", text: body, stoppedReason: null },
+    // Stamped now rather than re-read from the row: the reply is a second old,
+    // and the thread should show a time the moment it appears rather than
+    // waiting for the next fetch to fill one in.
+    message: {
+      id: message.id,
+      sender: "OPERATOR" as const,
+      text: body,
+      stoppedReason: null,
+      timeLabel: fmtTime.format(new Date()),
+    },
   };
 }
 

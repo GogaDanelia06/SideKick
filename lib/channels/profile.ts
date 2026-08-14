@@ -41,13 +41,17 @@ export async function fetchCustomerName(
   customerId: string,
   accessToken: string,
   fields: string,
+  // Instagram Login answers on its own host and rejects the Facebook one, the
+  // same split that `send.ts` documents. Defaulted to Facebook so the Messenger
+  // path reads unchanged, because that is the case with two callers.
+  host = "https://graph.facebook.com",
 ): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
     const res = await fetch(
-      `https://graph.facebook.com/${GRAPH_VERSION}/${customerId}` +
+      `${host}/${GRAPH_VERSION}/${customerId}` +
         `?fields=${fields}&access_token=${encodeURIComponent(accessToken)}`,
       { signal: controller.signal },
     );
@@ -101,7 +105,12 @@ export async function nameCustomer(conversationId: string): Promise<void> {
     channel.type === "INSTAGRAM" ? "name,username" : channel.type === "FACEBOOK" ? "first_name,last_name" : null;
   if (!fields) return;
 
-  const name = await fetchCustomerName(conversation.customerRef, channel.accessToken, fields);
+  const name = await fetchCustomerName(
+    conversation.customerRef,
+    channel.accessToken,
+    fields,
+    channel.type === "INSTAGRAM" ? "https://graph.instagram.com" : undefined,
+  );
   if (!name) return;
 
   // Guarded on still being empty: an operator may have typed one in the seconds

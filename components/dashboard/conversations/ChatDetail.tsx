@@ -274,6 +274,17 @@ export function ChatDetail({
                 </span>
               ) : null}
               {msg.text}
+              {/* Right-aligned under the text, quiet enough to ignore while
+                  reading and there the moment you look for it. A merchant
+                  answering an hour late needs to know it was an hour. */}
+              <span
+                className={clsx(
+                  "mt-1 block text-right text-[10px] tabular-nums",
+                  msg.sender === "OPERATOR" ? "opacity-70" : "text-faint",
+                )}
+              >
+                {msg.timeLabel}
+              </span>
             </div>
           ))
         )}
