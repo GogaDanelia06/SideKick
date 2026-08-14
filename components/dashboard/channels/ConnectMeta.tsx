@@ -103,9 +103,13 @@ export function ConnectResult({ type }: { type: ChannelType }) {
   );
 }
 
-export function ConnectButton({ type }: { type: ChannelType }) {
+export function ConnectButton({ type, relink = false }: { type: ChannelType; relink?: boolean }) {
   const { t } = useLanguage();
   const href = START[type];
+
+  // Nothing to offer when the channel has no flow and is already linked by
+  // hand — a "reconnect" that cannot reconnect is worse than no control.
+  if (relink && !href) return null;
 
   // No authorisation flow for this channel yet. Shown rather than hidden so the
   // row does not look broken, and disabled rather than dead-linked so nobody is
@@ -123,6 +127,23 @@ export function ConnectButton({ type }: { type: ChannelType }) {
       >
         {t({ ka: "დაკავშირება", en: "Connect" })}
       </button>
+    );
+  }
+
+  // Quieter than the first-time button on purpose: for an already-working
+  // channel this is a repair, not the main action on the row.
+  if (relink) {
+    return (
+      <a
+        href={href}
+        title={t({
+          ka: "ხელახლა გაატარებს Meta-ს თანხმობის ეკრანზე და ახალ ტოკენს აიღებს",
+          en: "Walks through Meta's consent screen again and takes a fresh token",
+        })}
+        className="inline-flex h-9 items-center rounded-[8px] border border-border px-3 text-[13px] font-medium text-muted hover:text-ink"
+      >
+        {t({ ka: "ხელახლა დაკავშირება", en: "Reconnect" })}
+      </a>
     );
   }
 

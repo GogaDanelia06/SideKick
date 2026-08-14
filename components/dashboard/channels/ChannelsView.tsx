@@ -100,6 +100,14 @@ export function ChannelsView({
               // useful action is the grant itself.
               <ConnectButton type={c.type} />
             ) : (
+              <>
+              {/* Re-authorising has to stay reachable for a channel that is
+                  already linked. Instagram tokens expire after sixty days, and
+                  a credential can be granted with the wrong scopes — in both
+                  cases the row looks perfectly connected while receiving
+                  nothing, and the only repair is walking through consent again.
+                  Hiding this behind "not linked yet" left no way to do that. */}
+              <ConnectButton type={c.type} relink />
             <button
               type="button"
               disabled={pending}
@@ -123,6 +131,7 @@ export function ChannelsView({
             >
               {c.connected ? t({ ka: "გათიშვა", en: "Disconnect" }) : t({ ka: "ჩართვა", en: "Turn on" })}
             </button>
+              </>
             )}
 
             <ConnectResult type={c.type} />
