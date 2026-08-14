@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import clsx from "clsx";
 import type { ChannelType } from "@prisma/client";
 import { ChatList } from "./ChatList";
 import { ChatDetail } from "./ChatDetail";
 import type { ConversationDetail, ConversationRow } from "@/lib/dashboard/queries";
+import { useLiveMessages } from "./useLiveMessages";
 
 export function ConversationsView({
   conversations,
@@ -65,6 +66,16 @@ export function ConversationsView({
       : null);
 
   const loading = Boolean(openId) && !cached;
+
+  /**
+   * Stable across renders, because the polling effect depends on it and a new
+   * function every render would restart the timers on every keystroke.
+   */
+  const receive = useCallback((chat: ConversationDetail) => {
+    setCache((prev) => ({ ...prev, [chat.id]: chat }));
+  }, []);
+
+  useLiveMessages(openId, receive);
 
   /**
    * Which channel the list is narrowed to, decided here rather than on the

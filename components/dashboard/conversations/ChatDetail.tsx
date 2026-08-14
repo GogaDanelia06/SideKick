@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import clsx from "clsx";
 import {
   IconArrowLeft,
@@ -78,6 +78,26 @@ export function ChatDetail({
   const [notice, setNotice] = useState<{ key: string; tone: "warn" | "error" } | null>(null);
   const [makingLead, setMakingLead] = useState(false);
   const [releasing, setReleasing] = useState(false);
+
+  /**
+   * Parks the thread on the newest message.
+   *
+   * A chat that opens at the top shows the oldest thing anyone said — and the
+   * merchant clicked the row *because* of the newest, which they had just read
+   * in the preview. Every message chat they have ever used opens at the bottom;
+   * this one reading as an archive was the surprise.
+   *
+   * Keyed on the message count as well as the conversation, so a reply arriving
+   * while the thread is open scrolls itself into view rather than landing
+   * silently below the fold.
+   */
+  const thread = useRef<HTMLDivElement>(null);
+  const count = chat?.messages.length ?? 0;
+
+  useEffect(() => {
+    const el = thread.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [chat?.id, count]);
 
   async function makeLead() {
     if (!chat || chat.hasLead) return;
@@ -238,7 +258,7 @@ export function ChatDetail({
         </span>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto bg-soft p-4">
+      <div ref={thread} className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto bg-soft p-4">
         {loading ? (
           // Three grey bars in the shape of a conversation. Saying "no messages"
           // while they are still being fetched would be wrong, and an empty
