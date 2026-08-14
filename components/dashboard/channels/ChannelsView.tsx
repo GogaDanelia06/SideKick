@@ -16,6 +16,7 @@ import {
 } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { ConnectButton, ConnectResult } from "./ConnectMeta";
+import { ChannelStatus } from "./ChannelStatus";
 import { setChannelConnected } from "@/lib/dashboard/actions";
 import { guideSteps, type ChannelGuideView } from "@/lib/dashboard/tutorials";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -92,9 +93,7 @@ export function ChannelsView({
                 {t({ ka: "ბოლო სინქრონიზაცია", en: "Last sync" })}: {c.lastSyncAt ? new Date(c.lastSyncAt).toISOString().slice(0, 10) : "—"}
               </div>
             </div>
-            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${c.connected ? "bg-green-surface text-green" : "bg-soft text-muted"}`}>
-              {c.connected ? t({ ka: "დაკავშირებულია", en: "Connected" }) : t({ ka: "გათიშულია", en: "Disconnected" })}
-            </span>
+            <ChannelStatus connected={c.connected} linked={c.linked} />
             {!c.linked ? (
               // Never authorised, so there is nothing to switch on — the only
               // useful action is the grant itself.

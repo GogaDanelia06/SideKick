@@ -40,18 +40,28 @@ const CHANNEL_FIELDS = {
  * would put it in the page source for no gain.
  */
 export type ChannelSummary = Prisma.ChannelGetPayload<{ select: typeof CHANNEL_FIELDS }> & {
-  /** True once an authorisation has stored an account id for this channel. */
+  /**
+   * True once an authorisation has stored *both* halves of a working
+   * credential: the account id the webhook routes on, and the token replies go
+   * out with. Either one alone is a channel that cannot carry a message.
+   */
   linked: boolean;
 };
 
 export async function getChannels(businessId: string): Promise<ChannelSummary[]> {
   const rows = await prisma.channel.findMany({
     where: { businessId },
-    select: { ...CHANNEL_FIELDS, externalId: true },
+    // Both are read and neither is returned: the screen needs to know whether a
+    // credential exists, not what it is. Putting an account id — let alone a
+    // token — in the page source would be a gift to anyone reading it.
+    select: { ...CHANNEL_FIELDS, externalId: true, accessToken: true },
     orderBy: { type: "asc" },
   });
 
-  return rows.map(({ externalId, ...rest }) => ({ ...rest, linked: Boolean(externalId) }));
+  return rows.map(({ externalId, accessToken, ...rest }) => ({
+    ...rest,
+    linked: Boolean(externalId && accessToken),
+  }));
 }
 
 export function getTeam(businessId: string) {
