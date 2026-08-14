@@ -28,12 +28,33 @@ export const CALLBACK_PATH = "/api/channels/facebook/callback";
  * - `pages_messaging`       — to send replies on Messenger
  * - `pages_manage_metadata` — to subscribe the Page to our webhook
  *
- * The two `instagram_*` scopes that used to be here are gone. They belong to
- * the Messenger Platform's Instagram, which is not the product this account
- * uses, and asking for them bought nothing except a longer consent screen and
- * more for App Review to approve.
+ * The `instagram_*` and `business_management` scopes are here for a second
+ * reason, and it is worth writing down because it looks redundant next to
+ * instagramConnect.ts.
+ *
+ * Instagram messages reach an app by one of two roads. Instagram Login is the
+ * one this codebase authorises on, and Meta will not deliver its webhooks to an
+ * unpublished app — it says so, in as many words, in the Configure webhooks
+ * panel. The older road runs the same messages through the Messenger Platform,
+ * attached to the Page the account is linked to, and *that* road delivers in
+ * development mode: this app receives Facebook messages today, unpublished.
+ *
+ * So the Page is asked for Instagram message access as well. Nothing else
+ * changes: a delivery arriving by either road carries the same
+ * `entry.id` — the Instagram account id already stored on the channel — so it
+ * routes to the same tenant, and replies still go out on the Instagram Login
+ * token. It costs one longer consent screen and may buy months of testing
+ * before business verification and App Review come through.
  */
-const SCOPES = ["pages_show_list", "pages_messaging", "pages_manage_metadata"].join(",");
+const SCOPES = [
+  "pages_show_list",
+  "pages_messaging",
+  "pages_manage_metadata",
+  "pages_read_engagement",
+  "instagram_basic",
+  "instagram_manage_messages",
+  "business_management",
+].join(",");
 
 export async function GET() {
   // Redirects to /login on its own when there is no session, which is the right

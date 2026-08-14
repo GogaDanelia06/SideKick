@@ -64,22 +64,29 @@ const payload = JSON.stringify({
 
 const signature = `sha256=${createHmac("sha256", secret).update(payload, "utf8").digest("hex")}`;
 
-const res = await fetch(url, {
-  method: "POST",
-  headers: {
-    "content-type": "application/json",
-    "x-hub-signature-256": signature,
-    "user-agent": "Webhooks/1.0 (simulated)",
-  },
-  body: payload,
-});
+// Wrapped rather than awaited at the top level: these scripts run through tsx,
+// which compiles them as CommonJS, where a top-level await is a syntax error
+// rather than a slow start.
+async function main() {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-hub-signature-256": signature,
+      "user-agent": "Webhooks/1.0 (simulated)",
+    },
+    body: payload,
+  });
 
-console.log(`${res.status} ${res.statusText} — ${await res.text()}`);
-console.log(
-  res.status === 200
-    ? "\nDelivered. Open the inbox: a chat from a customer whose id ends 0001.\n" +
-        "A 200 alone does not mean it was stored — check the logs for either\n" +
-        "'inbound message dropped' (the account id does not match a channel)\n" +
-        "or nothing at all, which is the quiet sound of success."
-    : "\nRejected. 403 means the signature did not match, so INSTAGRAM_APP_SECRET\nhere is not the one the deployed app is checking against.",
-);
+  console.log(`${res.status} ${res.statusText} — ${await res.text()}`);
+  console.log(
+    res.status === 200
+      ? "\nDelivered. Open the inbox: a chat from a customer whose id ends 0001.\n" +
+          "A 200 alone does not mean it was stored — check the logs for either\n" +
+          "'inbound message dropped' (the account id does not match a channel)\n" +
+          "or nothing at all, which is the quiet sound of success."
+      : "\nRejected. 403 means the signature did not match, so INSTAGRAM_APP_SECRET\nhere is not the one the deployed app is checking against.",
+  );
+}
+
+void main();
