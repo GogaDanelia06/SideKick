@@ -28,6 +28,13 @@ describe("authorizeUrl()", () => {
     expect(url.searchParams.get("redirect_uri")).toBe("https://sidekick.ge/cb");
     expect(url.searchParams.get("state")).toBe("STATE");
   });
+
+  it("forces a fresh sign-in", () => {
+    // Without this, whichever Instagram account the browser is already signed
+    // into is the one that gets connected — silently, and often the wrong one.
+    const url = new URL(authorizeUrl("APP_1", "https://sidekick.ge/cb", "STATE"));
+    expect(url.searchParams.get("force_reauth")).toBe("true");
+  });
 });
 
 describe("fetchAccount()", () => {

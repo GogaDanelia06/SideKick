@@ -35,6 +35,11 @@ export const IG_SCOPES = "instagram_business_basic,instagram_business_manage_mes
 /** Where the merchant is sent to grant access. */
 export function authorizeUrl(appId: string, redirectUri: string, state: string): string {
   const url = new URL(AUTHORIZE);
+  // Make them sign in again rather than accepting whichever Instagram session
+  // the browser already holds. On a shared or agency machine that session is
+  // often somebody else's, and connecting the wrong account is silent: the
+  // merchant sees "connected" and then receives a stranger's messages.
+  url.searchParams.set("force_reauth", "true");
   url.searchParams.set("client_id", appId);
   url.searchParams.set("redirect_uri", redirectUri);
   url.searchParams.set("response_type", "code");
