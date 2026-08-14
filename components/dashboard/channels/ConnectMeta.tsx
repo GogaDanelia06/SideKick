@@ -18,16 +18,38 @@ import type { Bilingual } from "@/lib/content/types";
  * back, and an XHR cannot carry someone through a consent screen.
  */
 const START: Partial<Record<ChannelType, string>> = {
-  FACEBOOK: "/api/channels/instagram/start",
+  FACEBOOK: "/api/channels/facebook/start",
+  INSTAGRAM: "/api/channels/instagram/start",
 };
 
 const RESULTS: Record<string, { tone: "ok" | "bad"; text: Bilingual }> = {
   connected: { tone: "ok", text: { ka: "დაკავშირდა.", en: "Connected." } },
-  connected_no_ig: {
-    tone: "ok",
+  // Instagram Login failures. Separated from the Facebook ones because the fix
+  // for each is in a different place, and "that did not work" sends whoever
+  // reads it to the wrong dashboard.
+  unconfigured_ig: {
+    tone: "bad",
+    text: { ka: "INSTAGRAM_APP_ID არ არის მითითებული.", en: "INSTAGRAM_APP_ID is not set." },
+  },
+  long_lived: {
+    tone: "bad",
     text: {
-      ka: "Facebook დაკავშირდა. Instagram ცალკე უნდა დაუკავშირდეს.",
-      en: "Facebook connected. Instagram connects separately.",
+      ka: "Instagram-მა გრძელვადიანი ტოკენი არ გასცა. სცადე თავიდან.",
+      en: "Instagram would not issue a long-lived token. Try again.",
+    },
+  },
+  no_account: {
+    tone: "bad",
+    text: {
+      ka: "Instagram-ის ანგარიში ვერ წავიკითხეთ. დარწმუნდი, რომ ანგარიში პროფესიულია.",
+      en: "Could not read the Instagram account. Check that it is a professional account.",
+    },
+  },
+  not_subscribed: {
+    tone: "bad",
+    text: {
+      ka: "ანგარიში დაუკავშირდა, მაგრამ Meta-მ მესიჯებზე გამოწერა არ დაუშვა. სცადე თავიდან.",
+      en: "The account linked, but Meta refused the messages subscription. Try again.",
     },
   },
   cancelled: { tone: "bad", text: { ka: "დაკავშირება შეწყდა.", en: "Connection cancelled." } },

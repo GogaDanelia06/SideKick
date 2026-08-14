@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { guardCallback } from "@/lib/channels/oauthCallback";
-import { connectInstagramFromCode } from "@/lib/channels/instagramConnect";
+import { connectFromCode } from "@/lib/channels/facebookConnect";
 import { absoluteUrl } from "@/lib/seo/site";
 import { DASH } from "@/lib/dashboard/routes";
+import { log } from "@/lib/logger";
 import { CALLBACK_PATH } from "../start/route";
 
 export const dynamic = "force-dynamic";
@@ -16,20 +17,24 @@ export const dynamic = "force-dynamic";
  * that one has to match what is registered, character for character.
  */
 const back = (request: Request, status: string) =>
+  // `channel` so the message lands under the row it belongs to.
   NextResponse.redirect(
-    new URL(`${DASH.channels}?connect=${status}&channel=INSTAGRAM`, request.url),
+    new URL(`${DASH.channels}?connect=${status}&channel=FACEBOOK`, request.url),
   );
 
-/** Where Instagram returns the merchant after they grant access. */
+/** Where Meta returns the merchant after they grant access to a Page. */
 export async function GET(request: Request) {
   const guard = await guardCallback(request);
   if (!guard.ok) return back(request, guard.status);
 
-  const result = await connectInstagramFromCode(
+  const result = await connectFromCode(
     guard.businessId,
     guard.code,
     absoluteUrl(CALLBACK_PATH),
   );
+  if (!result.ok) return back(request, result.reason);
 
-  return back(request, result.ok ? "connected" : result.reason);
+  log.info("Facebook page connected", { businessId: guard.businessId });
+
+  return back(request, "connected");
 }

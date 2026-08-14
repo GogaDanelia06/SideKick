@@ -1,56 +1,43 @@
 import { NextResponse } from "next/server";
 import { requireContext } from "@/lib/session";
 import { issueState } from "@/lib/channels/oauthState";
+import { authorizeUrl } from "@/lib/channels/instagramLogin";
 import { absoluteUrl } from "@/lib/seo/site";
 import { DASH } from "@/lib/dashboard/routes";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Where the merchant is sent to grant us access to their Page and Instagram.
+ * Where the merchant is sent to grant us access to their Instagram account.
  *
- * Deliberately not under `/api/auth/` — NextAuth's catch-all lives there and
- * swallows anything it does not recognise, answering 400 to a route that looks
- * present in the codebase. That cost us an afternoon once already.
+ * This is **Instagram Login**, not Facebook Login, and the difference is the
+ * whole point of this route existing separately. It authorises the Instagram
+ * professional account directly, on instagram.com, with the Instagram app's own
+ * client id — see lib/channels/instagramLogin.ts for why the two cannot be
+ * merged back together.
+ *
+ * The redirect URI below must be registered under the app's Instagram product
+ * settings. It is a different list from Facebook Login's, and a URI missing
+ * from it fails on Meta's screen before the merchant ever reaches consent.
  */
 export const CALLBACK_PATH = "/api/channels/instagram/callback";
-
-/**
- * The permissions asked for, and why each one is needed:
- *
- * - `pages_show_list`         — to find which Page to connect at all
- * - `pages_messaging`         — to send replies on Messenger
- * - `pages_manage_metadata`   — to subscribe the Page to our webhook
- * - `instagram_basic`         — to resolve the Page's Instagram account id
- * - `instagram_manage_messages` — to read and send Instagram messages
- *
- * Nothing beyond these. Every extra scope is another thing App Review has to
- * approve and another thing a merchant has to be persuaded to hand over.
- */
-const SCOPES = [
-  "pages_show_list",
-  "pages_messaging",
-  "pages_manage_metadata",
-  "instagram_basic",
-  "instagram_manage_messages",
-].join(",");
 
 export async function GET() {
   // Redirects to /login on its own when there is no session, which is the right
   // answer: the whole point of this route is to act for a known business.
   const ctx = await requireContext();
 
-  const appId = process.env.META_APP_ID;
+  // The Instagram app id, not META_APP_ID. Passing the Facebook app's id here
+  // fails with an error about an invalid client, which reads like a typo and is
+  // in fact the wrong application entirely.
+  const appId = process.env.INSTAGRAM_APP_ID;
   if (!appId) {
-    return NextResponse.redirect(absoluteUrl(`${DASH.channels}?connect=unconfigured`));
+    return NextResponse.redirect(
+      absoluteUrl(`${DASH.channels}?connect=unconfigured_ig&channel=INSTAGRAM`),
+    );
   }
 
-  const url = new URL(`https://www.facebook.com/${process.env.META_GRAPH_VERSION ?? "v25.0"}/dialog/oauth`);
-  url.searchParams.set("client_id", appId);
-  url.searchParams.set("redirect_uri", absoluteUrl(CALLBACK_PATH));
-  url.searchParams.set("state", issueState(ctx.businessId));
-  url.searchParams.set("scope", SCOPES);
-  url.searchParams.set("response_type", "code");
-
-  return NextResponse.redirect(url.toString());
+  return NextResponse.redirect(
+    authorizeUrl(appId, absoluteUrl(CALLBACK_PATH), issueState(ctx.businessId)),
+  );
 }

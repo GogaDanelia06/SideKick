@@ -55,6 +55,13 @@ const optional = z.object({
   META_VERIFY_TOKEN: blankIsMissing(
     z.string().min(16, "META_VERIFY_TOKEN should be at least 16 characters"),
   ),
+  // Instagram Login's own credentials. Genuinely a different application from
+  // the Facebook one above, not a second copy of it: its client id is what the
+  // authorise screen accepts, and its secret is what signs the Instagram
+  // webhook deliveries. Mixing the two up produces "invalid client" on the way
+  // in and rejected signatures on the way back.
+  INSTAGRAM_APP_ID: blankIsMissing(z.string().min(1)),
+  INSTAGRAM_APP_SECRET: blankIsMissing(z.string().min(1)),
 });
 
 type Env = z.infer<typeof required> & Partial<z.infer<typeof optional>>;
