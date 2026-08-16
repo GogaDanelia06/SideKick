@@ -1,10 +1,11 @@
 "use client";
 
-import type { Business, User } from "@prisma/client";
+import type { Business } from "@prisma/client";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { saveProfile } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
+import type { ProfileUser } from "@/lib/dashboard/queries";
 
 function Field({ name, label, defaultValue, disabled }: { name: string; label: Bilingual; defaultValue: string; disabled?: boolean }) {
   const { t } = useLanguage();
@@ -21,7 +22,7 @@ function Field({ name, label, defaultValue, disabled }: { name: string; label: B
   );
 }
 
-export function ProfileView({ user, business }: { user: User | null; business: Business | null }) {
+export function ProfileView({ user, business }: { user: ProfileUser | null; business: Business | null }) {
   const { t } = useLanguage();
 
   return (

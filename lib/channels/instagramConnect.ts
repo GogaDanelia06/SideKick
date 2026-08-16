@@ -16,7 +16,14 @@ export type InstagramConnectResult =
   | { ok: true; username: string; accountId: string }
   | {
       ok: false;
-      reason: "unconfigured" | "exchange" | "long_lived" | "no_account" | "not_subscribed";
+      reason:
+        | "unconfigured"
+        | "exchange"
+        | "long_lived"
+        | "no_account"
+        | "not_subscribed"
+        | "limit"
+        | "already_linked";
     };
 
 export async function connectInstagramFromCode(
@@ -42,7 +49,8 @@ export async function connectInstagramFromCode(
   // Stored before the subscription is attempted, on purpose. If subscribing
   // fails the merchant should be able to retry from a connected state rather
   // than walk back through Meta's consent screen for a token we already hold.
-  await linkChannel(businessId, "INSTAGRAM", account.id, token);
+  const linked = await linkChannel(businessId, "INSTAGRAM", account.id, token);
+  if (!linked.ok) return { ok: false, reason: linked.reason };
 
   const subscribed = await subscribeToMessages(token);
   if (!subscribed) {

@@ -8,6 +8,10 @@ vi.mock("@/lib/db", () => ({
 }));
 vi.mock("./client", () => ({ askAi: vi.fn(), aiConfigured: vi.fn(() => true) }));
 vi.mock("@/lib/channels/send", () => ({ deliverOutbound: vi.fn().mockResolvedValue(null) }));
+vi.mock("@/lib/billing/limits", () => ({
+  checkLimit: vi.fn(),
+  countMessage: vi.fn().mockResolvedValue(undefined),
+}));
 vi.mock("@/lib/logger", () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
@@ -16,6 +20,7 @@ import { answerCustomer } from "./answer";
 import { prisma } from "@/lib/db";
 import { askAi, aiConfigured } from "./client";
 import { deliverOutbound } from "@/lib/channels/send";
+import { checkLimit, countMessage } from "@/lib/billing/limits";
 
 const convFind = vi.mocked(prisma.conversation.findUnique);
 const convUpdate = vi.mocked(prisma.conversation.update);
@@ -23,6 +28,8 @@ const msgCreate = vi.mocked(prisma.message.create);
 const msgUpdate = vi.mocked(prisma.message.update);
 const msgFirst = vi.mocked(prisma.message.findFirst);
 const ask = vi.mocked(askAi);
+const limit = vi.mocked(checkLimit);
+const counted = vi.mocked(countMessage);
 const configured = vi.mocked(aiConfigured);
 const deliver = vi.mocked(deliverOutbound);
 
@@ -35,9 +42,39 @@ beforeEach(() => {
   msgCreate.mockResolvedValue({ id: "m9" } as never);
   msgFirst.mockResolvedValue({ id: "m8" } as never);
   ask.mockResolvedValue({ reply: "გამარჯობა, რით დაგეხმაროთ?", handoffRequested: false, handoffReason: null });
+  limit.mockResolvedValue({ allowed: true } as never);
 });
 
 describe("answerCustomer()", () => {
+  it("counts the reply against the plan", async () => {
+    // The meter has to run on this path, not only in the agent API: every real
+    // Facebook and Instagram message comes through here, so an uncounted reply
+    // makes the priced tiers identical and the usage bar permanently zero.
+    await answerCustomer("b1", "c1", "გამარჯობა");
+
+    expect(counted).toHaveBeenCalledWith("b1");
+  });
+
+  it("withholds the reply once the plan's messages are spent", async () => {
+    limit.mockResolvedValue({ allowed: false, used: 500, limit: 500, planName: "Basic" } as never);
+
+    await answerCustomer("b1", "c1", "გამარჯობა");
+
+    // Refused before the model is called: a generation that gets discarded
+    // still costs the owner money.
+    expect(ask).not.toHaveBeenCalled();
+    expect(msgCreate).not.toHaveBeenCalled();
+    expect(counted).not.toHaveBeenCalled();
+  });
+
+  it("does not count a reply the model failed to produce", async () => {
+    ask.mockResolvedValue(null);
+
+    await answerCustomer("b1", "c1", "გამარჯობა");
+
+    expect(counted).not.toHaveBeenCalled();
+  });
+
   it("stores the reply before sending it", async () => {
     // Order matters. Delivered-but-unrecorded would show the customer an answer
     // the merchant's inbox has no memory of.

@@ -18,7 +18,15 @@ export type ConnectResult =
   | { ok: true; pageName: string }
   | {
       ok: false;
-      reason: "unconfigured" | "exchange" | "no_page" | "many_pages" | "failed" | "not_subscribed";
+      reason:
+        | "unconfigured"
+        | "exchange"
+        | "no_page"
+        | "many_pages"
+        | "failed"
+        | "not_subscribed"
+        | "limit"
+        | "already_linked";
     };
 
 type Page = { id: string; name?: string; access_token?: string };
@@ -81,7 +89,8 @@ export async function connectFromCode(
   const page = list[0];
   if (!page.access_token) return { ok: false, reason: "failed" };
 
-  await linkChannel(businessId, "FACEBOOK", page.id, page.access_token);
+  const linked = await linkChannel(businessId, "FACEBOOK", page.id, page.access_token);
+  if (!linked.ok) return { ok: false, reason: linked.reason };
 
   // Saving the webhook URL in the App Dashboard says *where* Meta delivers.
   // This says *which Page's* events to deliver at all, and without it a Page

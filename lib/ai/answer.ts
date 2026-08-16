@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
 import { askAi, aiConfigured } from "./client";
 import { deliverOutbound } from "@/lib/channels/send";
+import { checkLimit, countMessage } from "@/lib/billing/limits";
 
 /**
  * How long a conversation stays with a person once the AI asks for help.
@@ -45,6 +46,28 @@ export async function answerCustomer(
   if (!conversation.aiEnabled) return;
   if (conversation.botPausedUntil && conversation.botPausedUntil > new Date()) return;
 
+  // The plan's ceiling, enforced on the path that actually carries the traffic.
+  //
+  // It was only ever checked in the agent API, which is the *other* way a reply
+  // gets written — so every real Facebook and Instagram message went through
+  // unmetered. The three tiers the client sells were identical in practice, the
+  // usage bar on the billing page never moved off zero, and the AI vendor was
+  // billed with no ceiling at all.
+  //
+  // Checked before `askAi` rather than after: a generation that would be
+  // discarded still costs money to produce.
+  const verdict = await checkLimit(businessId, "messages");
+  if (!verdict.allowed) {
+    log.warn("AI reply withheld — the plan's message limit is spent", {
+      businessId,
+      conversationId,
+      used: verdict.used,
+      limit: verdict.limit,
+    });
+    await markLastMessage(conversationId, "limit_reached");
+    return;
+  }
+
   const answer = await askAi(businessId, conversationId, text);
 
   if (!answer) {
@@ -58,6 +81,12 @@ export async function answerCustomer(
     data: { conversationId, sender: "AI", text: answer.reply },
     select: { id: true },
   });
+
+  // Counted once the reply exists, so a failed generation is not billed to the
+  // merchant. An atomic increment, so concurrent replies cannot lose a count —
+  // they can overshoot the cap by however many were in flight, which is a far
+  // better failure than a number that drifts.
+  await countMessage(businessId);
 
   // Stored first, sent second. If delivery fails the merchant can still see
   // what the AI said and send it themselves; the reverse — delivered but not

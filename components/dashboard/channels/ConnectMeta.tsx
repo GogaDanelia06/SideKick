@@ -53,6 +53,29 @@ const RESULTS: Record<string, { tone: "ok" | "bad"; text: Bilingual }> = {
     },
   },
   cancelled: { tone: "bad", text: { ka: "დაკავშირება შეწყდა.", en: "Connection cancelled." } },
+  // Without these three the redirect lands on a page showing nothing at all,
+  // and the button reads as broken rather than as refused.
+  forbidden: {
+    tone: "bad",
+    text: {
+      ka: "არხების მართვის უფლება არ გაქვს. მიმართე ბიზნესის მფლობელს.",
+      en: "You do not have permission to manage channels. Ask the business owner.",
+    },
+  },
+  limit: {
+    tone: "bad",
+    text: {
+      ka: "შენი გეგმა მეტ არხს არ უშვებს. ჯერ სხვა გამორთე ან გეგმა შეცვალე.",
+      en: "Your plan does not allow another channel. Turn one off first, or change the plan.",
+    },
+  },
+  already_linked: {
+    tone: "bad",
+    text: {
+      ka: "ეს ანგარიში სხვა ბიზნესზეა უკვე მიბმული.",
+      en: "That account is already linked to another business.",
+    },
+  },
   no_page: {
     tone: "bad",
     text: {

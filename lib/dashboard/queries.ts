@@ -65,10 +65,26 @@ export async function getChannels(businessId: string): Promise<ChannelSummary[]>
   }));
 }
 
-export function getTeam(businessId: string) {
+/**
+ * What the team screen may know about a colleague, and nothing more.
+ *
+ * `include: { user: true }` stood here, and the cost of the word `true` was the
+ * whole `User` row — bcrypt hash, phone number, platform-admin flag — handed to
+ * a client component and therefore serialised into the page HTML. Any member,
+ * including a view-only one, could read the owner's password hash out of view
+ * source and crack it at leisure. Naming the three fields the roster actually
+ * draws is the fix, and the list is short enough to keep honest.
+ */
+const TEAM_USER_FIELDS = { id: true, name: true, email: true } as const;
+
+export type TeamMember = Prisma.MembershipGetPayload<{
+  include: { user: { select: typeof TEAM_USER_FIELDS } };
+}>;
+
+export function getTeam(businessId: string): Promise<TeamMember[]> {
   return prisma.membership.findMany({
     where: { businessId },
-    include: { user: true },
+    include: { user: { select: TEAM_USER_FIELDS } },
     orderBy: { createdAt: "asc" },
   });
 }
@@ -441,9 +457,21 @@ export async function getAccount(userId: string, businessId: string) {
 
 export type Account = Awaited<ReturnType<typeof getAccount>>;
 
+/** Exactly the fields the profile form draws — see the note in `getProfile`. */
+const PROFILE_USER_FIELDS = { id: true, name: true, email: true, phone: true } as const;
+
+export type ProfileUser = Prisma.UserGetPayload<{ select: typeof PROFILE_USER_FIELDS }>;
+
 export async function getProfile(userId: string, businessId: string) {
   const [user, business] = await Promise.all([
-    prisma.user.findUnique({ where: { id: userId } }),
+    // Selected, not the whole row: this goes to a client component, and an
+    // unselected `findUnique` puts the caller's own bcrypt hash in the page
+    // source. Their own hash rather than a colleague's, which is a smaller
+    // blast radius and exactly as unnecessary.
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: PROFILE_USER_FIELDS,
+    }),
     prisma.business.findUnique({ where: { id: businessId } }),
   ]);
   return { user, business };

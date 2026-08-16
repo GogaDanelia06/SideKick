@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import type { Membership, User } from "@prisma/client";
+import type { Membership } from "@prisma/client";
 import { IconAlertTriangle, IconDots, IconPlus, IconTrash, IconUserCog, IconX } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { addTeamMember, removeTeamMember, updateMemberRole } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
+import type { TeamMember } from "@/lib/dashboard/queries";
 
-type Member = Membership & { user: User };
+type Member = TeamMember;
 type Role = Membership["role"];
 
 const ROLE: Record<Role, { pill: string; title: string; avatar: string; perms: Bilingual; desc: Bilingual }> = {
@@ -19,6 +20,9 @@ const ROLE: Record<Role, { pill: string; title: string; avatar: string; perms: B
 };
 
 const ROLES: Role[] = ["OWNER", "ADMIN", "OPERATOR", "VIEWER"];
+
+/** Mirrors the ceiling the server enforces — see RANK in lib/dashboard/actions.ts. */
+const RANK: Record<Role, number> = { OWNER: 3, ADMIN: 2, OPERATOR: 1, VIEWER: 0 };
 const cap = (r: string) => r[0] + r.slice(1).toLowerCase();
 
 const ERRORS: Record<string, Bilingual> = {
@@ -28,6 +32,7 @@ const ERRORS: Record<string, Bilingual> = {
   last_owner: { ka: "ბიზნესს ერთი მფლობელი მაინც სჭირდება", en: "A business needs at least one owner" },
   cannot_remove_self: { ka: "საკუთარ თავს ვერ წაშლი", en: "You can't remove yourself" },
   not_found: { ka: "წევრი ვერ მოიძებნა", en: "Member not found" },
+  bad_role: { ka: "ასეთი როლი არ არსებობს", en: "That is not a valid role" },
 };
 
 export function TeamView({
@@ -42,6 +47,15 @@ export function TeamView({
   const { t } = useLanguage();
   const [pending, start] = useTransition();
   const [adding, setAdding] = useState(false);
+
+  /**
+   * Only the roles this person may actually hand out.
+   *
+   * The server refuses the rest either way; hiding them keeps the screen honest
+   * rather than offering an admin an "Owner" button that always fails.
+   */
+  const myRank = RANK[currentRole as Role] ?? -1;
+  const grantable = ROLES.filter((r) => RANK[r] <= myRank);
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -116,7 +130,7 @@ export function TeamView({
               aria-label={t({ ka: "როლი", en: "Role" })}
               className="h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none focus:border-blue"
             >
-              {ROLES.map((r) => <option key={r} value={r}>{cap(r)}</option>)}
+              {grantable.map((r) => <option key={r} value={r}>{cap(r)}</option>)}
             </select>
             <div className="flex gap-2">
               <button
@@ -198,11 +212,12 @@ export function TeamView({
                             <div className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] uppercase tracking-wide text-faint">
                               <IconUserCog size={13} /> {t({ ka: "როლის შეცვლა", en: "Change role" })}
                             </div>
-                            {ROLES.map((role) => (
+                            {grantable.map((role) => (
                               <button
                                 key={role}
                                 type="button"
-                                disabled={pending || role === m.role}
+                                // Somebody who outranks you is not yours to move.
+                                disabled={pending || role === m.role || RANK[m.role] > myRank}
                                 onClick={() => run(() => updateMemberRole(m.id, role), () => setMenuFor(null))}
                                 className="flex w-full items-center justify-between rounded-[6px] px-2.5 py-2 text-[13px] hover:bg-soft disabled:opacity-40"
                               >

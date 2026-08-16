@@ -1,5 +1,10 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { log } from "@/lib/logger";
+import { checkLimit } from "@/lib/billing/limits";
 import type { ChannelType } from "@prisma/client";
+
+export type LinkResult = { ok: true } | { ok: false; reason: "limit" | "already_linked" };
 
 /**
  * Writes a credential onto the tenant's existing channel row.
@@ -18,21 +23,43 @@ export async function linkChannel(
   type: ChannelType,
   externalId: string,
   accessToken: string,
-): Promise<void> {
+): Promise<LinkResult> {
   const existing = await prisma.channel.findFirst({
     where: { businessId, type },
-    select: { id: true },
+    select: { id: true, connected: true },
   });
 
-  if (existing) {
-    await prisma.channel.update({
-      where: { id: existing.id },
-      data: { externalId, accessToken, connected: true },
-    });
-    return;
+  // The plan's channel cap, but only for a channel that is not already on.
+  // Counting unconditionally would make "Reconnect" fail forever for any tenant
+  // sitting at their ceiling — which is every tenant on the single-channel
+  // plans this product sells, and reconnecting is exactly what they need to do
+  // when a token expires.
+  if (!existing?.connected) {
+    const verdict = await checkLimit(businessId, "channels");
+    if (!verdict.allowed) return { ok: false, reason: "limit" };
   }
 
-  await prisma.channel.create({
-    data: { businessId, type, externalId, accessToken, connected: true },
-  });
+  try {
+    if (existing) {
+      await prisma.channel.update({
+        where: { id: existing.id },
+        data: { externalId, accessToken, connected: true },
+      });
+    } else {
+      await prisma.channel.create({
+        data: { businessId, type, externalId, accessToken, connected: true },
+      });
+    }
+    return { ok: true };
+  } catch (err) {
+    // `type_externalId` is unique across the whole table, not per business, so
+    // an account already linked to another tenant lands here. Uncaught it threw
+    // out of the OAuth callback as a 500 — a blank error page at the end of a
+    // consent flow, with nothing to tell the merchant what to do.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      log.warn("channel account is already linked to another business", { type, externalId });
+      return { ok: false, reason: "already_linked" };
+    }
+    throw err;
+  }
 }

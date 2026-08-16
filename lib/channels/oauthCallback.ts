@@ -1,4 +1,5 @@
 import { getContext } from "@/lib/session";
+import { can } from "@/lib/auth/permissions";
 import { readState } from "./oauthState";
 import { log } from "@/lib/logger";
 
@@ -19,7 +20,7 @@ import { log } from "@/lib/logger";
  */
 export type Guarded =
   | { ok: true; businessId: string; code: string }
-  | { ok: false; status: "cancelled" | "signed_out" | "bad_state" };
+  | { ok: false; status: "cancelled" | "signed_out" | "bad_state" | "forbidden" };
 
 export async function guardCallback(request: Request): Promise<Guarded> {
   const params = new URL(request.url).searchParams;
@@ -30,6 +31,20 @@ export async function guardCallback(request: Request): Promise<Guarded> {
 
   const ctx = await getContext();
   if (!ctx) return { ok: false, status: "signed_out" };
+
+  // Being signed in was the whole check, and the channels page renders a
+  // "Connect" button for everyone. So a view-only account could consent with a
+  // Facebook Page of their own and overwrite the merchant's page id and token:
+  // from that moment every real customer message is dropped — inbound routes by
+  // the stored account id — while the merchant's AI answers into a stranger's
+  // inbox. Placed before the state is read, so a captured callback URL replayed
+  // by the wrong role is refused whether or not its state is still valid.
+  if (!can(ctx.role, "channels:write")) {
+    log.warn("channel connect refused — the signed-in role may not change channels", {
+      role: ctx.role,
+    });
+    return { ok: false, status: "forbidden" };
+  }
 
   const state = readState(params.get("state"));
   if (!state) {

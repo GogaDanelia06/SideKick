@@ -18,6 +18,17 @@ type Json = Record<string, unknown>;
 async function request(url: string, body?: URLSearchParams): Promise<Json | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+  // Host and path, never the whole URL. `toLongLived` passes the app secret and
+  // the token as query parameters — Meta's documented shape for that call — so
+  // logging the URL would print, verbatim into the log stream, the key every
+  // Instagram webhook signature on this platform is checked against. Anyone who
+  // could read the logs could then forge customer messages for every merchant.
+  const endpoint = (() => {
+    const parsed = new URL(url);
+    return parsed.host + parsed.pathname;
+  })();
+
   try {
     const res = await fetch(url, {
       method: body ? "POST" : "GET",
@@ -27,15 +38,14 @@ async function request(url: string, body?: URLSearchParams): Promise<Json | null
     const data = (await res.json().catch(() => null)) as Json | null;
     if (!res.ok || !data || data.error_type || data.error) {
       log.error("Instagram Login refused a token call", undefined, {
-        // The URL only, never the body: it carries the app secret.
-        url,
+        endpoint,
         detail: String(data?.error_message ?? data?.error ?? `HTTP ${res.status}`),
       });
       return null;
     }
     return data;
   } catch (err) {
-    log.error("Instagram Login token call failed", err, { url });
+    log.error("Instagram Login token call failed", err, { endpoint });
     return null;
   } finally {
     clearTimeout(timer);

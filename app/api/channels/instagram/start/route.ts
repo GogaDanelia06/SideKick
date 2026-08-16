@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireContext } from "@/lib/session";
+import { can } from "@/lib/auth/permissions";
 import { issueState } from "@/lib/channels/oauthState";
 import { authorizeUrl } from "@/lib/channels/instagramLogin";
 import { absoluteUrl } from "@/lib/seo/site";
@@ -26,6 +27,15 @@ export async function GET() {
   // Redirects to /login on its own when there is no session, which is the right
   // answer: the whole point of this route is to act for a known business.
   const ctx = await requireContext();
+
+  // Same reasoning as the Facebook route: signed out goes to /login, wrong role
+  // comes back with a message. The callback checks again, because that is the
+  // request that actually writes a credential.
+  if (!can(ctx.role, "channels:write")) {
+    return NextResponse.redirect(
+      absoluteUrl(`${DASH.channels}?connect=forbidden&channel=INSTAGRAM`),
+    );
+  }
 
   // The Instagram app id, not META_APP_ID. Passing the Facebook app's id here
   // fails with an error about an invalid client, which reads like a typo and is

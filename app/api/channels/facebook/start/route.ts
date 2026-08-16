@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireContext } from "@/lib/session";
+import { can } from "@/lib/auth/permissions";
 import { issueState } from "@/lib/channels/oauthState";
 import { absoluteUrl } from "@/lib/seo/site";
 import { DASH } from "@/lib/dashboard/routes";
@@ -60,6 +61,16 @@ export async function GET() {
   // Redirects to /login on its own when there is no session, which is the right
   // answer: the whole point of this route is to act for a known business.
   const ctx = await requireContext();
+
+  // `requireContext` rather than `requirePermission`: a signed-out visitor
+  // belongs at the login screen, not at a "forbidden" message. The role check is
+  // separate, and the callback repeats it — this one only spares the merchant a
+  // trip through Meta's consent screen that was never going to be accepted.
+  if (!can(ctx.role, "channels:write")) {
+    return NextResponse.redirect(
+      absoluteUrl(`${DASH.channels}?connect=forbidden&channel=FACEBOOK`),
+    );
+  }
 
   const appId = process.env.META_APP_ID;
   if (!appId) {

@@ -270,6 +270,32 @@ function canManageTeam(role: string) {
   return can(role, "team:manage");
 }
 
+/**
+ * Roles, ranked, so one rule can be stated: nobody hands out more than they hold.
+ *
+ * `team:manage` alone was the whole check, and it is held by ADMIN as well as
+ * OWNER. So any admin the merchant hired could open the team page, set their own
+ * row to OWNER, and collect the billing rights the matrix deliberately withholds
+ * — then demote and remove the person whose business it is. A permission to
+ * manage a team is not a permission to outrank it.
+ *
+ * `ctx.role` is safe to rank against: getContext reads the membership row on
+ * every request, so it is the caller's real role and not what their token
+ * claimed when they signed in.
+ */
+const RANK: Record<Role, number> = { OWNER: 3, ADMIN: 2, OPERATOR: 1, VIEWER: 0 };
+
+/**
+ * Server action arguments arrive off the wire with their types erased, so a
+ * `role: Role` annotation guarantees nothing at runtime — junk reaches Prisma
+ * and throws out of the action as an unhandled error rather than a refusal.
+ */
+function isRole(value: string): value is Role {
+  return value in RANK;
+}
+
+const rankOf = (role: string) => (isRole(role) ? RANK[role] : -1);
+
 export async function addTeamMember(data: FormData): Promise<TeamResult> {
   const ctx = await getContext();
   if (!ctx) return { ok: false, error: "unauthorized" };
@@ -277,7 +303,12 @@ export async function addTeamMember(data: FormData): Promise<TeamResult> {
 
   const email = String(data.get("email") ?? "").toLowerCase().trim();
   const name = String(data.get("name") ?? "").trim() || null;
-  const role = String(data.get("role") ?? "VIEWER") as Role;
+  const wanted = String(data.get("role") ?? "VIEWER");
+  if (!isRole(wanted)) return { ok: false, error: "bad_role" };
+  // Inviting somebody above your own rank is the same escalation as promoting
+  // yourself, one step removed: invite an OWNER, sign in as them, done.
+  if (RANK[wanted] > rankOf(ctx.role)) return { ok: false, error: "forbidden" };
+  const role: Role = wanted;
   if (!email) return { ok: false, error: "email_required" };
 
   // Looked up, never upserted.
@@ -338,10 +369,19 @@ export async function updateMemberRole(membershipId: string, role: Role): Promis
   if (!ctx) return { ok: false, error: "unauthorized" };
   if (!canManageTeam(ctx.role)) return { ok: false, error: "forbidden" };
 
+  if (!isRole(role)) return { ok: false, error: "bad_role" };
+
   const target = await prisma.membership.findFirst({
     where: { id: membershipId, businessId: ctx.businessId },
   });
   if (!target) return { ok: false, error: "not_found" };
+
+  // Two ceilings, and both are needed. The first stops an admin granting a role
+  // above their own; the second stops them demoting or evicting someone who
+  // outranks them, which would otherwise be the same coup in two moves.
+  const mine = rankOf(ctx.role);
+  if (RANK[role] > mine) return { ok: false, error: "forbidden" };
+  if (RANK[target.role] > mine) return { ok: false, error: "forbidden" };
 
   if (target.role === "OWNER" && role !== "OWNER") {
     const owners = await prisma.membership.count({
@@ -365,6 +405,7 @@ export async function removeTeamMember(membershipId: string): Promise<TeamResult
   });
   if (!target) return { ok: false, error: "not_found" };
   if (target.userId === ctx.userId) return { ok: false, error: "cannot_remove_self" };
+  if (RANK[target.role] > rankOf(ctx.role)) return { ok: false, error: "forbidden" };
 
   if (target.role === "OWNER") {
     const owners = await prisma.membership.count({

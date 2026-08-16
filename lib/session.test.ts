@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("@/auth", () => ({ auth: vi.fn() }));
-vi.mock("@/lib/db", () => ({ prisma: { user: { findUnique: vi.fn() } } }));
+vi.mock("@/lib/db", () => ({ prisma: { membership: { findUnique: vi.fn() } } }));
 vi.mock("@/lib/env", () => ({ env: vi.fn() }));
 
 import { getContext } from "./session";
@@ -9,7 +9,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 
 const session = vi.mocked(auth as unknown as () => Promise<unknown>);
-const userFind = vi.mocked(prisma.user.findUnique);
+const memberFind = vi.mocked(prisma.membership.findUnique);
 
 const signedIn = {
   user: { id: "u1", businessId: "b1", role: "OWNER" },
@@ -18,29 +18,46 @@ const signedIn = {
 beforeEach(() => {
   vi.clearAllMocks();
   session.mockResolvedValue(signedIn);
-  userFind.mockResolvedValue({ id: "u1" } as never);
+  memberFind.mockResolvedValue({ role: "OWNER" } as never);
 });
 
 describe("getContext()", () => {
-  it("returns the context for a signed-in user who still exists", async () => {
+  it("returns the context for a signed-in member", async () => {
     expect(await getContext()).toEqual({ userId: "u1", businessId: "b1", role: "OWNER" });
   });
 
-  it("refuses a cookie naming an account that has been deleted", async () => {
-    // The hole this closes: sessions are JWTs, believed on their own word for a
-    // week. Without this check a removed user keeps opening the dashboard until
-    // the cookie expires by itself — and the pages fail one query at a time
-    // rather than sending them to the login screen.
-    userFind.mockResolvedValue(null);
+  it("refuses a cookie whose membership has been removed", async () => {
+    // The hole this closes: sessions are JWTs, believed on their own word, and
+    // `remember me` stops the expiry from bounding them. Without this check a
+    // fired employee keeps reading the merchant's inbox and answering their
+    // customers until they happen to sign out.
+    memberFind.mockResolvedValue(null);
 
     expect(await getContext()).toBeNull();
+  });
+
+  it("runs as the role in the database, not the one in the token", async () => {
+    // The demotion case. The cookie was minted while they were an admin and
+    // still says so; the row says otherwise, and the row wins — otherwise a
+    // demoted admin keeps every permission until their cookie expires.
+    session.mockResolvedValue({ user: { id: "u1", businessId: "b1", role: "ADMIN" } });
+    memberFind.mockResolvedValue({ role: "VIEWER" } as never);
+
+    expect((await getContext())?.role).toBe("VIEWER");
+  });
+
+  it("takes the role from the database even when the token names none", async () => {
+    session.mockResolvedValue({ user: { id: "u1", businessId: "b1" } });
+    memberFind.mockResolvedValue({ role: "OPERATOR" } as never);
+
+    expect((await getContext())?.role).toBe("OPERATOR");
   });
 
   it("returns null when nobody is signed in", async () => {
     session.mockResolvedValue(null);
 
     expect(await getContext()).toBeNull();
-    expect(userFind).not.toHaveBeenCalled();
+    expect(memberFind).not.toHaveBeenCalled();
   });
 
   it("returns null when the session carries no business", async () => {
@@ -49,9 +66,13 @@ describe("getContext()", () => {
     expect(await getContext()).toBeNull();
   });
 
-  it("falls back to the least privilege when the session names no role", async () => {
-    session.mockResolvedValue({ user: { id: "u1", businessId: "b1" } });
+  it("looks the membership up by the pair, so a token cannot name someone else's business", async () => {
+    await getContext();
 
-    expect((await getContext())?.role).toBe("VIEWER");
+    expect(memberFind).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId_businessId: { userId: "u1", businessId: "b1" } },
+      }),
+    );
   });
 });
