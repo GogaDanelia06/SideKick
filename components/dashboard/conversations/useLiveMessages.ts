@@ -21,8 +21,13 @@ import type { ConversationDetail } from "@/lib/dashboard/queries";
 /** The open thread, often enough that a reply feels live. */
 const CHAT_MS = 5_000;
 
-/** The list, less often: it is a bigger query and new chats are rarer. */
-const LIST_MS = 20_000;
+/**
+ * The list. Slower than the thread because it is the bigger query, but not by
+ * much — a *new* conversation only ever appears here, and twenty seconds of an
+ * empty inbox after a customer has written reads as a broken integration rather
+ * than a slow one. Eight seconds is short enough that nobody reaches for reload.
+ */
+const LIST_MS = 8_000;
 
 export function useLiveMessages(
   openId: string | null,
