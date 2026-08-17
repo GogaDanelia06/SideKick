@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { WORDMARK_PATHS, WORDMARK_VIEWBOX } from "@/lib/content/wordmark";
+import { TAGLINE_PATHS, WORDMARK_PATHS, WORDMARK_VIEWBOX } from "@/lib/content/wordmark";
 
 /**
  * The SIDEKICK logo, drawn inline so it takes its colour from the text around
@@ -35,22 +35,12 @@ export function Wordmark({
         <path key={i} d={d} />
       ))}
 
-      {/* Set in the page's own font. The drawing asks for Atkinson Hyperlegible,
-          which nobody has installed, so honouring it would mean shipping a font
-          file for eleven characters. Inter is already loaded and the line is
-          small enough that the difference does not read. */}
-      {tagline ? (
-        <text
-          x="311"
-          y="118"
-          textAnchor="end"
-          fontSize="18"
-          fontWeight="500"
-          fontFamily="var(--font-inter), system-ui, sans-serif"
-        >
-          ai_assistant
-        </text>
-      ) : null}
+      {/* Outlined in the source drawing, so this is the designer's lettering
+          rather than a near-enough substitute set in a font we happen to load —
+          and it needs no font at all to render correctly. */}
+      {tagline
+        ? TAGLINE_PATHS.map((d, i) => <path key={`tagline-${i}`} d={d} />)
+        : null}
     </svg>
   );
 }
