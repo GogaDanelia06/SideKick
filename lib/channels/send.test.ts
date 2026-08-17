@@ -159,7 +159,30 @@ describe("which host each channel is answered on", () => {
 
     await sendToMessenger("IGID_1", "IGA-token", "IGSID_1", "გამარჯობა", "INSTAGRAM");
 
-    expect(String(fetchMock.mock.calls[0][0])).toContain("https://graph.instagram.com/");
+    const url = String(fetchMock.mock.calls[0][0]);
+    expect(url).toContain("https://graph.instagram.com/");
+    // Addressed by the Instagram account id — the id graph.instagram.com knows.
+    expect(url).toContain("/IGID_1/messages");
+  });
+
+  it("sends an Instagram reply on a Page token to graph.facebook.com, addressed as me", async () => {
+    // The other road to the same inbox: a Page granted through Facebook Login
+    // carries its Instagram account across, and its `EAA…` token only works on
+    // graph.facebook.com. `me` rather than the account id, because that host
+    // will not accept an Instagram account id in the path — sending the pair to
+    // the wrong host is what made every reply vanish for weeks.
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ message_id: "mid.ig.page" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await sendToMessenger("IGID_1", "EAA-page-token", "IGSID_1", "გამარჯობა", "INSTAGRAM");
+
+    const url = String(fetchMock.mock.calls[0][0]);
+    expect(url).toContain("https://graph.facebook.com/");
+    expect(url).toContain("/me/messages");
+    expect(url).not.toContain("IGID_1");
   });
 
   it("still sends a Facebook reply to graph.facebook.com", async () => {

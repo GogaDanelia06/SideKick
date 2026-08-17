@@ -37,20 +37,41 @@ export type DeliveryResult = {
 
 type GraphError = { message?: string; code?: number };
 
+const GRAPH_FACEBOOK = "https://graph.facebook.com";
+const GRAPH_INSTAGRAM = "https://graph.instagram.com";
+
 /**
- * Which host answers for which channel.
- *
- * Not cosmetic. Instagram here runs on **Instagram Login**, not the Messenger
- * Platform, and the two are separate APIs that happen to share a request shape:
- * a different host, a different kind of token (`IGA…` rather than a Page's
- * `EAA…`), and a different id in the path. Sending an Instagram reply to
- * graph.facebook.com fails with "object does not exist" — confirmed against
- * the live account, not assumed.
+ * Instagram Login mints tokens with this prefix; a Page Access Token starts
+ * `EAA`. Meta documents both, and the difference is the only thing in the row
+ * that says which API the credential belongs to.
  */
-const HOSTS: Record<string, string> = {
-  FACEBOOK: "https://graph.facebook.com",
-  INSTAGRAM: "https://graph.instagram.com",
-};
+const INSTAGRAM_LOGIN_TOKEN = /^IGA/;
+
+/**
+ * Where an Instagram reply goes, and it depends on how the account was
+ * connected — not on the channel being Instagram.
+ *
+ * There are two roads to the same inbox and they are separate APIs that happen
+ * to share a request shape. **Instagram Login** hands back an `IGA…` token that
+ * works only against graph.instagram.com, addressed by the Instagram account id.
+ * The **Messenger Platform** hands back the Page's `EAA…` token, which works
+ * only against graph.facebook.com and is addressed as `me` — the page the token
+ * belongs to — because the Instagram account id is not a thing that host will
+ * accept in the path.
+ *
+ * Crossing them fails with "object does not exist", which is what a Page token
+ * pointed at graph.instagram.com did for weeks: the channel read as connected
+ * and every reply vanished. So the token decides, and the token is the only
+ * honest source — the same channel row can hold either one depending on which
+ * consent screen the merchant went through.
+ */
+function route(channelType: ChannelType, accountId: string, accessToken: string) {
+  if (channelType !== "INSTAGRAM") return { host: GRAPH_FACEBOOK, path: accountId };
+
+  return INSTAGRAM_LOGIN_TOKEN.test(accessToken)
+    ? { host: GRAPH_INSTAGRAM, path: accountId }
+    : { host: GRAPH_FACEBOOK, path: "me" };
+}
 
 /**
  * Hands one text message to Meta for delivery.
@@ -71,8 +92,9 @@ export async function sendToMessenger(
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
+    const { host, path } = route(channelType, pageId, accessToken);
     const res = await fetch(
-      `${HOSTS[channelType] ?? HOSTS.FACEBOOK}/${GRAPH_VERSION}/${pageId}/messages` +
+      `${host}/${GRAPH_VERSION}/${path}/messages` +
         `?access_token=${encodeURIComponent(accessToken)}`,
       {
         method: "POST",
@@ -142,9 +164,8 @@ export async function deliverOutbound(
   if (
     !conversation?.customerRef ||
     !channel ||
-    // Instagram replies go out the same way and on the same Page Access Token —
-    // only the id in the path differs, and that is already `externalId`.
-    // WhatsApp is not here: it is a different API, not a different id.
+    // WhatsApp is not here: it is a different API, not a different id. Which
+    // host an Instagram reply goes to is decided by the token — see `route`.
     !SENDABLE.has(channel.type) ||
     !channel.connected ||
     !channel.externalId ||

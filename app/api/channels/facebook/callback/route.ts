@@ -34,7 +34,14 @@ export async function GET(request: Request) {
   );
   if (!result.ok) return back(request, result.reason);
 
-  log.info("Facebook page connected", { businessId: guard.businessId });
+  log.info("Facebook page connected", {
+    businessId: guard.businessId,
+    instagram: result.instagram,
+  });
 
-  return back(request, "connected");
+  // Said out loud, because the two outcomes need different next steps from the
+  // merchant: one is finished, the other still needs Instagram connecting on
+  // its own. A single "Connected" for both sent people away thinking they were
+  // done and wondering later why Instagram was quiet.
+  return back(request, result.instagram ? "connected" : "connected_no_ig");
 }

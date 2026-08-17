@@ -24,6 +24,13 @@ const START: Partial<Record<ChannelType, string>> = {
 
 const RESULTS: Record<string, { tone: "ok" | "bad"; text: Bilingual }> = {
   connected: { tone: "ok", text: { ka: "დაკავშირდა.", en: "Connected." } },
+  connected_no_ig: {
+    tone: "ok",
+    text: {
+      ka: "Facebook დაკავშირდა. ამ გვერდს Instagram მიბმული არ აქვს — Instagram ცალკე დააკავშირე.",
+      en: "Facebook connected. This Page has no Instagram account linked — connect Instagram separately.",
+    },
+  },
   // Instagram Login failures. Separated from the Facebook ones because the fix
   // for each is in a different place, and "that did not work" sends whoever
   // reads it to the wrong dashboard.
