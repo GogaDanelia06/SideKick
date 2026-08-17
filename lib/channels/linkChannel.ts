@@ -39,16 +39,24 @@ export async function linkChannel(
     if (!verdict.allowed) return { ok: false, reason: "limit" };
   }
 
+  // All four fields, because two screens read two different ones. The channels
+  // page asks `connected`; the overview card asks `status`. Writing only the
+  // first left a channel that had just finished Meta's consent screen reading
+  // "connected" on one page and "off" on the other — and `lastSyncAt` stayed
+  // blank, so the row also claimed it had never synced.
+  const live = {
+    externalId,
+    accessToken,
+    connected: true,
+    status: "ACTIVE" as const,
+    lastSyncAt: new Date(),
+  };
+
   try {
     if (existing) {
-      await prisma.channel.update({
-        where: { id: existing.id },
-        data: { externalId, accessToken, connected: true },
-      });
+      await prisma.channel.update({ where: { id: existing.id }, data: live });
     } else {
-      await prisma.channel.create({
-        data: { businessId, type, externalId, accessToken, connected: true },
-      });
+      await prisma.channel.create({ data: { businessId, type, ...live } });
     }
     return { ok: true };
   } catch (err) {

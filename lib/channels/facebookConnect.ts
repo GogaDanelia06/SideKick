@@ -8,9 +8,10 @@ import { linkChannel } from "./linkChannel";
  * Also carries across the Instagram account the Page is linked to, when there
  * is one. That is a *second* road to the same Instagram inbox — the Messenger
  * Platform, on the Page's token — and it exists for merchants who will grant a
- * Page but not hand over their Instagram password. It never overwrites a
- * credential from Instagram Login, which is the better of the two; see
- * `linkInstagramFromPage` below and instagramConnect.ts for that other road.
+ * Page but not hand over their Instagram password. It leaves an Instagram Login
+ * credential for the same account alone — that one is better — but replaces one
+ * naming a different account; see `linkInstagramFromPage` below, and
+ * instagramConnect.ts for that other road.
  */
 
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION ?? "v25.0";
@@ -125,10 +126,18 @@ export async function connectFromCode(
  * `entry.id` on the way in and it is what `recordInbound` routes on. Replies go
  * out addressed as `me` instead — see `route` in send.ts.
  *
- * Never overwrites an Instagram Login credential. An `IGA…` token is the better
- * of the two: it reaches graph.instagram.com directly and does not expire with
- * the Page grant. Clobbering a working one with a Page token would be a silent
- * downgrade of a channel that was already answering customers.
+ * Leaves an Instagram Login credential alone, but only when it is for the *same*
+ * account. An `IGA…` token is the better of the two — it reaches
+ * graph.instagram.com directly and does not expire with the Page grant — so
+ * replacing a working one for the same account would be a silent downgrade.
+ *
+ * A token for a *different* account is the opposite case, and refusing to touch
+ * it was a bug with teeth: someone connected the wrong Instagram account once,
+ * by being signed into their own when they clicked, and from then on every
+ * attempt to fix it by granting the right Page was ignored — the wrong
+ * credential defended itself. The merchant has just said, on Meta's own consent
+ * screen, which Page they mean; the account that Page is linked to is the
+ * answer, and a stale mismatched token does not get to outvote it.
  */
 async function linkInstagramFromPage(businessId: string, page: Page): Promise<boolean> {
   const igId = page.instagram_business_account?.id;
@@ -136,13 +145,22 @@ async function linkInstagramFromPage(businessId: string, page: Page): Promise<bo
 
   const existing = await prisma.channel.findFirst({
     where: { businessId, type: "INSTAGRAM" },
-    select: { accessToken: true },
+    select: { externalId: true, accessToken: true },
   });
-  if (existing?.accessToken?.startsWith("IGA")) {
-    log.info("Instagram already holds an Instagram Login token — leaving it alone", {
+  if (existing?.accessToken?.startsWith("IGA") && existing.externalId === igId) {
+    log.info("Instagram already holds an Instagram Login token for this account", {
       businessId,
+      accountId: igId,
     });
     return true;
+  }
+
+  if (existing?.externalId && existing.externalId !== igId) {
+    log.warn("replacing the Instagram account on this channel", {
+      businessId,
+      was: existing.externalId,
+      now: igId,
+    });
   }
 
   const linked = await linkChannel(businessId, "INSTAGRAM", igId, page.access_token);
