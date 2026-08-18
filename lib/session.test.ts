@@ -3,10 +3,14 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 vi.mock("@/auth", () => ({ auth: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { membership: { findUnique: vi.fn() } } }));
 vi.mock("@/lib/env", () => ({ env: vi.fn() }));
+vi.mock("@/lib/logger", () => ({
+  log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+}));
 
 import { getContext } from "./session";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { log } from "@/lib/logger";
 
 const session = vi.mocked(auth as unknown as () => Promise<unknown>);
 const memberFind = vi.mocked(prisma.membership.findUnique);
@@ -74,5 +78,30 @@ describe("getContext()", () => {
         where: { userId_businessId: { userId: "u1", businessId: "b1" } },
       }),
     );
+  });
+});
+
+describe("diagnostics", () => {
+  it("says why it refused when the membership is gone", async () => {
+    // The silent version of this cost an evening: correct password, session
+    // issued, every guarded route bouncing to /login with nothing in the logs.
+    memberFind.mockResolvedValue(null);
+
+    await getContext();
+
+    expect(vi.mocked(log.warn)).toHaveBeenCalledWith(
+      expect.stringContaining("no membership"),
+      expect.objectContaining({ userId: "u1", businessId: "b1" }),
+    );
+  });
+
+  it("stays quiet for a visitor who is simply signed out", async () => {
+    // Not a fault and not rare — logging it would bury the real refusals.
+    session.mockResolvedValue(null);
+
+    await getContext();
+
+    expect(vi.mocked(log.warn)).not.toHaveBeenCalled();
+    expect(vi.mocked(log.info)).not.toHaveBeenCalled();
   });
 });

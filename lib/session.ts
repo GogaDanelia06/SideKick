@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import { sessionIsStale } from "@/lib/auth/sessionExpiry";
+import { log } from "@/lib/logger";
 
 export type Ctx = { userId: string; businessId: string; role: string };
 
@@ -48,7 +49,10 @@ export async function getContext(): Promise<Ctx | null> {
   // Middleware checks this too, but it cannot be the only place: it runs on the
   // edge for page navigations, and a Server Action reaching straight for the
   // context never passes through it.
-  if (sessionIsStale(session.user)) return null;
+  if (sessionIsStale(session.user)) {
+    log.info("session refused — too old to honour", { userId });
+    return null;
+  }
 
   // A cookie naming somebody who no longer belongs here is treated as no cookie
   // at all. Left unchecked it is worse than a signed-out visitor: the pages
@@ -58,7 +62,20 @@ export async function getContext(): Promise<Ctx | null> {
   // The role comes from this row, not from `session.user.role`. That is the
   // whole point — see the comment above.
   const role = await currentRole(userId, businessId);
-  if (!role) return null;
+  if (!role) {
+    // Said out loud, because from the outside this is indistinguishable from a
+    // wrong password: the credentials are accepted, a session is issued, and
+    // then every guarded route redirects to /login with no message. Somebody
+    // spent an evening on exactly that. The two causes are worth telling apart —
+    // a membership that was removed, or one that was never created because
+    // registration failed halfway. `scripts/find-orphan-users.ts` finds the
+    // second kind.
+    log.warn("session refused — no membership for this user and business", {
+      userId,
+      businessId,
+    });
+    return null;
+  }
 
   return { userId, businessId, role };
 }

@@ -39,17 +39,24 @@ export async function POST(req: Request) {
   // safeguard, not a reason to hand someone a door with no key.
   const canSendMail = mailConfigured();
 
-  const user = await prisma.user.create({
-    data: {
-      email: normEmail,
-      name: `${firstName} ${lastName}`.trim(),
-      passwordHash,
-      phone,
-      emailVerified: canSendMail ? null : new Date(),
-    },
-  });
+  // One transaction, because half of this is worse than none of it. The account
+  // and the business used to be two writes: if the second failed, the address
+  // was taken by a user who belonged to no business, could sign in, and was
+  // bounced off every dashboard route with nothing to explain why.
+  const user = await prisma.$transaction(async (tx) => {
+    const created = await tx.user.create({
+      data: {
+        email: normEmail,
+        name: `${firstName} ${lastName}`.trim(),
+        passwordHash,
+        phone,
+        emailVerified: canSendMail ? null : new Date(),
+      },
+    });
 
-  await provisionBusiness(user.id, company || `${firstName}'s business`, field);
+    await provisionBusiness(created.id, company || `${firstName}'s business`, field, tx);
+    return created;
+  });
 
   if (!canSendMail) return NextResponse.json({ ok: true, verify: false });
 

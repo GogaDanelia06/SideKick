@@ -1,11 +1,26 @@
 import { prisma } from "@/lib/db";
-import type { ChannelType } from "@prisma/client";
+import type { ChannelType, Prisma } from "@prisma/client";
 
 const CHANNELS: ChannelType[] = ["FACEBOOK", "INSTAGRAM", "WHATSAPP", "WEBSITE"];
 
-export async function provisionBusiness(userId: string, name: string, field?: string) {
-  const plan = await prisma.plan.findUnique({ where: { key: "basic" } });
-  return prisma.business.create({
+/**
+ * Gives a user a business of their own, with everything a business needs.
+ *
+ * Takes a client so the caller can run it inside a transaction. Registration
+ * must: it creates the user and then calls this, and when the two were separate
+ * writes a failure here left an account that could sign in and belonged nowhere
+ * — every dashboard route bouncing it back to the login screen, and the address
+ * already taken so it could not register again. A locked-out account with no
+ * error message to go on.
+ */
+export async function provisionBusiness(
+  userId: string,
+  name: string,
+  field?: string,
+  db: Prisma.TransactionClient | typeof prisma = prisma,
+) {
+  const plan = await db.plan.findUnique({ where: { key: "basic" } });
+  return db.business.create({
     data: {
       name,
       field,
