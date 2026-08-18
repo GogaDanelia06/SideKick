@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
 import type { ChannelType } from "@prisma/client";
+import { GRAPH_INSTAGRAM, graphHostFor } from "./graphHost";
 
 /**
  * Graph API version. Pinned rather than floating: Meta changes response shapes
@@ -37,40 +38,19 @@ export type DeliveryResult = {
 
 type GraphError = { message?: string; code?: number };
 
-const GRAPH_FACEBOOK = "https://graph.facebook.com";
-const GRAPH_INSTAGRAM = "https://graph.instagram.com";
-
-/**
- * Instagram Login mints tokens with this prefix; a Page Access Token starts
- * `EAA`. Meta documents both, and the difference is the only thing in the row
- * that says which API the credential belongs to.
- */
-const INSTAGRAM_LOGIN_TOKEN = /^IGA/;
-
 /**
  * Where an Instagram reply goes, and it depends on how the account was
- * connected — not on the channel being Instagram.
+ * connected — not on the channel being Instagram. See lib/channels/graphHost.ts
+ * for the whole story.
  *
- * There are two roads to the same inbox and they are separate APIs that happen
- * to share a request shape. **Instagram Login** hands back an `IGA…` token that
- * works only against graph.instagram.com, addressed by the Instagram account id.
- * The **Messenger Platform** hands back the Page's `EAA…` token, which works
- * only against graph.facebook.com and is addressed as `me` — the page the token
- * belongs to — because the Instagram account id is not a thing that host will
- * accept in the path.
- *
- * Crossing them fails with "object does not exist", which is what a Page token
- * pointed at graph.instagram.com did for weeks: the channel read as connected
- * and every reply vanished. So the token decides, and the token is the only
- * honest source — the same channel row can hold either one depending on which
- * consent screen the merchant went through.
+ * The path differs too: graph.instagram.com is addressed by the Instagram
+ * account id, while graph.facebook.com will not accept that id and is addressed
+ * as `me` — the page the token belongs to.
  */
 function route(channelType: ChannelType, accountId: string, accessToken: string) {
-  if (channelType !== "INSTAGRAM") return { host: GRAPH_FACEBOOK, path: accountId };
-
-  return INSTAGRAM_LOGIN_TOKEN.test(accessToken)
-    ? { host: GRAPH_INSTAGRAM, path: accountId }
-    : { host: GRAPH_FACEBOOK, path: "me" };
+  const host = graphHostFor(channelType, accessToken);
+  const addressedByAccountId = host === GRAPH_INSTAGRAM || channelType !== "INSTAGRAM";
+  return { host, path: addressedByAccountId ? accountId : "me" };
 }
 
 /**

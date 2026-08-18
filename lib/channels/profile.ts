@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
+import { GRAPH_FACEBOOK, graphHostFor } from "./graphHost";
 
 /** Pinned for the same reason as the Send API's — see `send.ts`. */
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION ?? "v25.0";
@@ -41,10 +42,8 @@ export async function fetchCustomerName(
   customerId: string,
   accessToken: string,
   fields: string,
-  // Instagram Login answers on its own host and rejects the Facebook one, the
-  // same split that `send.ts` documents. Defaulted to Facebook so the Messenger
-  // path reads unchanged, because that is the case with two callers.
-  host = "https://graph.facebook.com",
+  // Which host depends on the token, not the channel — see graphHost.ts.
+  host: string = GRAPH_FACEBOOK,
 ): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -105,11 +104,15 @@ export async function nameCustomer(conversationId: string): Promise<void> {
     channel.type === "INSTAGRAM" ? "name,username" : channel.type === "FACEBOOK" ? "first_name,last_name" : null;
   if (!fields) return;
 
+  // By the token, not by the channel type. Deciding by type sent a Page token —
+  // which is what an Instagram account linked through a Facebook Page holds — to
+  // graph.instagram.com, where it is refused. Facebook chats got their names and
+  // every Instagram chat stayed a dash.
   const name = await fetchCustomerName(
     conversation.customerRef,
     channel.accessToken,
     fields,
-    channel.type === "INSTAGRAM" ? "https://graph.instagram.com" : undefined,
+    graphHostFor(channel.type, channel.accessToken),
   );
   if (!name) return;
 
