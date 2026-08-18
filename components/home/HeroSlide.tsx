@@ -24,7 +24,7 @@ export function HeroSlide({
     <div className="grid h-full animate-[fadeUp_0.4s_ease] items-center gap-12 md:grid-cols-[1.05fr_0.95fr]">
       <div className="max-h-[390px] overflow-y-auto">
         {slide.badge && (
-          <Badge icon={slide.badge.icon}>
+          <Badge>
             {t(slide.badge.text)}
           </Badge>
         )}

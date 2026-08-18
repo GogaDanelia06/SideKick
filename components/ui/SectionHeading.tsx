@@ -3,12 +3,11 @@
 import clsx from "clsx";
 import { Badge } from "./Badge";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual, IconType } from "@/lib/content/types";
+import type { Bilingual } from "@/lib/content/types";
 
 type Props = {
   /** Omit for a section that reads better as a plain heading. */
   badge?: Bilingual | string;
-  badgeIcon?: IconType;
   title: Bilingual;
   sub?: Bilingual;
   align?: "center" | "left";
@@ -18,7 +17,6 @@ type Props = {
 
 export function SectionHeading({
   badge,
-  badgeIcon,
   title,
   sub,
   align = "center",
@@ -31,7 +29,7 @@ export function SectionHeading({
 
   return (
     <div className={clsx(align === "center" && "text-center")}>
-      {badgeText === null ? null : <Badge icon={badgeIcon}>{badgeText}</Badge>}
+      {badgeText === null ? null : <Badge>{badgeText}</Badge>}
       <Heading
         className={clsx(
           // The gap only exists to clear the badge, so without one it would be
@@ -45,7 +43,9 @@ export function SectionHeading({
       >
         {t(title)}
       </Heading>
-      {sub ? <p className="mt-2.5 text-base text-muted">{t(sub)}</p> : null}
+      {/* The same step as the badge above the title, so the three lines read as
+          evenly spaced rather than as a title with something crowded under it. */}
+      {sub ? <p className="mt-3 text-base text-muted">{t(sub)}</p> : null}
     </div>
   );
 }

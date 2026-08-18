@@ -1,51 +1,41 @@
 "use client";
 
-import { useState } from "react";
-import clsx from "clsx";
-import { IconCheck, IconChevronDown } from "@tabler/icons-react";
 import { LOCALES } from "@/lib/i18n/config";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { track } from "@/lib/analytics/track";
-import { useDismiss } from "@/hooks/useDismiss";
 
+/**
+ * Switches between the two languages in one click.
+ *
+ * The label is the language you would get, not the one you are reading — a
+ * button reading "GEO" while the page is already Georgian tells you nothing you
+ * could not see, and it was the only control on the site that opened a menu to
+ * choose between two options. With exactly two, the menu was the whole cost and
+ * none of the benefit.
+ *
+ * If a third language is ever added this has to become a menu again; the shape
+ * below assumes two on purpose rather than by accident.
+ */
 export function LanguageToggle() {
   const { locale, setLocale } = useLanguage();
-  const [open, setOpen] = useState(false);
-  const short = LOCALES.find((l) => l.code === locale)?.short ?? "GEO";
-  const ref = useDismiss<HTMLDivElement>(open, () => setOpen(false));
+
+  const next = LOCALES.find((l) => l.code !== locale) ?? LOCALES[0];
 
   return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="inline-flex h-[34px] items-center gap-1.5 rounded-sm border border-border px-[11px] text-[13px] font-medium text-ink"
-      >
-        {short}
-        <IconChevronDown size={15} />
-      </button>
-      {open ? (
-        <div className="absolute right-0 top-[calc(100%+6px)] z-[80] min-w-[160px] rounded-md border border-border bg-card p-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.28)]">
-          {LOCALES.map((l) => (
-            <button
-              key={l.code}
-              type="button"
-              onClick={() => {
-                setLocale(l.code);
-                setOpen(false);
-                track("language_changed");
-              }}
-              className={clsx(
-                "flex w-full items-center gap-2 rounded-sm px-[11px] py-2.5 text-left text-sm",
-                locale === l.code ? "font-semibold text-primary" : "text-ink",
-              )}
-            >
-              {locale === l.code ? <IconCheck size={15} /> : <span className="size-[15px]" />}
-              {l.label}
-            </button>
-          ))}
-        </div>
-      ) : null}
-    </div>
+    <button
+      type="button"
+      onClick={() => {
+        setLocale(next.code);
+        track("language_changed");
+      }}
+      // Named for what it does, because "ENG" alone is not a sentence to a
+      // screen reader — and the visible label is deliberately the *other*
+      // language, which would otherwise read as the current one.
+      aria-label={`Switch to ${next.label}`}
+      title={next.label}
+      className="inline-flex h-[34px] items-center rounded-sm border border-border px-[11px] text-[13px] font-medium text-ink transition-colors hover:border-primary hover:text-primary"
+    >
+      {next.short}
+    </button>
   );
 }

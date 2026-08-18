@@ -44,8 +44,19 @@ export function Story({ title, body }: { title?: Bilingual; body?: Bilingual }) 
             {t(heading)}
           </h2>
 
+          {/* Justified and full width, against the centring on the box.
+              Centred, the body sat in a narrow ragged column with air either
+              side of every line — the box read as half empty and the paragraph
+              as an afterthought. Set edge to edge it fills the space it was
+              given, and the lines end where the box ends. */}
           {paragraphs.map((p, i) => (
-            <p key={i} className={clsx("text-base leading-[1.8] text-muted", i > 0 && "mt-3")}>
+            <p
+              key={i}
+              className={clsx(
+                "text-justify text-base leading-[1.8] text-muted",
+                i > 0 && "mt-3",
+              )}
+            >
               {p}
             </p>
           ))}

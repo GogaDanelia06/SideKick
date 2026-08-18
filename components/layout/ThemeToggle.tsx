@@ -6,7 +6,11 @@ import { track } from "@/lib/analytics/track";
 
 export function ThemeToggle() {
   const { theme, toggle } = useTheme();
-  const Icon = theme === "light" ? IconSun : IconMoon;
+
+  // The icon is the theme you would get, not the one you are in. A sun while
+  // the page is already bright describes the room rather than offering
+  // anything, and every button beside it names its own outcome.
+  const Icon = theme === "light" ? IconMoon : IconSun;
 
   return (
     <button

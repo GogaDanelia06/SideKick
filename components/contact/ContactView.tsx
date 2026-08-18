@@ -1,6 +1,5 @@
 "use client";
 
-import { IconMail } from "@tabler/icons-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactInfo } from "./ContactInfo";
@@ -25,7 +24,6 @@ export function ContactView({
         <div className="mb-10 text-center">
           <SectionHeading
             badge={badge ?? CONTACT_HEADING.badge}
-            badgeIcon={IconMail}
             title={title ?? CONTACT_HEADING.title}
             sub={sub ?? CONTACT_HEADING.sub}
             size="xl"

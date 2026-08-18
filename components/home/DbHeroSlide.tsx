@@ -3,7 +3,6 @@
 import {
   IconArrowRight,
   IconRocket,
-  IconSparkles,
 } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/Badge";
@@ -120,7 +119,7 @@ export function DbHeroSlide({ slide }: { slide: HeroSlideView }) {
           cap earns nothing and costs a scrollbar inside the headline. */}
       <div className="md:max-h-[390px] md:overflow-y-auto">
         {slide.badge && (
-          <Badge icon={IconSparkles}>{t(slide.badge)}</Badge>
+          <Badge>{t(slide.badge)}</Badge>
         )}
 
         <Title text={t(slide.title)} />

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { ChannelType } from "@prisma/client";
 // Not `Channel`: the page deliberately fetches a subset, so the access token
 // never reaches this client component and therefore never reaches the browser.
 import type { ChannelSummary } from "@/lib/dashboard/queries";

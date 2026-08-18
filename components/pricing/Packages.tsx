@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { IconGift, IconTag } from "@tabler/icons-react";
+import { IconGift } from "@tabler/icons-react";
 
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -35,7 +35,6 @@ export function Packages({
       <Container>
         <SectionHeading
           badge={PACKAGES_HEADING.badge}
-          badgeIcon={IconTag}
           title={PACKAGES_HEADING.title}
         />
 

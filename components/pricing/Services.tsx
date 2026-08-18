@@ -1,6 +1,5 @@
 "use client";
 
-import { IconStack2 } from "@tabler/icons-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ServiceCard } from "./ServiceCard";
@@ -29,7 +28,6 @@ export function Services({
         <div className="mb-9">
           <SectionHeading
             badge={badge ?? SERVICES_HEADING.badge}
-            badgeIcon={IconStack2}
             title={title ?? SERVICES_HEADING.title}
             sub={sub ?? SERVICES_HEADING.sub}
             size="xl"

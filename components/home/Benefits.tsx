@@ -1,6 +1,5 @@
 "use client";
 
-import { IconStack2 } from "@tabler/icons-react";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -25,7 +24,6 @@ export function Benefits({ boxes }: { boxes?: BoxView[] }) {
       <Container>
         <SectionHeading
           badge={BENEFITS_HEADING.badge}
-          badgeIcon={IconStack2}
           title={BENEFITS_HEADING.title}
         />
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">

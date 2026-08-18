@@ -1,6 +1,6 @@
 "use client";
 
-import { IconArrowRight, IconGift } from "@tabler/icons-react";
+import { IconArrowRight } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -35,7 +35,7 @@ export function CtaBanner({ content = {} }: { content?: CtaContent }) {
       <Container>
         <div className="rounded-lg border border-blue-ring bg-card px-6 py-8 text-center sm:px-10">
           <div className="mb-4 text-left">
-            <Badge icon={IconGift}>{t(content.badge ?? CTA_BANNER.badge)}</Badge>
+            <Badge>{t(content.badge ?? CTA_BANNER.badge)}</Badge>
           </div>
           <h2 className="mb-3 text-3xl font-semibold leading-snug tracking-[-0.01em]">
             {t(content.title ?? CTA_BANNER.title)}
