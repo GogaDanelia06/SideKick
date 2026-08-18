@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { LeadStatus, OrderStatus, Role } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type { LeadStatus, OrderStatus, Product, Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { fmtTime } from "./time";
 import { getContext } from "@/lib/session";
@@ -153,24 +154,57 @@ const num = (data: FormData, k: string) => {
 };
 const str = (data: FormData, k: string) => ((data.get(k) as string) || "").trim() || null;
 
-export async function createProduct(data: FormData) {
+export type ProductResult =
+  | { ok: true; product: Product }
+  | { ok: false; error: "forbidden" | "missing" | "limit" | "duplicate" | "error" };
+
+/**
+ * Adds a product, and says what happened.
+ *
+ * It used to return nothing at all, and every refusal was a `return` — no
+ * permission, a missing name, the plan's ceiling. The merchant pressed "Add",
+ * watched the form sit there, and had no way to tell a slow save from a refused
+ * one. Half of them pressed it again.
+ */
+export async function createProduct(data: FormData): Promise<ProductResult> {
   const ctx = await requirePermission("products:write");
-  if (!ctx) return;
+  if (!ctx) return { ok: false, error: "forbidden" };
+
   const name = str(data, "name");
   const code = str(data, "code");
-  if (!name || !code) return;
+  if (!name || !code) return { ok: false, error: "missing" };
 
   const verdict = await checkLimit(ctx.businessId, "products");
-  if (!verdict.allowed) return;
+  if (!verdict.allowed) return { ok: false, error: "limit" };
 
-  await prisma.product.create({
-    data: {
-      businessId: ctx.businessId, name, code,
-      price: num(data, "price") ?? 0, discountPct: num(data, "discountPct"), salePrice: num(data, "salePrice"),
-      size: str(data, "size"), description: str(data, "description"), quantity: num(data, "quantity") ?? 0,
-    },
-  });
-  revalidatePath(DASH.products);
+  let product: Product;
+  try {
+    product = await prisma.product.create({
+      data: {
+        businessId: ctx.businessId, name, code,
+        price: num(data, "price") ?? 0, discountPct: num(data, "discountPct"), salePrice: num(data, "salePrice"),
+        size: str(data, "size"), description: str(data, "description"), quantity: num(data, "quantity") ?? 0,
+      },
+    });
+  } catch (err) {
+    // `[businessId, code]` is unique, so a code the shop already uses lands
+    // here. Uncaught it threw out of the action as an unhandled error and the
+    // form showed nothing — the one refusal a merchant is most likely to hit,
+    // because product codes are typed by hand.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return { ok: false, error: "duplicate" };
+    }
+    log.error("could not create a product", err, { businessId: ctx.businessId });
+    return { ok: false, error: "error" };
+  }
+
+  // Deliberately no `revalidatePath`. It re-ran the whole products page on the
+  // server and pushed a fresh payload down, which the browser shows as a real
+  // navigation — a loading bar and a visible wait for a row that is already
+  // saved. The row is returned instead and the list adds it on the spot; the
+  // server copy is authoritative again on the next navigation, and nothing here
+  // is stale in between because the row we hand back *is* what was written.
+  return { ok: true, product };
 }
 
 export async function updateProduct(id: string, data: FormData) {

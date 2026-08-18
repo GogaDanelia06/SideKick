@@ -85,5 +85,12 @@ export function usePricing(initial?: {
     if (p !== null) setDiscountPct(pctFromSale(p, sale));
   }
 
-  return { price, discountPct, salePrice, onPrice, onDiscount, onSale };
+  /** Emptied after a successful save, alongside the form's own reset. */
+  function reset() {
+    setPrice("");
+    setDiscountPct("");
+    setSalePrice("");
+  }
+
+  return { price, discountPct, salePrice, onPrice, onDiscount, onSale, reset };
 }

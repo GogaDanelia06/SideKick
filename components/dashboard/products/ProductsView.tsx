@@ -27,6 +27,18 @@ export function ProductsView({ products }: { products: Product[] }) {
   const [tab, setTab] = useState<"manual" | "file">("manual");
   const [editing, setEditing] = useState<Product | null>(null);
 
+  /**
+   * The list, held here rather than read straight from the server on every
+   * change.
+   *
+   * Adding a product used to go through `revalidatePath`, which re-runs this
+   * page on the server and sends a new payload down — the browser treats that as
+   * a navigation, so the merchant got a loading bar and a wait for a row that
+   * had already been written. Newest first, matching the server's own ordering,
+   * so the row appears exactly where a reload would put it.
+   */
+  const [rows, setRows] = useState(products);
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-5 border-b border-border">
@@ -39,8 +51,8 @@ export function ProductsView({ products }: { products: Product[] }) {
       </div>
       {tab === "manual" ? (
         <>
-          <AddProductForm />
-          <ProductTable products={products} onEdit={setEditing} />
+          <AddProductForm onAdded={(p) => setRows((prev) => [p, ...prev])} />
+          <ProductTable products={rows} onEdit={setEditing} />
         </>
       ) : (
         <FileUploadTab />
