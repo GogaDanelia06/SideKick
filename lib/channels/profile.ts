@@ -45,6 +45,15 @@ export async function fetchCustomerName(
   // Which host depends on the token, not the channel — see graphHost.ts.
   host: string = GRAPH_FACEBOOK,
 ): Promise<string | null> {
+  // Everything needed to place a failure, without the token or the customer's
+  // name: which host was tried, which fields were asked for, and which kind of
+  // credential was used. A refusal that does not say which of the two Instagram
+  // roads it took costs a round trip to find out.
+  const attempt = {
+    host: new URL(host).host,
+    fields,
+    credential: accessToken.startsWith("IGA") ? "instagram-login" : "page-token",
+  };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
@@ -58,6 +67,8 @@ export async function fetchCustomerName(
 
     if (!res.ok || body.error) {
       log.warn("could not read a customer profile from Meta", {
+        ...attempt,
+        code: body.error?.code,
         detail: body.error?.message ?? `HTTP ${res.status}`,
       });
       return null;
@@ -66,6 +77,7 @@ export async function fetchCustomerName(
     return nameFrom(body);
   } catch (err) {
     log.warn("customer profile lookup failed", {
+      ...attempt,
       detail: err instanceof Error ? err.message : String(err),
     });
     return null;
