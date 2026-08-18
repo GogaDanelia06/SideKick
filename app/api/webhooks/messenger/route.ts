@@ -218,6 +218,18 @@ export async function POST(request: Request) {
     // of dashes. Deduped because a batch can carry several messages from one
     // customer, and one blank name needs asking about once.
     const unnamed = new Set(recorded.filter((r) => r.needsName).map((r) => r.conversationId));
+
+    // Counted out loud, because the silence had two possible meanings and no way
+    // to tell them apart: either nothing was queued for naming, or naming ran
+    // and gave up without a word. Every branch inside `nameCustomer` now says
+    // something, so a run with candidates and no further line means the call
+    // never happened — and this is the line that proves which.
+    log.info("naming queue", {
+      recorded: recorded.length,
+      needName: unnamed.size,
+      channels: [...new Set(recorded.map((r) => r.channel))].join(","),
+    });
+
     for (const conversationId of unnamed) {
       await nameCustomer(conversationId);
     }
