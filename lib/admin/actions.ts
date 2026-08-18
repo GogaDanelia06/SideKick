@@ -2,7 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import type { ChannelType, StatMode } from "@prisma/client";
+import type { ChannelType, StatMode, SubscriptionStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 import { ADMIN_PAGES } from "@/lib/admin/pages";
@@ -926,5 +926,53 @@ export async function toggleChannelGuidePublished(
     update: { published },
   });
   revalidateTutorials();
+  return { ok: true };
+}
+
+/**
+ * Puts a business on a plan, by hand.
+ *
+ * The banks are not wired up yet, so this is how a tenant gets the tier they
+ * agreed to. Platform admin only, and deliberately not something a merchant can
+ * reach: the same write on the billing page would be a button that hands out
+ * premium for free.
+ *
+ * Creates the subscription when there is none — a business provisioned before
+ * plans existed has no row, and refusing to help it would be the one case where
+ * this screen is actually needed.
+ */
+export async function setBusinessPlan(
+  businessId: string,
+  planId: string,
+  status: SubscriptionStatus,
+  resetUsage: boolean,
+): Promise<AdminResult> {
+  const admin = await requireAdmin();
+
+  const [business, plan] = await Promise.all([
+    prisma.business.findUnique({ where: { id: businessId }, select: { id: true } }),
+    prisma.plan.findUnique({ where: { id: planId }, select: { id: true, key: true } }),
+  ]);
+  if (!business) return { ok: false, error: "ბიზნესი ვერ მოიძებნა" };
+  if (!plan) return { ok: false, error: "გეგმა ვერ მოიძებნა" };
+
+  await prisma.subscription.upsert({
+    where: { businessId },
+    // A plan is worth nothing while the old month's counter is still spent, so
+    // clearing it is offered — and defaults to on, because the reason somebody
+    // is moved up a tier is usually that they ran out of the one below.
+    update: { planId, status, ...(resetUsage ? { msgUsed: 0 } : {}) },
+    create: { businessId, planId, status, msgUsed: 0 },
+  });
+
+  log.info("admin set a business plan", {
+    userId: admin.userId,
+    businessId,
+    plan: plan.key,
+    status,
+    resetUsage,
+  });
+
+  revalidatePath("/admin/businesses");
   return { ok: true };
 }
