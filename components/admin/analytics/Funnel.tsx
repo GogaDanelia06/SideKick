@@ -66,13 +66,25 @@ export function Funnel({ steps }: { steps: Step[] }) {
                     }`}
                   >
                     {Icon ? <Icon size={13} /> : null}
-                    {/* Both bases, spelled out. Neither number means anything on
-                        its own, and the pair is the whole story of the step. */}
+                    {/* "Of previous" says where people were lost; "of start"
+                        says how many are left. Only the first is always
+                        interesting: on the second step the two are the same
+                        number by definition — the previous step *is* the start —
+                        and printing 9% twice reads as a fault in the page rather
+                        than as two facts. So the second figure appears only when
+                        it disagrees. */}
                     <span className="font-mono tabular-nums">{step.ofPrevious}%</span>
                     <BiText value={{ ka: "წინადან", en: "of previous" }} />
-                    <span className="text-faint">·</span>
-                    <span className="font-mono tabular-nums text-faint">{ofTop}%</span>
-                    <BiText className="text-faint" value={{ ka: "საწყისიდან", en: "of start" }} />
+                    {ofTop !== step.ofPrevious ? (
+                      <>
+                        <span className="text-faint">·</span>
+                        <span className="font-mono tabular-nums text-faint">{ofTop}%</span>
+                        <BiText
+                          className="text-faint"
+                          value={{ ka: "საწყისიდან", en: "of start" }}
+                        />
+                      </>
+                    ) : null}
                   </span>
                 )}
               </div>
