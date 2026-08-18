@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@10.15.0",
-  "prisma": {
-    "schema": "prisma/schema",
-    "seed": "tsx prisma/seed.ts"
-  },
   "pnpm": {
     "overrides": {
       "sharp": ">=0.35.3",

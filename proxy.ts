@@ -9,6 +9,10 @@ const { auth } = NextAuth(authConfig);
 /**
  * Guards the signed-in areas, and ends sessions that have gone quiet.
  *
+ * Called `proxy.ts` because Next 16 renamed the convention; `middleware.ts` still
+ * works but warns on every dev start. Nothing else changed — the default export
+ * and the `config.matcher` below are read exactly as before.
+ *
  * Passing a handler to `auth()` takes next-auth's own redirect out of the
  * picture — its `!authorized` branch is an `else if` that never runs once a
  * handler exists. So the decision is made here, through the same `gateAllows`
