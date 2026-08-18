@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import type { Bilingual } from "@/lib/content/types";
 import { signIn } from "next-auth/react";
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
@@ -30,6 +31,34 @@ type LoginFormProps = {
   google: boolean;
 };
 
+/**
+ * What Google sends back when it refuses.
+ *
+ * NextAuth redirects here with `?error=…` and nothing was reading it, so a
+ * failed Google sign-in landed on a login form that looked untouched — the
+ * visitor's only clue that anything had happened was that they were still on
+ * the login page.
+ *
+ * `OAuthAccountNotLinked` is the one that actually happens: the address
+ * already has a password on it, and Auth.js will not silently attach a second
+ * way in to an existing account. Saying so is the fix — the person knows their
+ * own password, they just reached for the faster button.
+ */
+const OAUTH_ERRORS: Record<string, Bilingual> = {
+  OAuthAccountNotLinked: {
+    ka: "ეს ელფოსტა უკვე რეგისტრირებულია პაროლით. შედი პაროლით.",
+    en: "That address is already registered with a password. Sign in with your password.",
+  },
+  AccessDenied: {
+    ka: "Google-ით შესვლა არ დაასრულე.",
+    en: "The Google sign-in was not completed.",
+  },
+  Configuration: {
+    ka: "Google-ით შესვლა ჯერ არ არის გამართული.",
+    en: "Google sign-in is not configured yet.",
+  },
+};
+
 export function LoginForm({ google }: LoginFormProps) {
   const { t } = useLanguage();
   const router = useRouter();
@@ -40,6 +69,14 @@ export function LoginForm({ google }: LoginFormProps) {
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
 
   const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
+
+  const oauthErrorKey = searchParams.get("error");
+  const oauthError = oauthErrorKey
+    ? (OAUTH_ERRORS[oauthErrorKey] ?? {
+        ka: "Google-ით შესვლა ვერ მოხერხდა. სცადე პაროლით.",
+        en: "Google sign-in failed. Try your password instead.",
+      })
+    : null;
 
   function clearFieldError(field: LoginField) {
     setFieldErrors((current) => {
@@ -184,9 +221,12 @@ export function LoginForm({ google }: LoginFormProps) {
           </Link>
         </div>
 
-        {error ? (
+        {/* The form's own error wins: if they have just tried a password, that
+            attempt is what they are waiting to hear about, not the Google one
+            still sitting in the query string. */}
+        {error || oauthError ? (
           <div className="flex flex-col gap-1.5">
-            <p className="text-[13px] text-red">{error}</p>
+            <p className="text-[13px] text-red">{error ?? t(oauthError!)}</p>
             {unverifiedEmail ? <ResendVerification email={unverifiedEmail} /> : null}
           </div>
         ) : null}
