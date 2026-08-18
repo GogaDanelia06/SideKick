@@ -74,7 +74,6 @@ export function Funnel({ steps }: { steps: Step[] }) {
                         than as two facts. So the second figure appears only when
                         it disagrees. */}
                     <span className="font-mono tabular-nums">{step.ofPrevious}%</span>
-                    <BiText value={{ ka: "წინადან", en: "of previous" }} />
                     {ofTop !== step.ofPrevious ? (
                       <>
                         <span className="text-faint">·</span>
