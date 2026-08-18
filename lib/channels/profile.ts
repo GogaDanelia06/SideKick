@@ -74,7 +74,22 @@ export async function fetchCustomerName(
       return null;
     }
 
-    return nameFrom(body);
+    const name = nameFrom(body);
+    if (!name) {
+      // The one outcome that used to leave no trace at all: Meta answers 200 and
+      // simply does not include a name. It is not an error, so the branch above
+      // never fires, and `nameCustomer` then returns quietly — a chat stuck on a
+      // dash with nothing anywhere to explain it.
+      //
+      // The keys are logged, never the values: which fields Meta was willing to
+      // disclose is the whole diagnosis, and the customer's name is not ours to
+      // copy into a second system's logs.
+      log.warn("Meta returned a profile with no name", {
+        ...attempt,
+        keys: Object.keys(body).join(",") || "(empty response)",
+      });
+    }
+    return name;
   } catch (err) {
     log.warn("customer profile lookup failed", {
       ...attempt,
@@ -108,13 +123,47 @@ export async function nameCustomer(conversationId: string): Promise<void> {
   });
 
   const channel = conversation?.channel;
-  if (!conversation?.customerRef || conversation.customerName || !channel?.accessToken) return;
 
   // Facebook and Instagram describe a person with different fields, and asking
   // for the wrong ones is an error rather than an empty answer.
   const fields =
-    channel.type === "INSTAGRAM" ? "name,username" : channel.type === "FACEBOOK" ? "first_name,last_name" : null;
-  if (!fields) return;
+    channel?.type === "INSTAGRAM"
+      ? "name,username"
+      : channel?.type === "FACEBOOK"
+        ? "first_name,last_name"
+        : null;
+
+  /**
+   * Why each of these is said out loud.
+   *
+   * Every one used to be a bare `return`, and the result was a chat showing a
+   * dash with *nothing whatsoever* in the logs — indistinguishable from Meta
+   * refusing the lookup, which is a completely different problem in a completely
+   * different place. `customerName` is not among them: already having a name is
+   * the ordinary case, not a fault.
+   */
+  const blocked =
+    !conversation ? "conversation not found"
+    : !conversation.customerRef ? "conversation has no customer id"
+    : !channel ? "conversation is not attached to a channel"
+    : !channel.accessToken ? "channel holds no access token"
+    : !fields ? `no profile fields for a ${channel.type} channel`
+    : null;
+
+  if (blocked) {
+    log.info(`skipped naming a customer — ${blocked}`, {
+      conversationId,
+      channelType: channel?.type ?? null,
+    });
+    return;
+  }
+  // Narrowing for the compiler; `blocked` above already proved all three.
+  if (!conversation?.customerRef || !channel?.accessToken || !fields) return;
+
+  // The ordinary case, and deliberately not logged: a chat that already has a
+  // name is not a failure, and saying so on every message would bury the ones
+  // above.
+  if (conversation.customerName) return;
 
   // By the token, not by the channel type. Deciding by type sent a Page token —
   // which is what an Instagram account linked through a Facebook Page holds — to
