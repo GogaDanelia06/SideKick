@@ -76,13 +76,6 @@ export function PlanCheckout({
   if (providers.length === 0) {
     return (
       <div className="grid gap-3">
-        <div className="flex items-start gap-2 rounded-[8px] border border-amber bg-soft px-3.5 py-2.5 text-[13px] text-muted">
-          <IconAlertTriangle size={16} className="mt-px shrink-0 text-amber" />
-          {t({
-            ka: "გადახდა ჯერ არ არის ჩართული. გეგმა დროებით უფასოდ იცვლება — ბანკის დაკავშირების შემდეგ გადახდა დაგჭირდება.",
-            en: "Payments are not enabled yet. Plans switch for free in the meantime — once a bank is connected, payment will be required.",
-          })}
-        </div>
 
         <div className="grid gap-2">
           {plans.map((p) => {
