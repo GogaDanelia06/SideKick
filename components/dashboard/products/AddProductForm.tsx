@@ -5,6 +5,7 @@ import { IconPhoto, IconPlus } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { createProduct } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { usePricing } from "./usePricing";
 
 const FIELD = "mt-1 w-full rounded-[6px] border border-input bg-soft px-3 py-2.5 text-[13px] outline-none focus:border-blue";
 
@@ -19,6 +20,7 @@ function Field({ label, ...input }: { label: string } & ComponentProps<"input">)
 
 export function AddProductForm() {
   const { t } = useLanguage();
+  const money = usePricing();
   return (
     <Panel className="p-5">
       <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold">
@@ -32,12 +34,30 @@ export function AddProductForm() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Field name="name" label={t({ ka: "დასახელება", en: "Name" })} required />
             <Field name="code" label={t({ ka: "კოდი", en: "Code" })} required />
-            <Field name="price" label={t({ ka: "ფასი", en: "Price" })} type="number" />
+            <Field
+              name="price"
+              label={t({ ka: "ფასი", en: "Price" })}
+              type="number"
+              value={money.price}
+              onChange={(e) => money.onPrice(e.target.value)}
+            />
             <Field name="size" label={t({ ka: "ზომა", en: "Size" })} />
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <Field name="discountPct" label={t({ ka: "ფასდაკლება %", en: "Discount %" })} type="number" />
-            <Field name="salePrice" label={t({ ka: "ფასდაკლ. ფასი", en: "Sale price" })} type="number" />
+            <Field
+              name="discountPct"
+              label={t({ ka: "ფასდაკლება %", en: "Discount %" })}
+              type="number"
+              value={money.discountPct}
+              onChange={(e) => money.onDiscount(e.target.value)}
+            />
+            <Field
+              name="salePrice"
+              label={t({ ka: "ფასდაკლ. ფასი", en: "Sale price" })}
+              type="number"
+              value={money.salePrice}
+              onChange={(e) => money.onSale(e.target.value)}
+            />
             <Field name="quantity" label={t({ ka: "რაოდენობა", en: "Quantity" })} type="number" />
           </div>
           <label className="block">
