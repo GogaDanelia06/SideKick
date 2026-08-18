@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import type { PaymentProvider, Plan, Subscription } from "@prisma/client";
 import { IconAlertTriangle, IconCheck, IconExternalLink } from "@tabler/icons-react";
-import { startPlanCheckout } from "@/lib/dashboard/actions";
+import { startPlanCheckout, switchPlanWithoutPayment } from "@/lib/dashboard/actions";
 import { BILLING_PERIODS, periodPrice, periodSavingPct } from "@/lib/content/packages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
@@ -63,14 +63,63 @@ export function PlanCheckout({
     });
   }
 
+  /**
+   * With no bank configured, the plans are still switchable — just free.
+   *
+   * The dead warning that stood here was accurate and unhelpful: it left no way
+   * to try a tier, so the three prices on the pricing page could not be
+   * exercised at all. The switch disappears by itself the moment BOG or TBC
+   * credentials exist, because that is the same condition the real checkout
+   * waits on — and the server refuses it independently, so this is a screen the
+   * guard happens to agree with rather than the guard itself.
+   */
   if (providers.length === 0) {
     return (
-      <div className="flex items-start gap-2 rounded-[8px] border border-amber bg-soft px-3.5 py-2.5 text-[13px] text-muted">
-        <IconAlertTriangle size={16} className="mt-px shrink-0 text-amber" />
-        {t({
-          ka: "გადახდა ჯერ არ არის ჩართული — ბანკის რეკვიზიტები არ არის დაყენებული.",
-          en: "Payments are not enabled yet — no bank credentials are configured.",
-        })}
+      <div className="grid gap-3">
+        <div className="flex items-start gap-2 rounded-[8px] border border-amber bg-soft px-3.5 py-2.5 text-[13px] text-muted">
+          <IconAlertTriangle size={16} className="mt-px shrink-0 text-amber" />
+          {t({
+            ka: "გადახდა ჯერ არ არის ჩართული. გეგმა დროებით უფასოდ იცვლება — ბანკის დაკავშირების შემდეგ გადახდა დაგჭირდება.",
+            en: "Payments are not enabled yet. Plans switch for free in the meantime — once a bank is connected, payment will be required.",
+          })}
+        </div>
+
+        <div className="grid gap-2">
+          {plans.map((p) => {
+            const current = subscription?.planId === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                disabled={pending || !canManage || current}
+                onClick={() => {
+                  setError(null);
+                  start(async () => {
+                    const res = await switchPlanWithoutPayment(p.key);
+                    if (!res.ok) setError(res.error);
+                  });
+                }}
+                className={`flex items-center justify-between rounded-[8px] border px-3.5 py-3 text-left text-[13px] disabled:opacity-60 ${
+                  current ? "border-primary bg-green-surface" : "border-border hover:border-blue"
+                }`}
+              >
+                <span className="flex items-center gap-2 font-medium">
+                  {p.name}
+                  {current ? (
+                    <span className="rounded-full bg-soft px-2 py-0.5 text-[11px] text-muted">
+                      {t({ ka: "მიმდინარე", en: "Current" })}
+                    </span>
+                  ) : null}
+                </span>
+                <span className="font-mono text-muted">
+                  {current ? null : t({ ka: "გადართვა", en: "Switch" })}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {error ? <p className="text-[13px] text-red">{error}</p> : null}
       </div>
     );
   }

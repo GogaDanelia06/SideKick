@@ -644,3 +644,53 @@ export async function createLeadFromConversation(
   revalidatePath(DASH.conversations);
   return { ok: true, created: true };
 }
+
+export type PlanSwitchResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * Moves a business onto a plan without taking money — and only while no bank is
+ * configured.
+ *
+ * The billing page used to replace its whole plan picker with "payments are not
+ * enabled yet", which is true and useless: nobody could try a tier, and the
+ * three prices on the pricing page were untestable.
+ *
+ * The guard is the interesting part. It is not a flag somebody has to remember
+ * to turn off before launch — it is the *absence* of bank credentials, which is
+ * the same condition that makes checkout impossible in the first place. Connect
+ * BOG or TBC and this refuses on its own, from the same fact that brings the
+ * real checkout back. A free-premium button that switches itself off is worth
+ * more than one guarded by a note in a README.
+ *
+ * `TRIAL` rather than `ACTIVE`, because no money changed hands and the billing
+ * page should not claim otherwise.
+ */
+export async function switchPlanWithoutPayment(planKey: string): Promise<PlanSwitchResult> {
+  const ctx = await requirePermission("billing:manage");
+  if (!ctx) return { ok: false, error: "ამის უფლება არ გაქვს" };
+
+  // Checked on the server, never taken from the client: this is the whole
+  // security boundary of the feature.
+  if (availableProviders().length > 0) {
+    return { ok: false, error: "გადახდა ჩართულია — გეგმა ბანკის გავლით უნდა შეიცვალოს" };
+  }
+
+  const plan = await prisma.plan.findUnique({ where: { key: planKey }, select: { id: true } });
+  if (!plan) return { ok: false, error: "გეგმა ვერ მოიძებნა" };
+
+  await prisma.subscription.upsert({
+    where: { businessId: ctx.businessId },
+    // The counter is cleared with the plan, or a tenant who spent the old tier's
+    // allowance would move up and still be blocked.
+    update: { planId: plan.id, status: "TRIAL", msgUsed: 0 },
+    create: { businessId: ctx.businessId, planId: plan.id, status: "TRIAL", msgUsed: 0 },
+  });
+
+  log.info("plan switched with no payment configured", {
+    businessId: ctx.businessId,
+    plan: planKey,
+  });
+
+  revalidatePath(DASH.billing);
+  return { ok: true };
+}
