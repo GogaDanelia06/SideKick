@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { findGroup, findLegalDoc, legalTitleKey } from "@/lib/site/textKeys";
+import { BACKGROUNDS, BG_KEY } from "@/lib/site/backgrounds";
 import { ICON_NAMES } from "@/lib/content/icons";
 import { STAT_SOURCE_KEYS } from "@/lib/site/statSources";
 import { CHANNEL_TYPES } from "@/lib/dashboard/channels";
@@ -974,5 +975,32 @@ export async function setBusinessPlan(
   });
 
   revalidatePath("/admin/businesses");
+  return { ok: true };
+}
+
+/* ── Appearance ─────────────────────────────────────────────────────────── */
+
+/**
+ * The page background, for the marketing site and the dashboard alike.
+ *
+ * The id is checked against the preset list rather than stored as given. It
+ * reaches `<style>` in the root layout, so an unvetted value would be a way to
+ * write CSS into every page on the platform.
+ */
+export async function updateBackground(fd: FormData): Promise<AdminResult> {
+  await requireAdmin();
+
+  const id = field(fd, "background");
+  if (!BACKGROUNDS.some((b) => b.id === id)) return { ok: false, error: "unknown_background" };
+
+  await prisma.siteSetting.upsert({
+    where: { key: BG_KEY },
+    create: { key: BG_KEY, valueKa: id },
+    update: { valueKa: id },
+  });
+
+  // Every route sits under the root layout that reads this, so the whole tree
+  // has to be refreshed — path by path would miss pages nobody thought of.
+  revalidatePath("/", "layout");
   return { ok: true };
 }

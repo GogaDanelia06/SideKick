@@ -3,6 +3,7 @@ import {
   IconLayoutDashboard,
   IconChartHistogram,
   IconHelpCircle,
+  IconPalette,
   type Icon,
 } from "@tabler/icons-react";
 import type { Bilingual } from "@/lib/content/types";
@@ -14,6 +15,7 @@ export const ADMIN = {
   businesses: "/admin/businesses",
   analytics: "/admin/analytics",
   tutorials: "/admin/tutorials",
+  appearance: "/admin/appearance",
 } as const;
 
 export type AdminPath = (typeof ADMIN)[keyof typeof ADMIN];
@@ -25,4 +27,5 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: ADMIN.businesses, label: { ka: "ბიზნესები და გეგმები", en: "Businesses & plans" }, icon: IconBuildingStore },
   { href: ADMIN.analytics, label: { ka: "ანალიტიკა", en: "Analytics" }, icon: IconChartHistogram },
   { href: ADMIN.tutorials, label: { ka: "ინსტრუქციები", en: "Help content" }, icon: IconHelpCircle },
+  { href: ADMIN.appearance, label: { ka: "იერსახე", en: "Appearance" }, icon: IconPalette },
 ];
