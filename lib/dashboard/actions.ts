@@ -102,6 +102,10 @@ export async function saveAiRules(data: FormData) {
   await upsertAiConfig(ctx.businessId, {
     roles: data.getAll("roles").map(String),
     handoffRule: (data.get("handoffRule") as string) || null,
+    // Clamped here as well as in the input, because a number field is a
+    // suggestion to a browser and nothing at all to a crafted request — and the
+    // value decides how long a serverless function is held open.
+    replyDelaySec: Math.min(120, Math.max(0, Number(data.get("replyDelaySec")) || 0)),
     leadEnabled: data.get("leadEnabled") === "on",
     leadRule: (data.get("leadRule") as string) || null,
     orderEnabled: data.get("orderEnabled") === "on",

@@ -45,6 +45,10 @@ export async function GET(request: Request) {
         faqText: true,
         policies: true,
         prompt: true,
+        // Sent so the service can see the window it is being called after —
+        // useful when a reply arrives with three questions in it and the model
+        // needs to know that is one turn rather than a batching bug.
+        replyDelaySec: true,
       },
     }),
     prisma.product.findMany({

@@ -16,6 +16,11 @@ model AiConfig {
   faqText        String?
   policies       String?
   prompt         String?
+  /// How long to wait for the customer to stop typing before answering, in
+  /// seconds. A person often sends three short messages instead of one long
+  /// one, and answering the first of them means answering a question they had
+  /// not finished asking. 0 answers immediately.
+  replyDelaySec  Int      @default(30)
   updatedAt      DateTime @updatedAt
   business       Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 }

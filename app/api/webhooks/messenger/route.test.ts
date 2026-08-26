@@ -7,7 +7,9 @@ vi.mock("next/server", () => ({ after: (fn: () => unknown) => fn() }));
 vi.mock("@/lib/channels/inbound", () => ({ recordInbound: vi.fn() }));
 vi.mock("@/lib/channels/notify", () => ({ notifyAgent: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/lib/channels/profile", () => ({ nameCustomer: vi.fn().mockResolvedValue(undefined) }));
-vi.mock("@/lib/ai/answer", () => ({ answerCustomer: vi.fn().mockResolvedValue(undefined) }));
+vi.mock("@/lib/ai/quietWindow", () => ({
+  answerAfterQuietWindow: vi.fn().mockResolvedValue(undefined),
+}));
 vi.mock("@/lib/logger", () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
@@ -16,12 +18,12 @@ import { GET, POST } from "./route";
 import { recordInbound } from "@/lib/channels/inbound";
 import { notifyAgent } from "@/lib/channels/notify";
 import { nameCustomer } from "@/lib/channels/profile";
-import { answerCustomer } from "@/lib/ai/answer";
+import { answerAfterQuietWindow } from "@/lib/ai/quietWindow";
 
 const record = vi.mocked(recordInbound);
 const notify = vi.mocked(notifyAgent);
 const name = vi.mocked(nameCustomer);
-const answer = vi.mocked(answerCustomer);
+const answer = vi.mocked(answerAfterQuietWindow);
 
 const APP_SECRET = "meta-app-secret";
 const VERIFY_TOKEN = "our-verify-token-1234";
@@ -297,7 +299,7 @@ describe("POST — receiving messages", () => {
     expect(name).not.toHaveBeenCalled();
   });
 
-  it("hands the customer's own words to the AI, not just an id", async () => {
+  it("hands the message off to the quiet window rather than answering at once", async () => {
     // Their API answers in the same call and takes the text directly — it does
     // not come back to read the message from us, so anything not passed here is
     // simply not seen. The text comes off the stored record rather than the
@@ -314,7 +316,10 @@ describe("POST — receiving messages", () => {
     const raw = body("ფასი რა ღირს?");
     await POST(post(raw, sign(raw)));
 
-    expect(answer).toHaveBeenCalledWith("b1", "conv1", "ფასი რა ღირს?");
+    // The id, not the text: the reply is composed from the whole run of what the
+    // customer said once they stop typing, and only the scheduler knows when
+    // that is. See lib/ai/quietWindow.ts.
+    expect(answer).toHaveBeenCalledWith("b1", "conv1", "m1");
   });
 
   it("does not answer a message it already had", async () => {

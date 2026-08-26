@@ -77,6 +77,32 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
         />
       </div>
 
+      <div>
+        <div className="mb-2 text-[13px] font-medium">
+          <span className="text-muted">3.</span>{" "}
+          {t({ ka: "რამდენ ხანს დაელოდოს პასუხამდე", en: "How long to wait before replying" })}
+        </div>
+        {/* Seconds, and the reason is worth saying on the screen: a merchant who
+            does not know why a delay exists will set it to zero. */}
+        <div className="flex items-center gap-2">
+          <input
+            name="replyDelaySec"
+            type="number"
+            min={0}
+            max={120}
+            defaultValue={config?.replyDelaySec ?? 30}
+            className="h-10 w-[90px] rounded-[8px] border border-input bg-soft px-3 text-[13px] outline-none focus:border-blue"
+          />
+          <span className="text-[13px] text-muted">{t({ ka: "წამი", en: "seconds" })}</span>
+        </div>
+        <p className="mt-1.5 text-[12px] text-faint">
+          {t({
+            ka: "კლიენტი ხშირად რამდენიმე მოკლე მესიჯს აგზავნის ზედიზედ. ლოდინი მათ ერთად კრებს და ერთ პასუხს აძლევს — 0 ნიშნავს მაშინვე პასუხს.",
+            en: "Customers often send several short messages in a row. Waiting gathers them into one question and one answer — 0 replies immediately.",
+          })}
+        </p>
+      </div>
+
       <div className="grid gap-4 rounded-[10px] border border-border p-4">
         <div>
           <CheckRow

@@ -97,3 +97,58 @@ export async function POST(request: Request) {
     delivery: delivery ? { status: delivery.status, detail: delivery.detail } : null,
   });
 }
+
+/** Enough for a model's context without letting one long chat page the world. */
+const HISTORY_LIMIT = 100;
+
+/**
+ * The conversation so far, oldest first.
+ *
+ * Added because the AI service had nowhere to read history from and was about to
+ * keep its own copy of it. Two stores of the same exchange drift, and when they
+ * do the merchant's inbox and the model's memory disagree about what a customer
+ * said — with the inbox being the one the merchant believes. So this is offered
+ * instead: one store, read over the same authenticated contract as everything
+ * else the service already asks us for.
+ *
+ * Oldest first because that is the order a transcript is read in and the order a
+ * prompt wants; `take` from the end and reverse, so a long chat returns its most
+ * recent hundred rather than its first.
+ */
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const businessId = url.searchParams.get("businessId");
+  const conversationId = url.searchParams.get("conversationId");
+
+  const auth = await authenticate(request, businessId);
+  if (isDenial(auth)) return auth.response;
+
+  if (!conversationId) {
+    return NextResponse.json({ error: "conversationId is required" }, { status: 400 });
+  }
+
+  // Ownership, not just existence: an id from another tenant must read as absent
+  // rather than as forbidden, and must never return a single row either way.
+  const owned = await ownedConversation(auth.businessId, conversationId);
+  if (isDenial(owned)) return owned.response;
+
+  const limit = Math.min(HISTORY_LIMIT, Math.max(1, Number(url.searchParams.get("limit")) || HISTORY_LIMIT));
+
+  const rows = await prisma.message.findMany({
+    where: { conversationId: owned.id },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: { id: true, sender: true, text: true, createdAt: true, stoppedReason: true },
+  });
+
+  return NextResponse.json({
+    conversationId: owned.id,
+    messages: rows.reverse().map((m) => ({
+      id: m.id,
+      sender: m.sender,
+      text: m.text,
+      at: m.createdAt.toISOString(),
+      stoppedReason: m.stoppedReason,
+    })),
+  });
+}

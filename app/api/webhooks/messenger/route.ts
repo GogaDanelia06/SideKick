@@ -4,7 +4,7 @@ import { PLATFORMS, parseMessagingEvents, tokensMatch, verifySignature } from "@
 import { recordInbound, type RecordedMessage } from "@/lib/channels/inbound";
 import { notifyAgent } from "@/lib/channels/notify";
 import { nameCustomer } from "@/lib/channels/profile";
-import { answerCustomer } from "@/lib/ai/answer";
+import { answerAfterQuietWindow } from "@/lib/ai/quietWindow";
 
 export const dynamic = "force-dynamic";
 
@@ -234,10 +234,9 @@ export async function POST(request: Request) {
       await nameCustomer(conversationId);
     }
 
+    // The notice goes out for every message, immediately: it announces that
+    // something arrived and is a separate concern from answering it.
     for (const result of recorded) {
-      // Kept for anyone subscribed to the push. It is a separate concern from
-      // the answer below: one announces that a message arrived, the other is
-      // the reply going back out.
       await notifyAgent({
         event: "message.received",
         businessId: result.businessId,
@@ -245,12 +244,19 @@ export async function POST(request: Request) {
         messageId: result.messageId,
         channel: result.channel,
       });
-
-      // The AI service answers in the same call rather than pushing to us
-      // later, so this is where the customer's reply is written and sent. Slow
-      // by nature, and safely so: the 200 went out before `after()` began.
-      await answerCustomer(result.businessId, result.conversationId, result.text);
     }
+
+    // The replies run together rather than one after another, because each one
+    // waits out a quiet window before deciding whether it is the message that
+    // should answer. Sequentially, three messages would wait three windows and
+    // the customer would be answered a minute and a half after they finished
+    // talking; in parallel they wait the same window once, and the last one
+    // through answers for all three. See lib/ai/quietWindow.ts.
+    await Promise.all(
+      recorded.map((result) =>
+        answerAfterQuietWindow(result.businessId, result.conversationId, result.messageId),
+      ),
+    );
   });
 
   // Ask Meta to send the batch again.
