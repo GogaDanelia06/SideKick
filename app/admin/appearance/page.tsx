@@ -1,21 +1,22 @@
-import { BG_KEY, DEFAULT_BACKGROUND } from "@/lib/site/backgrounds";
-import { getSiteValue } from "@/lib/site/content";
+import { readTheme } from "@/lib/site/theme/read";
 import { AdminHeading } from "@/components/admin/ui/AdminHeading";
-import { BackgroundPicker } from "@/components/admin/appearance/BackgroundPicker";
+import { ThemeEditor } from "@/components/admin/appearance/ThemeEditor";
 
 export default async function AdminAppearancePage() {
-  const current = (await getSiteValue(BG_KEY)) ?? DEFAULT_BACKGROUND;
+  const theme = await readTheme();
 
   return (
     <>
       <AdminHeading
         title={{ ka: "იერსახე", en: "Appearance" }}
         subtitle={{
-          ka: "ფონის ფერი საიტისთვის და დაშბორდისთვის. აირჩიე — მაშინვე დაინახავ, შემდეგ შეინახე.",
-          en: "The background colour for the site and the dashboard. Pick one to see it, then save.",
+          ka: "საიტისა და დაშბორდის ფერები. აირჩიე — მაშინვე დაინახავ ეკრანზე, შემდეგ შეინახე.",
+          en: "The colours of the site and the dashboard. Change one and you see it immediately, then save.",
         }}
       />
-      <BackgroundPicker current={current} />
+      {/* Opens on the dark palette. The tab switches the page's own theme too, so
+          whichever one is being edited is the one on screen. */}
+      <ThemeEditor initial={theme} shade="dark" />
     </>
   );
 }

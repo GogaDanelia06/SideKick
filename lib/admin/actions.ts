@@ -7,7 +7,7 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { findGroup, findLegalDoc, legalTitleKey } from "@/lib/site/textKeys";
-import { BACKGROUNDS, BG_KEY } from "@/lib/site/backgrounds";
+import { THEME_KEY, sanitizeTheme } from "@/lib/site/theme/css";
 import { ICON_NAMES } from "@/lib/content/icons";
 import { STAT_SOURCE_KEYS } from "@/lib/site/statSources";
 import { CHANNEL_TYPES } from "@/lib/dashboard/channels";
@@ -981,22 +981,31 @@ export async function setBusinessPlan(
 /* ── Appearance ─────────────────────────────────────────────────────────── */
 
 /**
- * The page background, for the marketing site and the dashboard alike.
+ * The platform palette, for the marketing site and the dashboard alike.
  *
- * The id is checked against the preset list rather than stored as given. It
- * reaches `<style>` in the root layout, so an unvetted value would be a way to
- * write CSS into every page on the platform.
+ * Stored as one row rather than one row per colour: the values are only ever
+ * read and written together, and a half-applied palette — six colours saved and
+ * twelve not — is a state nobody should be able to see.
+ *
+ * `sanitizeTheme` is what makes this safe. The result is written into a `<style>`
+ * element on every page, so anything that is not a known token holding a
+ * `#rrggbb` value is dropped and replaced with the shipped colour.
  */
-export async function updateBackground(fd: FormData): Promise<AdminResult> {
+export async function updateTheme(fd: FormData): Promise<AdminResult> {
   await requireAdmin();
 
-  const id = field(fd, "background");
-  if (!BACKGROUNDS.some((b) => b.id === id)) return { ok: false, error: "unknown_background" };
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(field(fd, "theme"));
+  } catch {
+    return { ok: false, error: "bad_theme" };
+  }
 
+  const value = JSON.stringify(sanitizeTheme(parsed));
   await prisma.siteSetting.upsert({
-    where: { key: BG_KEY },
-    create: { key: BG_KEY, valueKa: id },
-    update: { valueKa: id },
+    where: { key: THEME_KEY },
+    create: { key: THEME_KEY, valueKa: value },
+    update: { valueKa: value },
   });
 
   // Every route sits under the root layout that reads this, so the whole tree

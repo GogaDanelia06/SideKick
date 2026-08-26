@@ -1,19 +1,12 @@
 import type { Bilingual } from "@/lib/content/types";
 
 /**
- * The page background, chosen once by the platform admin.
+ * Ready-made starting points for the background pair.
  *
- * Deliberately a short list rather than a colour picker. The background is the
- * one colour every other colour in the design sits on: text, cards, borders and
- * the translucent header are all tuned against it. A free hex field lets a
- * client pick something that makes their own site unreadable, and they would
- * only discover it after saving. Each preset here is a subtle tint of the
- * original, so text contrast stays where it was and cards still read as raised.
- *
- * Both surfaces move together — `bg` is the marketing site, `canvas` is
- * everything inside `.dash-scope` (the merchant dashboard *and* this admin
- * panel). Nothing else is touched: cards, ink, borders and accents keep their
- * values, which is what keeps a preset from being able to break a screen.
+ * These shipped before the full colour editor and `site_bg` still holds a live
+ * choice, so they stay for two reasons: they migrate that choice forward (see
+ * theme/read.ts), and they are the one-click way into the editor for someone who
+ * only wants a different background and not eighteen decisions.
  */
 
 export const BG_KEY = "site_bg";
@@ -72,45 +65,4 @@ export const BACKGROUNDS: BackgroundPreset[] = [
  *  exists should show the site as it shipped, not a blank page. */
 export function findBackground(id: string | null | undefined): BackgroundPreset {
   return BACKGROUNDS.find((b) => b.id === id) ?? BACKGROUNDS[0];
-}
-
-/** #rrggbb → rgba(), for the translucent sticky headers. */
-function rgba(hex: string, alpha: number): string {
-  const n = Number.parseInt(hex.slice(1), 16);
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
-}
-
-/**
- * The override block injected into <head>.
- *
- * Every selector carries an extra `html` on the front. Not decoration: a <style>
- * element and the stylesheet <link> can land in either order depending on the
- * build, and `:root` against `:root` would then be decided by that order. The
- * added type selector wins on specificity instead, so the choice holds
- * regardless. Values come only from the list above, never from user input, so
- * there is nothing to escape.
- */
-export function backgroundCss(id: string | null | undefined): string {
-  const p = findBackground(id);
-  return p.id === DEFAULT_BACKGROUND ? "" : cssFor(p);
-}
-
-/**
- * Same block, but emitted for the default too.
- *
- * The admin's live preview needs it: the page it is previewing on may already
- * carry a saved override, and "" would leave that override standing — picking
- * Default would then appear to do nothing.
- */
-export function backgroundPreviewCss(id: string | null | undefined): string {
-  return cssFor(findBackground(id));
-}
-
-function cssFor(p: BackgroundPreset): string {
-  return [
-    `html:root{--bg:${p.dark.bg};--header-bg:${rgba(p.dark.bg, 0.85)}}`,
-    `html .dash-scope{--canvas:${p.dark.canvas}}`,
-    `html:root[data-theme="light"]{--bg:${p.light.bg};--header-bg:${rgba(p.light.bg, 0.85)}}`,
-    `html:root[data-theme="light"] .dash-scope{--canvas:${p.light.canvas}}`,
-  ].join("");
 }
