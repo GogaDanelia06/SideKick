@@ -55,13 +55,23 @@ export function ColorField({
         changed ? "border-blue" : "border-border"
       }`}
     >
-      <input
-        type="color"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-label={t(token.label)}
-        className="size-9 shrink-0 cursor-pointer rounded-md border border-border bg-transparent p-0"
-      />
+      {/* The swatch is a plain box painted with the value, and the real input sits
+          on top of it invisibly. A bare `input[type=color]` is drawn by the OS
+          with its own chrome and padding, which on a near-black colour leaves a
+          pale frame around a small dark patch — the one field whose whole job is
+          to show you a colour was the hardest to read. */}
+      <span
+        style={{ background: value }}
+        className="relative size-9 shrink-0 overflow-hidden rounded-md border border-border focus-within:ring-2 focus-within:ring-blue-ring"
+      >
+        <input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-label={t(token.label)}
+          className="absolute inset-0 size-full cursor-pointer opacity-0"
+        />
+      </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5 truncate text-[13px] font-medium">
           {t(token.label)}

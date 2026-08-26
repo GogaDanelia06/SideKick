@@ -4,11 +4,11 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { themeCss, type Theme } from "@/lib/site/theme/css";
 import { GROUPS, TOKENS, defaultColors, type Shade } from "@/lib/site/theme/tokens";
 import { updateTheme } from "@/lib/admin/actions";
-import { useLanguage } from "@/lib/i18n/useLanguage";
 import { ColorField } from "./ColorField";
 import { ContrastNotes } from "./ContrastNotes";
 import { ThemeActions } from "./ThemeActions";
 import { ThemePreview } from "./ThemePreview";
+import { ThemeSection } from "./ThemeSection";
 import { ThemeToolbar } from "./ThemeToolbar";
 
 function countChanges(draft: Theme, saved: Theme): number {
@@ -19,7 +19,6 @@ function countChanges(draft: Theme, saved: Theme): number {
 }
 
 export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade: Shade }) {
-  const { t } = useLanguage();
   const [shade, setShade] = useState<Shade>(opened);
   const [draft, setDraft] = useState<Theme>(initial);
   const [saved, setSaved] = useState<Theme>(initial);
@@ -80,12 +79,17 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
       <div className="flex min-w-0 flex-1 flex-col gap-5">
         <ThemeToolbar shade={shade} onShade={setShade} onPreset={patch} />
 
-        {GROUPS.map((g) => (
-          <section key={g.id}>
-            <h3 className="text-[13px] font-semibold">{t(g.label)}</h3>
-            <p className="mb-2 text-[11px] text-muted">{t(g.hint)}</p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {TOKENS.filter((x) => x.group === g.id).map((token) => (
+        {GROUPS.map((g) => {
+          const tokens = TOKENS.filter((x) => x.group === g.id);
+          return (
+            <ThemeSection
+              key={g.id}
+              group={g.id}
+              title={g.label}
+              hint={g.hint}
+              count={tokens.length}
+            >
+              {tokens.map((token) => (
                 <ColorField
                   key={token.id}
                   token={token}
@@ -95,9 +99,9 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
                   onRevert={() => patch({ [token.id]: saved[shade][token.id] })}
                 />
               ))}
-            </div>
-          </section>
-        ))}
+            </ThemeSection>
+          );
+        })}
       </div>
 
       <aside className="flex w-full shrink-0 flex-col gap-3 xl:sticky xl:top-4 xl:w-[320px]">

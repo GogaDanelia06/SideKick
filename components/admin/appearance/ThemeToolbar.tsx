@@ -19,25 +19,30 @@ export function ThemeToolbar({
   const { t } = useLanguage();
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex w-fit gap-1 rounded-[9px] border border-border bg-card p-1">
-        {(["dark", "light"] as const).map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => onShade(s)}
-            className={`${TAB} ${s === shade ? "bg-soft text-ink" : "text-muted hover:text-ink"}`}
-          >
-            {s === "dark"
-              ? t({ ka: "მუქი თემა", en: "Dark theme" })
-              : t({ ka: "ღია თემა", en: "Light theme" })}
-          </button>
-        ))}
+    <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-3.5">
+      <div>
+        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-faint">
+          {t({ ka: "რომელ თემას ასწორებ", en: "Which theme you are editing" })}
+        </p>
+        <div className="flex w-fit gap-1 rounded-[9px] border border-border bg-soft p-1">
+          {(["dark", "light"] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => onShade(s)}
+              className={`${TAB} ${s === shade ? "bg-surface text-ink" : "text-muted hover:text-ink"}`}
+            >
+              {s === "dark"
+                ? t({ ka: "მუქი თემა", en: "Dark theme" })
+                : t({ ka: "ღია თემა", en: "Light theme" })}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div>
-        <p className="mb-1.5 text-[11px] uppercase tracking-wide text-faint">
-          {t({ ka: "მზა პალიტრები", en: "Ready-made palettes" })}
+        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-faint">
+          {t({ ka: "მზა პალიტრები — ერთი დაჭერით", en: "Ready-made palettes — one click" })}
         </p>
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((p) => {
@@ -47,7 +52,7 @@ export function ThemeToolbar({
                 key={p.id}
                 type="button"
                 onClick={() => onPreset(presetColors(p, shade))}
-                className="flex items-center gap-2 rounded-lg border border-border bg-card py-1.5 pl-1.5 pr-2.5 text-[12px] hover:border-ink/40"
+                className="flex items-center gap-2 rounded-lg border border-border bg-surface py-1.5 pl-1.5 pr-2.5 text-[12px] hover:border-ink/40"
               >
                 <span className="flex overflow-hidden rounded-md border border-border">
                   <span aria-hidden style={{ background: bg }} className="size-6" />
