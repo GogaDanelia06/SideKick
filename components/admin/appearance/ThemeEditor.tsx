@@ -7,16 +7,26 @@ import { updateTheme } from "@/lib/admin/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { ColorField } from "./ColorField";
 import { ContrastNotes } from "./ContrastNotes";
+import { ThemeActions } from "./ThemeActions";
 import { ThemePreview } from "./ThemePreview";
 import { ThemeToolbar } from "./ThemeToolbar";
+
+function countChanges(draft: Theme, saved: Theme): number {
+  return (["dark", "light"] as const).reduce(
+    (n, s) => n + TOKENS.filter((t) => draft[s][t.id] !== saved[s][t.id]).length,
+    0,
+  );
+}
 
 export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade: Shade }) {
   const { t } = useLanguage();
   const [shade, setShade] = useState<Shade>(opened);
   const [draft, setDraft] = useState<Theme>(initial);
+  const [saved, setSaved] = useState<Theme>(initial);
   const [pending, start] = useTransition();
   const [status, setStatus] = useState<"idle" | "saved" | "failed">("idle");
   const entered = useRef(opened);
+  const changed = countChanges(draft, saved);
 
   // The draft, applied to the real page. This panel is one of the surfaces being
   // edited, so the preview is the thing itself rather than a picture of it.
@@ -39,6 +49,15 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
     return () => document.documentElement.setAttribute("data-theme", original);
   }, []);
 
+  // Unsaved colours look saved: the whole panel is already wearing them. Without
+  // this, closing the tab silently throws the work away.
+  useEffect(() => {
+    if (changed === 0) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [changed]);
+
   const colors = draft[shade];
   const patch = (next: Record<string, string>) =>
     setDraft((d) => ({ ...d, [shade]: { ...d[shade], ...next } }));
@@ -47,8 +66,10 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
     setStatus("idle");
     start(async () => {
       const res = await updateTheme(fd);
-      setStatus(res.ok ? "saved" : "failed");
-      if (res.ok) setTimeout(() => setStatus("idle"), 2500);
+      if (!res.ok) return setStatus("failed");
+      setSaved(draft);
+      setStatus("saved");
+      setTimeout(() => setStatus("idle"), 3000);
     });
   }
 
@@ -69,7 +90,9 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
                   key={token.id}
                   token={token}
                   value={colors[token.id]}
+                  saved={saved[shade][token.id]}
                   onChange={(hex) => patch({ [token.id]: hex })}
+                  onRevert={() => patch({ [token.id]: saved[shade][token.id] })}
                 />
               ))}
             </div>
@@ -80,28 +103,13 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
       <aside className="flex w-full shrink-0 flex-col gap-3 xl:sticky xl:top-4 xl:w-[320px]">
         <ThemePreview colors={colors} />
         <ContrastNotes colors={colors} />
-        <div className="flex items-center gap-2">
-          <button
-            type="submit"
-            disabled={pending}
-            className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60"
-          >
-            {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
-          </button>
-          <button
-            type="button"
-            onClick={() => patch(defaultColors(shade))}
-            className="h-9 rounded-[8px] border border-border px-3 text-[12px] text-muted hover:text-ink"
-          >
-            {t({ ka: "ნაგულისხმევზე დაბრუნება", en: "Reset" })}
-          </button>
-          {status === "saved" ? (
-            <span className="text-[12px] text-green">{t({ ka: "შენახულია", en: "Saved" })}</span>
-          ) : null}
-          {status === "failed" ? (
-            <span className="text-[12px] text-red">{t({ ka: "ვერ შეინახა", en: "Could not save" })}</span>
-          ) : null}
-        </div>
+        <ThemeActions
+          pending={pending}
+          status={status}
+          changed={changed}
+          onDiscard={() => setDraft(saved)}
+          onReset={() => patch(defaultColors(shade))}
+        />
       </aside>
     </form>
   );

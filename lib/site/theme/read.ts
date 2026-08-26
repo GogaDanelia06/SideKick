@@ -1,7 +1,10 @@
 import { log } from "@/lib/logger";
 import { getSiteValue } from "@/lib/site/content";
-import { BG_KEY, findBackground } from "@/lib/site/backgrounds";
+import { findPreset, presetColors } from "./presets";
 import { THEME_KEY, defaultTheme, sanitizeTheme, type Theme } from "./css";
+
+/** The background-only setting this screen shipped with. */
+export const BG_KEY = "site_bg";
 
 /**
  * The saved palette, or the shipped one.
@@ -27,13 +30,20 @@ export async function readTheme(): Promise<Theme> {
   return fromPreset(preset);
 }
 
-/** The five original background presets, expressed in the new shape. */
+/**
+ * The old background-only choice, in the new shape.
+ *
+ * Only `bg` and `canvas` are carried across, not the whole preset. Someone who
+ * picked a background months ago did not choose new borders and a new grey, and
+ * a deploy is the wrong moment to decide they did.
+ */
 function fromPreset(id: string | null): Theme {
   const theme = defaultTheme();
-  const p = findBackground(id);
-  theme.dark.bg = p.dark.bg;
-  theme.dark.canvas = p.dark.canvas;
-  theme.light.bg = p.light.bg;
-  theme.light.canvas = p.light.canvas;
+  const p = findPreset(id);
+  for (const shade of ["dark", "light"] as const) {
+    const colors = presetColors(p, shade);
+    theme[shade].bg = colors.bg;
+    theme[shade].canvas = colors.canvas;
+  }
   return theme;
 }

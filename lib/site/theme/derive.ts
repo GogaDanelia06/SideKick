@@ -66,7 +66,11 @@ export function derived(c: ThemeColors, shade: Shade): { root: ThemeColors; dash
 
   return {
     root: {
-      "--card2": c.card,
+      // A card sitting on a card. In the dark palette it is a step *away* from
+      // the page; in the light one the page itself is already the brighter of
+      // the two, so it borrows that. One formula for both made nested cards
+      // vanish in light mode.
+      "--card2": dark ? mix(c.card, WHITE, 0.05) : c.bg,
       "--sidebar": c.card,
       "--primary-h": mix(c.primary, toward, dark ? 0.16 : 0.1),
       "--header-bg": rgba(c.bg, 0.85),

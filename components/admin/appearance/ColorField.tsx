@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { IconRotate2 } from "@tabler/icons-react";
 import { isHex } from "@/lib/site/theme/derive";
 import type { ThemeToken } from "@/lib/site/theme/tokens";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -17,11 +18,16 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 export function ColorField({
   token,
   value,
+  saved,
   onChange,
+  onRevert,
 }: {
   token: ThemeToken;
   value: string;
+  /** The value on the server, so an edit can be undone one field at a time. */
+  saved: string;
   onChange: (hex: string) => void;
+  onRevert: () => void;
 }) {
   const { t } = useLanguage();
   const [text, setText] = useState(value);
@@ -41,8 +47,14 @@ export function ColorField({
     if (isHex(withHash)) onChange(withHash.toLowerCase());
   }
 
+  const changed = value !== saved;
+
   return (
-    <div className="flex items-center gap-2.5 rounded-lg border border-border bg-card p-2.5">
+    <div
+      className={`flex items-center gap-2.5 rounded-lg border bg-card p-2.5 ${
+        changed ? "border-blue" : "border-border"
+      }`}
+    >
       <input
         type="color"
         value={value}
@@ -51,7 +63,22 @@ export function ColorField({
         className="size-9 shrink-0 cursor-pointer rounded-md border border-border bg-transparent p-0"
       />
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[13px] font-medium">{t(token.label)}</span>
+        <span className="flex items-center gap-1.5 truncate text-[13px] font-medium">
+          {t(token.label)}
+          {/* Named, not just outlined — the blue border alone would leave someone
+              who cannot see it wondering which fields they had touched. */}
+          {changed ? (
+            <button
+              type="button"
+              onClick={onRevert}
+              title={t({ ka: "დაბრუნება", en: "Undo this change" })}
+              className="inline-flex items-center gap-0.5 rounded-full bg-blue-surface px-1.5 text-[10px] font-medium text-blue"
+            >
+              <IconRotate2 size={11} />
+              {t({ ka: "შეცვლილი", en: "changed" })}
+            </button>
+          ) : null}
+        </span>
         <span className="block truncate text-[11px] text-muted">{t(token.hint)}</span>
       </span>
       <input
