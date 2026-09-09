@@ -47,6 +47,9 @@ what makes a re-send land on the same row instead of creating a second copy.
 | --- | --- | --- |
 | `META_APP_SECRET` | to receive messages | From the Meta App Dashboard. Proves a delivery really came from Facebook. Without it the endpoint answers `503` rather than trusting unsigned events. |
 | `META_VERIFY_TOKEN` | to complete setup | A string **we invent**. It only has to match what is typed into the App Dashboard. 16+ characters. |
+| `META_APP_ID` | to connect a Page | Facebook Login's client id, used by the connect button. |
+| `INSTAGRAM_APP_ID` | to connect Instagram | The **Instagram** app's client id. A different application; `META_APP_ID` here fails as "invalid client". |
+| `INSTAGRAM_APP_SECRET` | to receive Instagram | Signs Instagram's webhook deliveries **and** its token exchange. Without it every Instagram delivery fails its signature check and vanishes. |
 | `AI_SERVICE_WEBHOOK_URL` | to notify the AI | Where we `POST` "a customer wrote in". Supplied by the AI team. |
 | `AI_SERVICE_WEBHOOK_TOKEN` | to notify the AI | Bearer token we send with that push, so they can tell it is us. 32+ characters. |
 | `AI_SERVICE_URL` | **to get replies** | Base URL of the AI service, e.g. `https://si-….on.aws`. Paths are appended to it. |
@@ -82,40 +85,69 @@ matches. A `403` at this step means the two tokens differ.
 
 ## Instagram
 
-**No second endpoint.** Instagram messages arrive at this same URL, because they
-belong to the same Meta app. The envelope is identical to Messenger's —
-`entry[].messaging[]`, `sender.id`, `message.mid`, `message.text`, `is_echo` —
-and the only difference is the `object` at the top:
+**No second endpoint** — Instagram messages arrive at this same URL. Almost
+everything else about it is different, and the temptation to treat it as
+"Messenger with another `object`" is the single most expensive assumption in
+this codebase's history.
 
-| | `object` | `entry[].id` | `sender.id` | Channel |
-| --- | --- | --- | --- | --- |
-| Messenger | `"page"` | Page id | PSID | `FACEBOOK` |
-| Instagram | `"instagram"` | Instagram account id (IGID) | IGSID | `INSTAGRAM` |
+| | Messenger | Instagram |
+| --- | --- | --- |
+| `object` | `"page"` | `"instagram"` |
+| `entry[].id` | Page id | Instagram **business account** id (`17841…`) |
+| Sender | PSID | IGSID |
+| Authorises via | Facebook Login | **Instagram Login**, on instagram.com |
+| App credentials | `META_APP_*` | `INSTAGRAM_APP_*` — a separate application |
+| Token | Page token (`EAA…`) | Instagram token (`IGA…`) |
+| Signs the webhook with | `META_APP_SECRET` | `INSTAGRAM_APP_SECRET` |
+| Replies go to | `graph.facebook.com` | `graph.instagram.com` |
+| Scopes | `pages_messaging` | `instagram_business_basic`, `instagram_business_manage_messages` |
 
-That one field is what decides which channel the message is filed under and,
-through it, which channel the reply goes back out on. Replies use the same
-Page Access Token and the same `/{id}/messages` call.
+Every row of that table produced **silence rather than an error** when it was
+wrong. A delivery signed with the Instagram secret and checked only against the
+Facebook one is rejected with a 403 that Meta never retries; an account id read
+from the wrong field matches no tenant and is dropped. Neither looks different
+from "Meta is not sending anything".
 
-To turn it on in Meta:
+### The two subscriptions
 
-1. The Instagram account must be **professional** (Business or Creator) and
-   **linked to the Facebook Page**. A personal account cannot receive this.
-2. In the **Instagram app** → Settings → Messages and story replies → **Message
-   controls** → turn on **"Allow access to messages"**. This is the step most
-   often missed; without it Meta accepts the subscription and then sends
-   nothing.
-3. App Dashboard → **Products → Instagram → API setup with Instagram login** (or
-   Webhooks → Instagram) → the same Callback URL and Verify Token as above.
-4. Subscribe to the `messages` field for Instagram as well — subscribing on the
-   Messenger product does not cover it.
-5. Permissions: `instagram_basic`, `instagram_manage_messages` and
-   `pages_manage_metadata`, submitted in the **same App Review** as
-   `pages_messaging`.
+Both are required and having one does not imply the other:
+
+1. **The app** must subscribe to the `instagram` object, with our callback URL —
+   separate from its `page` subscription. Check it with:
+   `GET /v23.0/{app-id}/subscriptions?access_token={app-id}|{app-secret}`
+2. **The account** must subscribe to the app. `connectInstagramFromCode` does
+   this via `POST /me/subscribed_apps?subscribed_fields=messages`, and treats a
+   failure as a failed connection — an account that is linked but unsubscribed
+   receives nothing at all.
+
+### Ids are large and must stay strings
+
+`17841436214263005` is past `2^53`, so reading it as a JSON number rounds it.
+`fetchAccount` takes `user_id` from `/me?fields=user_id,username` and refuses
+anything that is not a string, because an id that is off by one matches no
+webhook and produces a connection that looks complete and drops every message.
 
 Note the ids are per-surface. A customer who writes on both Instagram and
 Messenger has two different ids, so they are two conversations, not one. Merging
 them would need Meta's identity APIs and their permission, and guessing at it
 would show one customer another's messages.
+
+### Tokens expire, and are renewed for you
+
+Instagram tokens are long-lived for **60 days**. `Channel.tokenExpiresAt`
+records the date, and a daily cron — `/api/cron/instagram-refresh`, scheduled in
+`vercel.json` — renews anything inside 15 days of expiry.
+
+Two limits shape that job. Meta refuses to renew a token **younger than 24
+hours**, and refuses entirely once one has **already lapsed** — after which the
+only way back is the **Reconnect** button on the channels page. So it runs well
+ahead of the deadline rather than at it, and a failure is logged at `error`
+because nobody is watching and the window to fix it by hand closes when the
+token does.
+
+The route needs `CRON_SECRET`. With none set it answers 401 to everything,
+including Vercel: an unauthenticated job anyone can trigger calls Meta on demand
+for every connected account.
 
 ---
 
@@ -125,12 +157,22 @@ Meta's delivery names the **Page** or the **Instagram account**, never the
 business. The routing key is the pair `(Channel.type, Channel.externalId)`:
 `FACEBOOK` + page id, or `INSTAGRAM` + IGID → channel → business.
 
-Every business is provisioned with a row per channel already, so connecting one
-means filling in `externalId`, `accessToken` and `connected` on the row that is
-there — not creating one. Today that has to be done directly in the database;
-there is no screen for it yet, which is the main gap listed below. A channel only
-accepts messages when `connected` is true, so switching a channel off in the
-dashboard really does stop the AI answering for that tenant.
+Merchants connect their own accounts from **Dashboard → Channels**. Each row has
+its own button, because the two flows are separate authorisations:
+`/api/channels/facebook/start` and `/api/channels/instagram/start`. A row that is
+already linked keeps a quieter **Reconnect** — a token can expire or be granted
+with the wrong scopes, and in both cases the row looks perfectly connected while
+receiving nothing.
+
+Every business is provisioned with a row per channel already, so connecting fills
+in `externalId`, `accessToken`, `connected`, `status` and `lastSyncAt` on the row
+that is there rather than creating a second one. A channel only accepts messages
+when `connected` is true, so switching it off in the dashboard really does stop
+the AI answering for that tenant.
+
+`(type, externalId)` is unique across the whole table, so an account already
+linked to another business is refused rather than stolen — the callback reports
+`already_linked` instead of throwing a 500 at the end of a consent flow.
 
 ---
 
@@ -289,19 +331,15 @@ inbox can show what actually reached the customer.
 
 ## What is still missing
 
-1. **A connection screen.** Tenants cannot link their own page — the dashboard's
-   channel toggle sets `connected` but collects neither the page id nor its
-   token. Doing it properly means Facebook Login for Business, which supplies
-   **both** in one flow.
-2. **App Review.** Until Meta approves `pages_messaging` and
-   `instagram_manage_messages`, the app only works on pages and accounts
-   belonging to someone with a role in it. That is enough to test and not enough
+1. **WhatsApp.** `ChannelType` has it and nothing behind it. Genuinely a
+   different integration — a different envelope, a different Send API, and
+   message templates instead of a 24-hour window.
+2. **App Review.** Until Meta approves `pages_messaging` for the Facebook app
+   and `instagram_business_manage_messages` for the Instagram one, both only
+   work for people who hold a role in them — and the invitation has to be
+   *accepted* by the tester, not just sent. That is enough to test and not enough
    to sell. It is the longest lead time in this project and it belongs to whoever
    owns the Meta app.
-3. **WhatsApp.** `ChannelType` has it, and it is genuinely a different
-   integration: a different envelope (`entry[].changes[]`, not `messaging[]`), a
-   different Send API, and message templates instead of a 24-hour window. It is
-   refused here rather than half-read.
 4. **`AI_SERVICE_WEBHOOK_URL`.** The push notice is a separate thing from the
    reply, and nothing subscribes to it yet. The replies do not depend on it —
    see [Who answers](#who-answers).

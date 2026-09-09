@@ -45,6 +45,14 @@ model Channel {
   /// and why the webhook treats "no match" as a message for somebody else.
   externalId String?
   lastSyncAt DateTime?
+  /// When `accessToken` stops working, for the providers that say so.
+  ///
+  /// Instagram Login issues sixty-day tokens and does not renew them. Without a
+  /// date there is nothing to schedule against: the channel goes on reporting
+  /// "connected" while Meta quietly refuses every call, which is the same
+  /// silence a wrong id or a missing subscription produces and takes as long to
+  /// tell apart. Null for Facebook Page tokens, which do not expire on a clock.
+  tokenExpiresAt DateTime?
 
   business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
   conversations Conversation[]

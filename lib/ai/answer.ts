@@ -58,13 +58,16 @@ export async function answerCustomer(
   // discarded still costs money to produce.
   const verdict = await checkLimit(businessId, "messages");
   if (!verdict.allowed) {
-    log.warn("AI reply withheld — the plan's message limit is spent", {
-      businessId,
-      conversationId,
-      used: verdict.used,
-      limit: verdict.limit,
-    });
-    await markLastMessage(conversationId, "limit_reached");
+    // The two refusals are recorded apart because they need different actions
+    // from whoever reads the inbox: one is "upgrade", the other is "renew".
+    const expired = verdict.reason === "expired";
+    log.warn(
+      expired
+        ? "AI reply withheld — the subscription has lapsed past its grace period"
+        : "AI reply withheld — the plan's message limit is spent",
+      { businessId, conversationId, used: verdict.used, limit: verdict.limit },
+    );
+    await markLastMessage(conversationId, expired ? "subscription_expired" : "limit_reached");
     return;
   }
 

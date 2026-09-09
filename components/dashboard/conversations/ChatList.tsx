@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import type { ChannelType } from "@prisma/client";
-import { IconExclamationMark, IconInbox, IconRobotOff } from "@tabler/icons-react";
+import { IconCreditCard, IconExclamationMark, IconInbox, IconRobotOff } from "@tabler/icons-react";
 import { CHANNEL_META, CHANNEL_ORDER } from "@/lib/dashboard/channelMeta";
 import type { ConversationRow } from "@/lib/dashboard/queries";
 import type { Bilingual, IconType } from "@/lib/content/types";
@@ -13,10 +13,13 @@ const RING: Record<ConversationRow["ring"], string> = {
   order: "border-green",
   none: "border-border",
 };
-const ALERT: Record<"wait" | "aierr" | "aioff", { icon: IconType; cls: string }> = {
+const ALERT: Record<"wait" | "aierr" | "aioff" | "billing", { icon: IconType; cls: string }> = {
   wait: { icon: IconExclamationMark, cls: "bg-red-surface text-red" },
   aierr: { icon: IconExclamationMark, cls: "bg-amber-surface text-amber" },
   aioff: { icon: IconRobotOff, cls: "bg-soft text-muted" },
+  // Blue, not amber: this is not a fault. The assistant stopped because the
+  // plan says so, and the fix is on the billing page rather than in the logs.
+  billing: { icon: IconCreditCard, cls: "bg-blue-surface text-blue" },
 };
 
 /**
@@ -33,6 +36,7 @@ const LEGEND: { cls: string; icon?: IconType; label: Bilingual }[] = [
   { cls: ALERT.wait.cls, icon: ALERT.wait.icon, label: { ka: "ელოდება ადამიანს", en: "Waiting for a human" } },
   { cls: ALERT.aierr.cls, icon: ALERT.aierr.icon, label: { ka: "AI შეცდომა", en: "AI error" } },
   { cls: ALERT.aioff.cls, icon: ALERT.aioff.icon, label: { ka: "AI გათიშული", en: "AI off" } },
+  { cls: ALERT.billing.cls, icon: ALERT.billing.icon, label: { ka: "გეგმა ამოიწურა", en: "Plan spent or lapsed" } },
 ];
 
 function ago(mins: number): Bilingual {

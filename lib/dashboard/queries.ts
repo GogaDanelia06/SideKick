@@ -1,5 +1,6 @@
 import type { ChannelType, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { BILLING_STOPS } from "@/lib/billing/limits";
 import { fmtDate, fmtTime } from "./time";
 
 export function getLeads(businessId: string) {
@@ -374,7 +375,9 @@ export async function getConversations(businessId: string, channel?: ChannelType
       alert: c.botPausedUntil && c.botPausedUntil > new Date()
         ? ("wait" as const)
         : last?.stoppedReason
-          ? ("aierr" as const)
+          ? BILLING_STOPS.has(last.stoppedReason)
+            ? ("billing" as const)
+            : ("aierr" as const)
           : !c.aiEnabled
             ? ("aioff" as const)
             : ("none" as const),

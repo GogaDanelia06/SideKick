@@ -93,3 +93,25 @@ describe("subscribeToMessages()", () => {
     await expect(subscribeToMessages("IGA_TOKEN")).resolves.toBe(false);
   });
 });
+
+describe("cron route authorisation", () => {
+  it("refuses when CRON_SECRET is unset rather than defaulting to open", async () => {
+    // An unauthenticated job anyone can trigger is worse than one that does not
+    // run: it calls Meta on demand for every connected account.
+    delete process.env.CRON_SECRET;
+    const { GET } = await import("@/app/api/cron/instagram-refresh/route");
+    const res = await GET(new Request("https://sidekick.ge/api/cron/instagram-refresh"));
+    expect(res.status).toBe(401);
+  });
+
+  it("refuses a wrong secret", async () => {
+    process.env.CRON_SECRET = "the-real-one";
+    const { GET } = await import("@/app/api/cron/instagram-refresh/route");
+    const res = await GET(
+      new Request("https://sidekick.ge/api/cron/instagram-refresh", {
+        headers: { authorization: "Bearer not-it" },
+      }),
+    );
+    expect(res.status).toBe(401);
+  });
+});

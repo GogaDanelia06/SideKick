@@ -77,7 +77,7 @@ manager, not a document. **Do not commit real credentials to this file.**
 - **Registration and sign-in** — bcrypt passwords, JWT sessions, optional Google
   provider.
 - **Password recovery** — hashed single-use tokens, 60-minute expiry, no account
-  enumeration. Delivery is the only missing piece.
+  enumeration, delivered by email.
 - **Roles and permissions** — OWNER / ADMIN / OPERATOR / VIEWER enforced on the
   server for all 22 write actions. Verified by replaying the same crafted
   request under three different roles.
@@ -102,14 +102,21 @@ manager, not a document. **Do not commit real credentials to this file.**
 
 Ordered by how likely each is to matter.
 
-### 1. Email is not delivered
+### 1. Email — RESOLVED
 
-`lib/mail/send.ts` logs to the console instead of sending. **A user who forgets
-their password today cannot recover it without a developer reading the server
-log.** Everything else in the flow works.
+`lib/mail/send.ts` sends through Resend. Password recovery and signup
+confirmation both deliver.
 
-*Fix:* implement `deliver()`, add the provider key, verify the sending domain.
-See [DEPLOYMENT.md](DEPLOYMENT.md#email). Roughly an hour, most of it DNS.
+Two things are worth knowing, because both cost a day to find once:
+
+- **`MAIL_FROM` must sit on the verified sending domain**, which is
+  `send.sidekick.ge`, not the root. Addressing the root is refused by Resend —
+  and the refusal is quiet, because mail to the Resend account owner's own inbox
+  still arrives. It looks like email works until a real customer tries it.
+- **A refused send is logged, not surfaced.** `/api/auth/forgot` answers `ok`
+  whether or not the message left, on purpose: saying otherwise would reveal
+  which addresses have accounts. `password reset email could not be sent` in the
+  logs is the only trace.
 
 ### 2. The chat widget is a keyword matcher, not AI
 
@@ -144,7 +151,7 @@ protection. This was chosen so the marketing pages stay statically rendered — 
 nonce has to be minted per request, which forces dynamic rendering and costs the
 SEO and performance those pages depend on.
 
-*Fix path, if it becomes a priority:* mint a nonce in `middleware.ts`, add
+*Fix path, if it becomes a priority:* mint a nonce in `proxy.ts`, add
 `'nonce-<value>'` to the policy, drop `'unsafe-inline'`, and thread the nonce
 through the JSON-LD `<script>` tags in `components/seo/JsonLd.tsx`. Accept that
 marketing pages become dynamic.
@@ -157,12 +164,47 @@ passwords only — it cannot retroactively fix stored ones.
 
 *Fix:* force a reset for those accounts.
 
-### 7. Channels are modelled, not connected
+### 7. Channels — Facebook and Instagram are live; WhatsApp is not
 
-`Channel` rows exist and can be toggled, but no OAuth or webhook runs behind the
-toggle. This is **not** an oversight — the Facebook/Instagram/WhatsApp
-integration was a separate line item in the original four-part scope and was not
-commissioned. The schema and UI model it so that adding it later is additive.
+Both Meta channels are connected end to end: OAuth from the channels page, a
+signed webhook, AI replies delivered back to the customer. WhatsApp remains
+modelled but unbuilt.
+
+The two Meta channels are **separate products that happen to share a webhook**,
+and treating them as one cost this project the better part of a week:
+
+| | Facebook Messenger | Instagram |
+| --- | --- | --- |
+| Authorises | a Page, via Facebook Login | the Instagram account, via **Instagram Login** |
+| App credentials | `META_APP_ID` / `META_APP_SECRET` | `INSTAGRAM_APP_ID` / `INSTAGRAM_APP_SECRET` — a different app |
+| Token | Page token (`EAA…`) | Instagram token (`IGA…`) |
+| Sends to | `graph.facebook.com` | `graph.instagram.com` |
+| Scopes | `pages_messaging` | `instagram_business_manage_messages` |
+
+Everything below is load-bearing; each one produced silence rather than an error
+when it was wrong:
+
+- **The webhook signature is checked against both app secrets.** Instagram signs
+  with its own, so checking only Facebook's passed every Messenger delivery and
+  rejected every Instagram one — which is indistinguishable from Meta sending
+  nothing.
+- **`entry[].id` is the Instagram *business account* id** (`17841…`), which is
+  what `/me?fields=user_id` returns — not the app-scoped `id` from the same
+  call. Storing the wrong one drops every message at the tenant lookup.
+- **Those ids exceed 2^53**, so `JSON.parse` rounds them if they are read as
+  numbers. They are handled as strings throughout.
+- **Both envelopes are parsed** — `entry[].messaging[]` and
+  `entry[].changes[]` — because Instagram Login can use either.
+- **The account must be subscribed**, not just authorised. `connectInstagram`
+  posts to `/me/subscribed_apps` and treats a failure as a failed connection,
+  because an account that is linked but unsubscribed receives nothing.
+- **The app must be subscribed too**, per object. `object: instagram` is a
+  separate subscription from `object: page` in the App Dashboard; having one
+  does not imply the other.
+
+Instagram tokens expire after **60 days**. Nothing refreshes them yet — the
+repair is the "Reconnect" button on the channels page, and a merchant will need
+to be told to press it.
 
 ### 7a. Payments need bank credentials before they do anything
 
@@ -229,7 +271,7 @@ The user must already have registered on the site. After granting, they sign out
 and back in (or just visit `/admin`). Keeping this off the web UI means the most
 powerful role has no attack surface in the app itself.
 
-**How it's gated.** Two layers: `middleware.ts` redirects non-admins away at the
+**How it's gated.** Two layers: `proxy.ts` redirects non-admins away at the
 edge using a flag in the session token, and `requireAdmin()` re-checks against
 the database on every admin page — so a revoked admin loses access on their next
 request, not when their token eventually expires.
@@ -267,11 +309,49 @@ registration and billing reference them by fixed key.
 | Neon backups | verify quarterly | Neon takes them automatically; test a restore |
 | `RateLimitHit` table size | never, normally | swept automatically on ~2% of writes |
 | Expired reset tokens | optional | `purgeExpiredResetTokens()` exists for a cron job |
+| Instagram tokens | automatic, daily | `/api/cron/instagram-refresh` renews inside 15 days of expiry. Needs `CRON_SECRET`; without it the route answers 401 to everything, **including Vercel**, and the job silently never runs |
+| Instagram refresh failures | watch monthly | grep the logs for `Instagram token could not be renewed`. Once a token lapses there is no repair but the **Reconnect** button on the channels page |
 | Next.js major upgrades | as released | `next-auth` is on a **beta**; check its changelog first |
 
 `next-auth@5.0.0-beta.31` is the one dependency worth watching. It is a beta;
 its stable release may change the config shape. Pin it until you are ready to
 migrate deliberately.
+
+---
+
+## Before handing this to the client
+
+Everything here is a one-off, and every item has been true at some point during
+development — which is exactly why it needs writing down rather than
+remembering.
+
+### Rotate every credential
+
+All of these were shared over chat while the two teams were building, so treat
+each as public:
+
+`DATABASE_URL` (Neon role password) · `AUTH_SECRET` · `META_APP_SECRET` ·
+`INSTAGRAM_APP_SECRET` · `META_VERIFY_TOKEN` · `AI_SERVICE_TOKEN` ·
+`AI_SERVICE_KEY` · `RESEND_API_KEY` · `CRON_SECRET` · the bank credentials
+
+Rotating `META_VERIFY_TOKEN` means retyping it in the App Dashboard; rotating an
+app secret means the webhook stops until the new one is in Vercel. Do them in a
+quiet hour, not on a Friday.
+
+The **channel tokens in the database** (`Channel.accessToken`) are not rotated
+by hand — press **Reconnect** on the channels page and Meta issues fresh ones.
+
+### Switch off the debug flags
+
+`DEBUG_WEBHOOK_BODY=1` traces every webhook delivery. It no longer prints
+customer text — `lib/channels/webhookDebug.ts` replaces each human-written field
+with its length — so leaving it on is a noise problem rather than a privacy one.
+Still worth removing once whatever question it was turned on for is answered.
+
+### Fill in the legal placeholders
+
+The Terms, Privacy and Data Protection pages carry bracketed `【…】` markers where
+the company's registration details go.
 
 ---
 

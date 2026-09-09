@@ -4,6 +4,7 @@ import { PLATFORMS, parseMessagingEvents, tokensMatch, verifySignature } from "@
 import { recordInbound, type RecordedMessage } from "@/lib/channels/inbound";
 import { notifyAgent } from "@/lib/channels/notify";
 import { nameCustomer } from "@/lib/channels/profile";
+import { describe, traceDelivery } from "@/lib/channels/webhookDebug";
 import { answerAfterQuietWindow } from "@/lib/ai/quietWindow";
 
 export const dynamic = "force-dynamic";
@@ -15,57 +16,6 @@ function text(body: string, status: number) {
   return new Response(body, { status, headers: { "content-type": "text/plain" } });
 }
 
-/**
- * The skeleton of a payload: which keys, in which order, nothing inside them.
- *
- * Deliberately not the body. Knowing that Meta sent `entry[].changes[]` rather
- * than `entry[].messaging[]` is the whole diagnosis, and none of the words a
- * customer typed are needed to see it.
- */
-function describe(payload: unknown): string {
-  if (!payload || typeof payload !== "object") return typeof payload;
-  const top = payload as Record<string, unknown>;
-  const entry = Array.isArray(top.entry) && top.entry[0] ? top.entry[0] : null;
-  const inner = entry && typeof entry === "object" ? Object.keys(entry).join(",") : "—";
-
-  const first =
-    entry && typeof entry === "object"
-      ? ((entry as Record<string, unknown>).messaging ?? (entry as Record<string, unknown>).changes)
-      : null;
-  const leaf =
-    Array.isArray(first) && first[0] && typeof first[0] === "object"
-      ? Object.keys(first[0] as Record<string, unknown>).join(",")
-      : "—";
-
-  return `object=${String(top.object)} entry[0]={${inner}} first={${leaf}}`;
-}
-
-/** Bodies are small; this only guards against a pathological one. */
-const DEBUG_MAX_CHARS = 4_000;
-
-/**
- * Writes the whole delivery to the log, verbatim.
- *
- * Off unless `DEBUG_WEBHOOK_BODY` is set, and meant to be switched off again as
- * soon as the question it was turned on for is answered. What it prints is
- * every word a customer wrote — turning it on leaves their messages sitting in
- * a log aggregator, which is not where a merchant's inbox belongs.
- *
- * Deliberately before the signature check, because a delivery we *reject* is
- * often the one worth reading: that is what an unexpected signing secret, or a
- * forged request, actually looks like on the wire.
- */
-function debugDelivery(request: Request, raw: string): void {
-  if (process.env.DEBUG_WEBHOOK_BODY !== "1") return;
-
-  log.warn("RAW WEBHOOK DELIVERY — debug logging is on, turn it off when done", {
-    userAgent: request.headers.get("user-agent"),
-    signature: request.headers.get("x-hub-signature-256"),
-    bytes: raw.length,
-    body: raw.slice(0, DEBUG_MAX_CHARS),
-  });
-}
-
 function safeParse(raw: string): unknown {
   try {
     return JSON.parse(raw);
@@ -74,7 +24,14 @@ function safeParse(raw: string): unknown {
   }
 }
 
-
+/**
+ * The setup handshake.
+ *
+ * Meta calls this once, when the callback URL is saved in the App Dashboard,
+ * and again whenever it is changed. It proves we meant to publish this endpoint
+ * by asking us to echo a number back, which only somebody holding the verify
+ * token can do.
+ */
 export async function GET(request: Request) {
   const expected = process.env.META_VERIFY_TOKEN;
   if (!expected) {
@@ -135,7 +92,16 @@ export async function POST(request: Request) {
   // bytes, and re-serialising a parsed object produces different ones.
   const raw = await request.text();
 
-  debugDelivery(request, raw);
+  if (process.env.DEBUG_WEBHOOK_BODY === "1") {
+    // Safe to leave on: the envelope is kept and every human-written field is
+    // replaced by its length. See lib/channels/webhookDebug.ts for why that is
+    // enough — the diagnosis was always in the shape, never in the words.
+    //
+    // Before the signature check on purpose. A delivery we *reject* is often
+    // the one worth reading: an unexpected signing secret looks exactly like a
+    // forged request until you can see the envelope was Meta's own.
+    log.warn("RAW WEBHOOK DELIVERY — debug logging is on", traceDelivery(request, raw));
+  }
 
   const signature = request.headers.get("x-hub-signature-256");
   if (!verifySignature(raw, signature, secret, instagramSecret)) {

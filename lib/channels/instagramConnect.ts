@@ -40,19 +40,19 @@ export async function connectInstagramFromCode(
   const short = await exchangeCode(appId, appSecret, code, redirectUri);
   if (!short) return { ok: false, reason: "exchange" };
 
-  const token = await toLongLived(appSecret, short);
-  if (!token) return { ok: false, reason: "long_lived" };
+  const long = await toLongLived(appSecret, short);
+  if (!long) return { ok: false, reason: "long_lived" };
 
-  const account = await fetchAccount(token);
+  const account = await fetchAccount(long.token);
   if (!account) return { ok: false, reason: "no_account" };
 
   // Stored before the subscription is attempted, on purpose. If subscribing
   // fails the merchant should be able to retry from a connected state rather
   // than walk back through Meta's consent screen for a token we already hold.
-  const linked = await linkChannel(businessId, "INSTAGRAM", account.id, token);
+  const linked = await linkChannel(businessId, "INSTAGRAM", account.id, long.token, long.expiresAt);
   if (!linked.ok) return { ok: false, reason: linked.reason };
 
-  const subscribed = await subscribeToMessages(token);
+  const subscribed = await subscribeToMessages(long.token);
   if (!subscribed) {
     log.error("Instagram account linked but not subscribed to the messages webhook", undefined, {
       businessId,

@@ -29,8 +29,11 @@ read during this review (marked *reviewed*).
 | 1.7 | Successful login clears the failure counter | ✅ | `auth.ts` `authorize()` calls `clear()`. *Tested* |
 | 1.8 | Secrets (`AUTH_SECRET`) sourced from env, not committed | ✅ | `lib/env.ts`; `.env*` git-ignored except `.env.example` |
 
-**Deferred:** email verification on registration. `emailVerified` is set
-immediately because no mail provider is configured — see 8.1.
+| 1.9 | Email verification required before sign-in | ✅ | `auth.ts` refuses an unverified address *after* checking the password, so the refusal never reveals which addresses exist |
+
+**On 1.9:** registration falls back to activating the account when the provider
+refuses the message. Stranding somebody mid-signup over a mail outage is the
+worse failure, and the attempt is logged either way.
 
 ---
 
@@ -38,8 +41,8 @@ immediately because no mail provider is configured — see 8.1.
 
 | # | Control | Status | Evidence |
 | --- | --- | --- | --- |
-| 2.1 | Every dashboard route requires a valid session | ✅ | `middleware.ts` + `requireContext()` in each page |
-| 2.2 | Defence in depth: edge middleware **and** per-page guard | ✅ | `middleware.ts`, `lib/session.ts` |
+| 2.1 | Every dashboard route requires a valid session | ✅ | `proxy.ts` + `requireContext()` in each page |
+| 2.2 | Defence in depth: edge middleware **and** per-page guard | ✅ | `proxy.ts`, `lib/session.ts` |
 | 2.3 | Role-based permissions enforced server-side | ✅ | `lib/auth/permissions.ts` — every action calls `requirePermission()` |
 | 2.4 | Tenant isolation: every query scoped by `businessId` | ✅ | `lib/dashboard/queries.ts` — `businessId` is a required argument on all |
 | 2.5 | Writes re-check tenant ownership in the `where` clause | ✅ | `lib/dashboard/actions.ts` — `updateMany`/`deleteMany` with `businessId` |
@@ -53,7 +56,7 @@ immediately because no mail provider is configured — see 8.1.
 > No signal reaches the server when a window closes, and Chrome and Safari hand
 > the same session cookie back when they restore. Two server-side rules stand in
 > for it, and only when "remember me" was left unticked: **30 minutes idle**
-> (a signed `sk.seen` cookie refreshed by middleware) and an **8 hour absolute
+> (a signed `sk.seen` cookie refreshed by `proxy.ts`) and an **8 hour absolute
 > cap** (`startedAt` in the token). Ticking "remember me" keeps the full 7 days,
 > which is the whole point of the box.
 
@@ -134,6 +137,25 @@ production build with `curl -I`.
 | 7.2 | Users never see stack traces | ✅ | `app/error.tsx`, `app/global-error.tsx` show a short error id only |
 | 7.3 | Error id links a user report to a log entry | ✅ | `log.error()` returns the id shown in the boundary |
 | 7.4 | Rate-limit and enumeration attempts are logged | ✅ | `log.warn`/`log.info` in the limiter and forgot route |
+
+---
+
+## 7a. Debug switches
+
+| # | Control | Status | Evidence |
+| --- | --- | --- | --- |
+| 7a.1 | Webhook tracing is off unless asked for | ✅ | `DEBUG_WEBHOOK_BODY` — off unless set to `1` |
+| 7a.2 | Traced deliveries carry no customer text | ✅ | `lib/channels/webhookDebug.ts` — every human-written field is replaced by its length |
+
+> `DEBUG_WEBHOOK_BODY=1` logs the shape of each delivery: the `object`, the
+> account id, whether it arrived as `messaging[]` or `changes[]`, and whether a
+> signature was present. Every question a week of Meta debugging actually asked
+> was answered by that structure; none of them needed the words. So the text is
+> redacted to `‹n chars›` and the flag is safe to leave on.
+>
+> It writes one line per delivery, which is noise rather than a risk — worth
+> turning off once a question is answered, but no longer a reason to hold up a
+> handover.
 
 ---
 

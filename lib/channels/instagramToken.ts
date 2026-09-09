@@ -11,6 +11,7 @@ import { log } from "@/lib/logger";
 
 const TOKEN_EXCHANGE = "https://api.instagram.com/oauth/access_token";
 const LONG_LIVED = "https://graph.instagram.com/access_token";
+const REFRESH = "https://graph.instagram.com/refresh_access_token";
 const TIMEOUT_MS = 15_000;
 
 type Json = Record<string, unknown>;
@@ -89,7 +90,25 @@ export async function exchangeCode(
  * Skipping this is the kind of mistake that works perfectly in testing and then
  * breaks every connected account an hour after the merchant walks away.
  */
-export async function toLongLived(appSecret: string, shortToken: string): Promise<string | null> {
+export type LongLivedToken = { token: string; expiresAt: Date | null };
+
+/**
+ * Reads Meta's `expires_in`, which is seconds from now.
+ *
+ * Absent or nonsensical gives null rather than a guessed date: a refresh job
+ * that believes a wrong expiry either renews pointlessly or, worse, lets a
+ * token lapse while reporting it healthy.
+ */
+function expiryFrom(data: Json | null, now = Date.now()): Date | null {
+  const seconds = data?.expires_in;
+  if (typeof seconds !== "number" || !Number.isFinite(seconds) || seconds <= 0) return null;
+  return new Date(now + seconds * 1000);
+}
+
+export async function toLongLived(
+  appSecret: string,
+  shortToken: string,
+): Promise<LongLivedToken | null> {
   const url = new URL(LONG_LIVED);
   url.searchParams.set("grant_type", "ig_exchange_token");
   url.searchParams.set("client_secret", appSecret);
@@ -97,5 +116,25 @@ export async function toLongLived(appSecret: string, shortToken: string): Promis
 
   const data = await request(url.toString());
   const token = data?.access_token;
-  return typeof token === "string" && token ? token : null;
+  if (typeof token !== "string" || !token) return null;
+  return { token, expiresAt: expiryFrom(data) };
+}
+
+/**
+ * Renews a long-lived token for another sixty days.
+ *
+ * Meta refuses a token younger than 24 hours and one that has already lapsed,
+ * so this is only useful on a schedule — and only while the token still works.
+ * Once it has expired there is no way back except sending the merchant through
+ * the consent screen again.
+ */
+export async function refreshLongLived(token: string): Promise<LongLivedToken | null> {
+  const url = new URL(REFRESH);
+  url.searchParams.set("grant_type", "ig_refresh_token");
+  url.searchParams.set("access_token", token);
+
+  const data = await request(url.toString());
+  const fresh = data?.access_token;
+  if (typeof fresh !== "string" || !fresh) return null;
+  return { token: fresh, expiresAt: expiryFrom(data) };
 }

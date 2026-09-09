@@ -49,10 +49,16 @@ export async function POST(request: Request) {
   if (sender === "AI") {
     const verdict = await checkLimit(auth.businessId, "messages");
     if (!verdict.allowed) {
+      // Both are 402 and both mean "stop generating for this tenant", but the
+      // AI team reads these messages when a customer complains, and "renew" and
+      // "upgrade" send them to two different conversations.
+      const expired = verdict.reason === "expired";
       return NextResponse.json(
         {
-          error: "message_limit_reached",
-          message: `The ${verdict.planName} plan allows ${verdict.limit} AI messages and ${verdict.used} have been used. This reply was not recorded. Customer messages are still accepted — stop generating answers for this business until the plan is upgraded.`,
+          error: expired ? "subscription_expired" : "message_limit_reached",
+          message: expired
+            ? `This business's subscription has lapsed and its grace period is over. This reply was not recorded. Customer messages are still accepted — stop generating answers until it is renewed.`
+            : `The ${verdict.planName} plan allows ${verdict.limit} AI messages and ${verdict.used} have been used. This reply was not recorded. Customer messages are still accepted — stop generating answers for this business until the plan is upgraded.`,
           limit: verdict.limit,
           used: verdict.used,
         },

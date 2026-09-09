@@ -40,9 +40,7 @@ describe("addTeamMember", () => {
    * already exists, so that address could never be signed up again.
    */
   it("creates no account when the plan refuses the invitation", async () => {
-    vi.mocked(checkLimit).mockResolvedValue({
-      allowed: false,
-      limit: 3,
+    vi.mocked(checkLimit).mockResolvedValue({ allowed: false, reason: "limit" as const, limit: 3,
       used: 3,
       planName: "Basic",
     });

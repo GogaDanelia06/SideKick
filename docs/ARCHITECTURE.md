@@ -105,7 +105,7 @@ a query that does not take a tenant id, you have created a data leak.**
 
 **Defence in depth.** Three independent layers, each sufficient on its own:
 
-1. `middleware.ts` — blocks unauthenticated requests to `/dashboard/*` at the
+1. `proxy.ts` — blocks unauthenticated requests to `/dashboard/*` at the
    edge, before any page code runs.
 2. `requireContext()` in each page — redirects if the session is missing, and is
    what actually supplies the tenant id.
@@ -120,7 +120,7 @@ Auth.js v5 with the **JWT** session strategy. The config is deliberately split
 in two:
 
 - `auth.config.ts` — edge-safe. No Prisma, no bcrypt. This is what
-  `middleware.ts` imports, because the edge runtime cannot run either.
+  `proxy.ts` imports, because the edge runtime cannot run either.
 - `auth.ts` — the full config: Prisma adapter, credentials provider, optional
   Google provider, and the `jwt` / `session` callbacks.
 
@@ -317,13 +317,17 @@ for this build. Each is a single file, with the swap documented in its header:
 
 | Seam | File | Currently | To go live |
 | --- | --- | --- | --- |
-| Email | `lib/mail/send.ts` | logs to console | implement `deliver()`, add provider key |
-| AI replies | `lib/chat/bot.ts` | keyword matcher | replace `getBotReply` with an API call |
+| Email | `lib/mail/send.ts` | sends via Resend | — |
+| Marketing-site chat | `lib/chat/bot.ts` | keyword matcher | replace `getBotReply` with an API call |
+| Dashboard AI | `lib/ai/client.ts` | live | — |
 | Payments | `lib/payments/` | BOG + TBC wired | set the bank credentials |
-| Channels | `Channel` rows + status | modelled, not connected | Meta/WhatsApp integration |
+| Facebook / Instagram | `lib/channels/` | live — OAuth, webhook, replies | Meta App Review |
+| WhatsApp | `Channel` rows + status | modelled, not connected | separate integration |
 
-The channel integration was excluded from this engagement's scope. The database
-and UI already model it, so adding it is additive rather than structural.
+Two of these are worth separating, because the names collide. `lib/chat/bot.ts`
+is the **marketing site's** widget and is still a keyword matcher; the AI that
+answers a merchant's customers is `lib/ai/`, and it is live. Replacing the first
+does not touch the second.
 
 ### Payments
 

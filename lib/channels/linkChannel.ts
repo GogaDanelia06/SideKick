@@ -23,6 +23,8 @@ export async function linkChannel(
   type: ChannelType,
   externalId: string,
   accessToken: string,
+  /** When the credential dies, for providers that say so. Facebook's does not. */
+  tokenExpiresAt: Date | null = null,
 ): Promise<LinkResult> {
   const existing = await prisma.channel.findFirst({
     where: { businessId, type },
@@ -47,6 +49,7 @@ export async function linkChannel(
   const live = {
     externalId,
     accessToken,
+    tokenExpiresAt,
     connected: true,
     status: "ACTIVE" as const,
     lastSyncAt: new Date(),

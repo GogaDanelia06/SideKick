@@ -58,9 +58,7 @@ describe("checkLimit", () => {
   it("blocks once the cap is reached", async () => {
     findUnique.mockResolvedValue(plan());
     productCount.mockResolvedValue(100);
-    expect(await checkLimit("b1", "products")).toEqual({
-      allowed: false,
-      limit: 100,
+    expect(await checkLimit("b1", "products")).toEqual({ allowed: false, reason: "limit" as const, limit: 100,
       used: 100,
       planName: "ბეისიქი",
     });
@@ -91,9 +89,7 @@ describe("checkLimit", () => {
   it("reads message usage from the subscription, not a count query", async () => {
     findUnique.mockResolvedValue(plan({}, 1000));
     const verdict = await checkLimit("b1", "messages");
-    expect(verdict).toEqual({
-      allowed: false,
-      limit: 1000,
+    expect(verdict).toEqual({ allowed: false, reason: "limit" as const, limit: 1000,
       used: 1000,
       planName: "ბეისიქი",
     });

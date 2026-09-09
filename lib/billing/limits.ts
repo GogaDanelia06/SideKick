@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { isExpired } from "./subscriptionState";
 
 /**
  * What a tenant's plan actually allows.
@@ -13,9 +14,36 @@ import { prisma } from "@/lib/db";
 
 export type LimitName = "messages" | "channels" | "users" | "products";
 
+/**
+ * `Message.stoppedReason` values that mean "we chose not to answer", as opposed
+ * to "answering failed".
+ *
+ * The inbox draws one mark for every non-null `stoppedReason`, and it used to
+ * label all of them "AI error". A merchant whose plan had simply run out was
+ * told their assistant was broken — which sends them to their developer instead
+ * of to the billing page, and makes the product look faulty when it is working
+ * exactly as sold.
+ */
+export const BILLING_STOPS: ReadonlySet<string> = new Set([
+  "limit_reached",
+  "subscription_expired",
+]);
+
 export type LimitVerdict =
   | { allowed: true }
-  | { allowed: false; limit: number; used: number; planName: string };
+  | {
+      allowed: false;
+      /**
+       * Why, because the two refusals need different words and different fixes.
+       * `limit` means buy a bigger plan; `expired` means pay for the one you
+       * already chose. Telling a lapsed customer they are "out of messages"
+       * sends them to the wrong screen.
+       */
+      reason: "limit" | "expired";
+      limit: number;
+      used: number;
+      planName: string;
+    };
 
 /** `-1` is how the seed and admin panel express "no ceiling". */
 function unlimited(cap: number): boolean {
@@ -24,6 +52,8 @@ function unlimited(cap: number): boolean {
 
 type PlanCaps = {
   planName: string;
+  /** End of the paid period, or null for a trial that never had one. */
+  renewsAt: Date | null;
   msgLimit: number;
   channelCap: number;
   userCap: number;
@@ -36,6 +66,7 @@ async function capsFor(businessId: string): Promise<PlanCaps | null> {
     where: { businessId },
     select: {
       msgUsed: true,
+      renewsAt: true,
       plan: {
         select: {
           name: true,
@@ -51,6 +82,7 @@ async function capsFor(businessId: string): Promise<PlanCaps | null> {
 
   return {
     planName: subscription.plan.name,
+    renewsAt: subscription.renewsAt,
     msgLimit: subscription.plan.msgLimit,
     channelCap: subscription.plan.channelCap,
     userCap: subscription.plan.userCap,
@@ -77,10 +109,24 @@ export async function checkLimit(
   const deny = (limit: number, used: number): LimitVerdict =>
     unlimited(limit) || used < limit
       ? { allowed: true }
-      : { allowed: false, limit, used, planName: caps.planName };
+      : { allowed: false, reason: "limit", limit, used, planName: caps.planName };
 
   switch (what) {
     case "messages":
+      // Expiry stops the assistant and nothing else. The dashboard, the inbox
+      // and the history stay reachable: a merchant whose card failed still owns
+      // their customer conversations, and locking them out of their own records
+      // punishes the wrong thing. What they lose is the service they stopped
+      // paying for.
+      if (isExpired(caps.renewsAt)) {
+        return {
+          allowed: false,
+          reason: "expired",
+          limit: caps.msgLimit,
+          used: caps.msgUsed,
+          planName: caps.planName,
+        };
+      }
       return deny(caps.msgLimit, caps.msgUsed);
 
     case "channels": {
