@@ -15,14 +15,27 @@ import { log } from "@/lib/logger";
 
 const MAX_BYTES = 8 * 1024 * 1024;
 
-/** Only formats a browser can render inline. Everything else is refused — an
- *  upload endpoint that accepts arbitrary files is a liability. */
+/**
+ * Only formats a browser can render inline. Everything else is refused — an
+ * upload endpoint that accepts arbitrary files is a liability.
+ *
+ * SVG is deliberately absent. It is the one image format that is really a
+ * document: it can carry `<script>`, and a browser opening it directly runs
+ * that script in whatever origin served the file. In development that origin
+ * is this app, because uploads land in `public/uploads/` and are served from
+ * the same host as the dashboard and its session cookie.
+ *
+ * The upload would have to come from an admin, so this is not the first line of
+ * defence — but an admin who downloads an illustration and uploads it without
+ * reading the XML is a likelier story than a hostile one, and no other format
+ * on this list can execute anything. An admin who genuinely needs an SVG can
+ * still paste a URL to one.
+ */
 const ALLOWED = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
   "image/gif",
-  "image/svg+xml",
   "video/mp4",
   "video/webm",
 ]);
@@ -32,7 +45,6 @@ const EXT: Record<string, string> = {
   "image/png": "png",
   "image/webp": "webp",
   "image/gif": "gif",
-  "image/svg+xml": "svg",
   "video/mp4": "mp4",
   "video/webm": "webm",
 };
