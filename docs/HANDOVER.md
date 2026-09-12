@@ -113,10 +113,11 @@ Two things are worth knowing, because both cost a day to find once:
   `send.sidekick.ge`, not the root. Addressing the root is refused by Resend —
   and the refusal is quiet, because mail to the Resend account owner's own inbox
   still arrives. It looks like email works until a real customer tries it.
-- **A refused send is logged, not surfaced.** `/api/auth/forgot` answers `ok`
-  whether or not the message left, on purpose: saying otherwise would reveal
-  which addresses have accounts. `password reset email could not be sent` in the
-  logs is the only trace.
+- **A refused send is logged, not surfaced.** For a registered address
+  `/api/auth/forgot` answers `ok` whether or not the message left, so
+  `password reset email could not be sent` in the logs is the only trace. An
+  unregistered address is told so directly — see SECURITY-CHECKLIST 6.6 for why
+  the old vague answer was dropped.
 
 ### 2. The chat widget is a keyword matcher, not AI
 

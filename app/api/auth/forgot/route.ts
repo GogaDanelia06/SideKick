@@ -25,26 +25,39 @@ export async function POST(req: Request) {
 
   const issued = await createResetToken(parsed.data.email);
 
+  // Said plainly rather than hidden behind "if this address is registered".
+  //
+  // The vague answer is the textbook defence against account enumeration, but
+  // here it defended nothing: /api/auth/register already answers 409 "this
+  // email is already registered" to anyone who asks. Hiding the same fact on
+  // this page only cost real customers — someone who mistyped their address, or
+  // signed up with a different one, waited for a mail that was never coming.
+  //
+  // What still limits probing is the rate limiter above, which runs before the
+  // lookup: 3 attempts per address and 10 per IP an hour.
   if (!issued) {
     log.info("password reset requested for unknown address");
+    return NextResponse.json(
+      {
+        error: "ეს მეილი არ არის დარეგისტრირებული",
+        code: "not_registered",
+      },
+      { status: 404 },
+    );
   }
 
-  if (issued) {
-    const link = absoluteUrl(`/reset?token=${issued.token}`);
-    const { sent } = await sendMail(passwordResetEmail(issued.user.email, link, issued.user.name));
+  const link = absoluteUrl(`/reset?token=${issued.token}`);
+  const { sent } = await sendMail(passwordResetEmail(issued.user.email, link, issued.user.name));
 
-    // The answer below stays the same either way, so without this line a
-    // provider refusing every message looks exactly like success: the token is
-    // in the database, the form says "check your inbox", and nothing arrives.
-    // That is how a broken sender goes unnoticed for days.
-    if (!sent) {
-      log.error("password reset email could not be sent", undefined, { to: issued.user.email });
-    }
+  // Without this line a provider refusing every message looks exactly like
+  // success: the token is in the database, the form says "check your inbox", and
+  // nothing arrives. That is how a broken sender goes unnoticed for days.
+  if (!sent) {
+    log.error("password reset email could not be sent", undefined, { to: issued.user.email });
   }
 
-  // Deliberately identical for a known and an unknown address. Anything that
-  // differed — wording, status, even timing — would turn this endpoint into a
-  // way of asking which email addresses have accounts here.
+  // A refused send still answers ok. The account exists and a link was issued;
+  // a provider outage is ours to find in the logs, not the customer's to debug.
   return NextResponse.json({ ok: true });
 }
 

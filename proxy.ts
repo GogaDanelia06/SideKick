@@ -17,7 +17,7 @@ const { auth } = NextAuth(authConfig);
  * picture — its `!authorized` branch is an `else if` that never runs once a
  * handler exists. So the decision is made here, through the same `gateAllows`
  * the `authorized` callback uses: one rule, two callers, and no way for them to
- * drift into disagreeing about who gets in. Deleting that shared call would not
+ * drift into disagreeing about who gets in. Deleting that shared call would not`
  * fail any test; it would quietly open the dashboard to signed-out visitors.
  */
 export default auth(async (request) => {

@@ -14,10 +14,12 @@ export function ForgotForm() {
   const [sent, setSent] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notRegistered, setNotRegistered] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setNotRegistered(false);
     setPending(true);
 
     const email = String(new FormData(e.currentTarget).get("email") ?? "").trim();
@@ -32,6 +34,10 @@ export function ForgotForm() {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
+      // Its own state rather than a plain error string, because the useful
+      // answer to "not registered" is a way to register — a typo is the other
+      // common cause, and the field stays filled so it can be corrected.
+      if (data.code === "not_registered") return setNotRegistered(true);
       return setError(data.error ?? t({ ka: "ვერ გაიგზავნა", en: "Could not send" }));
     }
 
@@ -64,6 +70,14 @@ export function ForgotForm() {
             placeholder="you@company.com"
             required
           />
+          {notRegistered ? (
+            <p className="text-[13px] text-red">
+              {t(FORGOT.notRegistered)}{" "}
+              <Link href={ROUTES.register} className="font-medium text-blue underline-offset-2 hover:underline">
+                {t(FORGOT.createAccount)}
+              </Link>
+            </p>
+          ) : null}
           {error ? <p className="text-[13px] text-red">{error}</p> : null}
           <button
             type="submit"

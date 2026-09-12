@@ -82,9 +82,14 @@ export const FORGOT = {
   submit: { ka: "აღდგენის ბმულის გაგზავნა", en: "Send reset link" },
   back: { ka: "შესვლაზე დაბრუნება", en: "Back to sign in" },
   sent: {
-    ka: "თუ ეს მეილი დარეგისტრირებულია, აღდგენის ბმული გამოგზავნილია. შეამოწმეთ ფოსტა.",
-    en: "If that email is registered, a reset link has been sent. Check your inbox.",
+    ka: "აღდგენის ბმული გამოგზავნილია. შეამოწმე ფოსტა — თუ არ ჩანს, შეამოწმე Spam-ც.",
+    en: "A reset link has been sent. Check your inbox — and your spam folder if it is not there.",
   },
+  notRegistered: {
+    ka: "ეს მეილი არ არის დარეგისტრირებული.",
+    en: "That email is not registered.",
+  },
+  createAccount: { ka: "შექმენი ანგარიში", en: "Create an account" },
   sentNote: {
     ka: "ბმული აქტიურია 1 საათის განმავლობაში.",
     en: "The link is valid for 1 hour.",

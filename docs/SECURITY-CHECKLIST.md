@@ -28,7 +28,6 @@ read during this review (marked *reviewed*).
 | 1.6 | Brute-force protection on login | ✅ | `lib/security/rateLimit.ts` — 5/address + 30/IP per 15 min. *Tested:* 6th attempt returns `rate_limited` |
 | 1.7 | Successful login clears the failure counter | ✅ | `auth.ts` `authorize()` calls `clear()`. *Tested* |
 | 1.8 | Secrets (`AUTH_SECRET`) sourced from env, not committed | ✅ | `lib/env.ts`; `.env*` git-ignored except `.env.example` |
-
 | 1.9 | Email verification required before sign-in | ✅ | `auth.ts` refuses an unverified address *after* checking the password, so the refusal never reveals which addresses exist |
 
 **On 1.9:** registration falls back to activating the account when the provider
@@ -124,10 +123,17 @@ production build with `curl -I`.
 | 6.3 | Tokens expire (60 min) | ✅ | `TOKEN_TTL_MINUTES` |
 | 6.4 | A new request invalidates earlier tokens | ✅ | `createResetToken()` marks prior tokens used |
 | 6.5 | Token compared in constant time | ✅ | `timingSafeEqual` |
-| 6.6 | No account enumeration — identical 200 for unknown addresses | ✅ | `app/api/auth/forgot/route.ts`. *Tested* end-to-end |
+| 6.6 | Unknown addresses are told so; probing is rate-limited | ⚠️ | `app/api/auth/forgot/route.ts` answers 404 `not_registered`. See note |
 | 6.7 | Password change confirmed by email | ✅ | `passwordChangedEmail` (delivery pending — see 8.1) |
 
 ---
+
+> **On 6.6:** this page used to answer identically for known and unknown
+> addresses, the standard defence against account enumeration. It was removed
+> deliberately because it protected nothing — `/api/auth/register` answers 409
+> "already registered" to anyone — while costing real customers, who waited on a
+> reset mail for an address that had no account. Probing stays bounded by the
+> limiter, which runs before the lookup: 3 per address and 10 per IP an hour.
 
 ## 7. Logging & error handling
 
