@@ -7,23 +7,15 @@ import type { ChannelType } from "@prisma/client";
 export type LinkResult = { ok: true } | { ok: false; reason: "limit" | "already_linked" };
 
 /**
- * Writes a credential onto the tenant's existing channel row.
- *
- * Shared by both connect flows, and deliberately so: Facebook Login and
- * Instagram Login produce completely different tokens, but what happens to the
- * result is identical, and two copies of this drifted apart once already.
- *
- * Updates rather than creates, because every business is provisioned with a row
- * per channel. Creating a second one would leave the dashboard toggling a
- * different row from the one the webhook reads — which looks exactly like a
- * connection that silently does nothing.
+ * Stores a credential on the business's existing channel row (every business has
+ * one row per channel type). Shared by the Facebook and Instagram connect flows.
  */
 export async function linkChannel(
   businessId: string,
   type: ChannelType,
   externalId: string,
   accessToken: string,
-  /** When the credential dies, for providers that say so. Facebook's does not. */
+  /** Null when the provider gives no expiry (Facebook Page tokens). */
   tokenExpiresAt: Date | null = null,
 ): Promise<LinkResult> {
   const existing = await prisma.channel.findFirst({
@@ -31,21 +23,13 @@ export async function linkChannel(
     select: { id: true, connected: true },
   });
 
-  // The plan's channel cap, but only for a channel that is not already on.
-  // Counting unconditionally would make "Reconnect" fail forever for any tenant
-  // sitting at their ceiling — which is every tenant on the single-channel
-  // plans this product sells, and reconnecting is exactly what they need to do
-  // when a token expires.
+  // Only a new connection counts toward the plan's cap, so reconnecting always works.
   if (!existing?.connected) {
     const verdict = await checkLimit(businessId, "channels");
     if (!verdict.allowed) return { ok: false, reason: "limit" };
   }
 
-  // All four fields, because two screens read two different ones. The channels
-  // page asks `connected`; the overview card asks `status`. Writing only the
-  // first left a channel that had just finished Meta's consent screen reading
-  // "connected" on one page and "off" on the other — and `lastSyncAt` stayed
-  // blank, so the row also claimed it had never synced.
+  // The channels page reads `connected` and the overview reads `status`: set both.
   const live = {
     externalId,
     accessToken,
@@ -63,10 +47,7 @@ export async function linkChannel(
     }
     return { ok: true };
   } catch (err) {
-    // `type_externalId` is unique across the whole table, not per business, so
-    // an account already linked to another tenant lands here. Uncaught it threw
-    // out of the OAuth callback as a 500 — a blank error page at the end of a
-    // consent flow, with nothing to tell the merchant what to do.
+    // `type_externalId` is unique across businesses: the account belongs to another one.
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
       log.warn("channel account is already linked to another business", { type, externalId });
       return { ok: false, reason: "already_linked" };

@@ -17,8 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     select: { name: true, email: true },
   });
 
-  // Same fallback chain as the tenant dashboard's account menu, so the same
-  // person is labelled the same way in both places.
+  // Same fallback as the tenant dashboard's account menu.
   const name = user?.name?.trim() || user?.email?.split("@")[0] || "—";
 
   return (

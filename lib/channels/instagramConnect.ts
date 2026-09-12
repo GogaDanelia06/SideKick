@@ -4,12 +4,8 @@ import { exchangeCode, toLongLived } from "./instagramToken";
 import { fetchAccount, subscribeToMessages } from "./instagramAccount";
 
 /**
- * Turns an Instagram Login authorisation code into a connected Instagram
- * channel that Meta will actually deliver messages to.
- *
- * Four steps, and every one of them is required. Skipping the last is what made
- * a "connected" account receive nothing at all, so it is treated as a failure
- * here rather than a warning nobody reads.
+ * Instagram Login: exchanges the authorisation code, stores the long-lived token
+ * and subscribes the account to message webhooks. Every step is required.
  */
 
 export type InstagramConnectResult =
@@ -31,8 +27,7 @@ export async function connectInstagramFromCode(
   code: string,
   redirectUri: string,
 ): Promise<InstagramConnectResult> {
-  // Its own app id and secret. The Facebook app's credentials are a different
-  // application as far as Instagram Login is concerned and are rejected here.
+  // Instagram Login is a separate Meta app with its own id and secret.
   const appId = process.env.INSTAGRAM_APP_ID;
   const appSecret = process.env.INSTAGRAM_APP_SECRET;
   if (!appId || !appSecret) return { ok: false, reason: "unconfigured" };
@@ -46,9 +41,7 @@ export async function connectInstagramFromCode(
   const account = await fetchAccount(long.token);
   if (!account) return { ok: false, reason: "no_account" };
 
-  // Stored before the subscription is attempted, on purpose. If subscribing
-  // fails the merchant should be able to retry from a connected state rather
-  // than walk back through Meta's consent screen for a token we already hold.
+  // Stored before subscribing, so a failed subscription can be retried by reconnecting.
   const linked = await linkChannel(businessId, "INSTAGRAM", account.id, long.token, long.expiresAt);
   if (!linked.ok) return { ok: false, reason: linked.reason };
 

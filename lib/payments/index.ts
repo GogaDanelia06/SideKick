@@ -15,10 +15,7 @@ export function parseProvider(value: string): PaymentProvider | null {
   return upper === "BOG" || upper === "TBC" ? upper : null;
 }
 
-/**
- * Banks whose merchant credentials are actually set. The billing screen offers
- * only these, so a customer is never sent to a bank that would reject them.
- */
+/** Banks whose merchant credentials are configured; only these are offered. */
 export function availableProviders(): PaymentProvider[] {
   return (Object.keys(ADAPTERS) as PaymentProvider[]).filter((k) => ADAPTERS[k].isConfigured());
 }

@@ -8,19 +8,7 @@ import { absoluteUrl } from "@/lib/seo/site";
 import { log } from "@/lib/logger";
 import { clientIp, consume, tooManyRequestsMessage } from "@/lib/security/rateLimit";
 
-/**
- * Sends the signup confirmation link again.
- *
- * Without this, one lost mail locks someone out permanently: they cannot sign
- * in until the address is confirmed, and nothing but registration ever issued a
- * link. Spam folders and mistyped forwarding rules make that a certainty at
- * scale, not an edge case.
- *
- * Modelled on `/api/auth/forgot` down to the reply, and for the same reason —
- * a stranger must not learn from this endpoint which addresses have accounts,
- * nor which of them are still unconfirmed. So an unknown address, a confirmed
- * one, and a genuine resend are answered identically.
- */
+/** Resends the signup confirmation link. The answer is identical for every address. */
 export async function POST(req: Request) {
   const ipLimit = await consume("resendIp", clientIp(req));
   if (!ipLimit.ok) return throttled(ipLimit.retryAfterSec);
@@ -44,17 +32,12 @@ export async function POST(req: Request) {
     select: { id: true, email: true, name: true, emailVerified: true },
   });
 
-  // Already confirmed is silence rather than an error. Saying "that account is
-  // active" would answer a question the asker has no business asking, and the
-  // person who genuinely forgot can just sign in.
   if (user && !user.emailVerified) {
     const { token } = await createVerificationToken(user.id);
     const { sent } = await sendMail(
       verifyEmailEmail(user.email, absoluteUrl(`/api/auth/verify?token=${token}`), user.name),
     );
 
-    // The reply is the same either way, so this line is the only place a
-    // provider refusing every message becomes visible.
     if (!sent) {
       log.error("verification email could not be re-sent", undefined, { to: user.email });
     }

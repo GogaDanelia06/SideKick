@@ -17,17 +17,7 @@ import { DASH } from "@/lib/dashboard/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { useTheme } from "@/lib/theme/useTheme";
 
-/**
- * The account menu at the bottom of the admin sidebar.
- *
- * Deliberately the same shape as the tenant dashboard's — same trigger, same
- * popover, same language and theme rows in the same order. Someone who
- * administers the platform also uses the dashboard, and two different places to
- * change the theme in one product is one too many to remember.
- *
- * The menu opens upward because it lives at the bottom of the column; anything
- * dropping down would land off-screen.
- */
+/** The same account menu as the tenant dashboard; opens upward from the bottom of the sidebar. */
 export function AdminProfileMenu({ name, email }: { name: string; email: string }) {
   const { t, locale, toggle: toggleLang } = useLanguage();
   const { theme, toggle: toggleTheme } = useTheme();

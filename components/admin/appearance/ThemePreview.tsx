@@ -5,15 +5,7 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { PreviewDash } from "./PreviewDash";
 import { PreviewSite } from "./PreviewSite";
 
-/**
- * Two miniatures, drawn with inline styles from the draft.
- *
- * Needed because the admin panel only shows you half of what you are editing.
- * Change the site background while standing here and nothing on screen moves —
- * the sidebar and cards around you are the *dashboard* colours. Inline styles
- * rather than the CSS variables, so both halves are visible at once and the one
- * for the shade you are not currently viewing still shows the right thing.
- */
+/** Inline-style miniatures of the site and the dashboard, both visible while editing. */
 export function ThemePreview({ colors }: { colors: ThemeColors }) {
   const { t } = useLanguage();
 

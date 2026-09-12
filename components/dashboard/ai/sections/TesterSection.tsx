@@ -8,16 +8,7 @@ import { AiModuleNotice, INPUT } from "../parts";
 
 type Turn = { from: "you" | "ai"; text: string; handoff?: boolean };
 
-/**
- * A rehearsal of the current prompt, with nobody's customer on the other end.
- *
- * Real now, where it used to be two hardcoded lines pretending to be an answer.
- * A canned demo is worse than none once the module works: it shows the merchant
- * a reply their prompt never produced, so the one screen meant for checking the
- * assistant is the one screen that cannot be trusted.
- *
- * Nothing here is stored — see `testAiReply`.
- */
+/** Tries the current prompt against the real AI service; nothing is stored (see `testAiReply`). */
 export function TesterSection({ aiReady }: { aiReady: boolean }) {
   const { t } = useLanguage();
   const [draft, setDraft] = useState("");

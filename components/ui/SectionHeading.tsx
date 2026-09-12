@@ -32,8 +32,6 @@ export function SectionHeading({
       {badgeText === null ? null : <Badge>{badgeText}</Badge>}
       <Heading
         className={clsx(
-          // The gap only exists to clear the badge, so without one it would be
-          // an unexplained space above the first thing on the section.
           badgeText === null ? null : "mt-3",
           "font-semibold tracking-tight",
           size === "xl"
@@ -43,8 +41,6 @@ export function SectionHeading({
       >
         {t(title)}
       </Heading>
-      {/* The same step as the badge above the title, so the three lines read as
-          evenly spaced rather than as a title with something crowded under it. */}
       {sub ? <p className="mt-3 text-base text-muted">{t(sub)}</p> : null}
     </div>
   );

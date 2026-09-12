@@ -21,7 +21,7 @@ const ROLE: Record<Role, { pill: string; title: string; avatar: string; perms: B
 
 const ROLES: Role[] = ["OWNER", "ADMIN", "OPERATOR", "VIEWER"];
 
-/** Mirrors the ceiling the server enforces — see RANK in lib/dashboard/actions.ts. */
+/** Mirrors the server's RANK (lib/dashboard/actions.ts). */
 const RANK: Record<Role, number> = { OWNER: 3, ADMIN: 2, OPERATOR: 1, VIEWER: 0 };
 const cap = (r: string) => r[0] + r.slice(1).toLowerCase();
 
@@ -48,12 +48,7 @@ export function TeamView({
   const [pending, start] = useTransition();
   const [adding, setAdding] = useState(false);
 
-  /**
-   * Only the roles this person may actually hand out.
-   *
-   * The server refuses the rest either way; hiding them keeps the screen honest
-   * rather than offering an admin an "Owner" button that always fails.
-   */
+  /** Only roles this member may assign are offered; the server enforces the same rule. */
   const myRank = RANK[currentRole as Role] ?? -1;
   const grantable = ROLES.filter((r) => RANK[r] <= myRank);
   const [menuFor, setMenuFor] = useState<string | null>(null);
@@ -216,7 +211,6 @@ export function TeamView({
                               <button
                                 key={role}
                                 type="button"
-                                // Somebody who outranks you is not yours to move.
                                 disabled={pending || role === m.role || RANK[m.role] > myRank}
                                 onClick={() => run(() => updateMemberRole(m.id, role), () => setMenuFor(null))}
                                 className="flex w-full items-center justify-between rounded-[6px] px-2.5 py-2 text-[13px] hover:bg-soft disabled:opacity-40"

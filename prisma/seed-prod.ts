@@ -32,9 +32,7 @@ async function main() {
     });
   }
 
-  // Legal documents: import the drafted sections so the admin edits real text
-  // rather than starting from a blank page. Only when a document is empty, so
-  // re-running never overwrites the lawyer's revisions.
+  // Import drafted legal sections only into empty documents, so edits are never overwritten.
   for (const { doc, src } of [
     { doc: "terms", src: TERMS },
     { doc: "privacy", src: PRIVACY },
@@ -55,8 +53,7 @@ async function main() {
     });
   }
 
-  // Landing benefit boxes and pricing service boxes, imported from the shipped
-  // copy so the admin starts from real content.
+  // Import the shipped benefit and service boxes into empty tables.
   if ((await prisma.benefit.count()) === 0) {
     await prisma.benefit.createMany({
       data: BENEFITS.map((b, i) => ({

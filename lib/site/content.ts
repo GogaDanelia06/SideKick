@@ -9,27 +9,16 @@ import type { FaqItem } from "@/lib/content/faq";
 export type SiteStatView = {
   value: string;
   label: Bilingual;
-  /**
-   * `counted` is a real measurement and says so on the page. `auto` moves but
-   * measures nothing, so it is never badged as live — marking an invented
-   * number as a real one would mislead the visitor and, worse, the owner.
-   */
+  /** `auto` figures are decorative, so they are never badged as live. */
   kind: "fixed" | "counted" | "auto";
-  /**
-   * The key this figure is published under, or "" when it never moves.
-   *
-   * Counter keys and drifting figures' `auto:` keys share this field because
-   * the browser treats them identically: it keeps whatever is keyed current and
-   * does not care where the number came from.
-   */
+  /** Key in the live payload (a counter key or an `auto:` key); "" for fixed figures. */
   liveKey: string;
-  /** The raw number behind `value`, so the browser can count up to the next. */
+  /** The raw number behind `value`, for client-side animation. */
   n: number | null;
   format: StatFormat;
   suffix: string;
 };
 
-/** Every figure that stays still, whatever the reason. */
 function fixed(
   r: { value: string; labelKa: string; labelEn: string; suffix: string },
 ): SiteStatView {
@@ -44,19 +33,7 @@ function fixed(
   };
 }
 
-/**
- * The figures in the landing strip.
- *
- * Three kinds, chosen per figure in the admin panel: typed by hand, counted
- * from the database, or drifting upward from a start value. Only the first is
- * static, and any of the other two degrades to it rather than to a blank slot —
- * a counter that has been removed from the code, or a query that failed, still
- * shows a number with its label.
- *
- * The raw number travels alongside the formatted one. Rendering the real figure
- * server-side is what makes the first paint correct; the raw number is what the
- * browser counts up from when it next changes.
- */
+/** Landing strip figures. A missing or failing counter falls back to the stored value. */
 export async function getSiteStats(): Promise<SiteStatView[]> {
   const rows = await prisma.siteStat.findMany({ orderBy: { order: "asc" } });
 
@@ -81,7 +58,6 @@ export async function getSiteStats(): Promise<SiteStatView[]> {
       if (!source) return fixed(r);
 
       const n = await countStat(source);
-      // A failed count keeps the stored figure — stale, but not a blank slot.
       if (n === null) return fixed(r);
 
       return {
@@ -142,8 +118,7 @@ function planFeatures(p: {
 export async function getPlans(): Promise<Package[]> {
   const plans = await prisma.plan.findMany({ orderBy: { price: "asc" } });
   return plans.map((p) => {
-    // Admin-written bullets come after the ones derived from the caps, pairing
-    // each Georgian line with the English one at the same index.
+    // Admin-written bullets follow the derived ones; English pairs with Georgian by index.
     const extras: Bilingual[] = p.extrasKa
       .map((ka, i) => ({ ka: ka.trim(), en: (p.extrasEn[i] ?? ka).trim() }))
       .filter((b) => b.ka);
@@ -170,13 +145,7 @@ export async function getSiteFaq(): Promise<FaqItem[]> {
   }));
 }
 
-/**
- * Read editable texts by key.
- *
- * Returns only the keys an admin has actually saved (and left non-empty), so
- * call sites can fall back to the hardcoded copy with `??`. That keeps every
- * default next to the component that uses it rather than in one giant map.
- */
+/** Saved, non-empty texts by key; callers fall back to built-in copy with `??`. */
 export async function getSiteTexts(keys: string[]): Promise<Record<string, Bilingual>> {
   if (keys.length === 0) return {};
   const rows = await prisma.siteSetting.findMany({ where: { key: { in: keys } } });
@@ -195,11 +164,9 @@ export async function getSiteValue(key: string): Promise<string | null> {
   return row?.valueKa.trim() || null;
 }
 
-/* ── Hero carousel ──────────────────────────────────────────────────────── */
-
 export type HeroStatView = {
   label: Bilingual;
-  /** A counter key — when set, the drift settings below are ignored. */
+  /** A counter key; when set, the drift settings are ignored. */
   source: string;
   format: StatFormat;
   /** The real count for a sourced figure; the admin's start value otherwise. */
@@ -223,12 +190,7 @@ export type HeroSlideView = {
   stats: HeroStatView[];
 };
 
-/**
- * Published slides with their figures, in order.
- *
- * Every distinct counter used across the carousel is read once, not once per
- * figure — two slides showing "users registered" cost one query between them.
- */
+/** Published slides with their figures; each distinct counter is queried once. */
 export async function getHeroSlides(): Promise<HeroSlideView[]> {
   const rows = await prisma.heroSlide.findMany({
     where: { published: true },
@@ -257,8 +219,6 @@ export async function getHeroSlides(): Promise<HeroSlideView[]> {
     ctaLabel: s.ctaLabelKa ? { ka: s.ctaLabelKa, en: s.ctaLabelEn || s.ctaLabelKa } : null,
     ctaUrl: s.ctaUrl,
     stats: s.stats.map((t) => {
-      // An unknown or uncountable source degrades to a plain figure rather than
-      // to an empty box: the label still makes sense next to the stored number.
       const live = t.source ? counted.get(t.source) : undefined;
       const source = t.source ? findStatSource(t.source) : undefined;
       const isLive = live !== undefined;
@@ -284,8 +244,6 @@ export async function getHeroIntervalMs(): Promise<number> {
   const s = Number(row?.valueKa);
   return Number.isFinite(s) && s >= 1 ? s * 1000 : 5000;
 }
-
-/* ── Content boxes ──────────────────────────────────────────────────────── */
 
 export type BoxView = { icon: string; title: Bilingual; body: Bilingual };
 
@@ -314,8 +272,6 @@ export async function getServiceBoxes(): Promise<BoxView[]> {
     body: { ka: s.bodyKa, en: s.bodyEn || s.bodyKa },
   }));
 }
-
-/* ── Legal documents ────────────────────────────────────────────────────── */
 
 export type LegalSectionView = {
   heading: Bilingual;
@@ -352,8 +308,6 @@ export async function getLegalTitle(doc: string): Promise<Bilingual | null> {
   return { ka, en: row?.valueEn.trim() || ka };
 }
 
-/* ── Per-page SEO ───────────────────────────────────────────────────────── */
-
 /** What an admin has overridden for one page. Empty strings mean "not set",
  *  which the metadata builder reads as "use the built-in default". */
 export type PageSeoOverrides = {
@@ -376,13 +330,7 @@ const NO_OVERRIDES: PageSeoOverrides = {
   ogImageUrl: "",
 };
 
-/**
- * SEO overrides for one path.
- *
- * Returns a fully-populated object even when no row exists, so callers never
- * branch on null — an untouched page simply gets empty overrides and keeps the
- * defaults it always had.
- */
+/** SEO overrides for a path; an untouched page gets empty overrides, never null. */
 export async function getPageSeo(path: string): Promise<PageSeoOverrides> {
   const row = await prisma.pageSeo.findUnique({ where: { path } });
   if (!row) return NO_OVERRIDES;

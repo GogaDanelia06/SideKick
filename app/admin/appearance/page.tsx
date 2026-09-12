@@ -16,8 +16,6 @@ export default async function AdminAppearancePage() {
         }}
       />
       <ThemeGuide />
-      {/* Opens on the dark palette. The tab switches the page's own theme too, so
-          whichever one is being edited is the one on screen. */}
       <ThemeEditor initial={theme} shade="dark" />
     </>
   );

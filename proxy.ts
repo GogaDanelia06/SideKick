@@ -7,18 +7,9 @@ import { IDLE_COOKIE, isIdle, needsRefresh, readMarker, stampMarker } from "@/li
 const { auth } = NextAuth(authConfig);
 
 /**
- * Guards the signed-in areas, and ends sessions that have gone quiet.
- *
- * Named `proxy.ts` because Next 16 renamed the convention. `middleware.ts` still
- * works but warns on every dev start; the default export and `config.matcher`
- * below are read exactly as before.
- *
- * Passing a handler to `auth()` takes next-auth's own redirect out of the
- * picture — its `!authorized` branch is an `else if` that never runs once a
- * handler exists. So the decision is made here, through the same `gateAllows`
- * the `authorized` callback uses: one rule, two callers, and no way for them to
- * drift into disagreeing about who gets in. Deleting that shared call would not`
- * fail any test; it would quietly open the dashboard to signed-out visitors.
+ * Guards signed-in areas and ends idle sessions (Next 16's name for middleware).
+ * A handler passed to `auth()` disables next-auth's own redirect, so `gateAllows`
+ * decides here — the same rule the `authorized` callback uses.
  */
 export default auth(async (request) => {
   const { pathname } = request.nextUrl;

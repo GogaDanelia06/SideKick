@@ -1,17 +1,8 @@
 import { prisma } from "@/lib/db";
 
 /**
- * A figure that climbs on its own.
- *
- * The landing-page spec asks for three settings per figure — a start value, a
- * range for how much it changes and a range for how often — with the random
- * draws coming from an endpoint rather than the browser. That last part is the
- * one that matters: dice rolled in each visitor's browser mean two people see
- * two different numbers, and a refresh sends the figure back to its start
- * value. Both of those are how a visitor works out the number is invented.
- *
- * So the draw happens here, the running value lives in the database, and every
- * visitor reads the same figure.
+ * Decorative figures that climb over time. The random steps are drawn on the
+ * server and stored, so every visitor sees the same number.
  */
 
 export type AutoConfig = {
@@ -24,12 +15,7 @@ export type AutoConfig = {
 
 export type AutoState = { value: number; nextAt: Date };
 
-/**
- * How many missed steps get applied in one read.
- *
- * A figure nobody has looked at for a month should catch up rather than sit
- * frozen, but not by spinning through a hundred thousand iterations to do it.
- */
+/** Caps the catch-up steps applied in one read after a long idle period. */
 const MAX_CATCHUP = 500;
 
 /** Smallest interval we will honour, so a zero range cannot spin forever. */
@@ -46,13 +32,7 @@ function nextInterval(config: AutoConfig, random: Random): number {
   return Math.max(MIN_INTERVAL_MS, between(config.intervalMinMs, config.intervalMaxMs, random));
 }
 
-/**
- * Works out what a figure should read now, and when it next changes.
- *
- * Pure — the caller decides whether to persist the result. `random` is a
- * parameter so the behaviour can be pinned down in a test rather than observed
- * and hoped for.
- */
+/** Pure: the value now and the next change time. `random` is injectable for tests. */
 export function advance(
   config: AutoConfig,
   state: AutoState | null,
@@ -74,8 +54,7 @@ export function advance(
     nextAt = new Date(nextAt.getTime() + nextInterval(config, random));
   }
 
-  // Hitting the cap leaves a schedule still in the past; move it forward so the
-  // next read does not immediately grind through another 500 steps.
+  // Hitting the cap can leave the schedule in the past; restart it from now.
   if (nextAt.getTime() <= now.getTime()) {
     nextAt = new Date(now.getTime() + nextInterval(config, random));
   }
@@ -90,12 +69,8 @@ export type AutoRow = AutoConfig & {
 };
 
 /**
- * Reads a drifting figure, advancing and saving it if it is due.
- *
- * The write is guarded on the schedule we read, so two visitors arriving at the
- * same moment cannot both apply a step. The loser simply keeps the value it
- * computed, which is within one increment of the winner's — close enough for a
- * decorative figure, and not worth a transaction.
+ * Advances and saves a figure when a step is due. The write is guarded on the
+ * schedule that was read, so concurrent readers cannot both apply a step.
  */
 export async function readAutoStat(row: AutoRow, now = new Date()): Promise<number> {
   const state =
@@ -120,12 +95,7 @@ export async function readAutoStat(row: AutoRow, now = new Date()): Promise<numb
   return next.value;
 }
 
-/**
- * The key a drifting figure is published under.
- *
- * Prefixed so it cannot collide with a counter key from STAT_SOURCES — both
- * kinds share one payload and one poller on the client.
- */
+/** Prefixed so drifting keys never collide with counter keys in the live payload. */
 export function autoKey(statKey: string): string {
   return `auto:${statKey}`;
 }

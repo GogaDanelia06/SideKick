@@ -1,27 +1,12 @@
 /**
- * Ends a session that has gone quiet.
- *
- * People expect quitting the browser to sign them out. It cannot: no signal
- * reaches the server when a window closes, and Chrome and Safari hand the same
- * session cookie back when they restore. What *is* observable is silence — and
- * a browser that was quit produces exactly that.
- *
- * So the rule is idleness, not closure. Stop using the dashboard for half an
- * hour and the session ends, whether you closed the window, walked away, or
- * left it open on a screen in a shop. The second case is the one that actually
- * matters for a merchant's inbox.
- *
- * Kept out of the Auth.js token deliberately. Writing a moving timestamp into
- * the JWT makes Auth.js re-issue its cookie with the configured seven-day
- * `maxAge`, which would restore the very expiry the sign-in flow strips off.
- * A separate cookie has no such side effect — see [[sessionExpiry]] for the
- * absolute cap that backs this up.
+ * Idle sign-out: a signed cookie records the last activity, and a session unused
+ * for IDLE_MAX_SEC is refused. Kept outside the Auth.js JWT, because updating the
+ * token would re-issue its cookie with the 7-day maxAge.
  */
 
-/** How long a session may go untouched before it is refused. */
 export const IDLE_MAX_SEC = 30 * 60;
 
-/** Rewriting on every request is wasteful; the marker is refreshed past this. */
+/** The marker is rewritten at most this often. */
 const REFRESH_AFTER_SEC = 60;
 
 export const IDLE_COOKIE = "sk.seen";
@@ -42,7 +27,7 @@ async function hmac(secret: string, data: string): Promise<string> {
     .join("");
 }
 
-/** Constant-time for the same reason the webhook's signature check is. */
+/** Constant-time comparison. */
 function equal(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let diff = 0;
@@ -50,25 +35,13 @@ function equal(a: string, b: string): boolean {
   return diff === 0;
 }
 
-/**
- * Stamps the current time, signed.
- *
- * Signed because the cookie is otherwise a number the browser owns: anyone
- * could put tomorrow's date in it and never be signed out again, which is the
- * whole control undone.
- */
+/** The current time, signed so the browser cannot forge it. */
 export async function stampMarker(secret: string, now = Date.now()): Promise<string> {
   const ts = String(now);
   return `${ts}.${await hmac(secret, ts)}`;
 }
 
-/**
- * Reads a marker back, or null if it is missing, malformed or forged.
- *
- * Null is not "expired" — it is "no usable marker". The caller decides what
- * that means, and it must be treated as a fresh visit rather than an idle one,
- * or every user signs out the moment this ships.
- */
+/** The marker's timestamp, or null when missing, malformed or forged (treated as a fresh visit). */
 export async function readMarker(
   value: string | undefined,
   secret: string,
@@ -85,14 +58,10 @@ export async function readMarker(
   return equal(given, await hmac(secret, ts)) ? Number(ts) : null;
 }
 
-/** Whether the gap since `seenAt` is long enough to end the session. */
 export function isIdle(seenAt: number, now = Date.now()): boolean {
-  // A clock that has gone backwards must not expire anything, same as the
-  // absolute check.
   return (now - seenAt) / 1000 > IDLE_MAX_SEC;
 }
 
-/** Whether the marker is old enough to be worth writing again. */
 export function needsRefresh(seenAt: number, now = Date.now()): boolean {
   return (now - seenAt) / 1000 > REFRESH_AFTER_SEC;
 }

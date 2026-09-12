@@ -17,9 +17,6 @@ export function ChatWidget() {
   const { messages, typing, send, sendFile } = useChat(t(CHAT.widgetGreeting));
   const threadRef = useRef<HTMLDivElement>(null);
 
-  // The thread is only 260px tall, so the third message already pushes the
-  // newest one out of sight — and the typing dots with it. Runs on `open` too,
-  // so re-opening the widget shows where the conversation left off.
   useEffect(() => {
     const el = threadRef.current;
     if (el) el.scrollTop = el.scrollHeight;
@@ -27,9 +24,6 @@ export function ChatWidget() {
 
   return (
     <>
-      {/* Opens with a CSS keyframe, not framer-motion. The widget sits on every
-          public page, so the library was downloaded and parsed by every visitor
-          for this one fade — and all it added beyond it was a fade on close. */}
       {open ? (
         <div className="fixed bottom-[92px] right-6 z-[60] w-[340px] max-w-[calc(100vw-48px)] animate-[fadeUp_0.18s_ease] overflow-hidden rounded-lg border border-border bg-card shadow-[0_16px_44px_rgba(0,0,0,0.5)]">
           <header className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
@@ -54,9 +48,6 @@ export function ChatWidget() {
             {typing ? <ChatTyping aiTone="blue" /> : null}
           </div>
 
-          {/* Only while the thread is untouched. Once someone has asked
-              something of their own, three canned questions under their
-              conversation are clutter, not help. */}
           {messages.length === 1 ? (
             <div className="flex flex-wrap gap-2 px-4 pb-1">
               {CHAT_CHIPS.map((chip, i) => (
@@ -84,7 +75,6 @@ export function ChatWidget() {
         aria-label={t(CHAT.ariaChat)}
         onClick={() =>
           setOpen((o) => {
-            // Only the opening counts; closing is not an engagement signal.
             if (!o) track("chat_widget_opened");
             return !o;
           })

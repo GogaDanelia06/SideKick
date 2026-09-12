@@ -1,12 +1,8 @@
 import { log } from "@/lib/logger";
 
 /**
- * Trading an Instagram Login authorisation code for a token we can keep.
- *
- * Two calls, not one, and both hosts are Meta's own choice: the code is
- * exchanged on api.instagram.com and the result upgraded on
- * graph.instagram.com. Neither is versioned, unlike every other Graph call in
- * this codebase.
+ * Instagram Login token exchange: code → short-lived token (api.instagram.com)
+ * → 60-day token (graph.instagram.com). Neither endpoint is versioned.
  */
 
 const TOKEN_EXCHANGE = "https://api.instagram.com/oauth/access_token";
@@ -20,11 +16,7 @@ async function request(url: string, body?: URLSearchParams): Promise<Json | null
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-  // Host and path, never the whole URL. `toLongLived` passes the app secret and
-  // the token as query parameters — Meta's documented shape for that call — so
-  // logging the URL would print, verbatim into the log stream, the key every
-  // Instagram webhook signature on this platform is checked against. Anyone who
-  // could read the logs could then forge customer messages for every merchant.
+  // Host and path only: the query string carries the app secret and the token.
   const endpoint = (() => {
     const parsed = new URL(url);
     return parsed.host + parsed.pathname;
@@ -53,13 +45,7 @@ async function request(url: string, body?: URLSearchParams): Promise<Json | null
   }
 }
 
-/**
- * Trades the authorisation code for a short-lived token (about an hour).
- *
- * Form-encoded rather than a query string, and the redirect_uri repeated even
- * though the code already came back through it — both are Meta's requirements,
- * and omitting either fails with an error that names neither.
- */
+/** Code → short-lived token. Meta requires a form body and the same redirect_uri. */
 export async function exchangeCode(
   appId: string,
   appSecret: string,
@@ -73,9 +59,7 @@ export async function exchangeCode(
       client_secret: appSecret,
       grant_type: "authorization_code",
       redirect_uri: redirectUri,
-      // Instagram appends `#_` to the redirect it sends the browser to. A
-      // browser strips the fragment, but a merchant who copies the URL by hand
-      // does not, and the exchange then fails on a character nobody can see.
+      // Instagram appends "#_" to the code it redirects with.
       code: code.replace(/#_$/, ""),
     }),
   );
@@ -84,21 +68,9 @@ export async function exchangeCode(
   return typeof token === "string" && token ? token : null;
 }
 
-/**
- * Upgrades the hour-long token to the sixty-day one.
- *
- * Skipping this is the kind of mistake that works perfectly in testing and then
- * breaks every connected account an hour after the merchant walks away.
- */
 export type LongLivedToken = { token: string; expiresAt: Date | null };
 
-/**
- * Reads Meta's `expires_in`, which is seconds from now.
- *
- * Absent or nonsensical gives null rather than a guessed date: a refresh job
- * that believes a wrong expiry either renews pointlessly or, worse, lets a
- * token lapse while reporting it healthy.
- */
+/** Meta's `expires_in` (seconds from now) as a date; null when missing or invalid. */
 function expiryFrom(data: Json | null, now = Date.now()): Date | null {
   const seconds = data?.expires_in;
   if (typeof seconds !== "number" || !Number.isFinite(seconds) || seconds <= 0) return null;
@@ -120,14 +92,7 @@ export async function toLongLived(
   return { token, expiresAt: expiryFrom(data) };
 }
 
-/**
- * Renews a long-lived token for another sixty days.
- *
- * Meta refuses a token younger than 24 hours and one that has already lapsed,
- * so this is only useful on a schedule — and only while the token still works.
- * Once it has expired there is no way back except sending the merchant through
- * the consent screen again.
- */
+/** Extends a long-lived token by 60 days. Meta only allows it for valid tokens older than 24h. */
 export async function refreshLongLived(token: string): Promise<LongLivedToken | null> {
   const url = new URL(REFRESH);
   url.searchParams.set("grant_type", "ig_refresh_token");

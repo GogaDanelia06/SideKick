@@ -18,7 +18,6 @@ import { Funnel } from "@/components/admin/analytics/Funnel";
 import { RankedList } from "@/components/admin/analytics/RankedList";
 import type { Bilingual } from "@/lib/content/types";
 
-// The figures are counted per request; nothing here may be cached between them.
 export const dynamic = "force-dynamic";
 
 const fmt = (n: number) => n.toLocaleString("en-US");
@@ -99,8 +98,6 @@ export default async function AdminAnalyticsPage() {
         aside={<LiveRefresh />}
       />
 
-      {/* Income first — it is the platform owner's own money, and the reason
-          the rest of the page matters. */}
       <div className="mb-6 rounded-lg border border-green bg-green-surface/30 p-5">
         <BiText
           as="h2"
@@ -214,15 +211,12 @@ export default async function AdminAnalyticsPage() {
         <Card icon={IconPackage} label={{ ka: "პროდუქტი", en: "Products" }} value={fmt(s.products)} />
       </div>
 
-      {/* Plan distribution */}
       <div className="mt-6 rounded-lg border border-border bg-card p-5">
         <BiText
           as="h2"
           className="mb-1 text-base font-semibold"
           value={{ ka: "პაკეტების განაწილება", en: "Plan distribution" }}
         />
-        {/* Counts every subscription, paying or not — the status split above is
-            where you see who is actually on a paid plan. */}
         <BiText
           as="p"
           className="mb-4 text-[12px] text-faint"
@@ -254,7 +248,6 @@ export default async function AdminAnalyticsPage() {
         </div>
       </div>
 
-      {/* Growth */}
       <div className="mt-6 rounded-lg border border-border bg-card p-5">
         <BiText
           as="h2"
@@ -275,8 +268,6 @@ export default async function AdminAnalyticsPage() {
         </div>
       </div>
 
-      {/* Traffic — the questions "how many people came" and "what did they do",
-          answered from our own counters rather than from Google. */}
       <div className="mt-6 rounded-lg border border-border bg-card p-5">
         <BiText
           as="h2"
@@ -313,8 +304,6 @@ export default async function AdminAnalyticsPage() {
               <DailyBars days={traffic.daily} />
             </div>
 
-            {/* The funnel is the one thing here that answers "is the site
-                working" rather than "how busy was it". */}
             {traffic.funnel.length > 0 ? (
               <div className="mb-6">
                 <Funnel steps={traffic.funnel} />

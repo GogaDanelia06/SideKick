@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import type { Plan } from "@prisma/client";
 import { IconAlertTriangle, IconCheck, IconStarFilled } from "@tabler/icons-react";
-import { updatePlan } from "@/lib/admin/actions";
+import { updatePlan } from "@/lib/admin/actions/plans";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 

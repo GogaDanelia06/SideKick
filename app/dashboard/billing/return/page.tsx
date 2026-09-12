@@ -10,14 +10,7 @@ import { BiText } from "@/components/admin/ui/BiText";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Where the bank sends the customer back to.
- *
- * The bank's callback is what really settles a payment, but it can arrive after
- * the customer is already looking at this page — so we settle here too. Both
- * paths funnel through the same idempotent `settlePayment`, so whichever wins
- * the race, the subscription is extended exactly once.
- */
+/** Bank return page. Settles here too (idempotently), since the bank callback may arrive later. */
 export default async function PaymentReturnPage({
   searchParams,
 }: {
@@ -28,8 +21,7 @@ export default async function PaymentReturnPage({
 
   const payment = paymentId
     ? await prisma.payment.findFirst({
-        // Scoped to the caller's business: a payment id in the URL must not
-        // reveal another tenant's billing.
+        // Scoped to the caller's business.
         where: { id: paymentId, businessId: ctx.businessId },
       })
     : null;

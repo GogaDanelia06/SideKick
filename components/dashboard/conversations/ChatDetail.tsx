@@ -25,12 +25,7 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const MARK = "inline-flex h-8 items-center gap-1.5 rounded-[6px] border px-3 text-xs font-medium";
 
-/**
- * What to say when a reply is saved but does not reach the customer.
- *
- * Kept apart from the failures because the outcome is different: the message is
- * in the thread either way, and only some of these are worth trying again.
- */
+/** Shown when a reply is saved but not delivered. */
 const REPLY_NOTICE: Record<string, Bilingual> = {
   window_closed: {
     ka: "პასუხი შენახულია, მაგრამ Messenger-მა არ მიიღო: კლიენტს 24 საათია არ მოუწერია. ხელახლა ცდა ვერ უშველის — დაელოდე, სანამ თვითონ დაგიკავშირდება.",
@@ -79,18 +74,7 @@ export function ChatDetail({
   const [makingLead, setMakingLead] = useState(false);
   const [releasing, setReleasing] = useState(false);
 
-  /**
-   * Parks the thread on the newest message.
-   *
-   * A chat that opens at the top shows the oldest thing anyone said — and the
-   * merchant clicked the row *because* of the newest, which they had just read
-   * in the preview. Every message chat they have ever used opens at the bottom;
-   * this one reading as an archive was the surprise.
-   *
-   * Keyed on the message count as well as the conversation, so a reply arriving
-   * while the thread is open scrolls itself into view rather than landing
-   * silently below the fold.
-   */
+  /** Keeps the thread scrolled to the newest message, including replies arriving while it is open. */
   const thread = useRef<HTMLDivElement>(null);
   const count = chat?.messages.length ?? 0;
 
@@ -128,8 +112,7 @@ export function ChatDetail({
         return;
       }
 
-      // Cleared on success even when delivery fell short: the message is in the
-      // thread, and leaving it in the box invites sending it a second time.
+      // Cleared even when delivery failed: the message is saved, and resending would duplicate it.
       setDraft("");
       onSent(res.message);
 
@@ -183,8 +166,6 @@ export function ChatDetail({
           </div>
         </div>
 
-        {/* Only while a person is actually holding the chat. A permanent button
-            would invite handing back a conversation nobody had taken. */}
         {chat.handedOver ? (
           <button
             type="button"
@@ -229,9 +210,6 @@ export function ChatDetail({
           <IconUserPlus size={15} /> {t({ ka: "ლიდი", en: "Lead" })}
         </button>
         <span
-          // Not a button. Making an order means choosing products and
-          // quantities, which is a form and not a single press — so this stays
-          // what it always was: a sign of whether one exists.
           title={t({
             ka: "შეკვეთა იქმნება შეკვეთების გვერდიდან",
             en: "Orders are created from the orders page",
@@ -247,8 +225,7 @@ export function ChatDetail({
             on={chat.aiEnabled}
             onToggle={() => {
               const next = !chat.aiEnabled;
-              // Told to the parent first: the cache is what the header renders
-              // from, so waiting for the server would leave the switch still.
+              // Optimistic: the header renders from the parent's cache.
               onAiChange?.(next);
               start(() => setConversationAi(chat.id, next));
             }}
@@ -260,9 +237,6 @@ export function ChatDetail({
 
       <div ref={thread} className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto bg-soft p-4">
         {loading ? (
-          // Three grey bars in the shape of a conversation. Saying "no messages"
-          // while they are still being fetched would be wrong, and an empty
-          // panel reads as though the click had not registered.
           <div className="flex flex-col gap-3" aria-busy="true">
             <span className="skeleton h-9 w-[55%] rounded-[13px]" />
             <span className="skeleton ml-auto h-9 w-[45%] rounded-[13px]" />
@@ -294,9 +268,6 @@ export function ChatDetail({
                 </span>
               ) : null}
               {msg.text}
-              {/* Right-aligned under the text, quiet enough to ignore while
-                  reading and there the moment you look for it. A merchant
-                  answering an hour late needs to know it was an hour. */}
               <span
                 className={clsx(
                   "mt-1 block text-right text-[10px] tabular-nums",

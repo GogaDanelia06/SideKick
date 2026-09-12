@@ -24,12 +24,8 @@ export function normalizeYouTubeUrl(raw: string): string | null {
 }
 
 /**
- * Derived rather than stored: YouTube serves a thumbnail for every video id, so
- * there is nothing for an admin to upload or keep in sync.
- *
- * Kept here, away from any database import, because the admin editor that uses
- * it is a client component. Imported from tutorials.ts, it pulled `lib/db` — and
- * with it Prisma's browser runtime — into that page's JavaScript.
+ * YouTube's thumbnail for a watch URL. Free of database imports because a client
+ * component (the admin tutorials editor) uses it.
  */
 export function youtubeThumbnail(url: string): string | null {
   try {

@@ -1,17 +1,8 @@
 import { prisma } from "../lib/db";
 
 /**
- * Repairs channels that hold a working credential but were never marked active.
- *
- * `linkChannel` used to write `connected` and nothing else, so a channel that
- * had just come back from Meta's consent screen read "connected" on the
- * channels page and "off" on the overview card — the two screens ask different
- * columns. It also left `lastSyncAt` blank, so the row claimed it had never
- * synced while it was answering customers.
- *
- * The write is fixed; this is for the rows already in the database. Safe to run
- * more than once: it only touches rows that hold both halves of a credential
- * and are switched on, and only ones that are actually wrong.
+ * Marks connected channels that hold a credential ACTIVE when an old linkChannel
+ * bug left them inactive. Idempotent.
  *
  *   npx tsx scripts/fix-channel-status.ts          # show what would change
  *   npx tsx scripts/fix-channel-status.ts --apply  # change it
@@ -46,9 +37,7 @@ async function main() {
 
   const { count } = await prisma.channel.updateMany({
     where: { id: { in: broken.map((c) => c.id) } },
-    // `lastSyncAt` only when it is missing: a real timestamp from an actual
-    // delivery is better than "now", and overwriting it would age the row
-    // backwards for no reason.
+    // lastSyncAt is only set when missing.
     data: { status: "ACTIVE" },
   });
 

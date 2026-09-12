@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { themeCss, type Theme } from "@/lib/site/theme/css";
 import { GROUPS, TOKENS, defaultColors, type Shade } from "@/lib/site/theme/tokens";
-import { updateTheme } from "@/lib/admin/actions";
+import { updateTheme } from "@/lib/admin/actions/theme";
 import { ColorField } from "./ColorField";
 import { ContrastNotes } from "./ContrastNotes";
 import { ThemeActions } from "./ThemeActions";
@@ -26,8 +26,7 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
   const [status, setStatus] = useState<"idle" | "saved" | "failed">("idle");
   const changed = countChanges(draft, saved);
 
-  // The draft, applied to the real page. This panel is one of the surfaces being
-  // edited, so the preview is the thing itself rather than a picture of it.
+  // Preview the draft on the real page.
   useEffect(() => {
     const style = document.createElement("style");
     style.id = "theme-preview";
@@ -36,13 +35,8 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
     return () => style.remove();
   }, [draft]);
 
-  // Editing the light palette while looking at the dark one is guesswork, so the
-  // tab switches what is on screen too. Restored on the way out — the choice
-  // belongs to the theme toggle, not to this page.
-  //
-  // What gets restored is read off the document, before the effect below changes
-  // it. It used to be the tab this page opens on, which is always dark, so anyone
-  // browsing in light mode was switched to dark the moment they left.
+  // The page shows the palette being edited; the original theme is restored on exit
+  // (read before the effect below changes it).
   useEffect(() => {
     const root = document.documentElement;
     const original = root.getAttribute("data-theme");
@@ -55,8 +49,7 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
     document.documentElement.setAttribute("data-theme", shade);
   }, [shade]);
 
-  // Unsaved colours look saved: the whole panel is already wearing them. Without
-  // this, closing the tab silently throws the work away.
+  // Warn before leaving with unsaved changes.
   useEffect(() => {
     if (changed === 0) return;
     const warn = (e: BeforeUnloadEvent) => e.preventDefault();

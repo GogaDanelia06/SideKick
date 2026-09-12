@@ -23,17 +23,7 @@ function readLines(value: unknown): AgentOrderLine[] | { error: string } {
   return lines;
 }
 
-/**
- * Records an order the AI took during a chat.
- *
- * The caller names products by code and quantity; totals are computed here from
- * this tenant's own product rows. An order arrives as NEW, which is the state
- * the tenant's dashboard treats as "needs looking at" — the AI books it, a
- * human confirms it.
- *
- * There is deliberately no delete. Removing a customer's order is a decision
- * made by a person in the dashboard, with the history that implies.
- */
+/** Records an order taken by the AI. Totals are computed from this business's products. */
 export async function POST(request: Request) {
   const body = await readJson(request);
   if (isDenial(body)) return body.response;
@@ -44,8 +34,7 @@ export async function POST(request: Request) {
   const lines = readLines(body.items);
   if ("error" in lines) return badRequest(lines.error).response;
 
-  // An order may stand alone, but when a conversation is named it must be one
-  // of this tenant's.
+  // An optional conversation must belong to this business.
   const conversationId = str(body, "conversationId");
   if (conversationId) {
     const conversation = await ownedConversation(auth.businessId, conversationId);
@@ -85,8 +74,6 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       orderId: order.id,
-      // Echoed back so the AI can tell the customer a figure that matches what
-      // the tenant will see, rather than one it worked out itself.
       total: order.total,
       status: order.status,
       items: priced.items.map((i) => ({

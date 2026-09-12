@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import type { SubscriptionStatus } from "@prisma/client";
 import { IconCheck } from "@tabler/icons-react";
-import { setBusinessPlan } from "@/lib/admin/actions";
+import { setBusinessPlan } from "@/lib/admin/actions/businesses";
 import type { AdminBusiness, AdminPlan } from "@/lib/admin/businesses";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
@@ -46,9 +46,6 @@ export function BusinessRow({ business, plans }: { business: AdminBusiness; plan
         </div>
       </div>
 
-      {/* Usage against the current plan, because that is what decides whether a
-          tier still fits — a shop at 480 of 500 needs moving up, and the number
-          is the only thing on this screen that says so. */}
       <div className="w-[120px] shrink-0 text-xs">
         <div className="text-muted">{t({ ka: "მესიჯები", en: "Messages" })}</div>
         <div className={`font-mono ${limit > 0 && used >= limit ? "text-red" : "text-ink"}`}>

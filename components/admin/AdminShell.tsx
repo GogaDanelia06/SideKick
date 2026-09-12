@@ -28,8 +28,6 @@ export function AdminShell({
     </div>
   );
 
-  // Language, theme, the way back to the dashboard and signing out all live in
-  // here — the same menu, in the same corner, as the tenant dashboard.
   const footer = <AdminProfileMenu name={name} email={email} />;
 
   return (
@@ -62,9 +60,6 @@ export function AdminShell({
           </span>
         </div>
 
-        {/* Full width, like the tenant dashboard — the section rail sits right
-            beside the sidebar instead of floating in the middle of the screen.
-            Individual screens constrain their own reading width where it helps. */}
         <main className="w-full flex-1 px-5 py-7 sm:px-6">{children}</main>
       </div>
     </div>

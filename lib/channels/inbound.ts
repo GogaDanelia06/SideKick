@@ -5,26 +5,20 @@ import type { InboundMessage } from "./meta";
 
 export type RecordedMessage = {
   businessId: string;
-  /** Which channel it arrived on, so the AI is told where to answer. */
   channel: ChannelType;
   conversationId: string;
   messageId: string;
   /** False when this exact platform message had already been stored. */
   isNew: boolean;
-  /** True while the chat still shows as "—" and could be given a real name. */
+  /** The conversation has no customer name yet. */
   needsName: boolean;
-  /** What the customer wrote. Carried so the AI can be asked without re-reading it. */
   text: string;
 };
 
 /**
- * Files one customer message under the tenant that owns the page it arrived on.
- *
- * Returns null when no channel claims the page. That is not an error worth
- * shouting about: a Meta app can be subscribed to pages belonging to businesses
- * that never finished connecting here, and every one of them will deliver
- * events. Treating it as a failure would turn other people's traffic into our
- * alerts — and, worse, into retries.
+ * Stores one customer message under the business that owns the receiving account.
+ * Returns null for Meta's test payloads and for accounts without a connected
+ * channel; those are not errors and must not trigger retries.
  */
 export async function recordInbound(
   type: ChannelType,
@@ -35,18 +29,7 @@ export async function recordInbound(
     select: { id: true, businessId: true, connected: true },
   });
 
-  // A channel that exists but is switched off is a deliberate "stop answering
-  // for me", so it is dropped as firmly as an unknown account. Storing it
-  // anyway would fill an inbox the tenant has asked to be quiet.
-  //
-  // Said out loud, at info, because dropping silently makes two very different
-  // situations look identical from the outside: Meta never sent the event, and
-  // Meta sent it to an id we do not recognise. Without this line the only way
-  // to tell them apart is to guess.
-  // Meta's own "Test" button in the App Dashboard sends a sample payload with
-  // placeholder ids — "0" where a real account would be. It proves the webhook
-  // is reachable and nothing else, so it is called out by name: twice now it
-  // has been read as a real message that we lost.
+  // The App Dashboard "Test" button sends placeholder ids ("0").
   if (msg.pageId === "0") {
     log.info(
       `ignored Meta's ${type} test payload (account id "0") — this is the Dashboard "Test" button, not a real message`,
@@ -55,9 +38,6 @@ export async function recordInbound(
   }
 
   if (!channel?.connected) {
-    // The id is in the message itself, not only in the context object. Log
-    // viewers collapse structured fields by default, and the one number that
-    // resolves this is the one that was hidden behind a click.
     log.info(
       `inbound message dropped — no connected ${type} channel for account ${msg.pageId}` +
         (channel ? " (channel exists but is switched off)" : " (no channel has this id)"),
@@ -76,16 +56,12 @@ export async function recordInbound(
       customerRef: msg.senderId,
       status: "ACTIVE",
     },
-    // Nothing to change on an existing chat here; the status move is below,
-    // where it can be made conditional. The upsert is for getting the same row
-    // back on a second message rather than for editing it.
+    // Only fetches the existing row; the status change happens below.
     update: {},
     select: { id: true, customerName: true },
   });
 
-  // Postgres decides the duplicate, not a read-then-write in this process: two
-  // deliveries of the same retry can arrive at once, and a check-first version
-  // would let both through the gap between the check and the insert.
+  // Retries are found here; concurrent duplicates hit the unique index below.
   const existing = await prisma.message.findUnique({
     where: {
       conversationId_externalId: {
@@ -121,8 +97,7 @@ export async function recordInbound(
     });
     messageId = created.id;
   } catch {
-    // The unique index fired, which means a concurrent delivery of the same
-    // retry won the race. Its row is the right answer; ours was the duplicate.
+    // A concurrent delivery of the same message won the insert; use its row.
     const winner = await prisma.message.findUnique({
       where: {
         conversationId_externalId: {
@@ -144,9 +119,7 @@ export async function recordInbound(
     };
   }
 
-  // Same rule the agent API uses: traffic makes a chat no longer "new", but a
-  // conversation a human has marked DONE stays closed. Reopening it is their
-  // call, not an incoming message's.
+  // New traffic moves NEW to ACTIVE but never reopens a conversation marked DONE.
   await prisma.conversation.updateMany({
     where: { id: conversation.id, status: "NEW" },
     data: { status: "ACTIVE" },

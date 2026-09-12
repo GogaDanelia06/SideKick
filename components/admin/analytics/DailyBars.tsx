@@ -1,28 +1,15 @@
 import { BiText } from "@/components/admin/ui/BiText";
 
-/** One value per day, so the mark is a bar rather than a line. */
 export type Day = { day: string; views: number };
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 
-/** Ticks every fifth day. A label under all thirty bars is unreadable at this width. */
+/** Label every fifth day. */
 const TICK_EVERY = 5;
 
 const shortDay = (iso: string) => iso.slice(5).replace("-", "/");
 
-/**
- * Daily traffic for the last thirty days.
- *
- * The previous version was thirty bars and two dates — the first and the last.
- * You could see that something happened without being able to say what, or when,
- * or whether it was a lot: no scale to measure a bar against, and nothing but the
- * ends to date it by.
- *
- * So the chart now carries the three things that make a bar readable: the peak is
- * labelled where it stands, the average is drawn across as a reference, and the
- * dates appear often enough to place any bar within a day or two. One series, one
- * hue, no legend — the heading names it.
- */
+/** 30-day traffic bars with a labelled peak, an average line and periodic date ticks. */
 export function DailyBars({ days }: { days: Day[] }) {
   const peak = Math.max(1, ...days.map((d) => d.views));
   const total = days.reduce((sum, d) => sum + d.views, 0);
@@ -37,8 +24,6 @@ export function DailyBars({ days }: { days: Day[] }) {
       </div>
 
       <div className="relative h-[128px]">
-        {/* The average, drawn rather than stated: a bar is only "high" or "low"
-            against something, and this is the something. */}
         {average > 0 ? (
           <div
             className="absolute inset-x-0 z-[1] border-t border-dashed border-border"
@@ -61,8 +46,7 @@ export function DailyBars({ days }: { days: Day[] }) {
                 className={`flex-1 rounded-t-[4px] transition-opacity hover:opacity-60 ${
                   isPeak ? "bg-blue" : "bg-blue/55"
                 }`}
-                // A floor of 2px so a day with no traffic is still a day on the
-                // axis rather than a gap in it.
+                // A 2px floor keeps empty days visible on the axis.
                 style={{ height: `${Math.max(2, (d.views / peak) * 100)}%` }}
               />
             );

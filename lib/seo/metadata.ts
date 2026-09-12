@@ -19,17 +19,10 @@ type PageMeta = {
   description?: string;
   path: string;
   index?: boolean;
-  /** What the admin set for this page in the panel. Wins over the defaults. */
   overrides?: SeoOverrides;
 };
 
-/**
- * Builds a page's metadata from three layers, in order of precedence:
- * admin override → the page's own value → the site-wide default.
- *
- * Every override is skipped when blank, which is what lets an admin clear a
- * field to fall back rather than publish an empty tag.
- */
+/** Page metadata: admin override → page value → site default. Blank overrides are ignored. */
 export function pageMetadata({
   title,
   absoluteTitle,
@@ -76,17 +69,7 @@ export function pageMetadata({
   };
 }
 
-/**
- * A page's `generateMetadata`, with the admin's overrides already applied.
- *
- * Pages call this instead of `pageMetadata` directly so that adding a new
- * public page costs one line and can never forget to read its overrides:
- *
- *   export const generateMetadata = seoFor({ title: "ფასები", path: "/pricing" });
- *
- * Safe on a cached page: saving SEO in the panel revalidates the path, so the
- * new tags go out on the next load rather than at the next deploy.
- */
+/** A page's `generateMetadata` with the admin's SEO overrides applied. */
 export function seoFor(base: Omit<PageMeta, "overrides">) {
   return async function generateMetadata(): Promise<Metadata> {
     return pageMetadata({ ...base, overrides: await getPageSeo(base.path) });

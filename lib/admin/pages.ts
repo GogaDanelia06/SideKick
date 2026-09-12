@@ -21,17 +21,7 @@ import {
 } from "@tabler/icons-react";
 import type { Bilingual } from "@/lib/content/types";
 
-/**
- * The admin panel is organised the way the site is: you pick a **page** in the
- * left column, then a **section of that page** in the second column.
- *
- * That mirrors how the owner thinks about the site ("the story block on the
- * landing page") rather than how it is stored, and it is why this registry maps
- * pages → sections rather than exposing one flat list of editors.
- *
- * Each section names the editor that renders it; the data each one needs is
- * loaded by app/admin/page/[slug]/page.tsx.
- */
+/** Admin navigation mirrors the site: pages, then sections. Section data loads in app/admin/page/[slug]. */
 
 export type SectionKind =
   | "carousel"
@@ -83,8 +73,6 @@ export const ADMIN_PAGES: AdminPage[] = [
         icon: IconCarouselHorizontal,
         kind: "carousel",
       },
-      // Named for what it is, so it is never mistaken for the animated figures
-      // that live inside a carousel slide.
       {
         key: "stats",
         label: ka("ციფრების ზოლი", "Stats strip"),
@@ -219,8 +207,7 @@ export const ADMIN_PAGES: AdminPage[] = [
         kind: "text",
         textGroup: "free-period",
       },
-      // No SEO section: /register sits under the auth layout, which sends
-      // noindex on purpose. Offering SEO fields here would only mislead.
+      // No SEO section: /register is noindex.
     ],
   },
   {

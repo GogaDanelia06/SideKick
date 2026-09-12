@@ -1,18 +1,8 @@
 import { createHmac } from "node:crypto";
 
 /**
- * Sends the webhook Meta *would* send, signed exactly as Meta signs it.
- *
- * Instagram will not deliver a real DM to an unpublished app — Meta says so in
- * the Configure webhooks panel — so the last mile of this integration cannot be
- * exercised by messaging the account. Everything after that mile can: the
- * signature check, the parser, the tenant lookup, the inbox, the AI reply. This
- * plays the part of Meta so that the rest is provably working before anyone
- * waits on business verification.
- *
- * It is not a test double. The request is real, the signature is real, and the
- * message lands in the real inbox — which is the point, and also the reason to
- * delete the conversation afterwards.
+ * Sends a correctly signed Instagram webhook, since Meta does not deliver real DMs to
+ * an unpublished app. The message lands in the real inbox; delete it afterwards.
  *
  *   INSTAGRAM_APP_SECRET=… IG_ACCOUNT_ID=… npx tsx scripts/simulate-instagram-dm.ts "text"
  */
@@ -22,9 +12,7 @@ const accountId = process.env.IG_ACCOUNT_ID;
 const url = process.env.WEBHOOK_URL ?? "https://sidekick.ge/api/webhooks/messenger";
 const text = process.argv[2] ?? "გამარჯობა, ეს სატესტო შეტყობინებაა";
 
-// The sender is invented, and deliberately stable across runs: a fixed id keeps
-// every simulated message in one conversation instead of littering the inbox
-// with a new customer each time.
+// A stable fake sender keeps every run in one conversation.
 const senderId = process.env.IG_SENDER_ID ?? "9900000000000001";
 
 if (!secret || !accountId) {
@@ -36,9 +24,7 @@ if (!secret || !accountId) {
   process.exit(1);
 }
 
-// The Instagram Login shape: `changes[]` with a `messages` field, not the
-// `messaging[]` array the Messenger Platform sends. Both are accepted by the
-// webhook, and sending the wrong one here would test the wrong branch.
+// Instagram Login's `changes[]` shape.
 const payload = JSON.stringify({
   object: "instagram",
   entry: [
@@ -52,8 +38,7 @@ const payload = JSON.stringify({
             sender: { id: senderId },
             recipient: { id: accountId },
             timestamp: String(Date.now()),
-            // Unique per run, because a repeated mid is recognised as a retry
-            // and stored once — correct behaviour, and not what we want to see.
+            // A unique mid per run; a repeated one is treated as a retry.
             message: { mid: `sim_${Date.now()}`, text },
           },
         },
@@ -64,9 +49,7 @@ const payload = JSON.stringify({
 
 const signature = `sha256=${createHmac("sha256", secret).update(payload, "utf8").digest("hex")}`;
 
-// Wrapped rather than awaited at the top level: these scripts run through tsx,
-// which compiles them as CommonJS, where a top-level await is a syntax error
-// rather than a slow start.
+// tsx compiles to CommonJS, where top-level await is not allowed.
 async function main() {
   const res = await fetch(url, {
     method: "POST",

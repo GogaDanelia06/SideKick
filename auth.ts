@@ -40,15 +40,11 @@ const providers: Provider[] = [
       const ok = await bcrypt.compare(password, user.passwordHash);
       if (!ok) return null;
 
-      // Checked only after the password, so the answer never reveals whether an
-      // address is registered to someone who does not know its password.
+      // Checked after the password, so it never reveals whether an address is registered.
       if (!user.emailVerified) throw new UnverifiedEmail();
 
       await Promise.all([clear("login", email), clear("loginIp", ip)]);
-      // The form sends the "remember me" choice as a string, like every other
-      // credential field. Anything other than an explicit yes is a no, so a
-      // request that omits it gets the shorter session rather than the longer
-      // one — the safe direction for a field a caller controls.
+      // Only an explicit "1" means remember me; anything else gets the shorter session.
       return {
         id: user.id,
         name: user.name,
@@ -59,9 +55,7 @@ const providers: Provider[] = [
   }),
 ];
 
-// Same predicate the login and register pages use to decide whether to show the
-// button. Registering the provider on an id alone would leave a button that
-// leads to a Google error page, and half-configured is worse than off.
+// Registered only when fully configured (the same check the login page uses).
 if (googleSignInEnabled()) providers.push(Google);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -69,20 +63,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers,
   events: {
-    /**
-     * Gives a brand-new Google account a business of its own.
-     *
-     * Signing up with email and password goes through /api/auth/register, which
-     * provisions one. Google does not: the adapter creates the `User` row and
-     * nothing else, so without this the account can sign in and belongs
-     * nowhere — `getContext` finds no membership and bounces it off every
-     * dashboard route, back to the login screen it just came from, with no
-     * error to explain it. A door with no room behind it.
-     *
-     * Fires once, when the adapter creates the user, so it cannot double-run for
-     * somebody signing in again. The membership check is belt and braces: an
-     * adapter that ever retries would otherwise hand one person two businesses.
-     */
+    /** Provisions a business for a new Google account (email signups get one at registration). */
     async createUser({ user }) {
       if (!user.id) return;
 
@@ -93,18 +74,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
         if (existing) return;
 
-        // Google gives a display name and not much else, so the business is
-        // named after the person and the owner renames it later. Falling back to
-        // the local part of the address keeps it from reading "'s business".
         const person = user.name?.trim() || user.email?.split("@")[0] || "New";
         await provisionBusiness(user.id, `${person}'s business`);
 
         log.info("provisioned a business for a new OAuth account", { userId: user.id });
       } catch (err) {
-        // Loudly, and without failing the sign-in: the account exists either
-        // way, and refusing to let them in would leave the same locked-out row
-        // with a worse first impression. `scripts/find-orphan-users.ts --fix`
-        // repairs anything that lands here.
+        // Sign-in still succeeds; scripts/find-orphan-users.ts --fix repairs the account.
         log.error("could not provision a business for a new OAuth account", err, {
           userId: user.id,
         });
@@ -117,11 +92,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user?.id) {
         token.uid = user.id;
 
-        // Stamped once, at sign-in, and never refreshed — see
-        // lib/auth/sessionExpiry.ts for why a sliding stamp would undo the
-        // session cookie. Google has no `authorize()` to carry the choice, so
-        // an OAuth sign-in is treated as not remembered, which is also what
-        // closes the gap where that button ignored the box entirely.
+        // Stamped once at sign-in (see lib/auth/sessionExpiry.ts). OAuth sign-ins are never remembered.
         token.remember = user.remember === true;
         token.startedAt = Date.now();
         const [m, account] = await Promise.all([

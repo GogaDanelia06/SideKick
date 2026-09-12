@@ -5,15 +5,7 @@ import { log } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Renews Instagram tokens before they lapse. Runs daily — see vercel.json.
- *
- * Public URLs get probed, and this one does real work against Meta, so it is
- * closed by a secret rather than left open. Vercel sends `CRON_SECRET` as a
- * bearer token on its own invocations; with none configured the endpoint
- * refuses everything rather than defaulting to open, because an unauthenticated
- * job anyone can trigger is worse than a job that does not run.
- */
+/** Vercel Cron sends `Bearer CRON_SECRET`; without a configured secret every call is refused. */
 function authorised(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
   if (!secret) return false;
@@ -35,9 +27,6 @@ export async function GET(request: Request) {
 
   const report = await refreshInstagramTokens();
 
-  // Logged even when it did nothing. A job whose only trace is failure looks
-  // identical to a job that never ran, and this one is invisible for weeks at
-  // a time between tokens coming due.
   log.info("instagram token refresh ran", report);
 
   return NextResponse.json(report);

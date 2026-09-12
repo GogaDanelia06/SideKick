@@ -14,19 +14,7 @@ const fmt = (n: number) => n.toLocaleString("en-US");
 /** Half of the previous step is the line between "normal drop-off" and "a problem". */
 const HEALTHY_PCT = 50;
 
-/**
- * The sign-up funnel, with the drop-off drawn instead of implied.
- *
- * Two things were wrong with the list of numbers this replaces. A bare "9%" did
- * not say *of what* — of the step above, or of everyone who ever arrived — and
- * they are very different claims. And the health of a step was carried by colour
- * alone, green against amber: a pair the palette validator scores at ΔE 5.1 for
- * protanopia, which is to say a red-green reader saw one shade of grey twice.
- *
- * So each step now has a bar as wide as its share of the top, both percentages in
- * words, and a state that is an icon and a label — the colour agrees with them
- * rather than being the only one saying it.
- */
+/** Signup funnel: bars sized to the first step, percentages in words, and status as icon plus label. */
 export function Funnel({ steps }: { steps: Step[] }) {
   if (steps.length === 0) return null;
 
@@ -66,13 +54,7 @@ export function Funnel({ steps }: { steps: Step[] }) {
                     }`}
                   >
                     {Icon ? <Icon size={13} /> : null}
-                    {/* "Of previous" says where people were lost; "of start"
-                        says how many are left. Only the first is always
-                        interesting: on the second step the two are the same
-                        number by definition — the previous step *is* the start —
-                        and printing 9% twice reads as a fault in the page rather
-                        than as two facts. So the second figure appears only when
-                        it disagrees. */}
+                    {/* "Of start" appears only when it differs from "of previous". */}
                     <span className="font-mono tabular-nums">{step.ofPrevious}%</span>
                     {ofTop !== step.ofPrevious ? (
                       <>

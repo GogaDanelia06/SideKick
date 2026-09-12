@@ -31,14 +31,7 @@ function legalPage(doc: string, path: string): SitemapEntry {
   };
 }
 
-/**
- * Every public page, with what drives its content.
- *
- * `lastmod` is computed from these sources rather than from the build time.
- * A build-time date would tell search engines that every page changed on every
- * deploy, which is false and which Google learns to ignore — so a page here
- * reports the moment its own content was actually last edited.
- */
+/** Public pages with the sources behind them, so `lastmod` reflects real content edits. */
 export const SITEMAP_PAGES: SitemapEntry[] = [
   {
     path: "/",
@@ -93,13 +86,7 @@ export const SITEMAP_PAGES: SitemapEntry[] = [
 
 export type ResolvedPage = { path: string; lastModified: Date; changeFrequency: SitemapEntry["changeFrequency"]; priority: number };
 
-/**
- * The pages that belong in the sitemap, with a truthful lastmod.
- *
- * Pages an admin has set to noindex are left out: listing a page in the sitemap
- * while telling crawlers not to index it is a contradiction, and Search Console
- * reports it as an error.
- */
+/** Sitemap entries with a truthful `lastmod`; pages set to noindex are left out. */
 export async function resolveSitemap(fallback: Date): Promise<ResolvedPage[]> {
   const [seoRows, settingRows] = await Promise.all([
     prisma.pageSeo.findMany(),
@@ -122,9 +109,7 @@ export async function resolveSitemap(fallback: Date): Promise<ResolvedPage[]> {
         await page.contentUpdatedAt(),
       ) ?? fallback;
 
-    // Never claim a page changed in the future. A skewed database clock or a
-    // timestamp written in local time instead of UTC would otherwise publish a
-    // lastmod that search engines reject outright.
+    // Never report a lastmod in the future.
     const lastModified = newest > fallback ? fallback : newest;
 
     out.push({

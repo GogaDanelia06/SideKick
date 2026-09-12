@@ -1,15 +1,4 @@
-/**
- * The SIDEKICK wordmark, as the letterforms the designer drew.
- *
- * Kept as data rather than an <img> to a .svg file so it can inherit
- * `currentColor`: one mark serves the light and dark themes instead of two
- * files swapped by a theme check that would flicker on first paint.
- *
- * Source: Sidekick_logo_v2, viewBox 0 0 344.1 157.34. The v2 drawing outlines
- * the tagline as paths — the first version set it as a <text> in Atkinson
- * Hyperlegible, a font no visitor has, so it had to be re-set in Inter and was
- * never quite the designer's lettering. These are.
- */
+/** The SIDEKICK wordmark as path data (Sidekick_logo_v2), so it inherits `currentColor`. */
 
 /** Each glyph of SIDEKICK, in order, on the source drawing's coordinates. */
 export const WORDMARK_PATHS = [
@@ -23,15 +12,7 @@ export const WORDMARK_PATHS = [
   "M282.85,39.34v22.77l18.32-22.77h7.46l-18.88,23.4,19.93,28.41h-8.44l-18.39-27.04v27.04h-6.59v-51.81h6.59Z",
 ] as const;
 
-/**
- * "ai_assistant", as drawn rather than as type.
- *
- * Outlined in the v2 file, which is why it can be paths at all. Worth keeping
- * as paths and not re-setting in a loaded font: at this size the difference
- * between the designer's letterforms and a near-enough substitute is small,
- * and being small is exactly what makes it the kind of thing that never gets
- * fixed once it is wrong.
- */
+/** The "ai_assistant" tagline, outlined in the source drawing. */
 export const TAGLINE_PATHS = [
   "M181.07,120.81c-.81,0-1.55-.15-2.22-.44-.68-.29-1.22-.71-1.62-1.26-.4-.55-.6-1.21-.6-1.98,0-1.01.36-1.82,1.07-2.44s1.72-1.09,3.02-1.43c1.3-.33,2.84-.58,4.62-.73v-.31c0-.84-.22-1.5-.67-1.98-.45-.48-1.12-.72-2.03-.72-.7,0-1.29.16-1.76.48-.47.32-.78.77-.91,1.35l-2.47-.8c.36-.94,1-1.69,1.91-2.23.92-.55,1.99-.82,3.22-.82,1.8,0,3.13.42,4,1.25.86.83,1.3,2.16,1.3,3.97v2.93c0,.65.02,1.27.06,1.86.04.59.1,1.14.18,1.64.08.51.15.96.22,1.35h-2.52l-.49-1.67c-.41.63-.97,1.12-1.68,1.46-.71.34-1.59.51-2.63.51ZM181.86,118.78c.63,0,1.22-.11,1.75-.33.53-.22.95-.59,1.26-1.09.31-.5.46-1.2.46-2.09v-.82c-1.83.15-3.25.42-4.26.8-1.01.38-1.52.97-1.52,1.77,0,.53.21.96.63,1.28.42.33.98.49,1.68.49Z",
   "M192.17,120.5v-10.61h-1.9v-2.13h4.65v12.74h-2.75ZM193.35,105.44c-.5,0-.92-.18-1.28-.54-.36-.36-.54-.79-.54-1.28s.18-.95.54-1.3c.36-.35.79-.53,1.28-.53s.95.18,1.3.53c.35.35.53.78.53,1.3s-.18.92-.53,1.28c-.35.36-.78.54-1.3.54Z",

@@ -25,16 +25,8 @@ export async function POST(req: Request) {
 
   const issued = await createResetToken(parsed.data.email);
 
-  // Said plainly rather than hidden behind "if this address is registered".
-  //
-  // The vague answer is the textbook defence against account enumeration, but
-  // here it defended nothing: /api/auth/register already answers 409 "this
-  // email is already registered" to anyone who asks. Hiding the same fact on
-  // this page only cost real customers — someone who mistyped their address, or
-  // signed up with a different one, waited for a mail that was never coming.
-  //
-  // What still limits probing is the rate limiter above, which runs before the
-  // lookup: 3 attempts per address and 10 per IP an hour.
+  // Unregistered addresses are told so: /api/auth/register already reveals it, and
+  // the rate limits above run before this lookup.
   if (!issued) {
     log.info("password reset requested for unknown address");
     return NextResponse.json(
@@ -49,15 +41,10 @@ export async function POST(req: Request) {
   const link = absoluteUrl(`/reset?token=${issued.token}`);
   const { sent } = await sendMail(passwordResetEmail(issued.user.email, link, issued.user.name));
 
-  // Without this line a provider refusing every message looks exactly like
-  // success: the token is in the database, the form says "check your inbox", and
-  // nothing arrives. That is how a broken sender goes unnoticed for days.
   if (!sent) {
     log.error("password reset email could not be sent", undefined, { to: issued.user.email });
   }
 
-  // A refused send still answers ok. The account exists and a link was issued;
-  // a provider outage is ours to find in the logs, not the customer's to debug.
   return NextResponse.json({ ok: true });
 }
 

@@ -5,18 +5,7 @@ import type { ChannelType } from "@prisma/client";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 
-/**
- * The per-channel "connect" control.
- *
- * One button per row rather than one for both, because Facebook and Instagram
- * turned out to be two separate authorisations here: Messenger runs on Facebook
- * Login with a Page token, while this Instagram account runs on **Instagram
- * Login**, which has its own app credentials and its own token. A single button
- * would promise something neither grant delivers.
- *
- * A plain link, not a fetch — the flow is a full-page redirect out to Meta and
- * back, and an XHR cannot carry someone through a consent screen.
- */
+/** Per-channel connect links: Facebook Login and Instagram Login are separate full-page OAuth flows. */
 const START: Partial<Record<ChannelType, string>> = {
   FACEBOOK: "/api/channels/facebook/start",
   INSTAGRAM: "/api/channels/instagram/start",
@@ -31,9 +20,6 @@ const RESULTS: Record<string, { tone: "ok" | "bad"; text: Bilingual }> = {
       en: "Facebook connected. This Page has no Instagram account linked — connect Instagram separately.",
     },
   },
-  // Instagram Login failures. Separated from the Facebook ones because the fix
-  // for each is in a different place, and "that did not work" sends whoever
-  // reads it to the wrong dashboard.
   unconfigured_ig: {
     tone: "bad",
     text: { ka: "INSTAGRAM_APP_ID არ არის მითითებული.", en: "INSTAGRAM_APP_ID is not set." },
@@ -60,8 +46,6 @@ const RESULTS: Record<string, { tone: "ok" | "bad"; text: Bilingual }> = {
     },
   },
   cancelled: { tone: "bad", text: { ka: "დაკავშირება შეწყდა.", en: "Connection cancelled." } },
-  // Without these three the redirect lands on a page showing nothing at all,
-  // and the button reads as broken rather than as refused.
   forbidden: {
     tone: "bad",
     text: {
@@ -137,13 +121,9 @@ export function ConnectButton({ type, relink = false }: { type: ChannelType; rel
   const { t } = useLanguage();
   const href = START[type];
 
-  // Nothing to offer when the channel has no flow and is already linked by
-  // hand — a "reconnect" that cannot reconnect is worse than no control.
   if (relink && !href) return null;
 
-  // No authorisation flow for this channel yet. Shown rather than hidden so the
-  // row does not look broken, and disabled rather than dead-linked so nobody is
-  // sent to a consent screen that cannot complete.
+  // No OAuth flow for this channel yet: show a disabled button.
   if (!href) {
     return (
       <button
@@ -160,8 +140,6 @@ export function ConnectButton({ type, relink = false }: { type: ChannelType; rel
     );
   }
 
-  // Quieter than the first-time button on purpose: for an already-working
-  // channel this is a repair, not the main action on the row.
   if (relink) {
     return (
       <a

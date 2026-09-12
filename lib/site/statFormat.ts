@@ -1,16 +1,8 @@
 import type { Bilingual } from "@/lib/content/types";
 
-/**
- * How a counted figure is written out.
- *
- * Kept apart from the counters themselves because both sides need it: the
- * server writes the first paint, and the browser rewrites the same number on
- * every frame while it climbs. A function could not cross that boundary — a
- * name can.
- */
+/** A format name rather than a function, so it can cross to the client. */
 export type StatFormat = "number" | "money";
 
-/** Shape of one counter as the admin panel and the public page see it. */
 export type StatSourceOption = { key: string; label: Bilingual; format: StatFormat; value: string };
 
 const nf = new Intl.NumberFormat("en-US");

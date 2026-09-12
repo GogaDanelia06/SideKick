@@ -35,15 +35,6 @@ export function ContactInfo() {
       <Card className="p-5">
         <div className="mb-3 text-[12px] text-muted">{t(SOCIAL_LABEL)}</div>
 
-        {/* Named, not just drawn. Four unlabelled glyphs ask the reader to
-            recognise every one of them, and the two that look alike at 18px are
-            the two nobody is sure about. The name costs a word and removes the
-            guess — and it gives the link a target big enough to hit on a
-            phone. */}
-        {/* A grid, not a wrapping row. Four pills of different widths wrapped
-            three-then-one, which put an unexplained gap under the third and made
-            the fourth look like an afterthought. Two by two gives all four the
-            same width and the same distance from each other. */}
         <div className="grid grid-cols-2 gap-2.5">
           {SOCIALS.map((social) => (
             <a

@@ -5,25 +5,13 @@ import type { Bilingual } from "@/lib/content/types";
 import { formatStat, type StatFormat, type StatSourceOption } from "./statFormat";
 
 /**
- * The figures the platform can count for itself.
- *
- * Anything listed here should never be typed by hand: a typed number is a claim
- * that stops being true the moment the next customer signs up. Adding a source
- * costs one entry — a label for the admin and a query.
- *
- * `count` returns the raw figure and nothing else. Formatting is a separate,
- * named step because the browser has to redo it on every frame while the number
- * climbs, and it cannot be handed a server function to do that with.
- *
- * Deliberately aggregate-only. These read counts and sums across all tenants,
- * never a name, a message or an address, so a public page can never leak one
- * business's data to another's visitors.
+ * Figures the platform counts for itself. Aggregates only — never a name, a
+ * message or an address — because they are shown on public pages.
  */
 export type StatSource = {
   key: string;
   label: Bilingual;
   format: StatFormat;
-  /** The raw figure, unformatted. */
   count: () => Promise<number>;
 };
 
@@ -120,15 +108,10 @@ export function findStatSource(key: string): StatSource | undefined {
   return STAT_SOURCES.find((s) => s.key === key);
 }
 
-/** Keys an admin may save — anything else is rejected rather than stored. */
+/** Keys an admin may save. */
 export const STAT_SOURCE_KEYS: string[] = STAT_SOURCES.map((s) => s.key);
 
-/**
- * Counts one source, or `null` when the query fails.
- *
- * A counter that breaks must not take a page down with it: the caller falls
- * back to whatever it was showing before, and the failure is logged instead.
- */
+/** Counts one source; null (and logged) when the query fails. */
 export async function countStat(source: StatSource): Promise<number | null> {
   try {
     return await source.count();
@@ -138,18 +121,7 @@ export async function countStat(source: StatSource): Promise<number | null> {
   }
 }
 
-/**
- * Every counter with its value right now — what the admin picks from.
- *
- * Showing the current figure beside each choice is the point: it is how an
- * admin tells "users registered" from "businesses registered" without having to
- * publish one and go look at the site.
- *
- * Wrapped in `cache` because two sections of the landing admin page — the
- * carousel and the stats strip — both offer this picker. Without it the same
- * twelve counts run twice per render, which measured at 367ms against
- * production where one pass costs 183ms.
- */
+/** Every counter with its current value, for the admin pickers. Cached per request. */
 export const statSourceOptions = cache(async (): Promise<StatSourceOption[]> => {
   return Promise.all(
     STAT_SOURCES.map(async (s) => {

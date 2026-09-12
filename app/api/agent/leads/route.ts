@@ -6,17 +6,7 @@ import { ownedConversation } from "@/lib/agent/conversation";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Records — or fills in — the lead for a conversation.
- *
- * A chat produces one lead, not one per detail the AI manages to extract, so
- * this is keyed on the conversation and updates in place. That is what makes it
- * safe to call again the moment a customer finally gives their phone number
- * twenty messages in.
- *
- * Only supplied fields are written. Sending `{ phone }` will not blank a name a
- * human already corrected in the dashboard.
- */
+/** Creates or updates the conversation's lead; only the supplied fields are written. */
 export async function POST(request: Request) {
   const body = await readJson(request);
   if (isDenial(body)) return body.response;
@@ -37,8 +27,6 @@ export async function POST(request: Request) {
 
   const conversationId = str(body, "conversationId");
 
-  // Without a conversation there is nothing to key on, so a bare create is the
-  // only sensible reading — the AI is reporting a lead from somewhere else.
   if (!conversationId) {
     const lead = await prisma.lead.create({
       data: { businessId: auth.businessId, ...supplied },

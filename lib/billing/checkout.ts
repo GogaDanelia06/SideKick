@@ -5,8 +5,7 @@ import { periodPrice } from "@/lib/content/packages";
 import { log } from "@/lib/logger";
 import { SITE } from "@/lib/seo/site";
 
-/** The terms a customer may buy. Anything else is rejected before we ever
- *  talk to a bank, so a tampered form cannot invent a 0-month period. */
+/** Billing terms a customer may buy; anything else is rejected before a bank is contacted. */
 export const ALLOWED_MONTHS = [1, 3, 12] as const;
 export type Months = (typeof ALLOWED_MONTHS)[number];
 
@@ -14,10 +13,7 @@ export function isAllowedMonths(value: number): value is Months {
   return (ALLOWED_MONTHS as readonly number[]).includes(value);
 }
 
-/**
- * Price is always recomputed here from the plan row — never taken from the
- * browser. A customer who edits the form still gets charged the real price.
- */
+/** The price, always computed from the plan row and never taken from the form. */
 export function amountFor(plan: Plan, months: Months): number {
   return periodPrice(plan, months);
 }
@@ -28,12 +24,7 @@ function baseUrl(): string {
 
 export type StartedCheckout = { paymentId: string; redirectUrl: string };
 
-/**
- * Creates the payment record first, then asks the bank for a checkout session.
- *
- * Order matters: the row exists before the customer can possibly pay, so a
- * callback can never arrive for a payment we have no record of.
- */
+/** Creates the payment row before opening the bank checkout, so every callback has a record. */
 export async function startCheckout(opts: {
   businessId: string;
   plan: Plan;
@@ -75,8 +66,7 @@ export async function startCheckout(opts: {
 
     return { paymentId: payment.id, redirectUrl: session.redirectUrl };
   } catch (err) {
-    // The bank never got a usable order, so this attempt is dead. Marking it
-    // keeps the customer's history honest instead of leaving a ghost PENDING.
+    // The bank never created an order, so this payment can never complete.
     await prisma.payment.update({
       where: { id: payment.id },
       data: { status: "FAILED", failReason: "checkout_failed" },
@@ -86,13 +76,7 @@ export async function startCheckout(opts: {
   }
 }
 
-/**
- * Reads the bank's authoritative status for a payment and applies it.
- *
- * Safe to call repeatedly — from the callback, from the return page, or from
- * both at once. Only a PENDING row is ever advanced, so a duplicate callback
- * cannot extend a subscription twice.
- */
+/** Applies the bank's status. Idempotent: only a PENDING payment advances. */
 export async function settlePayment(
   provider: PaymentProvider,
   providerRef: string,
@@ -124,13 +108,7 @@ export async function settlePayment(
   return "paid";
 }
 
-/**
- * Marks the payment paid and moves the subscription onto the plan it bought.
- *
- * The whole thing is one transaction with a guard on `status: PENDING`: if two
- * callbacks race, exactly one updates a row and the other's update matches
- * nothing, so the period is only ever extended once.
- */
+/** Marks the payment paid and applies the plan, in one transaction guarded on PENDING. */
 async function activate(paymentId: string, savedCardRef: string | null): Promise<void> {
   await prisma.$transaction(async (tx) => {
     const claimed = await tx.payment.updateMany({

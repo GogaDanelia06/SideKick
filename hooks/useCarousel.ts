@@ -2,29 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-/**
- * How long a slide takes to travel, in milliseconds.
- *
- * Exported so the track's CSS and the safety net below cannot drift apart —
- * a duration in a class name and a timeout in a hook would eventually disagree.
- */
+/** Slide transition duration, shared with the track's CSS. */
 export const SLIDE_MS = 500;
 
 /**
- * Drives a carousel whose slides sit side by side on a sliding track.
- *
- * The wrap is the whole reason this is more than a counter. Moving from the
- * last slide to the first by setting the index to 0 sends the track back across
- * every slide in between: the visitor asked to go forward and watched it rewind.
- *
- * So the track carries a copy of the first slide after the last, and a copy of
- * the last before the first. Going forward off the end lands on the copy —
- * which travels forward, because that is where the copy is — and once the
- * movement has finished the track jumps to the real slide with the transition
- * switched off. The jump covers identical pixels, so there is nothing to see.
- *
- * `position` is where the track sits, counting the copies. `index` is which
- * slide a reader would say they are on, which is what the dots need.
+ * Carousel on a sliding track with clones at both ends, so wrapping keeps moving
+ * forward; after landing on a clone the track snaps to the real slide invisibly.
+ * `position` counts clones; `index` is the real slide.
  */
 export function useCarousel(count: number, intervalMs = 0) {
   const looped = count > 1;
@@ -43,13 +27,7 @@ export function useCarousel(count: number, intervalMs = 0) {
     [count, looped],
   );
 
-  /**
-   * Swaps a copy for the real slide once the movement onto it has finished.
-   *
-   * Called from the track's `transitionend`. Waiting for the event rather than a
-   * timer means the exchange cannot happen while the slide is still travelling,
-   * which would show as a stutter halfway across.
-   */
+  /** Swaps a clone for the real slide once the transition ends (called on `transitionend`). */
   const settle = useCallback(() => {
     if (!looped) return;
     setPosition((p) => {
@@ -65,36 +43,21 @@ export function useCarousel(count: number, intervalMs = 0) {
     });
   }, [count, looped]);
 
-  // Give the repositioned track one frame to paint before transitions come
-  // back, otherwise the browser animates the jump we just went to lengths to
-  // hide.
+  // Re-enable transitions a frame after the snap, so the jump is not animated.
   useEffect(() => {
     if (!snapping) return;
     const id = requestAnimationFrame(() => setSnapping(false));
     return () => cancelAnimationFrame(id);
   }, [snapping]);
 
-  /**
-   * Settles the track even when no `transitionend` arrives.
-   *
-   * It does not always arrive: a visitor who has asked for reduced motion gets
-   * no transition and therefore no event, and a browser suspends them for a
-   * background tab. Left on a copy the carousel would keep counting upward and
-   * slide away into empty space, so the event is treated as an optimisation
-   * rather than the mechanism. `settle` ignores a position already in range,
-   * so whichever fires second does nothing.
-   */
+  /** Fallback for when no `transitionend` fires (reduced motion, background tabs). */
   useEffect(() => {
     if (!looped || (position >= 1 && position <= count)) return;
     const id = setTimeout(settle, SLIDE_MS + 80);
     return () => clearTimeout(id);
   }, [looped, position, count, settle]);
 
-  // `position` is in the dependency list so the countdown starts again on every
-  // change, including the ones a visitor makes. Without it the timer kept the
-  // schedule it was given on mount: pressing next four seconds into a five
-  // second slide showed the chosen one for a second before the interval moved
-  // it on anyway.
+  // Restart the auto-advance timer after every move, including manual ones.
   useEffect(() => {
     if (intervalMs <= 0 || snapping) return;
     const id = setTimeout(next, intervalMs);

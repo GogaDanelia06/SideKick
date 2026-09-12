@@ -4,13 +4,7 @@ export const PLANS = [
   { key: "premium", name: "პრემიუმი", nameEn: "Premium", price: 199, msgLimit: -1, channelCap: -1, userCap: -1, productCap: -1, featured: false },
 ];
 
-// One of each mode, so whoever opens the admin panel sees what the three
-// choices do rather than reading about them. Any figure can be switched to any
-// mode under "ციფრების ზოლი" — none of this is fixed in code.
-//
-// The AUTO figure starts where the original hand-typed strip did and climbs on
-// its own, which is what the landing-page spec asks for. The counted one beside
-// it is the honest alternative wherever the platform can actually measure.
+// One figure per mode, so the admin panel demonstrates all three.
 export const SITE_STATS = [
   {
     key: "total_users",

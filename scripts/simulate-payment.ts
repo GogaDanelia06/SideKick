@@ -1,17 +1,8 @@
 /**
- * Walks a payment through the real settlement code without a bank.
- *
- * The bank's HTTP calls are stubbed; everything after that — the status read,
- * the PENDING→PAID transition, the subscription activation — is the same code
- * that runs in production. That makes this useful for seeing the billing screen
- * change locally, and for checking that a replayed callback stays harmless.
+ * Runs a payment through the real settlement code with the bank HTTP calls stubbed.
+ * Local databases only (see guard()).
  *
  *   pnpm tsx scripts/simulate-payment.ts <email> <planKey> [months] [BOG|TBC] [ok|fail]
- *
- * Example:
- *   pnpm tsx scripts/simulate-payment.ts me@example.com standard 12
- *
- * Refuses to run against anything but a local database — see guard() below.
  */
 import { PrismaClient, type PaymentProvider } from "@prisma/client";
 

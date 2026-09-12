@@ -20,14 +20,6 @@ export type DashNavItem = {
   label: Bilingual;
 };
 
-// Conversations and Orders used to carry `badge: "3"` and `badge: "5"` — two
-// numbers typed in when this was a design mock and never removed. They were the
-// same for every tenant and never moved, so a merchant with an empty inbox was
-// told they had three messages waiting and went looking for them.
-//
-// Removed rather than made real: a live count means a query on every page in the
-// dashboard, and nothing here is urgent enough to earn that. Both screens show
-// their own totals when opened.
 export const DASH_NAV: DashNavItem[] = [
   { href: DASH.home, icon: IconLayoutDashboard, label: { ka: "მთავარი", en: "Overview" } },
   { href: DASH.conversations, icon: IconMessages, label: { ka: "მიმოწერები", en: "Conversations" } },

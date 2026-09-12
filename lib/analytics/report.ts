@@ -40,12 +40,7 @@ function daysAgo(n: number): Date {
   return d;
 }
 
-/**
- * What the admin panel shows for traffic.
- *
- * Reads the daily counters rather than raw hits, so this stays one small query
- * no matter how busy the site gets.
- */
+/** Traffic for the admin panel, read from the daily counters. */
 export async function getTrafficReport(): Promise<TrafficReport> {
   const from30 = daysAgo(29);
   const from7 = daysAgo(6);
@@ -77,8 +72,7 @@ export async function getTrafficReport(): Promise<TrafficReport> {
   const publicPages = ranked.filter((p) => !isAppPath(p.path)).slice(0, 8);
   const appPages = ranked.filter((p) => isAppPath(p.path)).slice(0, 8);
 
-  // How many people made it from one step to the next. The rate is against the
-  // step before, not the top — that's what shows where people actually drop.
+  // Each step's rate is against the step before it, which shows where people drop off.
   const funnelNames = ["registration_started", "registration_completed", "pricing_plan_selected"];
   const funnel: FunnelStep[] = [];
   for (const name of funnelNames) {
@@ -93,8 +87,7 @@ export async function getTrafficReport(): Promise<TrafficReport> {
     });
   }
 
-  // Every day in the window, including the quiet ones — gaps in a chart read
-  // as missing data rather than as no traffic.
+  // Include empty days, so gaps read as no traffic rather than missing data.
   const perDay = new Map<string, number>();
   for (let i = 29; i >= 0; i--) perDay.set(daysAgo(i).toISOString().slice(0, 10), 0);
   for (const r of rows) {

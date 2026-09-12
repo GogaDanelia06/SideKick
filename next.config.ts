@@ -3,9 +3,8 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV !== "production";
 
 /**
- * Analytics is off by default (see seo.config.json), so its domains are not
- * allowed here. Turning a tag on means adding the matching entries below,
- * otherwise the browser silently blocks the script and the tag never reports:
+ * Analytics is off by default (seo.config.json), so its domains are not allowed.
+ * Enabling a tag means adding its entries:
  *
  *   Google Analytics / Tag Manager
  *     script-src  + https://www.googletagmanager.com
@@ -16,15 +15,7 @@ const isDev = process.env.NODE_ENV !== "production";
  *     script-src  + https://connect.facebook.net
  *     img-src     + https://www.facebook.com
  */
-/**
- * Where admin uploads are served from.
- *
- * Note this is a host, not the `blob:` scheme beside it — those are unrelated
- * things that happen to share a word. `blob:` covers object URLs the browser
- * makes locally; this covers files the admin panel actually uploaded. Without
- * it every uploaded image and video is blocked by the browser, on the public
- * landing page as well as in the editor.
- */
+/** Admin uploads (Vercel Blob); unrelated to the `blob:` scheme used for local object URLs. */
 const BLOB_HOST = "https://*.public.blob.vercel-storage.com";
 
 const csp = [
@@ -32,14 +23,7 @@ const csp = [
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: ${BLOB_HOST} https://img.youtube.com https://*.googleusercontent.com`,
-  // Hero slides can be video, and <video> is governed by media-src — which was
-  // absent, so it fell back to default-src 'self' and blocked them.
-  //
-  // `blob:` is for the chat's attachment preview. A video a visitor picks is
-  // shown straight from an object URL and never uploaded, so without this the
-  // preview is blocked while the image beside it works — img-src has carried
-  // blob: all along, which is exactly the kind of mismatch that reads as a
-  // broken feature rather than a policy.
+  // Hero videos come from blob storage; `blob:` covers local chat attachment previews.
   `media-src 'self' blob: ${BLOB_HOST}`,
   "font-src 'self' data:",
   `connect-src 'self'${isDev ? " ws: http://localhost:*" : ""}`,

@@ -78,11 +78,7 @@ function Section({ data }: { data: SectionData }) {
   }
 }
 
-/**
- * One admin page: its sections in a left rail, the selected section's editor
- * beside it. Mirrors the AI-assistant screen in the tenant dashboard, so the
- * two areas of the product feel like the same product.
- */
+/** One admin page: a section rail and the selected section's editor. */
 export function PageEditor({
   slug,
   data,
@@ -91,8 +87,7 @@ export function PageEditor({
   data: Record<string, SectionData>;
 }) {
   const { t } = useLanguage();
-  // Looked up here rather than passed in: the registry carries icon components,
-  // and functions can't cross the server/client boundary as props.
+  // Looked up here: the registry holds icon components, which cannot be passed from the server.
   const page = findAdminPage(slug);
   const [active, setActive] = useState(page?.sections[0]?.key ?? "");
 
@@ -119,7 +114,6 @@ export function PageEditor({
         </a>
       </div>
 
-      {/* Single-section pages don't need a rail to choose from. */}
       {page.sections.length === 1 ? (
         current ? <div className="max-w-[1100px]"><Section data={current} /></div> : null
       ) : (

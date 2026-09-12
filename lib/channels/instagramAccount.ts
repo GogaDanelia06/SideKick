@@ -1,9 +1,6 @@
 import { log } from "@/lib/logger";
 
-/**
- * The Graph half of Instagram Login: who we just connected, and telling Meta to
- * actually send us their messages.
- */
+/** Instagram Login Graph calls: identify the connected account and subscribe it. */
 
 const GRAPH = "https://graph.instagram.com";
 const VERSION = process.env.META_GRAPH_VERSION ?? "v25.0";
@@ -42,24 +39,14 @@ async function call(
 }
 
 /**
- * The account this token belongs to.
- *
- * `user_id` is taken, not `id`, and the difference matters. The same call
- * returns both — `user_id` is the Instagram professional account id (the one
- * beginning 17841…), `id` is an app-scoped id — and only the first is what Meta
- * puts in `entry.id` on an incoming webhook. Storing the wrong one produces a
- * connection that looks complete in the dashboard and drops every message,
- * because the lookup in recordInbound never matches.
+ * The account this token belongs to. Uses `user_id` (the 17841… professional
+ * account id that webhooks carry in `entry.id`), not the app-scoped `id`.
  */
 export async function fetchAccount(token: string): Promise<InstagramAccount | null> {
   const data = await call("/me?fields=user_id,username", token, "GET");
   const id = data?.user_id;
 
-  // A string, or nothing. Meta sends these ids quoted for a reason: they are
-  // past 2^53, so a bare JSON number is already rounded by the time JSON.parse
-  // hands it over — 17841436214263005 arrives as …004. Coercing that back to a
-  // string would store an id that is off by one and matches no webhook, which
-  // is far worse than refusing to connect and saying so.
+  // Ids exceed 2^53 and must arrive as strings; a JSON number is already rounded.
   if (typeof id !== "string" || !id) {
     if (id !== undefined) {
       log.error("Instagram returned a user_id that was not a string", undefined, {
@@ -73,17 +60,8 @@ export async function fetchAccount(token: string): Promise<InstagramAccount | nu
 }
 
 /**
- * Subscribes the account to our app's `messages` webhook.
- *
- * This is the step whose absence caused the silence. A webhook URL saved in the
- * App Dashboard only says *where* Meta should deliver; this says *which
- * account's* events to deliver at all. Without it the endpoint is live, the
- * signature is right, the account is authorised — and nothing ever arrives,
- * which is indistinguishable from a broken deployment until you know to look.
- *
- * Returns false rather than throwing: the credential is worth keeping even when
- * this fails, because it can be retried by reconnecting, and losing the token
- * would make the merchant redo the consent screen for no reason.
+ * Subscribes the account to this app's `messages` webhook; without it Meta delivers
+ * nothing. Returns false instead of throwing so the stored token survives a retry.
  */
 export async function subscribeToMessages(token: string): Promise<boolean> {
   const data = await call("/me/subscribed_apps?subscribed_fields=messages", token, "POST");

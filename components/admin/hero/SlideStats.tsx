@@ -3,7 +3,7 @@
 import { useOptimistic, useRef, useState, useTransition } from "react";
 import type { HeroSlideStat } from "@prisma/client";
 import { IconBolt, IconPlus, IconTrash, IconX } from "@tabler/icons-react";
-import { createSlideStat, updateSlideStat, deleteSlideStat } from "@/lib/admin/actions";
+import { createSlideStat, updateSlideStat, deleteSlideStat } from "@/lib/admin/actions/heroStats";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { StatSourceOption } from "@/lib/site/statFormat";
 
@@ -11,14 +11,7 @@ const INPUT =
   "w-full rounded-[8px] border border-input bg-canvas px-2.5 py-1.5 text-[13px] outline-none placeholder:text-faint focus:border-blue disabled:opacity-45";
 const LABEL = "mb-1 block text-[10px] uppercase tracking-wide text-faint";
 
-/**
- * One figure inside a slide's panel.
- *
- * Picking a counter is the intended path: the number then comes from the
- * platform itself and is right by construction. The hand-made fields stay
- * visible but disabled underneath it, so it is obvious both that they exist and
- * that they are no longer in charge.
- */
+/** One slide figure: pick a counter, or fill in the manual fields (disabled once a counter is picked). */
 function StatFields({
   initial,
   sources,
@@ -158,8 +151,7 @@ export function SlideStats({
   const [editing, setEditing] = useState<string | null>(null);
   const addRef = useRef<HTMLFormElement>(null);
 
-  // The figure disappears on click rather than after the round trip; React puts
-  // it back by itself if the delete fails.
+  // Optimistic removal; React restores the figure if the server refuses.
   const [visible, removeOptimistic] = useOptimistic(
     stats,
     (rows: HeroSlideStat[], id: string) => rows.filter((r) => r.id !== id),
@@ -234,7 +226,6 @@ export function SlideStats({
                     {s.suffix}
                   </span>
                   <span className="min-w-0 flex-1 truncate text-[12px] text-muted">{s.labelKa}</span>
-                  {/* Which of the two kinds this is, in one glance down the list. */}
                   {picked ? (
                     <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-green-surface px-2 py-0.5 text-[11px] text-green">
                       <IconBolt size={11} />

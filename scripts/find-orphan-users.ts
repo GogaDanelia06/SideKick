@@ -2,16 +2,8 @@ import { prisma } from "../lib/db";
 import { provisionBusiness } from "../lib/provision";
 
 /**
- * Finds accounts that can sign in but belong to no business.
- *
- * These are a dead end rather than a broken page: the password is accepted, the
- * session is issued, and then every dashboard route bounces to /login because
- * `getContext` has no membership to run as. Registering again does not help —
- * the address is already taken — so the person is locked out with no error
- * message to go on.
- *
- * They exist because registration created the user and the business as two
- * separate writes. That is fixed; this is for the rows left behind.
+ * Finds users without a business (left by an old non-transactional registration).
+ * They can sign in, but every dashboard route redirects them to /login.
  *
  *   npx tsx scripts/find-orphan-users.ts          # list them
  *   npx tsx scripts/find-orphan-users.ts --fix    # give each one a business
@@ -33,8 +25,6 @@ async function main() {
 
   console.log(`${orphans.length} account(s) with no business:\n`);
   for (const u of orphans) {
-    // Whether they can sign in at all decides how urgent it is: an account with
-    // no password was never usable, one with a password is a person locked out.
     const canSignIn = u.passwordHash ? "can sign in — locked out" : "no password set";
     console.log(`  ${u.email}  (${u.createdAt.toISOString().slice(0, 10)}, ${canSignIn})`);
   }

@@ -13,18 +13,7 @@ export type Row = {
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 
-/**
- * A ranked list where the magnitudes are visible, not just printed.
- *
- * These were two columns of right-aligned numbers, and comparing "413" against
- * "109" against "65" meant reading each one and holding it. A bar behind the row,
- * scaled to the largest, answers the only question the list is really asked —
- * which of these is big — before any of the numbers are read.
- *
- * Scaled to the top row rather than the total, because the rows are a top-N and
- * do not sum to anything meaningful; a share-of-total bar would be a lie about a
- * denominator we cropped.
- */
+/** Ranked rows with bars scaled to the top row (the rows are a top-N, not a whole). */
 export function RankedList({
   title,
   rows,

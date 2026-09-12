@@ -26,13 +26,7 @@ export const CHAT = {
   },
 } satisfies Record<string, Bilingual | string>;
 
-/**
- * The suggested questions offered under the thread.
- *
- * Chat copy rather than contact-page copy, because the floating widget shows
- * them too now — they lived in `lib/content/contact.ts` while the contact page
- * was the only place with them.
- */
+/** Suggested questions under the chat thread. */
 export const CHAT_CHIPS: Bilingual[] = [
   { ka: "ფასები რა არის?", en: "What are the prices?" },
   { ka: "როგორ ხდება ინტეგრაცია?", en: "How does integration work?" },

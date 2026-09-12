@@ -12,11 +12,7 @@ import type { TokenGroup } from "@/lib/site/theme/tokens";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 
-/**
- * Kept out of tokens.ts on purpose: that module is imported by the root layout,
- * and an icon set has no business being pulled into every page's server bundle
- * to decide what a colour is called.
- */
+/** Kept out of tokens.ts, which the root layout imports. */
 const ICONS: Record<TokenGroup, Icon> = {
   site: IconWorld,
   dash: IconLayoutDashboard,
@@ -24,14 +20,6 @@ const ICONS: Record<TokenGroup, Icon> = {
   accent: IconSparkles,
 };
 
-/**
- * One titled panel per group of colours.
- *
- * Eighteen fields in one flat list is a wall — you cannot tell where the site
- * stops and the dashboard starts, which is exactly the question you are asking
- * while you edit. The panel puts a name, an icon and a sentence of context
- * around each set, and the count tells you how far the section goes.
- */
 export function ThemeSection({
   group,
   title,

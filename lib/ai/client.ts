@@ -1,31 +1,12 @@
 import { log } from "@/lib/logger";
 
-/**
- * Talks to the AI service that answers customers.
- *
- * The shape here is theirs, not ours, and it is worth naming the difference:
- * this is a **request/response** API, not a webhook. We hand it one message and
- * it hands back the reply in the same call. Nothing arrives later, nothing is
- * pushed to us — so whatever it returns is the answer, and if the call fails
- * there is no reply coming at all.
- *
- * Their ids are snake_case and ours are camelCase. The translation happens here
- * so exactly one file knows about it.
- */
+/** Client for the AI service: synchronous request/response, snake_case translated here. */
 
-/** Their base URL. The paths below are appended to it. */
 const base = () => process.env.AI_SERVICE_URL?.replace(/\/+$/, "");
 
-/** Bearer, as their developer specified when handing over the key. */
 const key = () => process.env.AI_SERVICE_KEY;
 
-/**
- * Generous, because the thing on the other end is a language model.
- *
- * Safe to be generous only because every call sits outside Meta's five second
- * window — in `after()`, or behind a dashboard button. Putting one of these in
- * the webhook request itself would guarantee a retry.
- */
+/** Generous for a language model; these calls never run inside the webhook deadline. */
 const TIMEOUT_MS = Number(process.env.AI_SERVICE_TIMEOUT_MS ?? 45_000);
 
 export function aiConfigured() {
@@ -51,7 +32,6 @@ async function call<T>(path: string, body?: unknown): Promise<Result<T>> {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      // Their endpoints take no body in some cases, but always accept JSON.
       body: JSON.stringify(body ?? {}),
       signal: controller.signal,
     });
@@ -63,8 +43,6 @@ async function call<T>(path: string, body?: unknown): Promise<Result<T>> {
 
     return { ok: true, data: (await res.json()) as T };
   } catch (err) {
-    // A timeout lands here too. Never thrown onward: every caller has something
-    // better to do than crash, and the customer's message is already stored.
     return { ok: false, detail: err instanceof Error ? err.message : String(err) };
   } finally {
     clearTimeout(timer);
@@ -78,13 +56,7 @@ export type AiReply = {
   handoffReason: string | null;
 };
 
-/**
- * Asks the AI to answer one customer message.
- *
- * `conversationId` is ours, passed through unchanged: their side keeps the
- * history against it, which is why only the newest message is sent rather than
- * the whole thread.
- */
+/** Asks for a reply to one message; the service keeps history per `conversationId`. */
 export async function askAi(
   businessId: string,
   conversationId: string,
@@ -106,8 +78,6 @@ export async function askAi(
 
   const reply = res.data.reply?.trim();
   if (!reply) {
-    // A blank reply is worse than none: stored, it shows the customer an empty
-    // bubble from the business.
     log.warn("AI service returned an empty reply", { conversationId });
     return null;
   }

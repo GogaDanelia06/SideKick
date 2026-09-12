@@ -19,7 +19,7 @@ import {
   deleteTutorial,
   moveTutorial,
   toggleTutorialPublished,
-} from "@/lib/admin/actions";
+} from "@/lib/admin/actions/tutorials";
 import { youtubeThumbnail } from "@/lib/dashboard/youtube";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
@@ -67,8 +67,7 @@ export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
   const [error, setError] = useState<string | null>(null);
   const addRef = useRef<HTMLFormElement>(null);
 
-  // The row goes the moment it is clicked rather than after the round trip
-  // and the re-render that follows it. React restores it if the server refuses.
+  // Optimistic removal; React restores the row if the server refuses.
   const [visible, removeOptimistic] = useOptimistic(
     tutorials,
     (rows: Tutorial[], id: string) => rows.filter((r) => r.id !== id),
@@ -163,8 +162,6 @@ export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
                 </form>
               ) : (
                 <div className="flex items-start gap-3">
-                  {/* Dropped on the narrowest screens so the title keeps room
-                      next to the five action buttons. */}
                   <span className="hidden h-12 w-20 shrink-0 place-items-center overflow-hidden rounded-[6px] bg-soft sm:grid">
                     {thumb ? (
                       // eslint-disable-next-line @next/next/no-img-element

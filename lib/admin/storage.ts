@@ -3,19 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { put } from "@vercel/blob";
 
-/**
- * Where uploaded admin media goes.
- *
- * Production uses Vercel Blob. Development writes into `public/uploads/`, so
- * the panel is fully usable on a laptop without anyone having to create a blob
- * store first — which was the difference between "the upload button is broken"
- * and "the upload button works".
- *
- * The local path is deliberately never taken in production: a serverless
- * filesystem is read-only, and anything written to one instance would not exist
- * on the next. A production deploy with no token is genuinely unconfigured, and
- * says so.
- */
+/** Admin media storage: Vercel Blob in production, public/uploads in development. */
 
 export type StoredMedia = { url: string };
 export type StorageResult = StoredMedia | { error: "not_configured" };

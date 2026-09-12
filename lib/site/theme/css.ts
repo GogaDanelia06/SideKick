@@ -6,13 +6,8 @@ export type Theme = { dark: ThemeColors; light: ThemeColors };
 export const THEME_KEY = "site_theme";
 
 /**
- * Keeps only known tokens holding a `#rrggbb` value, and fills the rest from the
- * shipped palette.
- *
- * This runs on anything that arrives from a form or out of the database, because
- * the result is written straight into a `<style>` element on every page of the
- * platform. An unvetted value there is a way to inject CSS site-wide; a missing
- * one is a page with no background colour at all.
+ * Keeps only known tokens with `#rrggbb` values and fills the rest from the default
+ * palette. The result is written into a `<style>` tag, so nothing else may pass.
  */
 export function sanitize(input: unknown, shade: Shade): ThemeColors {
   const raw = (input ?? {}) as Record<string, unknown>;
@@ -58,15 +53,7 @@ function varsFor(colors: ThemeColors, shade: Shade) {
   return { root, dash };
 }
 
-/**
- * The override block for <head>.
- *
- * Every selector carries an extra `html` on the front. Not decoration: a <style>
- * element and the stylesheet <link> can land in either order depending on the
- * build, and `:root` against `:root` would then be settled by that order. The
- * added type selector wins on specificity instead, so the choice holds either
- * way.
- */
+/** CSS variable overrides for <head>. The extra `html` beats :root whatever the stylesheet order. */
 export function themeCss(theme: Theme): string {
   const dark = varsFor(theme.dark, "dark");
   const light = varsFor(theme.light, "light");

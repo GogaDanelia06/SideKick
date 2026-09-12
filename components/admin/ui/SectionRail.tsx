@@ -7,11 +7,7 @@ import type { Bilingual } from "@/lib/content/types";
 
 export type RailItem = { key: string; label: Bilingual; icon: Icon };
 
-/**
- * The second column: a list of the sections on one admin screen. Shared by
- * every screen that has more than one section so they stay identical — a
- * vertical list on desktop, a horizontal scroller on narrow viewports.
- */
+/** Section list for multi-section admin screens: vertical on desktop, a scrolling row on mobile. */
 export function SectionRail({
   items,
   active,
@@ -24,10 +20,7 @@ export function SectionRail({
   const { t } = useLanguage();
 
   return (
-    // `min-w-0` is what makes the horizontal scroller below actually scroll. A
-    // grid child defaults to `min-width: auto`, so without it this box refuses
-    // to shrink under its buttons, grows to their full width, and takes the
-    // whole admin page sideways with it.
+    // min-w-0 lets the grid child shrink, so the row scrolls instead of widening the page.
     <div className="min-w-0 rounded-lg border border-border bg-card p-3 lg:sticky lg:top-4">
       <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
         {t({ ka: "სექციები", en: "Sections" })}

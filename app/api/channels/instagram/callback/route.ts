@@ -7,20 +7,12 @@ import { CALLBACK_PATH } from "../start/route";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Back to the channels page with the outcome in the query string.
- *
- * Resolved against the incoming request rather than the configured site URL, so
- * a developer testing this locally lands on their own machine instead of being
- * thrown out to production. The `redirect_uri` handed to Meta stays absolute —
- * that one has to match what is registered, character for character.
- */
+/** Back to the channels page, on the request's own origin so local testing stays local. */
 const back = (request: Request, status: string) =>
   NextResponse.redirect(
     new URL(`${DASH.channels}?connect=${status}&channel=INSTAGRAM`, request.url),
   );
 
-/** Where Instagram returns the merchant after they grant access. */
 export async function GET(request: Request) {
   const guard = await guardCallback(request);
   if (!guard.ok) return back(request, guard.status);

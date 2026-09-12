@@ -1,14 +1,6 @@
 /**
- * Every event the site is allowed to record.
- *
- * The list is closed on purpose: `/api/track` is a public endpoint, so an
- * open-ended `name` field would let anyone fill the table with junk. An unknown
- * name is dropped rather than stored.
- *
- * Nothing here identifies a person. We keep an event name, the page it happened
- * on, the day, and a count — no IP address, no user id, no cookie. That is what
- * lets the site run this without a consent banner, and it is also why these
- * numbers can never be turned into "what did this particular visitor do".
+ * The closed list of trackable events (/api/track is public). Only an event name,
+ * page, day and count are stored — nothing that identifies a visitor.
  */
 
 import type { Bilingual } from "@/lib/content/types";

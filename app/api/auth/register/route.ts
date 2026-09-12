@@ -34,15 +34,10 @@ export async function POST(req: Request) {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  // With no mail provider configured, an unverified account is one nobody can
-  // ever activate — so the address is trusted instead. Verification is a
-  // safeguard, not a reason to hand someone a door with no key.
+  // Without a mail provider nobody could verify, so the address is trusted.
   const canSendMail = mailConfigured();
 
-  // One transaction, because half of this is worse than none of it. The account
-  // and the business used to be two writes: if the second failed, the address
-  // was taken by a user who belonged to no business, could sign in, and was
-  // bounced off every dashboard route with nothing to explain why.
+  // User and business are created together, so no account exists without a business.
   const user = await prisma.$transaction(async (tx) => {
     const created = await tx.user.create({
       data: {
@@ -65,9 +60,7 @@ export async function POST(req: Request) {
     verifyEmailEmail(user.email, absoluteUrl(`/api/auth/verify?token=${token}`), user.name),
   );
 
-  // The provider accepted the signup but refused the mail — a verified sender
-  // domain usually. Activating beats stranding someone mid-signup, and the log
-  // is where whoever configured it finds out.
+  // If the verification email cannot be sent, activate the account rather than strand it.
   if (!sent) {
     log.error("verification mail failed; activating the account instead", null, {
       userId: user.id,

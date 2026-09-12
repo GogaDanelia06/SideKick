@@ -50,10 +50,6 @@ export function ProfileMenu({ account }: { account: Account }) {
             <span className="flex-1">{theme === "dark" ? t({ ka: "მუქი თემა", en: "Dark theme" }) : t({ ka: "ღია თემა", en: "Light theme" })}</span>
             <Switch on={theme === "dark"} onToggle={toggleTheme} ariaLabel="Theme" />
           </div>
-          {/* The way back out. The dashboard has no other link to the public
-              site — once you are inside it, the only exit was the browser's own
-              back button or typing the address. The admin panel already offered
-              its own way home; this is the same door for tenants. */}
           <Link
             href={ROUTES.home}
             onClick={() => setOpen(false)}

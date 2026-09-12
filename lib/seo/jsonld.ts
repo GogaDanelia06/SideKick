@@ -1,13 +1,7 @@
  import type { JsonLdData } from "@/components/seo/JsonLd";
 import { ORGANIZATION, SITE, absoluteUrl } from "./site";
 
-/**
- * The organisation behind the site.
- *
- * Every optional field is dropped when blank rather than emitted empty —
- * schema.org treats an empty string as a claim, and a wrong claim is worse for
- * a rich result than a missing one.
- */
+/** Organization schema; blank optional fields are omitted rather than emitted empty. */
 export function organizationSchema(): JsonLdData {
   const { name, legalName, logo, email, phone, address, socialLinks } = ORGANIZATION;
 

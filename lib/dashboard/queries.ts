@@ -17,15 +17,7 @@ export function getProducts(businessId: string) {
   });
 }
 
-/**
- * The fields the channel screens draw, and nothing else.
- *
- * Named and shared so the list stays in one place. Spelling it out matters more
- * than it looks: `Channel` now holds `accessToken`, the credential that lets us
- * post as the merchant's Facebook page, and these rows are handed to client
- * components. Anything selected here is serialised into the HTML, so a bare
- * `findMany()` would publish that token to the browser.
- */
+/** Channel fields safe for client components (never the access token). */
 const CHANNEL_FIELDS = {
   id: true,
   type: true,
@@ -34,28 +26,15 @@ const CHANNEL_FIELDS = {
   lastSyncAt: true,
 } as const;
 
-/**
- * What the channel screens receive — deliberately not the whole `Channel`.
- *
- * `linked` rather than the id itself: the screen only needs to know whether a
- * credential exists, so that is all it gets. Sending the Page or Instagram id
- * would put it in the page source for no gain.
- */
 export type ChannelSummary = Prisma.ChannelGetPayload<{ select: typeof CHANNEL_FIELDS }> & {
-  /**
-   * True once an authorisation has stored *both* halves of a working
-   * credential: the account id the webhook routes on, and the token replies go
-   * out with. Either one alone is a channel that cannot carry a message.
-   */
+  /** Both the account id and the token are stored. */
   linked: boolean;
 };
 
 export async function getChannels(businessId: string): Promise<ChannelSummary[]> {
   const rows = await prisma.channel.findMany({
     where: { businessId },
-    // Both are read and neither is returned: the screen needs to know whether a
-    // credential exists, not what it is. Putting an account id — let alone a
-    // token — in the page source would be a gift to anyone reading it.
+    // Read only to derive `linked`; neither value is returned.
     select: { ...CHANNEL_FIELDS, externalId: true, accessToken: true },
     orderBy: { type: "asc" },
   });
@@ -66,16 +45,7 @@ export async function getChannels(businessId: string): Promise<ChannelSummary[]>
   }));
 }
 
-/**
- * What the team screen may know about a colleague, and nothing more.
- *
- * `include: { user: true }` stood here, and the cost of the word `true` was the
- * whole `User` row — bcrypt hash, phone number, platform-admin flag — handed to
- * a client component and therefore serialised into the page HTML. Any member,
- * including a view-only one, could read the owner's password hash out of view
- * source and crack it at leisure. Naming the three fields the roster actually
- * draws is the fix, and the list is short enough to keep honest.
- */
+/** Selected explicitly: these rows reach client components (no password hash). */
 const TEAM_USER_FIELDS = { id: true, name: true, email: true } as const;
 
 export type TeamMember = Prisma.MembershipGetPayload<{
@@ -202,8 +172,6 @@ export async function getHomeOverview(businessId: string) {
     }),
     prisma.message.findMany({
       where: { stoppedReason: { not: null }, conversation: { businessId } },
-      // Only the channel's type is read below. `include` would have pulled the
-      // whole row — access token included — through to the page.
       select: {
         id: true,
         text: true,
@@ -414,9 +382,6 @@ export async function getConversation(businessId: string, id: string) {
     channelType: c.channel?.type ?? null,
     status: c.status,
     aiEnabled: c.aiEnabled,
-    // Whether a person is currently holding this chat. Sent as a boolean rather
-    // than the date: the header only asks "is it paused", and a raw Date would
-    // have to be re-compared against the clock in the browser, where it drifts.
     handedOver: Boolean(c.botPausedUntil && c.botPausedUntil > new Date()),
     hasLead: Boolean(c.lead),
     hasOrder: c.orders.length > 0,
@@ -425,10 +390,7 @@ export async function getConversation(businessId: string, id: string) {
       sender: m.sender,
       text: m.text,
       stoppedReason: m.stoppedReason,
-      // Formatted here, in the merchant's timezone, rather than handed over as
-      // a Date. A Date crossing to the browser is rendered in whatever timezone
-      // the viewer's laptop is set to, so a shop in Tbilisi reading their inbox
-      // from abroad would see every message stamped an hour or four off.
+      // Formatted on the server, in the shop's timezone.
       timeLabel: fmtTime.format(m.createdAt),
     })),
   };
@@ -460,17 +422,13 @@ export async function getAccount(userId: string, businessId: string) {
 
 export type Account = Awaited<ReturnType<typeof getAccount>>;
 
-/** Exactly the fields the profile form draws — see the note in `getProfile`. */
+/** Selected explicitly: this row reaches a client component. */
 const PROFILE_USER_FIELDS = { id: true, name: true, email: true, phone: true } as const;
 
 export type ProfileUser = Prisma.UserGetPayload<{ select: typeof PROFILE_USER_FIELDS }>;
 
 export async function getProfile(userId: string, businessId: string) {
   const [user, business] = await Promise.all([
-    // Selected, not the whole row: this goes to a client component, and an
-    // unselected `findUnique` puts the caller's own bcrypt hash in the page
-    // source. Their own hash rather than a colleague's, which is a smaller
-    // blast radius and exactly as unnecessary.
     prisma.user.findUnique({
       where: { id: userId },
       select: PROFILE_USER_FIELDS,

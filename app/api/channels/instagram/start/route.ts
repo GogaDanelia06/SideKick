@@ -8,38 +8,19 @@ import { DASH } from "@/lib/dashboard/routes";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Where the merchant is sent to grant us access to their Instagram account.
- *
- * This is **Instagram Login**, not Facebook Login, and the difference is the
- * whole point of this route existing separately. It authorises the Instagram
- * professional account directly, on instagram.com, with the Instagram app's own
- * client id — see lib/channels/instagramLogin.ts for why the two cannot be
- * merged back together.
- *
- * The redirect URI below must be registered under the app's Instagram product
- * settings. It is a different list from Facebook Login's, and a URI missing
- * from it fails on Meta's screen before the merchant ever reaches consent.
- */
+/** Instagram Login, not Facebook Login; its redirect URI is registered under the Instagram product. */
 export const CALLBACK_PATH = "/api/channels/instagram/callback";
 
 export async function GET() {
-  // Redirects to /login on its own when there is no session, which is the right
-  // answer: the whole point of this route is to act for a known business.
   const ctx = await requireContext();
 
-  // Same reasoning as the Facebook route: signed out goes to /login, wrong role
-  // comes back with a message. The callback checks again, because that is the
-  // request that actually writes a credential.
   if (!can(ctx.role, "channels:write")) {
     return NextResponse.redirect(
       absoluteUrl(`${DASH.channels}?connect=forbidden&channel=INSTAGRAM`),
     );
   }
 
-  // The Instagram app id, not META_APP_ID. Passing the Facebook app's id here
-  // fails with an error about an invalid client, which reads like a typo and is
-  // in fact the wrong application entirely.
+  // The Instagram app's id, not META_APP_ID.
   const appId = process.env.INSTAGRAM_APP_ID;
   if (!appId) {
     return NextResponse.redirect(

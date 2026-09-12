@@ -25,8 +25,7 @@ export function useChat(greeting: string) {
   const objectUrls = useRef<string[]>([]);
 
   useEffect(() => {
-    // Closing the widget or leaving the page mid-compose would otherwise set
-    // state on a component that is gone, and leak every preview it made.
+    // Cancel pending replies and release previews on unmount.
     const pendingTimers = timers.current;
     const urls = objectUrls.current;
     return () => {
@@ -56,28 +55,16 @@ export function useChat(greeting: string) {
     (text: string) => {
       const trimmed = text.trim();
       if (!trimmed) return;
-      // The first message is what turns an opened widget into a conversation.
       if (idRef.current === 1) track("chat_conversation_started");
 
       const n = idRef.current++;
-      // The question shows at once; only the answer waits.
       setHistory((prev) => [...prev, { id: `u${n}`, role: "user", text: trimmed }]);
       scheduleReply(`a${n}`, t(getBotReply(trimmed)));
     },
     [t, scheduleReply],
   );
 
-  /**
-   * Shows a picked photo or video in the thread.
-   *
-   * The file is **not uploaded**. It is rendered from an object URL and stays in
-   * this tab: there is nothing on the other end of this chat to receive it, and
-   * storing a file no one can ever read again would be cost without a purpose.
-   * When the widget gets a real backend — the WEBSITE channel — this is the one
-   * function that changes.
-   *
-   * Returns an error code for the caller to translate, or null on success.
-   */
+  /** Shows a picked file from a local object URL (nothing is uploaded). Returns an error code or null. */
   const sendFile = useCallback(
     (file: File): AttachmentError | null => {
       const verdict = classifyAttachment(file);

@@ -82,8 +82,6 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
           <span className="text-muted">3.</span>{" "}
           {t({ ka: "რამდენ ხანს დაელოდოს პასუხამდე", en: "How long to wait before replying" })}
         </div>
-        {/* Seconds, and the reason is worth saying on the screen: a merchant who
-            does not know why a delay exists will set it to zero. */}
         <div className="flex items-center gap-2">
           <input
             name="replyDelaySec"

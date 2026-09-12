@@ -11,14 +11,7 @@ export type HeroSlide = {
   sub: Bilingual;
 };
 
-/**
- * How long a slide holds before the next one starts.
- *
- * Five seconds was the first guess and it was wrong: each slide carries a
- * headline, a paragraph and a mock conversation, and a reader who starts on the
- * paragraph is interrupted by the next slide before the end of it. A carousel
- * nobody can finish reading is a carousel nobody reads.
- */
+/** Long enough to read a slide's headline, paragraph and mock conversation. */
 export const HERO_INTERVAL_MS = 10_000;
 
 export const HERO_SLIDES: HeroSlide[] = [

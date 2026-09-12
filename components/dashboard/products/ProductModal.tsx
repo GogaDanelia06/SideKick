@@ -18,11 +18,7 @@ function Field({ label, ...input }: { label: string } & ComponentProps<"input">)
   );
 }
 
-/**
- * Split from the wrapper below so the "no product selected" case can return
- * early without skipping a hook — `usePricing` has to run on every render of
- * whatever component calls it, and a guard above it would break that rule.
- */
+/** Split out so hooks never run behind an early return. */
 function EditForm({ product, onClose }: { product: Product; onClose: () => void }) {
   const { t } = useLanguage();
   const money = usePricing(product);
@@ -92,8 +88,7 @@ export function ProductModal({ product, onClose }: { product: Product | null; on
   return (
     <div className="fixed inset-0 z-[100] grid place-items-center p-4">
       <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 cursor-default bg-black/55 backdrop-blur-[2px]" />
-      {/* Keyed on the product, so opening a second one starts from its own
-          numbers rather than keeping the last product's in the pricing state. */}
+      {/* Keyed by product, so the pricing state resets when another product opens. */}
       <EditForm key={product.id} product={product} onClose={onClose} />
     </div>
   );

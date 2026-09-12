@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-// Not `Channel`: the page deliberately fetches a subset, so the access token
-// never reaches this client component and therefore never reaches the browser.
+// A subset of Channel, so the access token never reaches the browser.
 import type { ChannelSummary } from "@/lib/dashboard/queries";
 import {
   IconBrandFacebook,
@@ -48,17 +47,10 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
             </div>
             <ChannelStatus connected={c.connected} linked={c.linked} />
             {!c.linked ? (
-              // Never authorised, so there is nothing to switch on — the only
-              // useful action is the grant itself.
               <ConnectButton type={c.type} />
             ) : (
               <>
-              {/* Re-authorising has to stay reachable for a channel that is
-                  already linked. Instagram tokens expire after sixty days, and
-                  a credential can be granted with the wrong scopes — in both
-                  cases the row looks perfectly connected while receiving
-                  nothing, and the only repair is walking through consent again.
-                  Hiding this behind "not linked yet" left no way to do that. */}
+              {/* Re-authorising stays available: tokens expire and grants can miss scopes. */}
               <ConnectButton type={c.type} relink />
             <button
               type="button"
@@ -67,8 +59,6 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
                 start(async () => {
                   setRefusal(null);
                   const res = await setChannelConnected(c.id, !c.connected);
-                  // The plan ceiling is the common case and it used to look
-                  // like a dead button — say so where the click happened.
                   if (!res.ok && res.error === "limit") {
                     setRefusal(
                       t({

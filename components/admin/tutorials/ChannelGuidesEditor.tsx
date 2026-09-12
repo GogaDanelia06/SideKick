@@ -13,7 +13,7 @@ import {
   IconWorld,
   type Icon,
 } from "@tabler/icons-react";
-import { saveChannelGuide, toggleChannelGuidePublished } from "@/lib/admin/actions";
+import { saveChannelGuide, toggleChannelGuidePublished } from "@/lib/admin/actions/channelGuides";
 import { CHANNEL_NAMES, CHANNEL_TYPES } from "@/lib/dashboard/channels";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
@@ -106,11 +106,7 @@ function GuideForm({ type, guide }: { type: ChannelType; guide?: ChannelGuide })
   );
 }
 
-/**
- * One form per channel type — the set is fixed by the schema, so there is
- * nothing to add or delete here, only to fill in. A channel with an empty
- * guide simply shows no instructions button in the tenant's dashboard.
- */
+/** One fixed form per channel type; an empty guide shows no instructions button. */
 export function ChannelGuidesEditor({ guides }: { guides: ChannelGuide[] }) {
   const { t } = useLanguage();
   const byType = new Map(guides.map((g) => [g.type, g]));

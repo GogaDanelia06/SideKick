@@ -1,12 +1,4 @@
-/**
- * The one clock the dashboard reads.
- *
- * Fixed to Tbilisi rather than the viewer's machine, on purpose. A shop's
- * orders and messages happened in shop time, and an owner checking their inbox
- * from a trip should see the hour their customer wrote, not the hour it was
- * where they are standing. Formatting on the server also keeps a Date from
- * crossing to the browser and being rendered differently there than here.
- */
+/** Dashboard times are always shown in the shop's timezone. */
 const TZ = "Asia/Tbilisi";
 
 export const fmtDate = new Intl.DateTimeFormat("en-GB", {

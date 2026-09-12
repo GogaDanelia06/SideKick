@@ -27,16 +27,7 @@ export function ProductsView({ products }: { products: Product[] }) {
   const [tab, setTab] = useState<"manual" | "file">("manual");
   const [editing, setEditing] = useState<Product | null>(null);
 
-  /**
-   * The list, held here rather than read straight from the server on every
-   * change.
-   *
-   * Adding a product used to go through `revalidatePath`, which re-runs this
-   * page on the server and sends a new payload down — the browser treats that as
-   * a navigation, so the merchant got a loading bar and a wait for a row that
-   * had already been written. Newest first, matching the server's own ordering,
-   * so the row appears exactly where a reload would put it.
-   */
+  /** Held locally so new rows appear without a server re-render (same newest-first order). */
   const [rows, setRows] = useState(products);
 
   return (

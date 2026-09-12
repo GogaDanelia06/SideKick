@@ -8,8 +8,7 @@ export const authConfig = {
   providers: [],
   callbacks: {
 
-    // The rule itself lives in `gateAllows` because middleware needs the same
-    // answer, and a second copy of it here would be free to drift.
+    // Shared with proxy.ts through gateAllows.
     authorized({ auth, request: { nextUrl } }) {
       return gateAllows(nextUrl.pathname, auth?.user);
     },

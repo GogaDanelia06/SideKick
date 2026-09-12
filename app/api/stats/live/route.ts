@@ -5,18 +5,11 @@ import { autoKey, readAutoStat } from "@/lib/site/autoStat";
 
 export const dynamic = "force-dynamic";
 
-/** How long one round of reading is reused for. */
 const CACHE_MS = 10_000;
 
 let cache: { at: number; body: Record<string, number> } | null = null;
 
-/**
- * Only the counters an admin actually put on the site.
- *
- * The registry knows how to count a dozen things; publishing all of them here
- * would hand a visitor figures the owner never chose to show — "3 businesses
- * registered" is nobody else's business until it is put on the page.
- */
+/** Only counters that are actually shown on the site are published. */
 async function countedKeys(): Promise<string[]> {
   const [strip, hero] = await Promise.all([
     prisma.siteStat.findMany({
@@ -31,16 +24,7 @@ async function countedKeys(): Promise<string[]> {
   return [...new Set([...strip, ...hero].map((r) => r.source))];
 }
 
-/**
- * Every figure on the landing page that does not stay still.
- *
- * Two kinds share one payload: counters read from the database, and the
- * drifting figures whose next step is drawn here rather than in the visitor's
- * browser. The client does not care which is which — it polls once for both.
- *
- * One round of work is shared for ten seconds, so a busy day costs the database
- * a handful of queries a minute rather than a handful per visitor.
- */
+/** Live and drifting landing-page figures, recomputed at most every CACHE_MS per instance. */
 export async function GET() {
   if (!cache || Date.now() - cache.at >= CACHE_MS) {
     const body: Record<string, number> = {};

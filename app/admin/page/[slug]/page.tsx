@@ -11,13 +11,7 @@ export function generateStaticParams() {
   return ADMIN_PAGES.map((p) => ({ slug: p.slug }));
 }
 
-/**
- * Loads one section's data.
- *
- * Returns undefined when a section's configuration no longer resolves — a text
- * group dropped from the registry, say — so the page renders without it rather
- * than failing whole.
- */
+/** Loads one section's data; undefined when its configuration no longer resolves. */
 async function loadSection(
   section: AdminSection,
   route: string,
@@ -41,8 +35,6 @@ async function loadSection(
     }
 
     case "stats": {
-      // Only the key, label and current value cross into the client; the
-      // query functions stay on the server.
       const [stats, sources] = await Promise.all([
         prisma.siteStat.findMany({ orderBy: { order: "asc" } }),
         statSourceOptions(),
@@ -144,14 +136,7 @@ async function loadSection(
   }
 }
 
-/**
- * One admin page, with every section fetched at once.
- *
- * These used to load in a `for` loop that awaited each section in turn, so six
- * sections cost six round trips to Frankfurt end to end — 1182ms measured
- * against production, against 190ms for the same queries issued together.
- * Nothing here depends on anything else, so it all goes in flight at once.
- */
+/** One admin page; every section loads in parallel. */
 export default async function AdminPageEditor({
   params,
 }: {

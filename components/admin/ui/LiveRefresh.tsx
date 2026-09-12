@@ -6,17 +6,7 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const REFRESH_MS = 30_000;
 
-/**
- * Keeps a server-rendered admin screen current without a reload.
- *
- * `router.refresh()` re-runs the page's queries and swaps the result in, so the
- * figures move while the owner is looking at them instead of being however old
- * the tab is. That matters most on a screen someone leaves open on a second
- * monitor all day.
- *
- * A hidden tab is skipped: refreshing a page nobody is looking at spends
- * database time to update pixels that aren't on screen.
- */
+/** Refreshes a server-rendered admin screen every REFRESH_MS while the tab is visible. */
 export function LiveRefresh() {
   const router = useRouter();
   const { t } = useLanguage();

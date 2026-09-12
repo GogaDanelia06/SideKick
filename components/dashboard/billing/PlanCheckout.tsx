@@ -28,12 +28,7 @@ const ERRORS: Record<string, Bilingual> = {
   },
 };
 
-/**
- * Plan, period, bank — then off to the bank's own page.
- *
- * Nothing here decides what is charged: the server recomputes the price from
- * the plan row, so the figures shown are for the customer's benefit only.
- */
+/** Plan, period and bank selection; the server recomputes the price. */
 export function PlanCheckout({
   plans,
   subscription,
@@ -63,16 +58,7 @@ export function PlanCheckout({
     });
   }
 
-  /**
-   * With no bank configured, the plans are still switchable — just free.
-   *
-   * The dead warning that stood here was accurate and unhelpful: it left no way
-   * to try a tier, so the three prices on the pricing page could not be
-   * exercised at all. The switch disappears by itself the moment BOG or TBC
-   * credentials exist, because that is the same condition the real checkout
-   * waits on — and the server refuses it independently, so this is a screen the
-   * guard happens to agree with rather than the guard itself.
-   */
+  // Without a configured bank, plans switch for free (the server enforces the same rule).
   if (providers.length === 0) {
     return (
       <div className="grid gap-3">

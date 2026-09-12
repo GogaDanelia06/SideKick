@@ -3,33 +3,13 @@ import { isPlatformAdmin } from "@/lib/auth/admin";
 import { storeMedia } from "@/lib/admin/storage";
 import { log } from "@/lib/logger";
 
-/**
- * Media upload for admin content (carousel slides, about photo).
- *
- * Where the bytes land is `lib/admin/storage.ts`'s problem — Vercel Blob in
- * production, the local disk in development. This route's job is deciding what
- * is allowed through: an admin, a format a browser can render, under the size
- * cap. When storage is genuinely unconfigured it says so plainly and the admin
- * UI falls back to pasting a URL, rather than failing in a confusing way.
- */
+/** Admin media upload (hero slides, about photo). Storage lives in lib/admin/storage.ts. */
 
 const MAX_BYTES = 8 * 1024 * 1024;
 
 /**
- * Only formats a browser can render inline. Everything else is refused — an
- * upload endpoint that accepts arbitrary files is a liability.
- *
- * SVG is deliberately absent. It is the one image format that is really a
- * document: it can carry `<script>`, and a browser opening it directly runs
- * that script in whatever origin served the file. In development that origin
- * is this app, because uploads land in `public/uploads/` and are served from
- * the same host as the dashboard and its session cookie.
- *
- * The upload would have to come from an admin, so this is not the first line of
- * defence — but an admin who downloads an illustration and uploads it without
- * reading the XML is a likelier story than a hostile one, and no other format
- * on this list can execute anything. An admin who genuinely needs an SVG can
- * still paste a URL to one.
+ * Formats browsers render inline. SVG is excluded: it can carry scripts that run
+ * on the serving origin.
  */
 const ALLOWED = new Set([
   "image/jpeg",

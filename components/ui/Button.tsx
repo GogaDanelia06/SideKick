@@ -21,8 +21,7 @@ export function Button({
   children,
   ...rest
 }: CommonProps &
-  // The link variant accepts onClick too — a button that navigates still
-  // sometimes needs to report the click before the page changes.
+  // Links accept onClick too, e.g. to track a click before navigating.
   (({ href: string; onClick?: () => void }) | (ComponentProps<"button"> & { href?: undefined }))) {
   const cls = clsx(BASE, VARIANTS[variant], className);
   if ("href" in rest && rest.href) {

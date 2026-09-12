@@ -5,11 +5,6 @@ import { Panel } from "@/components/dashboard/ui/Panel";
 import type { TutorialView } from "@/lib/dashboard/tutorials";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * Read-only on purpose. These guides are written once by the platform admin
- * and shown to every business, so there is nothing here for a tenant to add,
- * edit or delete — they open the video and get on with their work.
- */
 export function VideosView({ tutorials }: { tutorials: TutorialView[] }) {
   const { t } = useLanguage();
 

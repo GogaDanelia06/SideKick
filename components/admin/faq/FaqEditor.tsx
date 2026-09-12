@@ -19,7 +19,7 @@ import {
   deleteFaq,
   moveFaq,
   toggleFaqPublished,
-} from "@/lib/admin/actions";
+} from "@/lib/admin/actions/faq";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 
@@ -55,8 +55,7 @@ export function FaqEditor({ faqs }: { faqs: SiteFaq[] }) {
   const [error, setError] = useState<string | null>(null);
   const addRef = useRef<HTMLFormElement>(null);
 
-  // The row goes the moment it is clicked rather than after the round trip
-  // and the re-render that follows it. React restores it if the server refuses.
+  // Optimistic removal; React restores the row if the server refuses.
   const [visible, removeOptimistic] = useOptimistic(
     faqs,
     (rows: SiteFaq[], id: string) => rows.filter((r) => r.id !== id),

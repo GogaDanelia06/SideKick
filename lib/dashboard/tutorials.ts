@@ -22,8 +22,7 @@ function bi(ka: string, en: string): Bilingual {
   return { ka, en: en || ka };
 }
 
-/** Published tutorials, in admin-chosen order. Platform-wide — every tenant
- *  sees the same list, which is why nothing here is scoped to a business. */
+/** Published tutorials in admin order; shared by every business. */
 export async function getTutorials(): Promise<TutorialView[]> {
   const rows = await prisma.tutorial.findMany({
     where: { published: true },
@@ -40,8 +39,7 @@ export async function getTutorials(): Promise<TutorialView[]> {
   }));
 }
 
-/** Connection instructions keyed by channel type. A type is absent when the
- *  admin hasn't written a guide yet, and the channel row simply shows none. */
+/** Published connection guides by channel type. */
 export async function getChannelGuides(): Promise<Partial<Record<ChannelType, ChannelGuideView>>> {
   const rows = await prisma.channelGuide.findMany({ where: { published: true } });
   const out: Partial<Record<ChannelType, ChannelGuideView>> = {};
@@ -53,8 +51,7 @@ export async function getChannelGuides(): Promise<Partial<Record<ChannelType, Ch
   return out;
 }
 
-/** Steps are stored one per line; blank lines are ignored so trailing
- *  newlines in the textarea don't render as empty bullets. */
+/** One step per non-empty line. */
 export function guideSteps(body: Bilingual): { ka: string[]; en: string[] } {
   const split = (s: string) => s.split("\n").map((l) => l.trim()).filter(Boolean);
   return { ka: split(body.ka), en: split(body.en) };

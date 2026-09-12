@@ -5,18 +5,9 @@ import { effectivePrice } from "@/lib/agent/pricing";
 
 export const dynamic = "force-dynamic";
 
-/** Products per response — enough for a catalogue, small enough to stay fast. */
 const PRODUCT_LIMIT = 500;
 
-/**
- * Everything the model needs to answer one tenant's customer.
- *
- * The tone settings, the tenant's own prompt, and the catalogue with prices
- * already worked out — so the AI quotes the same figure the order endpoint will
- * charge, rather than deriving it from `price` and `discountPct` itself.
- *
- * A GET, so `businessId` comes from the query string rather than a body.
- */
+/** Everything the AI needs to answer for one business, with final product prices. */
 export async function GET(request: Request) {
   const businessId = new URL(request.url).searchParams.get("businessId");
 
@@ -45,9 +36,6 @@ export async function GET(request: Request) {
         faqText: true,
         policies: true,
         prompt: true,
-        // Sent so the service can see the window it is being called after —
-        // useful when a reply arrives with three questions in it and the model
-        // needs to know that is one turn rather than a batching bug.
         replyDelaySec: true,
       },
     }),
@@ -69,8 +57,7 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     business,
-    // Null means the tenant has not configured their assistant yet, which the
-    // AI service should treat as "use your defaults", not as an error.
+    // Null until the assistant is configured; the AI service then uses its defaults.
     config,
     products: products.map((p) => ({
       code: p.code,

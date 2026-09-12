@@ -113,23 +113,12 @@ export function RegisterForm({ google }: RegisterFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  /**
-   * Where to land once the account exists.
-   *
-   * `/start` — what the pricing page's "get started" button goes through —
-   * sends `?callbackUrl=/dashboard/billing`, because somebody who just picked a
-   * plan is trying to pay for it. This form used to ignore the parameter and
-   * push the dashboard home instead, so the plan they chose was dropped on the
-   * floor and they arrived somewhere they had not asked for.
-   */
+  // Honour ?callbackUrl (e.g. /start sends people to billing after choosing a plan).
   const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
 
   const [sent, setSent] = useState(false);
   /** Registered, but waiting on the customer to open the link we emailed. */
   const [needsVerification, setNeedsVerification] = useState(false);
-  // Shown back to them, and used by the resend button. A mistyped address is
-  // the commonest reason the mail "never arrives", and it is invisible unless
-  // the address is put in front of them.
   const [pendingEmail, setPendingEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<RegisterErrors>({});
@@ -240,10 +229,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
         return;
       }
 
-      // The server says whether it sent a confirmation link. When it did, the
-      // account is meant to stay shut until the customer opens it — so signing
-      // in here would be asking for a refusal we already know is coming, and
-      // reporting that refusal as if the registration had gone wrong.
+      // When a confirmation link was sent, don't sign in: the account stays closed until it is used.
       const data = await res.json().catch(() => ({}));
       if (data.verify) {
         setPendingEmail(email);
@@ -316,11 +302,6 @@ export function RegisterForm({ google }: RegisterFormProps) {
             </div>
           </div>
 
-          {/* Sign in, not "go to dashboard": the account does not open until the
-              link is used, and a button that cannot work yet reads as a fault
-              in the site rather than a step still to do. */}
-          {/* Carries the destination across, so someone who opens the link
-              later still ends up where they were originally heading. */}
           <Link
             href={`${ROUTES.login}?callbackUrl=${encodeURIComponent(callbackUrl)}`}
             className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm border border-border text-sm font-medium"
@@ -346,9 +327,6 @@ export function RegisterForm({ google }: RegisterFormProps) {
             }}
             className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white"
           >
-            {/* Not "go to dashboard" any more: the destination now depends on
-                where the customer set out from — billing, if they came from a
-                plan — and a button that names the wrong screen is its own bug. */}
             {t({ ka: "გაგრძელება", en: "Continue" })}
             <IconArrowRight size={18} />
           </button>

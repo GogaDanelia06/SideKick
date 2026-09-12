@@ -1,11 +1,6 @@
 export type ChatRole = "ai" | "user";
 
-/**
- * A photo or video the visitor attached.
- *
- * `url` is an object URL, not an uploaded address: the file never leaves the
- * browser. See `hooks/useChat.ts` for why, and for where it gets revoked.
- */
+/** A visitor's attachment; `url` is a local object URL and the file never leaves the browser. */
 export type ChatAttachment = {
   kind: "image" | "video";
   url: string;

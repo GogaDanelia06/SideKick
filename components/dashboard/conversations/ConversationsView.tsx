@@ -19,30 +19,12 @@ export function ConversationsView({
 }) {
   const [openId, setOpenId] = useState<string | null>(selected?.id ?? null);
 
-  /**
-   * Conversations already fetched, kept for as long as the page is open.
-   *
-   * Picking a chat used to change the URL, which re-ran the whole page on the
-   * server: a hundred conversations queried again, the shell re-rendered, the
-   * messages arriving as a full navigation. Long enough to feel like the click
-   * had not registered.
-   *
-   * Now only the chosen conversation is fetched, and coming back to one already
-   * read costs nothing — which is the common move, since a merchant reads one,
-   * answers another, and returns.
-   */
+  /** Conversations fetched during this visit; reopening one is instant. */
   const [cache, setCache] = useState<Record<string, ConversationDetail>>(
     selected ? { [selected.id]: selected } : {},
   );
 
-  /**
-   * The open chat, drawn from whatever is known right now.
-   *
-   * The list row already carries the name, the channel, the AI switch and
-   * whether there is a lead or an order — everything in the header. Only the
-   * messages have to be fetched, so the chat opens at once and fills in, rather
-   * than showing an empty panel that reads as though nothing was selected.
-   */
+  /** The open chat: its header comes from the list row, its messages from the cache once fetched. */
   const cached = openId ? cache[openId] : undefined;
   const row = openId ? conversations.find((c) => c.id === openId) : undefined;
 
@@ -56,8 +38,6 @@ export function ConversationsView({
           channelType: row.channelType,
           status: row.status,
           aiEnabled: row.aiEnabled,
-          // The list already knows: "wait" is the same paused state the header
-          // reads, so the instant version does not have to guess or flicker.
           handedOver: row.alert === "wait",
           hasLead: row.ring === "lead" || row.ring === "order",
           hasOrder: row.ring === "order",
@@ -67,38 +47,21 @@ export function ConversationsView({
 
   const loading = Boolean(openId) && !cached;
 
-  /**
-   * Stable across renders, because the polling effect depends on it and a new
-   * function every render would restart the timers on every keystroke.
-   */
+  /** Stable, so the polling effect is not restarted on every render. */
   const receive = useCallback((chat: ConversationDetail) => {
     setCache((prev) => ({ ...prev, [chat.id]: chat }));
   }, []);
 
   useLiveMessages(openId, receive);
 
-  /**
-   * Which channel the list is narrowed to, decided here rather than on the
-   * server.
-   *
-   * Going through the server meant a full page load for a filter over rows the
-   * browser was already holding — the wait was the same as opening the inbox
-   * from scratch, for a click that changes nothing but what is shown.
-   *
-   * The list arrives capped at a hundred conversations, so on an inbox larger
-   * than that this narrows the hundred most recent rather than fetching the
-   * hundred most recent of one channel. No merchant is near that yet, and the
-   * exchange is a filter that answers instantly.
-   */
+  /** Filtered on the client; the list is capped at 100 rows, so this narrows those. */
   const [filter, setFilter] = useState<ChannelType | null>(channel);
   const shown = filter ? conversations.filter((c) => c.channelType === filter) : conversations;
 
   async function open(id: string | null) {
     setOpenId(id);
 
-    // `history` rather than the router: the address bar should follow the
-    // selection so a chat can be linked to and survives a refresh, but going
-    // through Next would fetch the page again and undo the point of all this.
+    // history rather than the router: the URL stays shareable without refetching the page.
     const url = new URL(window.location.href);
     if (id) url.searchParams.set("c", id);
     else url.searchParams.delete("c");
@@ -151,10 +114,7 @@ export function ConversationsView({
               return { ...current, [openId]: { ...open, messages: [...open.messages, message] } };
             })
           }
-          /* The cache wins over the freshly-rendered row, so a change the server
-             has already accepted is invisible until it is mirrored here. Without
-             these two the AI switch and the hand-back button look broken: the
-             database moves, the screen does not. */
+          /* Mirror accepted changes into the cache, which takes precedence over server rows. */
           onAiChange={(aiEnabled) =>
             setCache((current) => {
               const open = openId && current[openId];

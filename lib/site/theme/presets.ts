@@ -2,17 +2,8 @@ import type { Bilingual } from "@/lib/content/types";
 import { defaultColors, type Shade, type ThemeColors } from "./tokens";
 
 /**
- * Complete looks, one click each.
- *
- * A patch rather than a full palette: a preset names the surfaces and borders
- * that give it its character and leaves the rest at the shipped values. Written
- * out in full, six presets would be two hundred hex codes, and the twelfth time
- * someone adjusted a red they would forget five of them.
- *
- * `bg` and `canvas` are pinned to the values the original background-only
- * presets used, because `site_bg` still holds a live choice that migrates
- * through here — see read.ts. Changing them would repaint a site nobody asked
- * to repaint.
+ * One-click palettes, stored as patches over the default palette. Their `bg` and
+ * `canvas` match the legacy `site_bg` presets that read.ts still migrates.
  */
 
 export type Preset = {

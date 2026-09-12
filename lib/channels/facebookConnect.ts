@@ -3,15 +3,8 @@ import { log } from "@/lib/logger";
 import { linkChannel } from "./linkChannel";
 
 /**
- * Turns a Facebook Login authorisation code into a connected Messenger channel.
- *
- * Also carries across the Instagram account the Page is linked to, when there
- * is one. That is a *second* road to the same Instagram inbox — the Messenger
- * Platform, on the Page's token — and it exists for merchants who will grant a
- * Page but not hand over their Instagram password. It leaves an Instagram Login
- * credential for the same account alone — that one is better — but replaces one
- * naming a different account; see `linkInstagramFromPage` below, and
- * instagramConnect.ts for that other road.
+ * Facebook Login: turns an authorisation code into a connected Messenger channel,
+ * and links the Page's Instagram account when it has one.
  */
 
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION ?? "v25.0";
@@ -88,10 +81,8 @@ export async function connectFromCode(
   const list = pages?.data ?? [];
 
   if (list.length === 0) return { ok: false, reason: "no_page" };
-  // Meta's own consent screen already asks which pages to grant, so the honest
-  // fix for several is to send the merchant back to pick one there rather than
-  // to guess here — connecting the wrong page would route a stranger's
-  // customers into this inbox.
+  // Guessing between several pages could route another business's customers
+  // here, so the merchant picks one on Meta's consent screen instead.
   if (list.length > 1) return { ok: false, reason: "many_pages" };
 
   const page = list[0];
@@ -100,10 +91,7 @@ export async function connectFromCode(
   const linked = await linkChannel(businessId, "FACEBOOK", page.id, page.access_token);
   if (!linked.ok) return { ok: false, reason: linked.reason };
 
-  // Saving the webhook URL in the App Dashboard says *where* Meta delivers.
-  // This says *which Page's* events to deliver at all, and without it a Page
-  // that authorised perfectly still produces total silence. It is the reason
-  // `pages_manage_metadata` is in the scope list.
+  // Without a Page subscription Meta delivers nothing (needs pages_manage_metadata).
   if (!(await subscribePage(page.id, page.access_token))) {
     return { ok: false, reason: "not_subscribed" };
   }
@@ -114,30 +102,10 @@ export async function connectFromCode(
 }
 
 /**
- * Carries the Instagram account attached to this Page across with the grant.
- *
- * Instagram messages reach an app by two roads, and this is the second one: the
- * Messenger Platform delivers them through the Page the account is linked to,
- * on the Page's own token. It exists because the first road — Instagram Login —
- * asks the merchant for the Instagram account's password, and plenty of
- * merchants will hand over a Page but not that.
- *
- * The account id is stored, not the Page id, because that is what Meta puts in
- * `entry.id` on the way in and it is what `recordInbound` routes on. Replies go
- * out addressed as `me` instead — see `route` in send.ts.
- *
- * Leaves an Instagram Login credential alone, but only when it is for the *same*
- * account. An `IGA…` token is the better of the two — it reaches
- * graph.instagram.com directly and does not expire with the Page grant — so
- * replacing a working one for the same account would be a silent downgrade.
- *
- * A token for a *different* account is the opposite case, and refusing to touch
- * it was a bug with teeth: someone connected the wrong Instagram account once,
- * by being signed into their own when they clicked, and from then on every
- * attempt to fix it by granting the right Page was ignored — the wrong
- * credential defended itself. The merchant has just said, on Meta's own consent
- * screen, which Page they mean; the account that Page is linked to is the
- * answer, and a stale mismatched token does not get to outvote it.
+ * Links the Instagram account attached to this Page (the Messenger Platform route).
+ * Stores the Instagram account id, which webhooks carry in `entry.id`. An Instagram
+ * Login token for the same account is kept (it is the better credential); one for
+ * a different account is replaced.
  */
 async function linkInstagramFromPage(businessId: string, page: Page): Promise<boolean> {
   const igId = page.instagram_business_account?.id;
@@ -176,7 +144,6 @@ async function linkInstagramFromPage(businessId: string, page: Page): Promise<bo
   return true;
 }
 
-/** Subscribes one Page to this app's message webhooks. */
 async function subscribePage(pageId: string, pageToken: string): Promise<boolean> {
   const result = await graphPost<{ success?: boolean }>(
     `/${pageId}/subscribed_apps?subscribed_fields=messages,messaging_postbacks` +

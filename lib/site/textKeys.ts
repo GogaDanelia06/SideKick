@@ -1,28 +1,11 @@
 import type { Bilingual } from "@/lib/content/types";
 
-/**
- * Every editable text on the public site, in one registry.
- *
- * Each entry maps a stable key to where it appears, what it is called in the
- * admin UI, and how it should be edited. The admin screens are generated from
- * this list — adding a new editable field costs one entry here, not a new
- * table, migration, screen and action.
- *
- * `fallback` is what the site shows when the key has never been saved. It
- * points at the existing hardcoded copy, so the site is never blank.
- */
+/** Registry of editable public-site texts; the admin screens are generated from it. */
 
 export type TextField = {
   key: string;
   label: Bilingual;
-  /**
-   * `long` renders a textarea, `short` an input, `url`/`email`/`tel` are
-   * single-line with hints, and `media` gives the upload-or-paste picker.
-   *
-   * `media` still stores a plain URL in the same place as the rest — uploading
-   * only saves the admin the trip to a file host first. Nothing about the
-   * storage changes, which is why no field of its own was needed for it.
-   */
+  /** Admin input type; `media` stores a URL, with an upload picker. */
   kind: "short" | "long" | "url" | "email" | "tel" | "media";
   /** Only Georgian is edited for this key (e.g. a phone number or a URL). */
   singleLang?: boolean;
@@ -41,8 +24,6 @@ export type TextGroup = {
 
 const ka = (ka: string, en: string): Bilingual => ({ ka, en });
 
-/* ── #4 Story ───────────────────────────────────────────────────────────── */
-
 const STORY: TextGroup = {
   slug: "story",
   title: ka("ისტორიის სექცია", "Story section"),
@@ -52,8 +33,6 @@ const STORY: TextGroup = {
     { key: "story_body", label: ka("ტექსტი", "Text"), kind: "long" },
   ],
 };
-
-/* ── #6 CTA banner ──────────────────────────────────────────────────────── */
 
 const CTA: TextGroup = {
   slug: "cta",
@@ -77,8 +56,6 @@ const CTA: TextGroup = {
   ],
 };
 
-/* ── #9 + #12 Free period ───────────────────────────────────────────────── */
-
 const FREE_PERIOD: TextGroup = {
   slug: "free-period",
   title: ka("უფასო პერიოდის სექცია", "Free-period section"),
@@ -94,8 +71,6 @@ const FREE_PERIOD: TextGroup = {
   ],
 };
 
-/* ── #10 About ──────────────────────────────────────────────────────────── */
-
 const ABOUT: TextGroup = {
   slug: "about",
   title: ka("ჩვენ შესახებ", "About us"),
@@ -108,9 +83,6 @@ const ABOUT: TextGroup = {
       label: ka("ფოტო", "Photo"),
       kind: "media",
       singleLang: true,
-      // The frame is a wide 300px-tall band and the image is cropped to fill
-      // it, so a portrait photo loses its top and bottom. Saying the size here
-      // is cheaper than letting someone discover that on the live page.
       hint: ka(
         "რეკომენდებული: 1600×500 (განივი). სურათი მოიჭრება ჩარჩოს შესავსებად.",
         "Recommended: 1600×500 (landscape). The image is cropped to fill the frame.",
@@ -118,8 +90,6 @@ const ABOUT: TextGroup = {
     },
   ],
 };
-
-/* ── #11 Contact ────────────────────────────────────────────────────────── */
 
 const CONTACT: TextGroup = {
   slug: "contact",
@@ -134,8 +104,6 @@ const CONTACT: TextGroup = {
     { key: "social_linkedin", label: ka("LinkedIn", "LinkedIn"), kind: "url", singleLang: true },
   ],
 };
-
-/* ── Pricing heading ────────────────────────────────────────────────────── */
 
 const PRICING: TextGroup = {
   slug: "pricing-heading",
@@ -159,8 +127,6 @@ const PRICING: TextGroup = {
     { key: "pricing_sub", label: ka("ქვესათაური", "Subheading"), kind: "short" },
   ],
 };
-
-/* ── Contact heading ────────────────────────────────────────────────────── */
 
 const CONTACT_HEADING: TextGroup = {
   slug: "contact-heading",
@@ -191,17 +157,10 @@ export const TEXT_GROUPS: TextGroup[] = [
   CONTACT_HEADING,
 ];
 
-/* ── #13–15 Legal ───────────────────────────────────────────────────────── */
-
-/**
- * The three legal documents. These get their own screens rather than a generic
- * text group: each is a list of numbered sections (heading + paragraphs +
- * bullets) and that structure is what makes them readable, so it is edited
- * section by section instead of as one giant blob.
- */
+/** Legal documents are edited section by section on their own screens. */
 export type LegalDocMeta = { doc: string; title: Bilingual; route: string };
 
-/** The stable SiteSetting key holding a legal document's own heading (its H1). */
+/** The SiteSetting key for a legal document's heading. */
 export function legalTitleKey(doc: string): string {
   return `legal_${doc}_title`;
 }

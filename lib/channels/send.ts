@@ -3,49 +3,29 @@ import { log } from "@/lib/logger";
 import type { ChannelType } from "@prisma/client";
 import { GRAPH_INSTAGRAM, graphHostFor } from "./graphHost";
 
-/**
- * Graph API version. Pinned rather than floating: Meta changes response shapes
- * between versions and an unpinned call would start failing on their schedule
- * instead of ours. Bumping it is a deliberate edit, not a surprise.
- */
+/** Pinned: Meta changes response shapes between versions. */
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION ?? "v25.0";
 
-/** Long enough for a slow Graph response, short enough not to hang the caller. */
 const TIMEOUT_MS = 10_000;
 
-/**
- * Meta's code for "the 24 hour window has closed".
- *
- * Worth singling out because it is not a fault. Messenger only lets a business
- * reply within 24 hours of the customer's last message; after that the customer
- * has to write again. Treating it as an error would have someone hunting a bug
- * that is really a policy, so it gets its own status.
- */
+/** Meta's error when the 24-hour reply window has closed — a policy, not a fault. */
 const WINDOW_CLOSED_CODE = 1545041;
 
 export type DeliveryStatus = "SENT" | "WINDOW_CLOSED" | "FAILED";
 
-/** Channels the Send API can answer on. */
 const SENDABLE = new Set<ChannelType>(["FACEBOOK", "INSTAGRAM"]);
 
 export type DeliveryResult = {
   status: DeliveryStatus;
-  /** Meta's id for the sent message, when it went out. */
   externalId?: string;
-  /** Human-readable reason, for the log and the API response. */
   detail?: string;
 };
 
 type GraphError = { message?: string; code?: number };
 
 /**
- * Where an Instagram reply goes, and it depends on how the account was
- * connected — not on the channel being Instagram. See lib/channels/graphHost.ts
- * for the whole story.
- *
- * The path differs too: graph.instagram.com is addressed by the Instagram
- * account id, while graph.facebook.com will not accept that id and is addressed
- * as `me` — the page the token belongs to.
+ * Instagram replies follow the token (see graphHost.ts): graph.instagram.com is
+ * addressed by account id, graph.facebook.com as `me`.
  */
 function route(channelType: ChannelType, accountId: string, accessToken: string) {
   const host = graphHostFor(channelType, accessToken);
@@ -53,14 +33,7 @@ function route(channelType: ChannelType, accountId: string, accessToken: string)
   return { host, path: addressedByAccountId ? accountId : "me" };
 }
 
-/**
- * Hands one text message to Meta for delivery.
- *
- * The account id is in the path and the token in the query string because that
- * is the shape Meta documents. `messaging_type: "RESPONSE"` declares this as an
- * answer to something the customer said, which is what makes it allowed inside
- * the 24 hour window — omitting it gets the message refused.
- */
+/** Sends one text reply. `messaging_type: RESPONSE` is required inside the 24-hour window. */
 export async function sendToMessenger(
   pageId: string,
   accessToken: string,
@@ -109,22 +82,13 @@ export async function sendToMessenger(
 
     return { status: "SENT", externalId: body.message_id };
   } catch (err) {
-    // A timeout lands here too. Reported rather than thrown: the message is
-    // already saved, and the caller has something better to do than crash.
     return { status: "FAILED", detail: err instanceof Error ? err.message : String(err) };
   } finally {
     clearTimeout(timer);
   }
 }
 
-/**
- * Sends a message we have already stored out to the customer it was written for.
- *
- * Returns null when there is nothing to deliver to — a conversation started in
- * the dashboard, a channel switched off, a page linked by hand that has no
- * token yet. None of those are errors, and none should colour the reply the AI
- * service gets back; the message is recorded either way.
- */
+/** Delivers a stored reply; null when there is nowhere to deliver it. */
 export async function deliverOutbound(
   conversationId: string,
   messageId: string,
@@ -144,8 +108,6 @@ export async function deliverOutbound(
   if (
     !conversation?.customerRef ||
     !channel ||
-    // WhatsApp is not here: it is a different API, not a different id. Which
-    // host an Instagram reply goes to is decided by the token — see `route`.
     !SENDABLE.has(channel.type) ||
     !channel.connected ||
     !channel.externalId ||
@@ -166,8 +128,7 @@ export async function deliverOutbound(
     where: { id: messageId },
     data: {
       deliveryStatus: result.status,
-      // Meta's id for the outbound copy, so an echo of it coming back through
-      // the webhook is recognised as one we already have.
+      // Lets the webhook recognise the echo of this message.
       ...(result.externalId ? { externalId: result.externalId } : {}),
     },
   });

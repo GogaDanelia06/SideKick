@@ -34,9 +34,6 @@ export function ForgotForm() {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      // Its own state rather than a plain error string, because the useful
-      // answer to "not registered" is a way to register — a typo is the other
-      // common cause, and the field stays filled so it can be corrected.
       if (data.code === "not_registered") return setNotRegistered(true);
       return setError(data.error ?? t({ ka: "ვერ გაიგზავნა", en: "Could not send" }));
     }

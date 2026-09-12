@@ -16,12 +16,7 @@ export function AuthShell({
   children,
   footer,
 }: {
-  /**
-   * The square tile above the heading. Sign-in and sign-up leave it out and
-   * pass the logo instead: those two screens are the front door, and a stranger
-   * arriving from an email link should see whose site this is, not a symbol.
-   * Forgot and reset keep an icon, because there the picture names the task.
-   */
+  /** Tile icon for forgot/reset; sign-in and sign-up show the logo instead. */
   icon?: IconType;
   iconTone?: "primary" | "outline";
   title: Bilingual;
@@ -47,10 +42,6 @@ export function AuthShell({
             <Icon size={24} />
           </span>
         ) : (
-          // Taller than it looks it needs to be: with the tagline the drawing is
-          // 92 units deep against 55 without, so the same CSS height would
-          // shrink the letters by a third to make room for a line that would
-          // then be too small to read anyway.
           <Wordmark className="mx-auto h-[46px]" tagline />
         )}
         <h1 className="mt-3.5 text-[26px] font-semibold">{t(title)}</h1>

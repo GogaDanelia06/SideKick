@@ -7,21 +7,7 @@ import { BRAND } from "@/lib/content/common";
 import { CONTACT_PREVIEW, CONTACT_SEED } from "@/lib/content/contact";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * A picture of the assistant at work, on the contact page.
- *
- * This used to be a second working chat, identical to the floating widget a few
- * hundred pixels away — two inputs for one conversation, and the page's own one
- * lost its history the moment you navigated. Now there is one real chat (the
- * widget) and this illustrates it.
- *
- * Nothing here is interactive, and the markup says so rather than merely looking
- * static: the suggested questions are spans and the composer below is a drawing
- * of one, so the keyboard has nothing to land on and a screen reader announces
- * no controls. `cursor-default` is the same treatment the hero mocks get —
- * without it the bubbles inherit `cursor: auto`, which resolves to the I-beam
- * over text and reads as a field.
- */
+/** A static illustration of the assistant (the floating widget is the real chat); nothing is interactive. */
 export function ContactChat() {
   const { t } = useLanguage();
 
@@ -58,11 +44,7 @@ export function ContactChat() {
         ))}
       </div>
 
-      {/* The composer, drawn rather than built — it finishes the picture, since a
-          chat that stops at the last bubble looks cut off rather than static.
-          Classes track ChatInput so the illustration keeps matching the real
-          thing. `aria-hidden` because announcing a text field that cannot be
-          typed into is worse than announcing nothing at all. */}
+      {/* A drawn composer, hidden from assistive tech because it cannot be typed into. */}
       <div aria-hidden className="flex gap-2 border-t border-border p-3">
         <span className="grid w-10 shrink-0 place-items-center rounded-sm border border-input text-muted">
           <IconPaperclip size={18} />

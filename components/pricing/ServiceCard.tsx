@@ -20,9 +20,7 @@ export function ServiceCard({
   iconName?: string;
 }) {
   const { t } = useLanguage();
-  // createElement rather than binding to a capitalised local: assigning a
-  // component to a variable inside render trips React's "component created
-  // during render" rule, even though this is only a lookup.
+  // createElement keeps this lookup clear of React's "component created during render" rule.
   const iconComponent = iconName ? resolveIcon(iconName) : (icon ?? resolveIcon(null));
 
   return (

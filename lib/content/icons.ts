@@ -29,14 +29,7 @@ import {
   type Icon,
 } from "@tabler/icons-react";
 
-/**
- * Icons an admin may pick for a content box.
- *
- * The database stores the *name*, so rendering has to map it back to a
- * component. Doing that through a fixed table rather than a dynamic import
- * keeps the bundle predictable and means a bad value in the database can only
- * ever fall back to the default — it can never inject anything.
- */
+/** Icons an admin may choose; stored names resolve through this table, never a dynamic import. */
 export const ICONS: Record<string, Icon> = {
   IconSparkles,
   IconBolt,

@@ -4,14 +4,7 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { LiveDot, LiveFigure } from "./LiveFigure";
 import type { SiteStatView } from "@/lib/site/content";
 
-/**
- * The strip under the hero.
- *
- * Three kinds of figure share one row and look alike: typed, counted, and
- * drifting. Only a counted one gets the live dot — badging a drifting figure as
- * live would be a claim it cannot back, and the owner reading their own site
- * should be able to see at a glance which of their three numbers are real.
- */
+/** The strip under the hero; only counted figures get the live dot. */
 export function Stats({ stats }: { stats: SiteStatView[] }) {
   const { t } = useLanguage();
   if (stats.length === 0) return null;

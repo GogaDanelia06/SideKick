@@ -10,25 +10,9 @@ import { log } from "@/lib/logger";
 export type Ctx = { userId: string; businessId: string; role: string };
 
 /**
- * Reads the caller's *current* role in the business their session names.
- *
- * Sessions here are JWTs, which means they are believed on their own word.
- * Nothing revokes one, and `remember me` stops the expiry from bounding it. So
- * the token's `businessId` and `role` are a snapshot of the moment somebody
- * signed in, and everything downstream — every `requirePermission`, every
- * `can()` — trusts them.
- *
- * Checking only that the *user* row still existed was not enough, and the gap
- * was the dangerous kind. Remove someone from the team and their cookie kept
- * opening the merchant's whole inbox: reading customer conversations, exporting
- * leads, answering real customers as the business. Demote an owner and they
- * kept billing rights, including cancelling the paying client's subscription.
- * A removal that does not take effect is not a removal.
- *
- * So the membership is read instead, and its role is what the request runs as —
- * the token is only believed about *who* is asking, never about what they may
- * do. One indexed lookup on a compound unique key, wrapped in `cache()` so the
- * several calls a single page makes cost one query rather than several.
+ * The caller's current role, read from the membership row on every request. JWTs
+ * cannot be revoked, so the token is trusted for who is asking, never for what
+ * they may do. Cached per request.
  */
 const currentRole = cache(async (userId: string, businessId: string): Promise<Role | null> => {
   const membership = await prisma.membership.findUnique({
@@ -46,30 +30,15 @@ export async function getContext(): Promise<Ctx | null> {
   const businessId = session?.user?.businessId;
   if (!userId || !businessId) return null;
 
-  // Middleware checks this too, but it cannot be the only place: it runs on the
-  // edge for page navigations, and a Server Action reaching straight for the
-  // context never passes through it.
+  // Server actions do not pass through the proxy, so staleness is checked here too.
   if (sessionIsStale(session.user)) {
     log.info("session refused — too old to honour", { userId });
     return null;
   }
 
-  // A cookie naming somebody who no longer belongs here is treated as no cookie
-  // at all. Left unchecked it is worse than a signed-out visitor: the pages
-  // load, then fail one by one on data that cannot be there, and the error
-  // looks like a bug in whichever query happened to run first.
-  //
-  // The role comes from this row, not from `session.user.role`. That is the
-  // whole point — see the comment above.
   const role = await currentRole(userId, businessId);
   if (!role) {
-    // Said out loud, because from the outside this is indistinguishable from a
-    // wrong password: the credentials are accepted, a session is issued, and
-    // then every guarded route redirects to /login with no message. Somebody
-    // spent an evening on exactly that. The two causes are worth telling apart —
-    // a membership that was removed, or one that was never created because
-    // registration failed halfway. `scripts/find-orphan-users.ts` finds the
-    // second kind.
+    // Usually a removed membership or a half-finished registration (scripts/find-orphan-users.ts).
     log.warn("session refused — no membership for this user and business", {
       userId,
       businessId,

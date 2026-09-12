@@ -1,17 +1,4 @@
-/**
- * One poller for every live figure on the page.
- *
- * The landing page can show the same counter in the strip and inside a slide,
- * and a carousel with three slides could easily hold six figures. Each one
- * fetching for itself would be six requests every interval for data that is
- * identical, so they share a single store instead: the first figure to mount
- * starts the poll, the last one to unmount stops it.
- *
- * A failed request is ignored rather than surfaced. The number on screen is
- * already correct as of the last successful read, and blanking it because a
- * visitor's wifi dropped for a second would be a worse answer than a slightly
- * old one.
- */
+/** One shared poller for every live figure on the page; failures keep the last values. */
 
 const ENDPOINT = "/api/stats/live";
 const REFRESH_MS = 15_000;
@@ -29,7 +16,7 @@ async function pull(): Promise<void> {
     snapshot = (await res.json()) as Snapshot;
     for (const notify of listeners) notify();
   } catch {
-    // Offline or mid-deploy: keep showing the last figures we trust.
+    // Keep the last known figures.
   }
 }
 
@@ -37,7 +24,6 @@ function visible(): boolean {
   return typeof document === "undefined" || document.visibilityState === "visible";
 }
 
-/** Coming back to a parked tab should show today's figure, not this morning's. */
 function onVisibility(): void {
   if (visible()) void pull();
 }
@@ -48,9 +34,6 @@ export function subscribeLiveStats(onChange: () => void): () => void {
   if (listeners.size === 1) {
     void pull();
     timer = setInterval(() => {
-      // A backgrounded tab is nobody watching; polling it wastes the visitor's
-      // battery and our database for a number no one can see. The listener
-      // below catches them up the moment they come back.
       if (visible()) void pull();
     }, REFRESH_MS);
     document.addEventListener("visibilitychange", onVisibility);

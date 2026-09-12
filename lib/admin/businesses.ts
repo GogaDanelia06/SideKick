@@ -1,13 +1,6 @@
 import { prisma } from "@/lib/db";
 
-/**
- * Every tenant, with the plan they are on and what they are using it for.
- *
- * Platform-admin only. It exists because plans are assigned by hand until the
- * banks are wired up, and assigning one blind — without seeing how many
- * messages a shop actually sends, or how many channels it has on — is how a
- * tenant ends up on a tier that cannot hold them.
- */
+/** Every business with its plan and usage, for manual plan assignment. */
 export async function getBusinessesForAdmin() {
   const rows = await prisma.business.findMany({
     orderBy: { createdAt: "desc" },
@@ -24,8 +17,7 @@ export async function getBusinessesForAdmin() {
         },
       },
       _count: { select: { memberships: true, conversations: true, products: true } },
-      // Only the ones that are on, because that is what the plan's channel cap
-      // counts — a provisioned-but-off row is not using anything.
+      // Only connected channels count toward the plan cap.
       channels: { where: { connected: true }, select: { id: true } },
     },
   });

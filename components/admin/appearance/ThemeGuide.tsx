@@ -18,7 +18,6 @@ const STEPS: Bilingual[] = [
   },
 ];
 
-/** Three sentences, so nobody has to guess what this screen expects of them. */
 export function ThemeGuide() {
   const { t } = useLanguage();
 

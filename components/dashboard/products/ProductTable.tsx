@@ -10,10 +10,9 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const ICON_BTN = "grid size-[30px] place-items-center rounded-[6px] border border-border bg-surface";
 
-/** Empty, nearly empty, or fine — read at a glance rather than counted. */
 const stockCls = (n: number) => (n === 0 ? "text-red" : n < 5 ? "text-amber" : "text-ink");
 
-/** Column widths, shared by the header and the rows so they cannot drift apart. */
+/** Shared column widths, so the header lines up with the rows. */
 const COL = { price: "w-[92px]", sale: "w-[104px]", stock: "w-[96px]" };
 
 export function ProductTable({ products, onEdit }: { products: Product[]; onEdit: (p: Product) => void }) {
@@ -29,10 +28,6 @@ export function ProductTable({ products, onEdit }: { products: Product[]; onEdit
         </span>
       </div>
 
-      {/* Column names. Three bare numbers in a row — 3500, 3000, 12 — asked the
-          reader to guess which was the price, which the discount and which the
-          stock. Naming them is the whole fix, and the names have to sit in the
-          same widths as the values or they label the wrong column. */}
       {products.length > 0 ? (
         <div className="hidden items-center gap-3 border-b border-border bg-soft px-4 py-2 text-[11px] uppercase tracking-wide text-faint sm:flex">
           <span className="size-10 shrink-0" />
@@ -60,9 +55,7 @@ export function ProductTable({ products, onEdit }: { products: Product[]; onEdit
               <div className="font-mono text-xs text-muted">{p.code}</div>
             </div>
 
-            {/* Struck through when there is a sale price, because then it is what
-                the customer does *not* pay, and the two numbers side by side
-                otherwise read as a range. */}
+            {/* Struck through when a sale price applies. */}
             <div className={clsx(COL.price, "hidden text-right font-mono text-sm sm:block")}>
               <span className={p.salePrice ? "text-muted line-through" : undefined}>{p.price}₾</span>
             </div>

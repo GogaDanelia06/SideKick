@@ -27,19 +27,7 @@ function Frame({ value, label, live }: { value: React.ReactNode; label: string; 
   );
 }
 
-/**
- * A figure that drifts upward to make the hero panel feel busy.
- *
- * This is the fallback for a figure with no counter behind it: it starts at the
- * admin's base value and adds a random amount from their range at a random
- * interval from their range. It is decoration, and it is the reason the source
- * picker exists — anything a visitor might read as a measurement should be
- * counted, not drifted.
- *
- * Honours `prefers-reduced-motion`: the number simply sits at its base value,
- * which is also what the server renders — so there is no hydration mismatch and
- * no motion for people who asked not to have any.
- */
+/** A decorative figure that drifts upward; with reduced motion it stays at its base value. */
 function DriftStat({ stat }: { stat: HeroStatView }) {
   const { t } = useLanguage();
   const [value, setValue] = useState(stat.baseValue);

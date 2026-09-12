@@ -17,24 +17,10 @@ import { MOCKS, MOCK_FRAME, mockKey } from "./mocks/registry";
 
 const SHELL = "flex w-full items-center justify-center rounded-lg border border-border bg-card";
 
-/**
- * For an uploaded photo or video.
- *
- * Keeps a fixed height so an unusually tall upload cannot push the rest of the
- * page down the screen. Nothing is lost to it: `object-contain` on the media
- * scales the whole picture to fit rather than cropping to fill.
- */
+/** Fixed height, so a tall upload cannot push the page down. */
 const MEDIA_FRAME = `${SHELL} h-[260px] overflow-hidden sm:h-[300px] md:h-[360px]`;
 
-/**
- * For the built-in animations and the figure grid.
- *
- * A floor rather than a fixed height. These used to share the media frame, and
- * on a phone that meant a mock wanting 429px was given 300 and the remainder
- * was cut off — the bottom of the chat simply missing, with nothing to say so.
- * They are drawn at whatever size they need; the height only stops a short one
- * looking thin.
- */
+/** A minimum height only, so the built-in mocks are never clipped on phones. */
 const CONTENT_FRAME = `${SHELL} min-h-[260px] md:h-[360px] md:overflow-hidden`;
 
 function Title({ text }: { text: string }) {
@@ -113,10 +99,6 @@ export function DbHeroSlide({ slide }: { slide: HeroSlideView }) {
 
   return (
     <div className="grid h-full animate-[fadeUp_0.4s_ease] items-center gap-12 md:grid-cols-[1.05fr_0.95fr]">
-      {/* Capped only from `md` up, where the two columns sit side by side and a
-          long slide would otherwise stretch the panel next to it. On a phone
-          they are stacked and nothing is holding the other to a height, so the
-          cap earns nothing and costs a scrollbar inside the headline. */}
       <div className="md:max-h-[390px] md:overflow-y-auto">
         {slide.badge && (
           <Badge>{t(slide.badge)}</Badge>

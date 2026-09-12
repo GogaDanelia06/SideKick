@@ -1,16 +1,6 @@
 import config from "@/seo.config.json";
 
-/**
- * Global SEO settings, read from seo.config.json.
- *
- * That file is the single source for anything describing the site as a whole:
- * its name, the organisation behind it, the default social image, the canonical
- * domain, analytics and verification tags. Per-page overrides live in the admin
- * panel (the PageSeo table); this layer is the floor beneath them.
- *
- * `NEXT_PUBLIC_SITE_URL` overrides the configured URL so preview deployments
- * describe themselves rather than production.
- */
+/** Site-wide SEO settings from seo.config.json; NEXT_PUBLIC_SITE_URL overrides the URL on previews. */
 
 const configuredUrl = config.website.url || config.defaults.canonicalDomain;
 
@@ -34,7 +24,6 @@ export const OG_IMAGE = {
   alt: config.website.title,
 } as const;
 
-/** The organisation behind the site, as schema.org understands it. */
 export const ORGANIZATION = {
   name: config.organization.name || config.website.name,
   legalName: config.organization.legalName,

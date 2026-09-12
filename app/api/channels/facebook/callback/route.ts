@@ -8,21 +8,12 @@ import { CALLBACK_PATH } from "../start/route";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Back to the channels page with the outcome in the query string.
- *
- * Resolved against the incoming request rather than the configured site URL, so
- * a developer testing this locally lands on their own machine instead of being
- * thrown out to production. The `redirect_uri` handed to Meta stays absolute —
- * that one has to match what is registered, character for character.
- */
+/** Back to the channels page, on the request's own origin so local testing stays local. */
 const back = (request: Request, status: string) =>
-  // `channel` so the message lands under the row it belongs to.
   NextResponse.redirect(
     new URL(`${DASH.channels}?connect=${status}&channel=FACEBOOK`, request.url),
   );
 
-/** Where Meta returns the merchant after they grant access to a Page. */
 export async function GET(request: Request) {
   const guard = await guardCallback(request);
   if (!guard.ok) return back(request, guard.status);
@@ -39,9 +30,5 @@ export async function GET(request: Request) {
     instagram: result.instagram,
   });
 
-  // Said out loud, because the two outcomes need different next steps from the
-  // merchant: one is finished, the other still needs Instagram connecting on
-  // its own. A single "Connected" for both sent people away thinking they were
-  // done and wondering later why Instagram was quiet.
   return back(request, result.instagram ? "connected" : "connected_no_ig");
 }

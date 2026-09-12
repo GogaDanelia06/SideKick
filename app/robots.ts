@@ -6,9 +6,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Everything behind a login, plus the auth screens themselves. These
-      // carry noindex too; the disallow just saves crawl budget on pages that
-      // would only ever redirect.
+      // Signed-in areas and auth screens (all noindex too); disallowing saves crawl budget.
       disallow: [
         "/dashboard",
         "/admin",
@@ -17,7 +15,6 @@ export default function robots(): MetadataRoute.Robots {
         "/register",
         "/forgot",
         "/reset",
-        // Pure redirect — nothing to index, and its answer differs per visitor.
         "/start",
       ],
     },

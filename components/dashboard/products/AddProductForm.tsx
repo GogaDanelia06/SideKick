@@ -20,12 +20,6 @@ function Field({ label, ...input }: { label: string } & ComponentProps<"input">)
   );
 }
 
-/**
- * Why each refusal gets its own sentence: they need different things done. A
- * duplicate code is retyped, a missing name is filled in, a plan ceiling is
- * either cleared out or upgraded. "Something went wrong" would send the merchant
- * to none of them.
- */
 const ERRORS: Record<string, Bilingual> = {
   missing: { ka: "დასახელება და კოდი სავალდებულოა.", en: "Name and code are required." },
   duplicate: {
@@ -59,8 +53,6 @@ export function AddProductForm({ onAdded }: { onAdded: (product: Product) => voi
             setNotice(null);
             const res = await createProduct(fd);
             if (res.ok) {
-              // Cleared only on success, so a refused attempt keeps everything
-              // the merchant typed instead of making them start again.
               form.current?.reset();
               money.reset();
               setNotice({ tone: "ok" });

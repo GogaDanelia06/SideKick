@@ -3,20 +3,11 @@
 import { useState } from "react";
 
 /**
- * Keeps price, discount and sale price agreeing with each other.
- *
- * Two of the three are enough to know the third, and a merchant pricing a
- * product thinks in whichever two suit the moment: "twenty-five thousand, ten
- * percent off" or "twenty-five thousand, sells for twenty-two five". Making
- * them type the third themselves is arithmetic homework, and the answer they
- * type is the one that ends up wrong.
- *
- * Whichever field was last edited wins, and the other is derived from it. Clear
- * the source and the derived one clears too — a discount with no percentage and
- * no price is a leftover, not a value.
+ * Keeps price, discount % and sale price consistent: the last edited field wins
+ * and the other is derived. Clearing the source clears the derived value.
  */
 
-/** All three columns are Int in the schema, so nothing keeps a fraction. */
+/** The columns are integers. */
 const round = (n: number) => String(Math.round(n));
 
 export const num = (v: string) => {
@@ -24,7 +15,6 @@ export const num = (v: string) => {
   return v.trim() !== "" && Number.isFinite(n) ? n : null;
 };
 
-/** The two sums, kept out of the hook so they can be tested as arithmetic. */
 export const saleFromPct = (price: number, pct: number) => round(price * (1 - pct / 100));
 export const pctFromSale = (price: number, sale: number) => round((1 - sale / price) * 100);
 
@@ -41,7 +31,6 @@ export function usePricing(initial?: {
   const [discountPct, setDiscountPct] = useState(str(initial?.discountPct));
   const [salePrice, setSalePrice] = useState(str(initial?.salePrice));
 
-  /** Nothing can be derived from a missing or zero price — division by it, or by nothing. */
   const basis = () => {
     const p = num(price);
     return p !== null && p > 0 ? p : null;
@@ -52,8 +41,7 @@ export function usePricing(initial?: {
     const p = num(value);
     if (p === null || p <= 0) return;
 
-    // The discount is the merchant's intent; the sale price is its consequence.
-    // So when the price moves, a percentage they set is what survives.
+    // When the price changes, a set percentage is kept and the sale price follows.
     const pct = num(discountPct);
     if (pct !== null) {
       setSalePrice(saleFromPct(p, pct));
@@ -85,7 +73,6 @@ export function usePricing(initial?: {
     if (p !== null) setDiscountPct(pctFromSale(p, sale));
   }
 
-  /** Emptied after a successful save, alongside the form's own reset. */
   function reset() {
     setPrice("");
     setDiscountPct("");

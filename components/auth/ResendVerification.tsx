@@ -6,15 +6,7 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 
 type Props = { email: string };
 
-/**
- * Asks for the confirmation link again.
- *
- * Shown only once sign-in has failed with `unverified_email` — which happens
- * after the password was checked, so offering it here tells a stranger nothing.
- * Without it, one mail lost to a spam folder locks an account forever: signing
- * in is refused until the address is confirmed, and only registration ever
- * issued a link.
- */
+/** Resends the confirmation link; shown only after a correct password for an unverified account. */
 export function ResendVerification({ email }: Props) {
   const { t } = useLanguage();
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
@@ -28,12 +20,9 @@ export function ResendVerification({ email }: Props) {
         body: JSON.stringify({ email }),
       });
     } catch {
-      // Swallowed on purpose. The endpoint answers the same for every address,
-      // so there is no failure worth reporting that would not also be a hint
-      // about whether the account exists.
+      // Errors are ignored: the endpoint answers the same for every address.
     }
-    // Reported as done either way, and never reset: a button that stays
-    // clickable invites someone to send themselves five copies.
+    // Stays "done" so the button cannot send repeated emails.
     setState("done");
   }
 

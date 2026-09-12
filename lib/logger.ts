@@ -11,11 +11,7 @@ const REDACT = [
   "cookie",
   "creditcard",
   "cardnumber",
-  // A URL is a container for the three above. Meta documents token exchanges as
-  // GET calls with the app secret in the query string, so a logged URL is a
-  // logged secret — and the field name gives no hint of it. Masking the key
-  // costs nothing: nowhere in this codebase is a whole URL worth reading in a
-  // log, and the host and path are logged separately where they help.
+  // URLs can carry secrets in their query string (Meta token exchanges).
   "url",
   "href",
   "uri",

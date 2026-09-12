@@ -5,17 +5,7 @@ import { BUBBLE_BASE, aiBubbleClass, type AiTone } from "./ChatBubble";
 import { CHAT } from "@/lib/content/chat";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * The "…" bubble shown while the assistant composes its answer.
- *
- * Sits in the same bubble as the reply that replaces it, so the answer appears
- * where the dots were rather than jumping to a new position.
- *
- * `role="status"` announces it once, politely, to a screen reader — the dots
- * themselves are decoration and hidden, because "three bullet points" is not
- * what is happening. The label is the only text a reader gets, which is why it
- * says who is typing.
- */
+/** Typing indicator: decorative dots with a screen-reader status label. */
 export function ChatTyping({ aiTone = "neutral" }: { aiTone?: AiTone }) {
   const { t } = useLanguage();
 

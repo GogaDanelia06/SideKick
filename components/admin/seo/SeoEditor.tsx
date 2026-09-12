@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import type { PageSeo } from "@prisma/client";
 import { IconAlertTriangle, IconCheck, IconEye, IconEyeOff } from "@tabler/icons-react";
-import { updateSeo } from "@/lib/admin/actions";
+import { updateSeo } from "@/lib/admin/actions/seo";
 import { MediaField } from "@/components/admin/ui/MediaField";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
@@ -11,7 +11,7 @@ import type { Bilingual } from "@/lib/content/types";
 const INPUT =
   "w-full rounded-[8px] border border-input bg-canvas px-3 py-2.5 text-sm outline-none placeholder:text-faint focus:border-blue";
 
-/** Google truncates around here. Going over isn't an error, just a warning. */
+/** Google truncates around these lengths; longer is a warning, not an error. */
 const LIMITS = { title: 60, description: 160 };
 
 const ERRORS: Record<string, Bilingual> = {
@@ -27,11 +27,7 @@ export type SeoValues = Pick<
   "title" | "description" | "canonical" | "indexable" | "ogTitle" | "ogDescription" | "ogImageUrl"
 >;
 
-/**
- * SEO for one public page. Every field may be left blank — blank means "use the
- * built-in default", which is why nothing here is required and why the
- * placeholders show what that default would be.
- */
+/** SEO for one public page; blank fields fall back to the defaults shown as placeholders. */
 export function SeoEditor({
   path,
   values,
@@ -89,9 +85,6 @@ export function SeoEditor({
         </p>
       </div>
 
-      {/* Written generically because the heading lives in a different section on
-          every page — the carousel here, a text group there. Naming one would be
-          wrong on the others. */}
       <p className="rounded-[8px] border border-border2 bg-soft px-3.5 py-2.5 text-[12px] text-muted">
         {t({
           ka: "აქ მხოლოდ ის იცვლება, რასაც საძიებო სისტემა ხედავს. გვერდზე დაწერილი დიდი სათაური (H1) და ტექსტები ამავე გვერდის სხვა სექციებშია.",
@@ -118,8 +111,6 @@ export function SeoEditor({
           placeholder={defaults.title}
           className={INPUT}
         />
-        {/* The title tag and the on-page heading are different things that read
-            alike, and confusing them sends people hunting in the wrong section. */}
         <span className="mt-1 block text-[11px] text-faint">
           {t({
             ka: "ეს ჩანს Google-ის შედეგებში და ბრაუზერის ჩანართზე — არა თვით გვერდზე.",
@@ -142,8 +133,6 @@ export function SeoEditor({
         />
       </label>
 
-      {/* People try to type in here. Saying it only mirrors the fields above —
-          and dimming it — is cheaper than explaining it a second time. */}
       <div className="select-none rounded-[8px] border border-dashed border-border2 bg-soft p-4 opacity-90">
         <div className="mb-1 flex items-center justify-between text-[11px] uppercase tracking-wide text-faint">
           <span>{t({ ka: "გადახედვა Google-ში", en: "Google preview" })}</span>

@@ -3,9 +3,7 @@ import { SITE_URL, absoluteUrl } from "@/lib/seo/site";
 import { resolveSitemap } from "@/lib/seo/sitemap";
 import { log } from "@/lib/logger";
 
-// Rebuilt hourly, never frozen at deploy time: the pages are admin-editable and
-// their dates come from the content tables. An hour late is nothing to a crawler
-// that reads this once a day.
+// Rebuilt hourly; lastmod comes from the content tables.
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -20,8 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: p.priority,
     }));
   } catch (err) {
-    // A database hiccup must not serve an empty sitemap — an empty one tells
-    // search engines the site has no pages. Fall back to the plain list.
+    // Never serve an empty sitemap: fall back to the static page list.
     log.error("sitemap could not read content dates", err);
     return [
       { url: SITE_URL, lastModified: fallback, changeFrequency: "weekly", priority: 1 },

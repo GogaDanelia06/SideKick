@@ -20,7 +20,7 @@ import {
   moveLegalSection,
   toggleLegalPublished,
   saveLegalTitle,
-} from "@/lib/admin/actions";
+} from "@/lib/admin/actions/legal";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 
@@ -108,8 +108,7 @@ export function LegalEditor({
   const [savedTitle, setSavedTitle] = useState(false);
   const addRef = useRef<HTMLFormElement>(null);
 
-  // The row goes the moment it is clicked rather than after the round trip
-  // and the re-render that follows it. React restores it if the server refuses.
+  // Optimistic removal; React restores the row if the server refuses.
   const [visible, removeOptimistic] = useOptimistic(
     sections,
     (rows: LegalSection[], id: string) => rows.filter((r) => r.id !== id),
@@ -135,8 +134,7 @@ export function LegalEditor({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* The document's own heading — this is the page's H1. Blank falls back
-          to the drafted title, so the page is never left without one. */}
+      {/* The document's H1; blank falls back to the drafted title. */}
       <form
         action={(fd) =>
           run(() => saveLegalTitle(doc, fd), () => {

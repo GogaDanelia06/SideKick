@@ -17,10 +17,7 @@ import {
 
 export const generateMetadata = seoFor({ path: "/" });
 
-// Served from the CDN and rebuilt in the background, not rendered for every
-// visit. Admin saves that touch this page call revalidatePath("/"), so an edit
-// shows on the next load. The minute is for the live figures, which change
-// without anyone saving anything — and the browser polls those on top.
+// Admin saves revalidate this page; the timer keeps the live figures fresh.
 export const revalidate = 60;
 
 export default async function HomePage() {
@@ -52,9 +49,6 @@ export default async function HomePage() {
           path: "/",
         })}
       />
-      {/* The product itself, priced. Repeated from /pricing because the landing
-          page is what search results point at, and the price range is what
-          earns the rich result. Skipped when no plan is published. */}
       {prices.length > 0 ? (
         <JsonLd
           data={softwareAppSchema({

@@ -12,14 +12,7 @@ type Props = {
 
 const BTN = "inline-flex h-10 items-center gap-2 rounded-[8px] px-4 text-[13px] font-medium";
 
-/**
- * The two buttons that ask the AI service for a prompt.
- *
- * The result is handed upward rather than saved and forgotten: it lands in the
- * textarea, where the merchant reads it and decides. A generated prompt written
- * straight into the live config would change how the assistant talks to their
- * customers before anyone had seen a word of it.
- */
+/** Generate and refine buttons; the result goes into the textarea for review, not to the live config. */
 export function PromptAiActions({ ready, onPrompt }: Props) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();

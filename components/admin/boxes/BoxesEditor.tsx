@@ -19,8 +19,8 @@ import {
   deleteBox,
   moveBox,
   toggleBoxPublished,
-  type BoxKind,
-} from "@/lib/admin/actions";
+} from "@/lib/admin/actions/boxes";
+import type { BoxKind } from "@/lib/admin/forms/content";
 import { ICON_NAMES, resolveIcon } from "@/lib/content/icons";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
@@ -117,8 +117,7 @@ export function BoxesEditor({ kind, items }: { kind: BoxKind; items: BoxItem[] }
   const [error, setError] = useState<string | null>(null);
   const addRef = useRef<HTMLFormElement>(null);
 
-  // The row goes the moment it is clicked rather than after the round trip
-  // and the re-render that follows it. React restores it if the server refuses.
+  // Optimistic removal; React restores the row if the server refuses.
   const [visible, removeOptimistic] = useOptimistic(
     items,
     (rows: BoxItem[], id: string) => rows.filter((r) => r.id !== id),

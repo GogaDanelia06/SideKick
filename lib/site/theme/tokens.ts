@@ -1,17 +1,6 @@
 import type { Bilingual } from "@/lib/content/types";
 
-/**
- * Every colour the admin can change, and where it lands in the stylesheet.
- *
- * Grouped by *where you see it* rather than by what kind of colour it is. An
- * owner does not think "surface token" — they think "the sidebar". Four site
- * colours, six dashboard colours, and the text and accents that both share.
- *
- * Only these are editable. Everything else in globals.css is derived in
- * derive.ts — translucent headers, pale status fills, button hover. Those exist
- * to stay in step with a base colour; letting them drift on their own would
- * only produce combinations nobody wants to look at.
- */
+/** Admin-editable colours, grouped by where they appear. Everything else is derived (derive.ts). */
 
 export type TokenScope = "root" | "dash";
 export type TokenGroup = "site" | "dash" | "text" | "accent";

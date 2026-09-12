@@ -6,9 +6,7 @@ const OAUTH_URL = "https://oauth2.bog.ge/auth/realms/bog/protocol/openid-connect
 const API = "https://api.bog.ge/payments/v1";
 
 /**
- * Bank of Georgia's published callback key. Their docs say to take the latest
- * from the portal, so it is overridable by env without a deploy — if BOG
- * rotates it, set BOG_PUBLIC_KEY and every callback keeps verifying.
+ * Bank of Georgia's callback verification key; set BOG_PUBLIC_KEY if they rotate it.
  * https://api.bog.ge/docs/en/payments/standard-process/callback
  */
 const DEFAULT_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
@@ -72,8 +70,7 @@ export const bog: PaymentAdapter = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${await accessToken()}`,
         "Accept-Language": req.locale,
-        // The bank de-duplicates on this, so a double-submitted checkout
-        // creates one order rather than two.
+        // BOG de-duplicates on this key, so a double submit creates one order.
         "Idempotency-Key": req.paymentId,
       },
       body: JSON.stringify({
@@ -119,8 +116,7 @@ export const bog: PaymentAdapter = {
     const data = (await res.json()) as ReceiptResponse;
     const key = data.order_status?.key ?? "";
 
-    // Anything not explicitly completed stays pending or fails — we never guess
-    // "paid" from an unrecognised status.
+    // Only an explicit "completed" counts as paid.
     if (key === "completed") return { state: "paid", reason: null };
     if (key === "created" || key === "processing") return { state: "pending" };
     return { state: "failed", reason: data.reject_reason ?? key ?? null };

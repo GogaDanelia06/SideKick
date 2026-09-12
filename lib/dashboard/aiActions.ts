@@ -10,13 +10,7 @@ export type PromptResult =
   | { ok: true; prompt: string }
   | { ok: false; error: "forbidden" | "unconfigured" | "failed" | "empty" };
 
-/**
- * Writes a system prompt from what the business has already filled in.
- *
- * Their service generates it and hands it straight back without storing
- * anything, so keeping it is our job — the text goes into `AiConfig.prompt`,
- * the same field the merchant can then edit by hand.
- */
+/** Generates a system prompt from the business profile and saves it to `AiConfig.prompt`. */
 export async function generateAiPrompt(): Promise<PromptResult> {
   const ctx = await requirePermission("ai:write");
   if (!ctx) return { ok: false, error: "forbidden" };
@@ -53,19 +47,11 @@ async function save(businessId: string, prompt: string): Promise<PromptResult> {
   return { ok: true, prompt };
 }
 
-/**
- * Gives a paused conversation back to the bot.
- *
- * Two halves that must both happen: their side is told to resume, and the pause
- * that lights the "waiting for a human" mark is lifted here. Clearing ours
- * without telling them would leave the bot believing a person is still on it.
- */
+/** Hands a paused conversation back to the bot, both on the AI service and here. */
 export async function handBackToAi(conversationId: string): Promise<{ ok: boolean }> {
   const ctx = await requirePermission("conversations:write");
   if (!ctx) return { ok: false };
 
-  // Scoped by business as well as id, so an id from elsewhere cannot reach
-  // another tenant's conversation.
   const conversation = await prisma.conversation.findFirst({
     where: { id: conversationId, businessId: ctx.businessId },
     select: { id: true },
@@ -88,17 +74,7 @@ export type TestReply =
   | { ok: true; reply: string; handoff: boolean }
   | { ok: false; error: "forbidden" | "unconfigured" | "empty" | "failed" };
 
-/**
- * Asks the assistant a question without a customer involved.
- *
- * Nothing is written down: no conversation, no message, no delivery. This is a
- * rehearsal of the prompt, and a merchant trying phrasings should not be
- * filling their own inbox with their own experiments.
- *
- * The conversation id is per-business and constant, so the AI keeps one thread
- * of context for the tester — and, being prefixed, it can never collide with a
- * real conversation's cuid.
- */
+/** A test question for the assistant; nothing is stored. Uses a fixed per-business thread id. */
 export async function testAiReply(message: string): Promise<TestReply> {
   const ctx = await requirePermission("ai:write");
   if (!ctx) return { ok: false, error: "forbidden" };

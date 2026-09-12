@@ -14,18 +14,10 @@ function prefersReducedMotion(): boolean {
   );
 }
 
-/**
- * Counts from wherever the number is now to wherever it just moved to.
- *
- * Interrupting mid-flight is normal — a second signup can land while the first
- * is still counting — so the animation always restarts from the value on
- * screen rather than from the last target. Anything else would make the number
- * jump backwards before climbing again.
- */
+/** Animates from the displayed value to the latest target, restarting when interrupted. */
 function useCountUp(target: number): number {
   const [value, setValue] = useState(target);
-  // Read once on mount. Server-side it is false, and the first render is the
-  // target either way, so hydration sees the same number both times.
+  // Read once: false on the server, and the first render shows the target either way.
   const [reduced] = useState(prefersReducedMotion);
   const fromRef = useRef(target);
 
@@ -33,7 +25,6 @@ function useCountUp(target: number): number {
     const from = fromRef.current;
     if (from === target) return;
 
-    // Nothing to animate: the render below shows the new figure outright.
     if (reduced) {
       fromRef.current = target;
       return;
@@ -57,13 +48,7 @@ function useCountUp(target: number): number {
   return reduced ? target : value;
 }
 
-/**
- * A real platform figure that keeps itself current.
- *
- * `initial` is what the server counted for this render, so the first paint is
- * already the truth and there is nothing to hydrate around. From then on the
- * shared poller supplies the number and this counts up to it.
- */
+/** A counted figure: server-rendered `initial`, then kept current by the shared poller. */
 export function LiveFigure({
   source,
   initial,

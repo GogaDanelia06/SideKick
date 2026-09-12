@@ -36,12 +36,6 @@ export function AboutView({
   return (
     <section className="pb-16 pt-[60px]">
       <Container className="max-w-[920px]">
-        {/* Left, not centred, and one line rather than two.
-            The break was hard-coded into the copy, which meant the eyebrow sat
-            centred over a two-line heading and lined up with neither of its
-            edges. Ranged left they share a margin, and the heading is set small
-            enough to hold on a single line at desktop width — where a stacked
-            title was reading as two separate thoughts. */}
         <div className="mb-9">
           <Badge>{t(ABOUT.badge)}</Badge>
           <h1 className="mt-3 text-[26px] font-semibold leading-[1.2] tracking-[-0.02em] md:text-[34px] md:leading-[1.15]">

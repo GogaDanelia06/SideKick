@@ -3,22 +3,9 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Closes a popover when the pointer goes down outside it, or on Escape.
- *
- * Replaces the full-screen invisible button these menus used to sit behind.
- * That trick breaks in a way that is hard to spot: an ancestor with
- * `backdrop-filter`, `filter` or `transform` becomes the containing block for
- * its fixed-position descendants, so `fixed inset-0` stops meaning "the
- * viewport" and starts meaning "that ancestor". The site header has
- * `backdrop-blur`, which left the language menu's overlay 64px tall — the menu
- * closed when you clicked the header and stayed open everywhere else.
- *
- * A document listener has no such geometry to get wrong. It also lets the click
- * through, so dismissing a menu and pressing the thing underneath is one action
- * rather than two.
- *
- * Attach the returned ref to the element that counts as "inside" — trigger and
- * panel together, or the panel alone if the trigger toggles.
+ * Closes a popover on an outside pointerdown or Escape; attach the ref to everything
+ * that counts as inside. A document listener avoids `fixed inset-0` overlays, which
+ * break under ancestors with backdrop-filter or transform.
  */
 export function useDismiss<T extends HTMLElement = HTMLDivElement>(
   open: boolean,
@@ -26,9 +13,7 @@ export function useDismiss<T extends HTMLElement = HTMLDivElement>(
 ) {
   const ref = useRef<T>(null);
 
-  // Held in a ref so an inline arrow from the caller does not tear the
-  // listeners down and rebuild them on every render. Updated in an effect
-  // rather than during render, which is the rule React enforces.
+  // A ref, so an inline callback does not re-register the listeners on every render.
   const close = useRef(onClose);
   useEffect(() => {
     close.current = onClose;
@@ -45,8 +30,6 @@ export function useDismiss<T extends HTMLElement = HTMLDivElement>(
       if (event.key === "Escape") close.current();
     };
 
-    // `pointerdown` rather than `click`: a menu that lingers until mouseup
-    // feels stuck, and this fires for touch and pen too.
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
     return () => {

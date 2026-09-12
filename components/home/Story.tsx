@@ -9,19 +9,7 @@ import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 
-/**
- * The story block on the landing page: one full-width box that is itself the
- * link to the About page.
- *
- * The whole card is a single anchor rather than a card with a button inside —
- * that is what the design asks for, and it also keeps the entire area as one
- * keyboard stop instead of the nested-link tangle you get from a clickable div
- * wrapped around a link.
- *
- * Title and body are admin-editable via `story_title` / `story_body`, each on
- * its own; either falls back to the shipped copy when unset. The body splits on
- * blank lines into paragraphs.
- */
+/** Landing story block: the whole card links to /about; title and body fall back to built-in copy. */
 export function Story({ title, body }: { title?: Bilingual; body?: Bilingual }) {
   const { t } = useLanguage();
 
@@ -44,11 +32,6 @@ export function Story({ title, body }: { title?: Bilingual; body?: Bilingual }) 
             {t(heading)}
           </h2>
 
-          {/* Justified and full width, against the centring on the box.
-              Centred, the body sat in a narrow ragged column with air either
-              side of every line — the box read as half empty and the paragraph
-              as an afterthought. Set edge to edge it fills the space it was
-              given, and the lines end where the box ends. */}
           {paragraphs.map((p, i) => (
             <p
               key={i}
@@ -61,7 +44,6 @@ export function Story({ title, body }: { title?: Bilingual; body?: Bilingual }) 
             </p>
           ))}
 
-          {/* Without this the box gives no sign that it can be clicked. */}
           <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
             {t({ ka: "ჩვენ შესახებ", en: "About us" })}
             <IconArrowRight

@@ -7,11 +7,7 @@ import { ADMIN_NAV } from "@/lib/admin/routes";
 import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * Two groups: the platform-level screens, then one entry per public page. The
- * page entries lead to a screen that lists that page's sections in a second
- * column — so the nav stays short no matter how many editable sections exist.
- */
+/** Platform screens, then one entry per public page (its sections open in a second column). */
 export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { t } = useLanguage();

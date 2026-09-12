@@ -6,15 +6,7 @@ import { isHex } from "@/lib/site/theme/derive";
 import type { ThemeToken } from "@/lib/site/theme/tokens";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * One colour, two ways in: the swatch for picking and the hex for pasting.
- *
- * The text box keeps its own draft while it is being typed. Feeding every
- * keystroke straight up would mean `#1f` is not a colour, so the parent would
- * reject it and re-render the old value on top of what is being typed — the
- * field would fight back after the second character. It only reports upward once
- * six digits are there.
- */
+/** A colour swatch plus a hex input; typed text is reported only once it is a full hex. */
 export function ColorField({
   token,
   value,
@@ -33,9 +25,7 @@ export function ColorField({
   const [text, setText] = useState(value);
   const [lastSeen, setLastSeen] = useState(value);
 
-  // Adjusting state during render, not in an effect: when the swatch or a preset
-  // changes the colour from outside, the text box has to follow, and doing that
-  // in an effect would paint the stale value for a frame first.
+  // Sync with outside changes during render, so a stale value is never painted.
   if (value !== lastSeen) {
     setLastSeen(value);
     setText(value);
@@ -55,11 +45,7 @@ export function ColorField({
         changed ? "border-blue" : "border-border"
       }`}
     >
-      {/* The swatch is a plain box painted with the value, and the real input sits
-          on top of it invisibly. A bare `input[type=color]` is drawn by the OS
-          with its own chrome and padding, which on a near-black colour leaves a
-          pale frame around a small dark patch — the one field whose whole job is
-          to show you a colour was the hardest to read. */}
+      {/* An invisible native colour input over a painted swatch (the native control renders poorly). */}
       <span
         style={{ background: value }}
         className="relative size-9 shrink-0 overflow-hidden rounded-md border border-border focus-within:ring-2 focus-within:ring-blue-ring"
@@ -75,8 +61,6 @@ export function ColorField({
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5 truncate text-[13px] font-medium">
           {t(token.label)}
-          {/* Named, not just outlined — the blue border alone would leave someone
-              who cannot see it wondering which fields they had touched. */}
           {changed ? (
             <button
               type="button"

@@ -14,19 +14,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-/**
- * Gets — or creates — the conversation for one customer.
- *
- * This exists because orders and leads point at a conversation, so the AI
- * service needs one to exist before it can record anything. Rather than teach
- * it our id format, our status enum and our defaults, it names the customer and
- * we hand back an id.
- *
- * Idempotent by `customerRef`: calling it twice for the same customer returns
- * the same conversation. That matters because a retry after a timeout is the
- * normal case for a service like this, and the alternative is a duplicate chat
- * in the tenant's inbox every time the network hiccups.
- */
+/** Gets or creates the conversation for a customer; idempotent by `customerRef`. */
 export async function POST(request: Request) {
   const body = await readJson(request);
   if (isDenial(body)) return body.response;
@@ -41,8 +29,7 @@ export async function POST(request: Request) {
   const channelType = oneOf(body, "channelType", CHANNEL_TYPES);
   if (isDenial(channelType)) return channelType.response;
 
-  // A channel is optional, but a named one must be this tenant's — otherwise a
-  // typo would silently file the chat under someone else's channel.
+  // An optional channel must belong to this business.
   let channelId: string | undefined;
   if (channelType) {
     const channel = await prisma.channel.findUnique({
@@ -61,8 +48,7 @@ export async function POST(request: Request) {
       customerName,
       channelId,
     },
-    // Only fills gaps. A name a human typed in the dashboard outranks whatever
-    // the platform reports, so it is never overwritten here.
+    // Only fills gaps: a name typed in the dashboard is never overwritten.
     update: {
       ...(customerName ? { customerName: customerName } : {}),
       ...(channelId ? { channelId } : {}),
@@ -78,8 +64,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     conversationId: conversation.id,
     status: conversation.status,
-    // The AI service needs to know when to stay quiet: a tenant can pause the
-    // bot on a chat to answer it themselves.
     aiEnabled: conversation.aiEnabled && !isPaused(conversation.botPausedUntil),
   });
 }

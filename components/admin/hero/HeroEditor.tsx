@@ -21,7 +21,7 @@ import {
   moveSlide,
   toggleSlidePublished,
   updateHeroInterval,
-} from "@/lib/admin/actions";
+} from "@/lib/admin/actions/hero";
 import { MediaField } from "@/components/admin/ui/MediaField";
 import { SlideStats } from "./SlideStats";
 import type { StatSourceOption } from "@/lib/site/statFormat";
@@ -52,8 +52,6 @@ function SlideFields({ initial }: { initial?: SlideWithStats }) {
       />
 
       <label className="block">
-        {/* The panel shows exactly one thing. Saying which wins here is the
-            difference between "I picked it and nothing changed" and a choice. */}
         <span className={LABEL}>
           {t({
             ka: "ჩაშენებული ანიმაცია — ჩანს მაშინ, თუ მედია არ არის ატვირთული",
@@ -142,8 +140,7 @@ export function HeroEditor({
   const [savedInterval, setSavedInterval] = useState(false);
   const addRef = useRef<HTMLFormElement>(null);
 
-  // The row goes the moment it is clicked rather than after the round trip
-  // and the re-render that follows it. React restores it if the server refuses.
+  // Optimistic removal; React restores the row if the server refuses.
   const [visible, removeOptimistic] = useOptimistic(
     slides,
     (rows: SlideWithStats[], id: string) => rows.filter((r) => r.id !== id),
@@ -169,7 +166,6 @@ export function HeroEditor({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Auto-advance setting */}
       <form
         action={(fd) =>
           run(() => updateHeroInterval(fd), () => {

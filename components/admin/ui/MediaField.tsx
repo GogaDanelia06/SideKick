@@ -9,8 +9,6 @@ const INPUT =
   "w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-blue";
 
 const ERRORS: Record<string, Bilingual> = {
-  // Names the place to go, not just the problem — whoever sees this is the
-  // person who can fix it, and "not configured" alone tells them nothing.
   not_configured: {
     ka: "ფაილების საცავი არ არის დაკავშირებული (Vercel → Storage → Blob). ამასობაში ჩასვი ბმული ქვემოთ.",
     en: "File storage is not connected (Vercel → Storage → Blob). Paste a URL below in the meantime.",
@@ -21,13 +19,7 @@ const ERRORS: Record<string, Bilingual> = {
   upload_failed: { ka: "ატვირთვა ვერ მოხერხდა", en: "Upload failed" },
 };
 
-/**
- * Upload-or-paste media picker.
- *
- * Uploading is the happy path, but the URL field is always available so the
- * panel works before blob storage is configured — and so an admin can point at
- * an image they already host.
- */
+/** Upload-or-paste media picker; the URL field works even without blob storage. */
 export function MediaField({
   name,
   typeName,
@@ -37,19 +29,11 @@ export function MediaField({
   note,
 }: {
   name: string;
-  /**
-   * Where to record whether the file is an image or a video. Optional: some
-   * places store only the URL, and submitting a value nothing reads would be a
-   * field to explain later for no benefit.
-   */
+  /** Form field for "image" or "video", when the caller stores the media type. */
   typeName?: string;
   initialUrl?: string | null;
   initialType?: string | null;
-  /**
-   * Refuses video. Set it wherever the page draws the result with `<img>` —
-   * an accepted upload that renders as a broken frame is worse than a refusal
-   * at the moment of choosing.
-   */
+  /** Refuse video wherever the result is rendered with <img>. */
   imagesOnly?: boolean;
   /** Replaces the standing advice under the field, which is slide-specific. */
   note?: Bilingual;
@@ -93,7 +77,6 @@ export function MediaField({
           : t({ ka: "ფოტო ან ვიდეო", en: "Photo or video" })}
       </span>
 
-      {/* Values the form actually submits. */}
       <input type="hidden" name={name} value={url} />
       {typeName ? (
         <input type="hidden" name={typeName} value={url ? (isVideo ? "video" : "image") : ""} />

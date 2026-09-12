@@ -2,14 +2,7 @@ import type { Bilingual } from "@/lib/content/types";
 import { luminance } from "./derive";
 import type { ThemeColors } from "./tokens";
 
-/**
- * Which pairs have to stay readable, and how readable.
- *
- * A free colour picker can produce grey text on a grey background, and the
- * person choosing it is looking at one screen out of a dozen when they do. These
- * are the pairs that actually carry words. 4.5 is the WCAG AA threshold for body
- * text; 3 is the large-text and non-essential-hint threshold.
- */
+/** Text/background pairs that must stay readable: WCAG AA 4.5, or 3 for hints and links. */
 
 type Pair = { fg: keyof ThemeColors; bg: keyof ThemeColors; label: Bilingual; min: number };
 
@@ -34,7 +27,7 @@ export function ratio(a: string, b: string): number {
 
 export type Failure = { label: Bilingual; ratio: number; min: number };
 
-/** Only what falls short — a list of everything that passes is noise. */
+/** Only the pairs that fall short. */
 export function failures(colors: ThemeColors): Failure[] {
   return PAIRS.flatMap((p) => {
     const value = ratio(colors[p.fg], colors[p.bg]);

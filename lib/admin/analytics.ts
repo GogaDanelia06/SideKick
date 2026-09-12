@@ -1,18 +1,7 @@
 import type { SubscriptionStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 
-/**
- * Platform-wide analytics for the site owner.
- *
- * Deliberately **aggregate only**: counts, sums and distributions. No message
- * text, customer names, phone numbers or addresses are read here, so the
- * platform owner can see how the business is doing without gaining access to
- * their customers' customers' personal data.
- *
- * That is a decision, not an oversight — widening this to per-conversation
- * content makes the platform owner a processor of every tenant's personal data
- * and needs a contract change first. See docs/HANDOVER.md.
- */
+/** Platform-wide aggregates only (counts, sums, distributions); never tenants' customer data. */
 
 export type PlatformStats = {
   businesses: { total: number; newThisMonth: number };
@@ -24,10 +13,7 @@ export type PlatformStats = {
   leads: { total: number; converted: number };
   channelsConnected: number;
   products: number;
-  /**
-   * The platform's own money, which is a different thing entirely from
-   * tenantSales and is the number the owner actually cares about.
-   */
+  /** The platform's own revenue, as opposed to `tenantSales`. */
   income: {
     /** Monthly recurring revenue: the plan price of every active subscription. */
     mrr: number;
@@ -36,7 +22,6 @@ export type PlatformStats = {
     failedThisMonth: number;
     pending: number;
   };
-  /** How many tenants are trialing, paying, overdue or gone. */
   subscriptions: { trial: number; active: number; pastDue: number; cancelled: number };
   plans: { name: string; key: string; price: number; subscribers: number }[];
   /** New businesses per month, oldest first — a simple growth line. */
@@ -57,7 +42,6 @@ function countByStatus(
 
 export async function getPlatformStats(): Promise<PlatformStats> {
   const monthStart = startOfMonth(new Date());
-  // Six months back, so the growth line has a fixed, comparable window.
   const windowStart = new Date(monthStart);
   windowStart.setUTCMonth(windowStart.getUTCMonth() - 5);
 
@@ -109,8 +93,6 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       select: { createdAt: true },
     }),
 
-    // MRR is built from the plans people are actually on, not from what they
-    // once paid — a cancelled tenant stops counting the moment they cancel.
     prisma.subscription.findMany({
       where: { status: "ACTIVE" },
       select: { plan: { select: { price: true } } },
@@ -126,8 +108,6 @@ export async function getPlatformStats(): Promise<PlatformStats> {
     prisma.payment.count({ where: { status: "PENDING" } }),
   ]);
 
-  // Bucket by month in JS rather than raw SQL — the row count here is small and
-  // it keeps the query portable.
   const buckets = new Map<string, number>();
   for (let i = 0; i < 6; i++) {
     const d = new Date(windowStart);

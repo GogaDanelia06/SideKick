@@ -5,14 +5,7 @@ import { failures } from "@/lib/site/theme/contrast";
 import type { ThemeColors } from "@/lib/site/theme/tokens";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * What is no longer readable, and nothing else.
- *
- * A picker that lets any colour meet any other needs to say when the result has
- * stopped working, because the person choosing is looking at one screen and the
- * damage lands on all of them. Only failures are listed: a checklist of things
- * that are fine trains you to stop reading it.
- */
+/** Lists the text colours that fail their contrast minimum. */
 export function ContrastNotes({ colors }: { colors: ThemeColors }) {
   const { t } = useLanguage();
   const bad = failures(colors);

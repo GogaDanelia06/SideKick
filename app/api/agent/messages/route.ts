@@ -14,14 +14,7 @@ import { deliverOutbound } from "@/lib/channels/send";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Records one message in a conversation.
- *
- * Both directions go through here — what the customer said and what the AI
- * answered — because the tenant's inbox is meant to show the whole exchange,
- * not half of it. A conversation moves from NEW to ACTIVE on its first message,
- * which is what the dashboard's "active chats" figure counts.
- */
+/** Records a customer or AI message; AI messages are billed and delivered to the customer. */
 export async function POST(request: Request) {
   const body = await readJson(request);
   if (isDenial(body)) return body.response;
@@ -42,16 +35,10 @@ export async function POST(request: Request) {
   const conversation = await ownedConversation(auth.businessId, conversationId);
   if (isDenial(conversation)) return conversation.response;
 
-  // Only what the AI produces counts against the plan. Refusing to record what
-  // a customer already said would lose the tenant's own inbox history over a
-  // billing matter, and the customer never agreed to the plan in the first
-  // place. The 402 tells the AI service to stop answering this tenant.
+  // Only AI messages count against the plan; customer messages are always recorded.
   if (sender === "AI") {
     const verdict = await checkLimit(auth.businessId, "messages");
     if (!verdict.allowed) {
-      // Both are 402 and both mean "stop generating for this tenant", but the
-      // AI team reads these messages when a customer complains, and "renew" and
-      // "upgrade" send them to two different conversations.
       const expired = verdict.reason === "expired";
       return NextResponse.json(
         {
@@ -74,53 +61,27 @@ export async function POST(request: Request) {
 
   if (sender === "AI") await countMessage(auth.businessId);
 
-  // A chat with traffic in it is no longer "new". Left alone once a human has
-  // marked it DONE — reopening someone's closed conversation is their call.
+  // Traffic moves NEW to ACTIVE but never reopens a conversation marked DONE.
   await prisma.conversation.updateMany({
     where: { id: conversation.id, status: "NEW" },
     data: { status: "ACTIVE" },
   });
 
-  // Everything above only wrote to our own database. Without this the AI would
-  // hold a fluent conversation that the customer never sees a word of.
-  //
-  // `CUSTOMER` is excluded because it is a record of what they already said —
-  // sending it back would be us repeating their own words to them.
-  //
-  // Awaited rather than deferred: there is no five-second deadline here, and
-  // the caller can act on the answer — stop composing follow-ups once the
-  // window has closed, retry later on a failure. A silent send would leave them
-  // guessing. It cannot fail the request, though: the message is saved, and
-  // losing that over a delivery problem would help nobody.
+  // Awaited so the caller sees the delivery outcome; a failed delivery does not
+  // fail the request, because the message is already saved.
   const delivery =
     sender === "CUSTOMER" ? null : await deliverOutbound(conversation.id, message.id, text);
 
   return NextResponse.json({
     messageId: message.id,
     createdAt: message.createdAt,
-    // Null means there was nowhere to send it — a dashboard conversation, or a
-    // page whose owner has not finished connecting it. Not a failure.
     delivery: delivery ? { status: delivery.status, detail: delivery.detail } : null,
   });
 }
 
-/** Enough for a model's context without letting one long chat page the world. */
 const HISTORY_LIMIT = 100;
 
-/**
- * The conversation so far, oldest first.
- *
- * Added because the AI service had nowhere to read history from and was about to
- * keep its own copy of it. Two stores of the same exchange drift, and when they
- * do the merchant's inbox and the model's memory disagree about what a customer
- * said — with the inbox being the one the merchant believes. So this is offered
- * instead: one store, read over the same authenticated contract as everything
- * else the service already asks us for.
- *
- * Oldest first because that is the order a transcript is read in and the order a
- * prompt wants; `take` from the end and reverse, so a long chat returns its most
- * recent hundred rather than its first.
- */
+/** The latest messages of a conversation, oldest first. */
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const businessId = url.searchParams.get("businessId");
@@ -133,8 +94,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "conversationId is required" }, { status: 400 });
   }
 
-  // Ownership, not just existence: an id from another tenant must read as absent
-  // rather than as forbidden, and must never return a single row either way.
+  // Another business's conversation reads as not found.
   const owned = await ownedConversation(auth.businessId, conversationId);
   if (isDenial(owned)) return owned.response;
 

@@ -1,12 +1,4 @@
-/**
- * What a product costs, decided here and nowhere else.
- *
- * The AI service sends a product code and a quantity. It does not send a price,
- * and if it did we would ignore it: a second pricing implementation on their
- * side is a second thing that can be wrong about money, and the tenant is the
- * one who would eat the difference. This mirrors `amountFor` in the billing
- * checkout for exactly the same reason.
- */
+/** Product pricing for AI orders; prices are always computed here, never taken from the caller. */
 
 export type PricedProduct = {
   id: string;
@@ -32,12 +24,7 @@ export type PricedLine = {
   lineTotal: number;
 };
 
-/**
- * Turns the caller's lines into priced ones, or names what went wrong.
- *
- * Snapshots the code and name onto the order line because a tenant renaming a
- * product next month must not rewrite what a customer ordered today.
- */
+/** Prices the caller's lines, snapshotting code and name so later product edits don't rewrite orders. */
 export function priceLines(
   lines: AgentOrderLine[],
   catalogue: PricedProduct[],

@@ -1,15 +1,6 @@
 import type { Shade, ThemeColors } from "./tokens";
 
-/**
- * The colours that are *not* editable, worked out from the ones that are.
- *
- * globals.css carries about a dozen values that only exist to stay in step with
- * a base colour: the translucent sticky headers, the pale fills behind status
- * chips, the button hover, the tint of blue used for text on a blue background.
- * Exposing those as their own fields would be eighteen more inputs and a new way
- * to end up with a green chip on an amber background. They are computed here
- * instead, so they cannot drift.
- */
+/** Non-editable colours (hovers, tinted fills, translucent headers) derived from the editable ones. */
 
 type Rgb = [number, number, number];
 
@@ -52,24 +43,14 @@ export function luminance(hex: string): number {
 const WHITE = "#ffffff";
 const BLACK = "#000000";
 
-/**
- * Everything derived, split by the scope it belongs to.
- *
- * The shade matters: a hover state is *lighter* than its button on a dark
- * background and *darker* on a light one, and the same is true of the readable
- * ink used on a tinted surface. One formula for both would look wrong in one of
- * them, which is why `shade` is a parameter rather than an assumption.
- */
+/** Derived variables per scope. Hover and ink shifts go lighter on dark, darker on light. */
 export function derived(c: ThemeColors, shade: Shade): { root: ThemeColors; dash: ThemeColors } {
   const dark = shade === "dark";
   const toward = dark ? WHITE : BLACK;
 
   return {
     root: {
-      // A card sitting on a card. In the dark palette it is a step *away* from
-      // the page; in the light one the page itself is already the brighter of
-      // the two, so it borrows that. One formula for both made nested cards
-      // vanish in light mode.
+      // Nested cards: a lighter step on dark; the page colour on light.
       "--card2": dark ? mix(c.card, WHITE, 0.05) : c.bg,
       "--sidebar": c.card,
       "--primary-h": mix(c.primary, toward, dark ? 0.16 : 0.1),

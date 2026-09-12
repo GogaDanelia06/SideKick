@@ -10,8 +10,6 @@ import { AREA, SectionForm } from "../parts";
 
 export function PromptSection({ config, aiReady }: { config: AiConfig | null; aiReady: boolean }) {
   const { t } = useLanguage();
-  // Controlled from here so a generated prompt lands in the box the merchant is
-  // already looking at, instead of appearing only after a reload.
   const [prompt, setPrompt] = useState(config?.prompt ?? "");
 
   return (

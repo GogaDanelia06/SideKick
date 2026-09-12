@@ -3,7 +3,7 @@ import { nameCustomer } from "@/lib/channels/profile";
 
 const prisma = new PrismaClient();
 
-/** Meta throttles per app. A gap between calls keeps a backlog from tripping it. */
+/** A pause between Graph calls, to stay under Meta's per-app rate limit. */
 const GAP_MS = 250;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -11,10 +11,6 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function main() {
   const dryRun = process.argv.includes("--dry-run");
 
-  // Deliberately unfiltered beyond "has no name". Narrowing to channels that
-  // hold a token would hide the most likely reason a chat is nameless behind a
-  // cheerful "nothing to do", and send whoever ran this looking at Meta instead
-  // of at the row in front of them.
   const nameless = await prisma.conversation.findMany({
     where: { customerName: null, customerRef: { not: null } },
     select: {
@@ -31,8 +27,6 @@ async function main() {
     return;
   }
 
-  // Only the two surfaces with a profile API behind them, and only where we
-  // hold the token that opens it. A website chat has no Meta id to look up.
   const isMeta = (t?: string) => t === "FACEBOOK" || t === "INSTAGRAM";
   const pending = nameless.filter((c) => isMeta(c.channel?.type) && c.channel?.accessToken);
   const blocked = nameless.filter((c) => !pending.includes(c));
@@ -73,8 +67,7 @@ async function main() {
   for (const c of pending) {
     await nameCustomer(c.id);
 
-    // Read it back rather than trusting the call: `nameCustomer` stays quiet on
-    // a profile Meta declines, which is the case worth counting separately.
+    // Re-read the row: nameCustomer does not report a profile Meta declined.
     const after = await prisma.conversation.findUnique({
       where: { id: c.id },
       select: { customerName: true },
@@ -93,8 +86,7 @@ async function main() {
   console.log(`\nnamed ${named} of ${pending.length}.`);
 
   if (named < pending.length) {
-    // The usual cause, and not a fault in this script: before App Review the
-    // profile API only answers for people who hold a role in the Meta app.
+    // Before App Review the profile API only answers for people with a role in the Meta app.
     console.log(
       "\nThe ones with no name are normal in Development Mode — Meta only\n" +
         "discloses profiles of people with a role in the app. They will fill in\n" +

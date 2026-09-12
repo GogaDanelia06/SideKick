@@ -32,9 +32,7 @@ export function ChatInput({
   };
 
   function pick(file: File | undefined) {
-    // Clearing the input matters: picking the same file twice in a row fires no
-    // change event otherwise, so a visitor who mis-typed a caption and retried
-    // would think the button had died.
+    // Reset, so picking the same file again still fires a change event.
     if (fileRef.current) fileRef.current.value = "";
     if (!file || !onFile) return;
     setError(onFile(file));
@@ -87,8 +85,6 @@ export function ChatInput({
         </button>
       </div>
 
-      {/* `role="alert"` so a refusal is announced; it is the only feedback that
-          the file was rejected rather than silently ignored. */}
       {error ? (
         <p role="alert" className="mt-2 text-[12px] text-red">
           {t(CHAT[ERRORS[error]] as { ka: string; en: string })}

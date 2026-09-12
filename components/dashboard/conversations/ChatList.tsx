@@ -17,19 +17,11 @@ const ALERT: Record<"wait" | "aierr" | "aioff" | "billing", { icon: IconType; cl
   wait: { icon: IconExclamationMark, cls: "bg-red-surface text-red" },
   aierr: { icon: IconExclamationMark, cls: "bg-amber-surface text-amber" },
   aioff: { icon: IconRobotOff, cls: "bg-soft text-muted" },
-  // Blue, not amber: this is not a fault. The assistant stopped because the
-  // plan says so, and the fix is on the billing page rather than in the logs.
+  // Blue, not amber: a plan limit is not a fault.
   billing: { icon: IconCreditCard, cls: "bg-blue-surface text-blue" },
 };
 
-/**
- * What the rings and badges on each row mean.
- *
- * Built from the same `RING` and `ALERT` maps the rows use, so a colour cannot
- * be changed in one place and explained wrongly in the other. Without this the
- * marks are just colours: nothing on the screen said that an orange ring meant
- * a lead.
- */
+/** Built from RING and ALERT, so the legend always matches the rows. */
 const LEGEND: { cls: string; icon?: IconType; label: Bilingual }[] = [
   { cls: RING.lead, label: { ka: "ლიდი", en: "Lead" } },
   { cls: RING.order, label: { ka: "შეკვეთა", en: "Order" } },
@@ -149,9 +141,6 @@ export function ChatList({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5">
-                    {/* min-w-0 so a long name gives way instead of shoving the
-                        time out of the row — real names are longer than the
-                        column, and the full one is in the chat header anyway. */}
                     <span title={c.name} className="min-w-0 truncate text-[13px] font-semibold">
                       {c.name}
                     </span>

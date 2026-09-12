@@ -1,21 +1,10 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 /**
- * The `state` parameter Meta hands back with the authorisation code.
- *
- * It exists to answer one question on the way back: was this round trip started
- * by the person now returning? Without that, an attacker can begin their own
- * authorisation, keep the resulting link, and get a signed-in merchant to open
- * it — which would attach the attacker's Instagram account to the merchant's
- * business, and every customer message with it.
- *
- * So the value is signed with our own secret and carries the business it was
- * issued for. The callback checks the signature, checks it has not gone stale,
- * and checks the business matches the session that came back. All three have to
- * hold; any one of them alone is bypassable.
+ * Signed OAuth `state`: binds a Meta authorisation round trip to the business that
+ * started it, so an attacker's account cannot be attached to someone else's.
  */
 
-/** Long enough to read Meta's consent screen, short enough to be worthless later. */
 const MAX_AGE_SEC = 15 * 60;
 
 const secret = () => process.env.AUTH_SECRET ?? "";
@@ -28,22 +17,14 @@ function equal(a: string, b: string): boolean {
   return x.length === y.length && timingSafeEqual(x, y);
 }
 
-/** Builds a state value for one authorisation attempt. */
 export function issueState(businessId: string, now = Date.now()): string {
-  // The nonce makes two attempts from the same business distinguishable, so a
-  // captured link cannot be replayed as a different one.
   const payload = Buffer.from(
     JSON.stringify({ b: businessId, n: randomBytes(9).toString("hex"), t: now }),
   ).toString("base64url");
   return `${payload}.${sign(payload)}`;
 }
 
-/**
- * Reads a state back, or null when it is missing, forged or expired.
- *
- * Null always means "do not proceed". It never means "probably fine" — a
- * callback that cannot prove where it came from is exactly the case this guards.
- */
+/** The state's business, or null when it is missing, forged or expired. */
 export function readState(value: string | null, now = Date.now()): { businessId: string } | null {
   if (!value) return null;
 
@@ -59,8 +40,7 @@ export function readState(value: string | null, now = Date.now()): { businessId:
       t?: unknown;
     };
     if (typeof data.b !== "string" || typeof data.t !== "number") return null;
-    // A clock that has gone backwards must not reject anything, so only the
-    // forward direction is treated as expiry.
+    // A timestamp from the future (clock skew) is not treated as expired.
     if ((now - data.t) / 1000 > MAX_AGE_SEC) return null;
 
     return { businessId: data.b };

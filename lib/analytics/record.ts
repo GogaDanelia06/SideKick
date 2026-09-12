@@ -2,16 +2,7 @@ import { prisma } from "@/lib/db";
 import { EVENT_NAMES } from "./events";
 import { log } from "@/lib/logger";
 
-/**
- * The paths worth counting separately.
- *
- * `day_name_path` is unique, so an unrecognised path would earn its own row —
- * and `/api/track` is public, which makes that a way for anyone to grow the
- * table without limit. Everything off this list is folded into "other" instead,
- * which caps the row count at roughly (routes × events × days).
- *
- * Adding a page means adding it here, otherwise its visits land in "other".
- */
+/** Paths counted separately; anything else is folded into "other" to bound the table size. */
 const KNOWN_PATHS = new Set([
   "/",
   "/about",
@@ -40,7 +31,6 @@ const KNOWN_PATHS = new Set([
   "/dashboard/videos",
 ]);
 
-/** Where anything unrecognised is counted. */
 const OTHER = "other";
 
 function normalisePath(raw: string): string {
@@ -58,12 +48,7 @@ function today(): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
-/**
- * Adds one to the counter for this event, on this page, today.
- *
- * Never throws: analytics failing must not break the page the visitor is
- * actually trying to read.
- */
+/** Increments today's counter for an event and page. Never throws. */
 export async function recordEvent(name: string, path = ""): Promise<void> {
   if (!EVENT_NAMES.includes(name)) return;
 

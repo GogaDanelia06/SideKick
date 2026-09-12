@@ -23,14 +23,7 @@ export type ChannelToggleResult =
   | { ok: false; error: "forbidden" }
   | { ok: false; error: "limit"; limit: number; used: number; planName: string };
 
-/**
- * Switches a channel on or off.
- *
- * Reports why it refused instead of returning quietly. The silent version read
- * as a broken button: a tenant at their plan's ceiling clicked "connect", saw
- * nothing happen at all, and had no way to learn that the answer was "your plan
- * allows one channel and it is already in use".
- */
+/** Toggles a channel; says why when the plan's channel cap refuses. */
 export async function setChannelConnected(
   channelId: string,
   connected: boolean,
@@ -38,8 +31,7 @@ export async function setChannelConnected(
   const ctx = await requirePermission("channels:write");
   if (!ctx) return { ok: false, error: "forbidden" };
 
-  // Only connecting is capped. Disconnecting must always work, or a tenant who
-  // hits their ceiling could never get back under it.
+  // Only connecting is capped, so a business can always get back under its limit.
   if (connected) {
     const verdict = await checkLimit(ctx.businessId, "channels");
     if (!verdict.allowed) {
@@ -102,9 +94,7 @@ export async function saveAiRules(data: FormData) {
   await upsertAiConfig(ctx.businessId, {
     roles: data.getAll("roles").map(String),
     handoffRule: (data.get("handoffRule") as string) || null,
-    // Clamped here as well as in the input, because a number field is a
-    // suggestion to a browser and nothing at all to a crafted request — and the
-    // value decides how long a serverless function is held open.
+    // Clamped on the server: the value decides how long a function is held open.
     replyDelaySec: Math.min(120, Math.max(0, Number(data.get("replyDelaySec")) || 0)),
     leadEnabled: data.get("leadEnabled") === "on",
     leadRule: (data.get("leadRule") as string) || null,
@@ -162,14 +152,6 @@ export type ProductResult =
   | { ok: true; product: Product }
   | { ok: false; error: "forbidden" | "missing" | "limit" | "duplicate" | "error" };
 
-/**
- * Adds a product, and says what happened.
- *
- * It used to return nothing at all, and every refusal was a `return` — no
- * permission, a missing name, the plan's ceiling. The merchant pressed "Add",
- * watched the form sit there, and had no way to tell a slow save from a refused
- * one. Half of them pressed it again.
- */
 export async function createProduct(data: FormData): Promise<ProductResult> {
   const ctx = await requirePermission("products:write");
   if (!ctx) return { ok: false, error: "forbidden" };
@@ -191,10 +173,7 @@ export async function createProduct(data: FormData): Promise<ProductResult> {
       },
     });
   } catch (err) {
-    // `[businessId, code]` is unique, so a code the shop already uses lands
-    // here. Uncaught it threw out of the action as an unhandled error and the
-    // form showed nothing — the one refusal a merchant is most likely to hit,
-    // because product codes are typed by hand.
+    // `[businessId, code]` is unique.
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
       return { ok: false, error: "duplicate" };
     }
@@ -202,12 +181,7 @@ export async function createProduct(data: FormData): Promise<ProductResult> {
     return { ok: false, error: "error" };
   }
 
-  // Deliberately no `revalidatePath`. It re-ran the whole products page on the
-  // server and pushed a fresh payload down, which the browser shows as a real
-  // navigation — a loading bar and a visible wait for a row that is already
-  // saved. The row is returned instead and the list adds it on the spot; the
-  // server copy is authoritative again on the next navigation, and nothing here
-  // is stale in between because the row we hand back *is* what was written.
+  // No revalidatePath: the client inserts the returned row without a re-render.
   return { ok: true, product };
 }
 
@@ -309,25 +283,12 @@ function canManageTeam(role: string) {
 }
 
 /**
- * Roles, ranked, so one rule can be stated: nobody hands out more than they hold.
- *
- * `team:manage` alone was the whole check, and it is held by ADMIN as well as
- * OWNER. So any admin the merchant hired could open the team page, set their own
- * row to OWNER, and collect the billing rights the matrix deliberately withholds
- * — then demote and remove the person whose business it is. A permission to
- * manage a team is not a permission to outrank it.
- *
- * `ctx.role` is safe to rank against: getContext reads the membership row on
- * every request, so it is the caller's real role and not what their token
- * claimed when they signed in.
+ * Role ranks: nobody may grant, change or remove a role above their own.
+ * `ctx.role` comes from the membership row, not from the session token.
  */
 const RANK: Record<Role, number> = { OWNER: 3, ADMIN: 2, OPERATOR: 1, VIEWER: 0 };
 
-/**
- * Server action arguments arrive off the wire with their types erased, so a
- * `role: Role` annotation guarantees nothing at runtime — junk reaches Prisma
- * and throws out of the action as an unhandled error rather than a refusal.
- */
+/** Server action arguments are untyped at runtime. */
 function isRole(value: string): value is Role {
   return value in RANK;
 }
@@ -343,37 +304,24 @@ export async function addTeamMember(data: FormData): Promise<TeamResult> {
   const name = String(data.get("name") ?? "").trim() || null;
   const wanted = String(data.get("role") ?? "VIEWER");
   if (!isRole(wanted)) return { ok: false, error: "bad_role" };
-  // Inviting somebody above your own rank is the same escalation as promoting
-  // yourself, one step removed: invite an OWNER, sign in as them, done.
   if (RANK[wanted] > rankOf(ctx.role)) return { ok: false, error: "forbidden" };
   const role: Role = wanted;
   if (!email) return { ok: false, error: "email_required" };
 
-  // Looked up, never upserted.
-  //
-  // This used to create the account first and check the plan afterwards, so a
-  // team that had hit its user cap got "plan_limit" *and* a leftover User row
-  // with no membership — and because registration refuses an address that
-  // already exists, that address could then never be signed up at all. A
-  // refusal has to leave nothing behind.
+  // Checked before any write, so a refused invite leaves no user row behind.
   const found = await prisma.user.findUnique({ where: { email }, select: { id: true } });
 
   if (found) {
     const existing = await prisma.membership.findUnique({
       where: { userId_businessId: { userId: found.id, businessId: ctx.businessId } },
     });
-    // Checked before the plan so re-inviting someone already on the team reports
-    // the real reason rather than blaming the plan.
     if (existing) return { ok: false, error: "already_member" };
   }
 
   const verdict = await checkLimit(ctx.businessId, "users");
   if (!verdict.allowed) return { ok: false, error: "plan_limit" };
 
-  // The name is deliberately not written for someone who already has an account.
-  // `upsert`'s update branch used to set it, which let the owner of one business
-  // rename a person who belongs to another — their own name, changed by a
-  // stranger, with nothing in the interface to show it had happened.
+  // Never rename an existing account: it may belong to other businesses too.
   const userId =
     found?.id ??
     (
@@ -381,14 +329,7 @@ export async function addTeamMember(data: FormData): Promise<TeamResult> {
         data: {
           email,
           name,
-          // An invited colleague has no password, and the only way to get one is
-          // the reset link — which goes to this address. So inbox control is
-          // still proven before they can sign in, and the owner vouching for
-          // them stands in for the confirmation step they never went through.
-          //
-          // Left null, `authorize()` throws UnverifiedEmail after they set a
-          // password, and there is no resend route: the invitation was a
-          // permanent lock-out with no way in.
+          // Invitees set a password through the emailed reset link, which proves the address.
           emailVerified: new Date(),
         },
         select: { id: true },
@@ -414,9 +355,7 @@ export async function updateMemberRole(membershipId: string, role: Role): Promis
   });
   if (!target) return { ok: false, error: "not_found" };
 
-  // Two ceilings, and both are needed. The first stops an admin granting a role
-  // above their own; the second stops them demoting or evicting someone who
-  // outranks them, which would otherwise be the same coup in two moves.
+  // Both the member's current role and the new role must be within the caller's rank.
   const mine = rankOf(ctx.role);
   if (RANK[role] > mine) return { ok: false, error: "forbidden" };
   if (RANK[target.role] > mine) return { ok: false, error: "forbidden" };
@@ -459,14 +398,7 @@ export async function removeTeamMember(membershipId: string): Promise<TeamResult
 
 export type CheckoutStart = { ok: true; redirectUrl: string } | { ok: false; error: string };
 
-/**
- * Buying a plan.
- *
- * There is no path here that grants a plan without money changing hands — the
- * subscription only moves once a bank confirms the payment in
- * lib/billing/checkout.ts. The price is read from the plan row, never from the
- * form, so editing the page cannot change what is charged.
- */
+/** Starts a bank checkout; the plan changes only after the bank confirms payment. */
 export async function startPlanCheckout(
   planKey: string,
   months: number,
@@ -502,10 +434,7 @@ export async function startPlanCheckout(
   }
 }
 
-/**
- * Stops the subscription renewing. The paid period is not cut short — the
- * customer keeps what they paid for until `renewsAt`.
- */
+/** Stops renewal; the paid period runs until `renewsAt`. */
 export async function cancelSubscription(): Promise<TeamResult> {
   const ctx = await getContext();
   if (!ctx) return { ok: false, error: "unauthorized" };
@@ -525,7 +454,6 @@ export type ReplyResult =
   | {
       ok: true;
       delivery: DeliveryStatus | null;
-      /** The stored reply, so the open thread can show it without refetching. */
       message: {
         id: string;
         sender: "OPERATOR";
@@ -536,19 +464,7 @@ export type ReplyResult =
     }
   | { ok: false; error: string };
 
-/**
- * Sends a human's reply to a customer on the channel they wrote in on.
- *
- * This box sat disabled behind "replying requires the channel integration" for
- * as long as there was no way to reach the customer. There is now: the page
- * token is stored on the channel and `deliverOutbound` uses it, so a merchant
- * can answer someone from the same screen where the message arrived rather than
- * opening Facebook in another tab.
- *
- * The reply is recorded before it is sent. A message the customer received but
- * the inbox never shows is worse than the reverse — the merchant would answer
- * the same question twice, believing the first attempt had failed.
- */
+/** Sends an operator's reply on the customer's channel: stored first, then delivered. */
 export async function sendOperatorReply(
   conversationId: string,
   text: string,
@@ -559,8 +475,6 @@ export async function sendOperatorReply(
   const body = text.trim();
   if (!body) return { ok: false, error: "empty" };
 
-  // Filtering by business as well as id is the point: an id from somewhere else
-  // must not let anyone write into another tenant's conversation.
   const conversation = await prisma.conversation.findFirst({
     where: { id: conversationId, businessId: ctx.businessId },
     select: { id: true },
@@ -572,8 +486,7 @@ export async function sendOperatorReply(
     select: { id: true },
   });
 
-  // A person typing an answer is not the AI spending the plan's allowance, so
-  // this is deliberately not counted against `msgLimit`.
+  // Operator replies are not billed against the plan.
   await prisma.conversation.updateMany({
     where: { id: conversation.id, status: "NEW" },
     data: { status: "ACTIVE" },
@@ -585,9 +498,6 @@ export async function sendOperatorReply(
   return {
     ok: true,
     delivery: delivery?.status ?? null,
-    // Stamped now rather than re-read from the row: the reply is a second old,
-    // and the thread should show a time the moment it appears rather than
-    // waiting for the next fetch to fill one in.
     message: {
       id: message.id,
       sender: "OPERATOR" as const,
@@ -598,18 +508,7 @@ export async function sendOperatorReply(
   };
 }
 
-/**
- * Turns an open conversation into a lead.
- *
- * The mark in the chat header showed whether a lead existed and did nothing
- * when pressed, so the one moment a merchant is most likely to want one — while
- * reading what the customer just asked for — was the one place they could not
- * make one. It links back to the conversation, so the lead carries its own
- * evidence rather than a name typed from memory.
- *
- * `conversationId` is unique on `Lead`, which is what stops a second press
- * creating a duplicate; the existing one is returned instead.
- */
+/** Creates a lead from a conversation; the unique `conversationId` prevents duplicates. */
 export async function createLeadFromConversation(
   conversationId: string,
 ): Promise<ActionResult & { created?: boolean }> {
@@ -628,19 +527,12 @@ export async function createLeadFromConversation(
       data: {
         businessId: ctx.businessId,
         conversationId: conversation.id,
-        // Facebook gives a page-scoped id, not a name, so this is often empty.
-        // Left blank rather than filled with the id: a lead list of numbers is
-        // worse than one a merchant knows to complete.
         name: conversation.customerName?.trim() || null,
         source: conversation.channel?.type ?? "manual",
       },
     });
   } catch {
-    // The unique index on `conversationId` fired, which means a second press
-    // arrived while this one was still working. The check above cannot prevent
-    // that on its own — it only reads — so the constraint is what actually
-    // holds, and this is where its verdict gets honoured. Without it a
-    // double-click showed the merchant an error for a lead that was created.
+    // A concurrent double click created it first.
     return { ok: true, created: false };
   }
 
@@ -652,29 +544,13 @@ export async function createLeadFromConversation(
 export type PlanSwitchResult = { ok: true } | { ok: false; error: string };
 
 /**
- * Moves a business onto a plan without taking money — and only while no bank is
- * configured.
- *
- * The billing page used to replace its whole plan picker with "payments are not
- * enabled yet", which is true and useless: nobody could try a tier, and the
- * three prices on the pricing page were untestable.
- *
- * The guard is the interesting part. It is not a flag somebody has to remember
- * to turn off before launch — it is the *absence* of bank credentials, which is
- * the same condition that makes checkout impossible in the first place. Connect
- * BOG or TBC and this refuses on its own, from the same fact that brings the
- * real checkout back. A free-premium button that switches itself off is worth
- * more than one guarded by a note in a README.
- *
- * `TRIAL` rather than `ACTIVE`, because no money changed hands and the billing
- * page should not claim otherwise.
+ * Switches plans without payment, only while no bank provider is configured.
+ * The subscription becomes TRIAL because nothing was paid.
  */
 export async function switchPlanWithoutPayment(planKey: string): Promise<PlanSwitchResult> {
   const ctx = await requirePermission("billing:manage");
   if (!ctx) return { ok: false, error: "ამის უფლება არ გაქვს" };
 
-  // Checked on the server, never taken from the client: this is the whole
-  // security boundary of the feature.
   if (availableProviders().length > 0) {
     return { ok: false, error: "გადახდა ჩართულია — გეგმა ბანკის გავლით უნდა შეიცვალოს" };
   }
@@ -684,8 +560,7 @@ export async function switchPlanWithoutPayment(planKey: string): Promise<PlanSwi
 
   await prisma.subscription.upsert({
     where: { businessId: ctx.businessId },
-    // The counter is cleared with the plan, or a tenant who spent the old tier's
-    // allowance would move up and still be blocked.
+    // Reset usage, or a business that spent its old allowance would stay blocked.
     update: { planId: plan.id, status: "TRIAL", msgUsed: 0 },
     create: { businessId: ctx.businessId, planId: plan.id, status: "TRIAL", msgUsed: 0 },
   });

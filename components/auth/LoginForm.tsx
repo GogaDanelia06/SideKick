@@ -31,19 +31,7 @@ type LoginFormProps = {
   google: boolean;
 };
 
-/**
- * What Google sends back when it refuses.
- *
- * NextAuth redirects here with `?error=…` and nothing was reading it, so a
- * failed Google sign-in landed on a login form that looked untouched — the
- * visitor's only clue that anything had happened was that they were still on
- * the login page.
- *
- * `OAuthAccountNotLinked` is the one that actually happens: the address
- * already has a password on it, and Auth.js will not silently attach a second
- * way in to an existing account. Saying so is the fix — the person knows their
- * own password, they just reached for the faster button.
- */
+/** Messages for the `?error=` NextAuth adds after a failed Google sign-in. */
 const OAUTH_ERRORS: Record<string, Bilingual> = {
   OAuthAccountNotLinked: {
     ka: "ეს ელფოსტა უკვე რეგისტრირებულია პაროლით. შედი პაროლით.",
@@ -116,19 +104,13 @@ export function LoginForm({ google }: LoginFormProps) {
       const res = await signIn("credentials", {
         email,
         password,
-        // Sent into the token, not just used to rewrite the cookie afterwards:
-        // a browser that restores session cookies hands the rewritten one back
-        // as if nothing happened, so the choice has to live somewhere the server
-        // reads. See lib/auth/sessionExpiry.ts.
+        // Stored in the token: browsers restore session cookies, so the server must know (see sessionExpiry.ts).
         remember: remember ? "1" : "0",
         redirect: false,
       });
 
       if (!res?.ok || res.error) {
-        // `unverified_email` used to fall through to "wrong email or password",
-        // which sends someone to reset a password that was never wrong. It is
-        // safe to be specific: the check runs *after* bcrypt, so seeing this
-        // message already means knowing the password.
+        // Safe to be specific: this check runs only after the password matched.
         const unverified = res?.code === "unverified_email";
         const message = unverified
           ? LOGIN.unverified
@@ -136,20 +118,11 @@ export function LoginForm({ google }: LoginFormProps) {
             ? LOGIN.rateLimited
             : LOGIN.invalid;
 
-        // Kept so the resend button below knows where to send it. Held only in
-        // this component's state, and only for an address whose password was
-        // just proven.
         setUnverifiedEmail(unverified ? email : null);
         return setError(t(message));
       }
 
-      // Sessions are seven days by configuration. Someone who did not ask to be
-      // remembered gets that cut back to the life of the browser window, which
-      // is what the box beneath the password field has always promised.
-      //
-      // Failure here is not worth stopping the sign-in for: they are logged in
-      // either way, and the cost is a cookie that outlives the window rather
-      // than a broken login.
+      // Not remembered: turn the cookie into a browser-session cookie. A failure does not block sign-in.
       if (!remember) {
         await fetch("/api/session/remember", { method: "POST" }).catch(() => {});
       }
@@ -221,9 +194,6 @@ export function LoginForm({ google }: LoginFormProps) {
           </Link>
         </div>
 
-        {/* The form's own error wins: if they have just tried a password, that
-            attempt is what they are waiting to hear about, not the Google one
-            still sitting in the query string. */}
         {error || oauthError ? (
           <div className="flex flex-col gap-1.5">
             <p className="text-[13px] text-red">{error ?? t(oauthError!)}</p>

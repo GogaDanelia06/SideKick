@@ -6,17 +6,8 @@ import { consume } from "@/lib/security/rateLimit";
 import { log } from "@/lib/logger";
 
 /**
- * Who is allowed to write through /api/agent/*.
- *
- * The AI service is one trusted process serving every tenant, so it holds one
- * shared token and names the business it is acting for on each request. That
- * makes `businessId` the single thing standing between tenants, which is why
- * nothing here trusts it: it is checked against a real Business row on every
- * call, and every write is logged with it.
- *
- * This is deliberately *not* a database grant. A Postgres role has no idea what
- * a tenant is; these handlers do, and they are also where prices get computed,
- * limits get applied, and a bad request becomes a 400 instead of a corrupt row.
+ * Authentication for /api/agent/*: one shared token for the AI service, which names
+ * the business on each request. The business id is verified on every call.
  */
 
 export type AgentContext = { businessId: string };
@@ -36,11 +27,10 @@ export function notFound(message: string): AgentDenial {
   return { response: NextResponse.json({ error: message }, { status: 404 }) };
 }
 
-/** Compares without leaking how much of the token matched. */
+/** Constant-time token comparison. */
 function tokenMatches(given: string, expected: string): boolean {
   const a = Buffer.from(given);
   const b = Buffer.from(expected);
-  // timingSafeEqual throws on a length mismatch, which would itself be a leak.
   if (a.length !== b.length) return false;
   return timingSafeEqual(a, b);
 }
@@ -50,21 +40,13 @@ function bearer(request: Request): string {
   return header.startsWith("Bearer ") ? header.slice(7).trim() : "";
 }
 
-/**
- * Authenticates the caller and resolves which tenant it is acting for.
- *
- * Returns 401 for a bad or missing token and 403 for a `businessId` that does
- * not exist — separate codes because they mean different things to whoever is
- * debugging the integration at 2am.
- */
+/** 401 for a bad or missing token, 403 for an unknown business. */
 export async function authenticate(
   request: Request,
   businessId: unknown,
 ): Promise<AgentContext | AgentDenial> {
   const expected = env().AI_SERVICE_TOKEN;
   if (!expected) {
-    // Nothing configured means the integration is not switched on here. Saying
-    // so plainly beats a 401 that sends them hunting for a wrong token.
     log.warn("agent API called while AI_SERVICE_TOKEN is unset");
     return { response: NextResponse.json({ error: "agent API is not enabled" }, { status: 503 }) };
   }
@@ -88,9 +70,7 @@ export async function authenticate(
     return { response: NextResponse.json({ error: "unknown businessId" }, { status: 403 }) };
   }
 
-  // A ceiling on what one tenant can write per minute. The token is otherwise
-  // the only thing between a leak and unlimited writes to leads and orders, and
-  // it is a single shared secret held by another company.
+  // A per-business write ceiling, in case the shared token leaks.
   const limit = await consume("agent", business.id);
   if (!limit.ok) {
     log.warn("agent API rate limited", { businessId: business.id });
@@ -118,9 +98,7 @@ export async function readJson(request: Request): Promise<Record<string, unknown
   }
 }
 
-/* ── Field readers ────────────────────────────────────────────────────────
-   Small and boring on purpose: a wrong type from the caller should become a
-   400 with a field name in it, never a Prisma error in our logs.            */
+// Field readers: a wrong type becomes a 400 naming the field, never a Prisma error.
 
 export function str(body: Record<string, unknown>, key: string): string | undefined {
   const v = body[key];
@@ -141,13 +119,7 @@ export function int(body: Record<string, unknown>, key: string): number | undefi
   return typeof v === "number" && Number.isInteger(v) ? v : undefined;
 }
 
-/**
- * Narrows a caller-supplied string to one of our enum values.
- *
- * Written as a real check rather than a cast so an unrecognised value comes
- * back as a 400 naming the allowed options, instead of reaching Prisma and
- * failing there with something the AI team cannot act on.
- */
+/** Narrows a string to an allowed value, or a 400 listing the options. */
 export function oneOf<T extends string>(
   body: Record<string, unknown>,
   key: string,

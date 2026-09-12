@@ -1,25 +1,14 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 
-/**
- * Signup confirmation tokens.
- *
- * Deliberately the same shape as `passwordReset.ts` — hashed at rest, single
- * use, superseded on reissue — because these are the same kind of secret and
- * two different designs would mean two chances to get one wrong.
- *
- * The window is a day rather than an hour: a password reset is something you
- * asked for and are waiting on, while a signup confirmation often sits until
- * the next time someone opens their mail.
- */
+/** Signup confirmation tokens, built like password reset tokens: hashed, single use, 24h. */
 
 const TOKEN_TTL_HOURS = 24;
 
 const hash = (token: string) => createHash("sha256").update(token).digest("hex");
 
 export async function createVerificationToken(userId: string) {
-  // Reissuing invalidates the last one, so a forwarded old mail cannot be used
-  // after the person has asked for a fresh link.
+  // Reissuing invalidates older links.
   await prisma.emailVerificationToken.updateMany({
     where: { userId, usedAt: null },
     data: { usedAt: new Date() },
@@ -51,13 +40,7 @@ export async function verifyVerificationToken(token: string) {
   return record;
 }
 
-/**
- * Marks the address confirmed and burns the token, together.
- *
- * One transaction because a half-applied confirmation is the worst outcome:
- * either a spent token on an unverified account, or a verified account with a
- * link still live in someone's inbox.
- */
+/** Marks the address verified and consumes the token in one transaction. */
 export async function consumeVerificationToken(id: string, userId: string) {
   await prisma.$transaction([
     prisma.emailVerificationToken.update({ where: { id }, data: { usedAt: new Date() } }),

@@ -12,16 +12,11 @@ export const LIMITS = {
   register: { max: 5, windowSec: 60 * 60 },
   forgot: { max: 3, windowSec: 60 * 60 },
   forgotIp: { max: 10, windowSec: 60 * 60 },
-  // Same shape as `forgot`, and for the same reason: an endpoint that sends
-  // mail to an address a stranger typed is a way to have us deliver unwanted
-  // messages on their behalf.
+  // Sends mail to an address a stranger typed, like `forgot`.
   resend: { max: 3, windowSec: 60 * 60 },
   resendIp: { max: 10, windowSec: 60 * 60 },
   reset: { max: 10, windowSec: 60 * 60 },
-  // Per business, not per IP: the AI service calls from its own servers, so
-  // every tenant's traffic arrives from the same handful of addresses. Set
-  // generously — this is a ceiling for a leaked token or a retry loop gone
-  // wrong, not a throttle on normal conversation.
+  // Per business, not per IP: all AI service traffic comes from the same servers.
   agent: { max: 600, windowSec: 60 },
 } as const satisfies Record<string, LimitRule>;
 

@@ -43,13 +43,7 @@ export function getBotReply(input: string): Bilingual {
   return RULES.find((rule) => rule.keywords.some((k) => q.includes(k)))?.reply ?? FALLBACK;
 }
 
-/**
- * What to say when a visitor attaches a photo or video.
- *
- * Deliberately does not claim to have looked at it. This bot matches keywords —
- * it cannot see an image, and "I can see your screenshot, the problem is…"
- * would be a straight invention that the next sentence exposes.
- */
+/** Reply to an attachment; the keyword bot cannot see images, so it never claims to. */
 export const ATTACHMENT_REPLY: Bilingual = {
   ka: "მადლობა, ფაილი მივიღე. აღწერეთ ორიოდე სიტყვით რასთან დაკავშირებით არის და დაგეხმარებით — ან დაგიკავშირდება ჩვენი გუნდი.",
   en: "Thanks, I've got the file. Tell me in a line or two what it relates to and I'll help — or our team can get back to you.",

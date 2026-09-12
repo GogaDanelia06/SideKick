@@ -11,7 +11,7 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
-import { createStat, updateStat, deleteStat, moveStat } from "@/lib/admin/actions";
+import { createStat, updateStat, deleteStat, moveStat } from "@/lib/admin/actions/stats";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { StatSourceOption } from "@/lib/site/statFormat";
 import type { Bilingual } from "@/lib/content/types";
@@ -73,13 +73,7 @@ const MODES: { key: Mode; label: Bilingual; hint: Bilingual }[] = [
   },
 ];
 
-/**
- * One figure in the strip: typed, drifting, or counted.
- *
- * The three modes are tabs rather than a dropdown because they are not variants
- * of one thing — each brings its own fields, and seeing which fields appear is
- * the fastest way to understand what the mode does.
- */
+/** One strip figure: typed, drifting or counted, chosen with tabs. */
 function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourceOption[] }) {
   const { t } = useLanguage();
   const [mode, setMode] = useState<Mode>(initial?.mode ?? "MANUAL");
@@ -229,8 +223,6 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
             </div>
           </div>
 
-          {/* Saving restarts the figure, and an admin who does not know that
-              will change the start value, see nothing, and try again. */}
           <p className="text-[12px] text-amber">
             {t({
               ka: "შენახვისას ციფრი თავიდან იწყებს ზრდას საწყისი ციფრიდან.",
@@ -257,14 +249,7 @@ export function StatsEditor({
   const [error, setError] = useState<string | null>(null);
   const addRef = useRef<HTMLFormElement>(null);
 
-  /**
-   * The row leaves the list the moment it is clicked.
-   *
-   * Deleting means a round trip to Frankfurt and then a re-render of the whole
-   * page, so waiting for the server before removing the row is most of a second
-   * where nothing appears to happen and people click again. React puts the row
-   * back on its own if the action fails, and the error below says why.
-   */
+  // Optimistic removal; React restores the row if the server refuses.
   const [visible, removeOptimistic] = useOptimistic(stats, (rows: SiteStat[], id: string) =>
     rows.filter((r) => r.id !== id),
   );
@@ -384,8 +369,6 @@ export function StatsEditor({
               </form>
             ) : (
               <div className="flex items-center gap-4">
-                {/* The figure the site is showing right now — for a counted or
-                    drifting stat that is the whole point of the row. */}
                 <div className="font-mono text-2xl font-medium tabular-nums">
                   {s.mode === "LIVE"
                     ? (sources.find((o) => o.key === s.source)?.value ?? "—")

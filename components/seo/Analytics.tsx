@@ -2,15 +2,8 @@ import Script from "next/script";
 import { ANALYTICS } from "@/lib/seo/site";
 
 /**
- * Analytics tags, driven entirely by seo.config.json.
- *
- * Renders nothing at all while the IDs are blank — which is the state the site
- * ships in, so no third-party script loads and no consent banner is owed until
- * someone deliberately turns one on.
- *
- * Turning one on also needs the provider's domain added to the CSP in
- * next.config.ts, or the browser will block the script. The allowances are
- * already written there, commented, next to this note.
+ * Analytics tags from seo.config.json; renders nothing while the IDs are blank.
+ * Enabling a tag also needs its domains in the CSP (next.config.ts).
  */
 export function Analytics() {
   const { googleAnalyticsId: ga, googleTagManagerId: gtm, facebookPixelId: pixel } = ANALYTICS;

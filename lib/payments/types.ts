@@ -33,27 +33,14 @@ export type ProviderStatus = {
   reason?: string | null;
 };
 
-/**
- * One Georgian bank.
- *
- * Every adapter follows the same rule: a callback is only a *hint* that
- * something changed. The money is confirmed by calling `fetchStatus`, never by
- * reading amounts or statuses out of the callback body — that body is attacker
- * controlled until proven otherwise, and for TBC it carries no status at all.
- */
+/** A bank adapter. Callbacks are only hints: outcomes always come from `fetchStatus`. */
 export interface PaymentAdapter {
   readonly key: PaymentProvider;
   /** False when the merchant credentials are not set, so the UI can hide it. */
   isConfigured(): boolean;
   createCheckout(req: CheckoutRequest): Promise<CheckoutSession>;
   fetchStatus(providerRef: string): Promise<ProviderStatus>;
-  /**
-   * Whether this callback really came from the bank.
-   *
-   * BOG signs the body and we verify it. TBC does not sign, so it returns true
-   * and safety rests entirely on `fetchStatus` — which is why the callback body
-   * is never trusted for the amount or the outcome.
-   */
+  /** BOG signs callbacks; TBC does not (returns true), which is why bodies are never trusted. */
   verifyCallback(rawBody: string, headers: Headers): boolean;
   /** Pulls the bank's id for this payment out of its callback body. */
   refFromCallback(rawBody: string): string | null;

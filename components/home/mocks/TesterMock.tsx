@@ -33,10 +33,6 @@ export function TesterMock() {
           <IconMessageQuestion size={16} className="shrink-0 text-blue" />
           <span className="truncate">{t(COPY.prompt)}</span>
         </div>
-        {/* A span, not a button. It was a real `<button>` with no handler: the
-            keyboard could tab onto it, a screen reader announced it as a
-            button, and pressing it did nothing — the drawing of a control
-            promising to behave like one. Styling is unchanged. */}
         <span className="inline-flex items-center gap-2 rounded-sm bg-primary px-4 text-sm font-medium text-white">
           <IconPlayerPlay size={16} />
           {t(COPY.run)}

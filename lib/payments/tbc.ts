@@ -66,12 +66,11 @@ export const tbc: PaymentAdapter = {
         returnurl: req.returnUrl,
         callbackUrl: req.callbackUrl,
         merchantPaymentId: req.paymentId,
-        // Their docs recommend at most 12; past this the bank expires the
-        // payment itself, which is what we want rather than a stuck PENDING row.
+        // TBC recommends at most 12; the bank then expires the payment itself.
         expirationMinutes: 12,
         language: req.locale === "ka" ? "KA" : "EN",
         saveCard: req.saveCard,
-        // Statement lines are short; the bank truncates silently otherwise.
+        // TBC silently truncates long descriptions.
         description: req.description.slice(0, 30),
       }),
     });
@@ -109,11 +108,7 @@ export const tbc: PaymentAdapter = {
     }
   },
 
-  /**
-   * TBC does not sign its callback, so there is nothing to verify here. That is
-   * safe only because the callback is treated as a bare "go and look" ping:
-   * the outcome always comes from `fetchStatus` over an authenticated call.
-   */
+  /** TBC callbacks are unsigned; the outcome is always read back with `fetchStatus`. */
   verifyCallback(): boolean {
     return true;
   },
@@ -123,8 +118,7 @@ export const tbc: PaymentAdapter = {
       const parsed = JSON.parse(rawBody) as { PaymentId?: string; paymentId?: string };
       return parsed.PaymentId ?? parsed.paymentId ?? null;
     } catch {
-      // Their callback is documented as a POST "containing PaymentId" and has
-      // been seen form-encoded as well, so fall back to parsing it that way.
+      // The callback has also been seen form-encoded.
       const form = new URLSearchParams(rawBody);
       return form.get("PaymentId") ?? form.get("paymentId");
     }

@@ -3,22 +3,11 @@ import { log } from "@/lib/logger";
 import { refreshLongLived } from "./instagramToken";
 
 /**
- * Renews Instagram tokens before they lapse.
- *
- * Instagram Login issues sixty-day tokens and renews none of them. What makes
- * that dangerous is the shape of the failure: an expired token does not
- * disconnect the channel or raise anything. The row still says "connected", the
- * webhook still arrives, and every reply is refused — which is the same silence
- * that a wrong account id or a missing subscription produces, and takes just as
- * long to tell apart. Left alone, every connected account breaks on a two-month
- * timer, one at a time, long after anyone remembers connecting it.
- *
- * Renewing is only possible *while the token still works*. Once it lapses the
- * only way back is walking the merchant through the consent screen again, so
- * this runs well ahead of the deadline rather than at it.
+ * Renews 60-day Instagram Login tokens before they expire. An expired token fails
+ * silently (replies are refused while the channel still looks connected), and only
+ * a token that still works can be renewed.
  */
 
-/** Renew once a token is inside this many days of expiry. */
 const RENEW_WITHIN_DAYS = 15;
 
 /** Meta refuses to renew a token younger than a day. */
@@ -32,14 +21,6 @@ export type RefreshReport = {
   failed: number;
 };
 
-/**
- * Which channels are worth a call right now.
- *
- * Only Instagram, only connected, only ones we hold a token and a date for. A
- * row with no `tokenExpiresAt` predates this column; it is left alone rather
- * than renewed blindly, because a refresh on a token Meta considers too young
- * fails and would repeat every night.
- */
 function dueBefore(now: Date): Date {
   return new Date(now.getTime() + RENEW_WITHIN_DAYS * DAY_MS);
 }
@@ -58,17 +39,13 @@ export async function refreshInstagramTokens(now = new Date()): Promise<RefreshR
   const report: RefreshReport = { considered: due.length, renewed: 0, failed: 0 };
 
   for (const channel of due) {
-    // Meta refuses anything younger than a day, and `lastSyncAt` is when this
-    // token was obtained. Skipping quietly beats a nightly failure that reads
-    // like a broken integration.
+    // `lastSyncAt` is when the current token was issued.
     const age = channel.lastSyncAt ? now.getTime() - channel.lastSyncAt.getTime() : Infinity;
     if (age < MIN_AGE_HOURS * 60 * 60 * 1000) continue;
 
     const fresh = await refreshLongLived(channel.accessToken!);
     if (!fresh) {
       report.failed += 1;
-      // Error, not warning: nobody is watching this job, and the window to fix
-      // it by hand closes when the token does.
       log.error("Instagram token could not be renewed — this channel will stop", undefined, {
         businessId: channel.businessId,
         expiresAt: channel.tokenExpiresAt?.toISOString(),

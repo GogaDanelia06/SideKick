@@ -2,13 +2,7 @@
 
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * Save, undo everything, and start over — plus a count of what is pending.
- *
- * The count is the important part. Eighteen fields across two palettes is more
- * than anyone holds in their head, and without it the only way to know whether
- * a change had been saved was to reload and see.
- */
+/** Save, discard and reset, with a count of unsaved changes. */
 export function ThemeActions({
   pending,
   status,

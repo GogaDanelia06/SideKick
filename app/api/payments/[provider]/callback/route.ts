@@ -6,15 +6,8 @@ import { log } from "@/lib/logger";
 export const dynamic = "force-dynamic";
 
 /**
- * Where the banks report back.
- *
- * This endpoint is public — anyone can POST to it — so it is written to be
- * useless to an attacker: the body is only ever used to learn *which* payment
- * to look at, and the outcome comes from an authenticated call back to the
- * bank. Forging a body gets you a re-check of a real payment, nothing more.
- *
- * It answers 200 in almost every case on purpose. Banks retry non-2xx, and a
- * malformed or unknown callback will never succeed on a retry.
+ * Bank payment callbacks. The body only identifies the payment; its status is read
+ * back from the bank. Answers 200 unless the bank is unreachable, so only that retries.
  */
 export async function POST(
   request: Request,
@@ -42,8 +35,6 @@ export async function POST(
     const result = await settlePayment(provider, providerRef);
     log.info("payment callback handled", { provider, providerRef, result });
   } catch (err) {
-    // The bank's API was unreachable. Retrying is worth it here, so this is the
-    // one case that reports a failure and lets the bank call again.
     const errorId = log.error("payment callback could not be settled", err, {
       provider,
       providerRef,

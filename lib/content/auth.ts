@@ -16,16 +16,14 @@ export const LOGIN = {
     ka: "ძალიან ბევრი მცდელობა. სცადეთ ხელახლა რამდენიმე წუთში.",
     en: "Too many attempts. Please try again in a few minutes.",
   },
-  // Shown only after the password was correct, so it never reveals to a
-  // stranger that an address is registered.
+  // Shown only after a correct password, so it never reveals which addresses exist.
   unverified: {
     ka: "ელფოსტა ჯერ არ არის დადასტურებული. შეამოწმე ფოსტა — გამოგზავნილია ბმული.",
     en: "Your email is not confirmed yet. Check your inbox — we sent you a link.",
   },
   resend: { ka: "ბმულის ხელახლა გაგზავნა", en: "Send the link again" },
   resending: { ka: "იგზავნება…", en: "Sending…" },
-  // Says "if" on purpose. The endpoint answers the same for an address with no
-  // account as for a real one, and promising delivery here would give that away.
+  // Worded as "if": the endpoint answers the same for unknown addresses.
   resendDone: {
     ka: "თუ ანგარიში არსებობს და ჯერ არ არის დადასტურებული, ბმული გაიგზავნა.",
     en: "If that account exists and is not confirmed yet, the link has been sent.",
@@ -60,9 +58,6 @@ export const REGISTER = {
   industry: { ka: "საქმიანობის სფერო", en: "Industry" },
   optional: { ka: "(არასავალდებულო)", en: "(optional)" },
   submit: { ka: "რეგისტრაცია", en: "Sign up" },
-  // Two outcomes, two messages — and each says only what actually happened.
-  // This field once promised a verification link that was never sent, which is
-  // how eight real customers ended up waiting on an email that did not exist.
   sent: {
     ka: "ანგარიში შექმნილია. შეგიძლია დაიწყო მუშაობა.",
     en: "Your account is ready. You can start right away.",
