@@ -251,12 +251,19 @@ Structured, not sprinkled:
 - `next.config.ts` — permanent redirect from `www.` to the bare domain, so a
   page never has two canonical hosts.
 
-Most marketing pages are statically rendered (`○` in the build output). The
-three that carry admin-editable content — home, pricing and contact — are
-`force-dynamic` (`ƒ`) so an owner's edit shows up on the next request; they are
-still fully server-rendered into HTML, so SEO is unaffected. The reason the
-Content-Security-Policy uses `'unsafe-inline'` rather than per-request nonces is
-to keep the *static* pages static — see the comment in `next.config.ts`.
+Every marketing page is prerendered and served from the CDN (`○` in the build
+output, with a revalidate time). Admin edits reach them through `revalidatePath`
+in `lib/admin/actions.ts`, so a save shows on the next load; the timers are only
+a backstop — a minute on the home page for its live figures, an hour elsewhere
+for rows changed outside the panel. They used to be `force-dynamic`, which
+rendered every visit on a function and read the database each time. The reason
+the Content-Security-Policy uses `'unsafe-inline'` rather than per-request nonces
+is the same: a nonce would force every page back to per-request rendering — see
+the comment in `next.config.ts`.
+
+Functions run in `fra1` (Frankfurt, set in `vercel.json`), next to the Neon
+database in `eu-central-1`. On Vercel's default region, Washington, every query
+was a round trip across the Atlantic.
 
 ---
 

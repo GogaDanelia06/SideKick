@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { IconCircleFilled, IconMessageChatbot, IconRobot, IconX } from "@tabler/icons-react";
 import { ChatBubble } from "./ChatBubble";
 import { ChatInput } from "./ChatInput";
@@ -28,63 +27,58 @@ export function ChatWidget() {
 
   return (
     <>
-      <AnimatePresence>
-        {open ? (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            transition={{ duration: 0.18 }}
-            className="fixed bottom-[92px] right-6 z-[60] w-[340px] max-w-[calc(100vw-48px)] overflow-hidden rounded-lg border border-border bg-card shadow-[0_16px_44px_rgba(0,0,0,0.5)]"
-          >
-            <header className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
-              <span className="grid size-8 place-items-center rounded-full bg-blue-surface text-blue">
-                <IconRobot size={16} />
-              </span>
-              <div className="flex-1">
-                <div className="text-sm font-semibold">{BRAND} AI</div>
-                <div className="flex items-center gap-1 text-[12px] text-muted">
-                  <IconCircleFilled size={8} className="text-green" />
-                  {t(CHAT.online)}
-                </div>
+      {/* Opens with a CSS keyframe, not framer-motion. The widget sits on every
+          public page, so the library was downloaded and parsed by every visitor
+          for this one fade — and all it added beyond it was a fade on close. */}
+      {open ? (
+        <div className="fixed bottom-[92px] right-6 z-[60] w-[340px] max-w-[calc(100vw-48px)] animate-[fadeUp_0.18s_ease] overflow-hidden rounded-lg border border-border bg-card shadow-[0_16px_44px_rgba(0,0,0,0.5)]">
+          <header className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
+            <span className="grid size-8 place-items-center rounded-full bg-blue-surface text-blue">
+              <IconRobot size={16} />
+            </span>
+            <div className="flex-1">
+              <div className="text-sm font-semibold">{BRAND} AI</div>
+              <div className="flex items-center gap-1 text-[12px] text-muted">
+                <IconCircleFilled size={8} className="text-green" />
+                {t(CHAT.online)}
               </div>
-              <button type="button" aria-label={t(CHAT.ariaClose)} onClick={() => setOpen(false)} className="text-muted hover:text-ink">
-                <IconX size={18} />
-              </button>
-            </header>
-            <div ref={threadRef} className="flex max-h-[260px] flex-col gap-2.5 overflow-auto p-4">
-              {messages.map((m) => (
-                <ChatBubble key={m.id} message={m} aiTone="blue" />
-              ))}
-              {typing ? <ChatTyping aiTone="blue" /> : null}
             </div>
+            <button type="button" aria-label={t(CHAT.ariaClose)} onClick={() => setOpen(false)} className="text-muted hover:text-ink">
+              <IconX size={18} />
+            </button>
+          </header>
+          <div ref={threadRef} className="flex max-h-[260px] flex-col gap-2.5 overflow-auto p-4">
+            {messages.map((m) => (
+              <ChatBubble key={m.id} message={m} aiTone="blue" />
+            ))}
+            {typing ? <ChatTyping aiTone="blue" /> : null}
+          </div>
 
-            {/* Only while the thread is untouched. Once someone has asked
-                something of their own, three canned questions under their
-                conversation are clutter, not help. */}
-            {messages.length === 1 ? (
-              <div className="flex flex-wrap gap-2 px-4 pb-1">
-                {CHAT_CHIPS.map((chip, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => send(t(chip))}
-                    className="rounded-full border border-blue-border bg-blue-surface px-3 py-1.5 text-[12px] font-medium text-blue"
-                  >
-                    {t(chip)}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+          {/* Only while the thread is untouched. Once someone has asked
+              something of their own, three canned questions under their
+              conversation are clutter, not help. */}
+          {messages.length === 1 ? (
+            <div className="flex flex-wrap gap-2 px-4 pb-1">
+              {CHAT_CHIPS.map((chip, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => send(t(chip))}
+                  className="rounded-full border border-blue-border bg-blue-surface px-3 py-1.5 text-[12px] font-medium text-blue"
+                >
+                  {t(chip)}
+                </button>
+              ))}
+            </div>
+          ) : null}
 
-            <ChatInput
-              placeholder={t(CHAT.widgetPlaceholder)}
-              onSend={send}
-              onFile={sendFile}
-            />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+          <ChatInput
+            placeholder={t(CHAT.widgetPlaceholder)}
+            onSend={send}
+            onFile={sendFile}
+          />
+        </div>
+      ) : null}
       <button
         type="button"
         aria-label={t(CHAT.ariaChat)}

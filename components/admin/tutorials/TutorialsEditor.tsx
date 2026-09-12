@@ -20,7 +20,7 @@ import {
   moveTutorial,
   toggleTutorialPublished,
 } from "@/lib/admin/actions";
-import { youtubeThumbnail } from "@/lib/dashboard/tutorials";
+import { youtubeThumbnail } from "@/lib/dashboard/youtube";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 

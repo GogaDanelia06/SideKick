@@ -3,9 +3,10 @@ import { SITE_URL, absoluteUrl } from "@/lib/seo/site";
 import { resolveSitemap } from "@/lib/seo/sitemap";
 import { log } from "@/lib/logger";
 
-// Pages are admin-editable, so the sitemap is built per request rather than
-// frozen at deploy time.
-export const dynamic = "force-dynamic";
+// Rebuilt hourly, never frozen at deploy time: the pages are admin-editable and
+// their dates come from the content tables. An hour late is nothing to a crawler
+// that reads this once a day.
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const fallback = new Date();

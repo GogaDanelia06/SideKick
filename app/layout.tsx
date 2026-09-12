@@ -5,7 +5,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { themeScript } from "@/lib/theme/theme-script";
 import { themeCss } from "@/lib/site/theme/css";
-import { readTheme } from "@/lib/site/theme/read";
+import { cachedTheme } from "@/lib/site/theme/cached";
 import { OG_IMAGE, SITE, VERIFICATION } from "@/lib/seo/site";
 import { Analytics } from "@/components/seo/Analytics";
 import { PageViews } from "@/components/seo/PageViews";
@@ -70,7 +70,8 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // The admin's palette. Read here rather than per page because it applies to
   // the marketing site and the dashboard alike, and both live under this layout.
-  const palette = themeCss(await readTheme());
+  // From the data cache, because this runs for every uncached request.
+  const palette = themeCss(await cachedTheme());
 
   return (
     <html

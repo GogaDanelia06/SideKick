@@ -1,6 +1,7 @@
 import type { ChannelType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import type { Bilingual } from "@/lib/content/types";
+import { youtubeThumbnail } from "./youtube";
 
 export type TutorialView = {
   id: string;
@@ -19,17 +20,6 @@ export type ChannelGuideView = {
 /** English falls back to Georgian, so a half-translated row still reads. */
 function bi(ka: string, en: string): Bilingual {
   return { ka, en: en || ka };
-}
-
-/** Derived rather than stored: YouTube serves a thumbnail for every video id,
- *  so there is nothing for an admin to upload or keep in sync. */
-export function youtubeThumbnail(url: string): string | null {
-  try {
-    const id = new URL(url).searchParams.get("v");
-    return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
-  } catch {
-    return null;
-  }
 }
 
 /** Published tutorials, in admin-chosen order. Platform-wide — every tenant

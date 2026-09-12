@@ -196,21 +196,29 @@ export async function POST(request: Request) {
       channels: [...new Set(recorded.map((r) => r.channel))].join(","),
     });
 
-    for (const conversationId of unnamed) {
-      await nameCustomer(conversationId);
-    }
+    // Naming, the notice and the reply start together rather than in turn. In
+    // turn, the reply queued behind a profile lookup at Meta and then a notice
+    // to the AI service that may take its whole ten-second timeout per message —
+    // all of it added to the customer's wait before the quiet window had even
+    // begun. None of the three needs another's result: the reply never reads
+    // the customer's name.
+    const naming = (async () => {
+      for (const conversationId of unnamed) await nameCustomer(conversationId);
+    })();
 
-    // The notice goes out for every message, immediately: it announces that
-    // something arrived and is a separate concern from answering it.
-    for (const result of recorded) {
-      await notifyAgent({
-        event: "message.received",
-        businessId: result.businessId,
-        conversationId: result.conversationId,
-        messageId: result.messageId,
-        channel: result.channel,
-      });
-    }
+    // The notice goes out for every message: it announces that something
+    // arrived and is a separate concern from answering it.
+    const notices = (async () => {
+      for (const result of recorded) {
+        await notifyAgent({
+          event: "message.received",
+          businessId: result.businessId,
+          conversationId: result.conversationId,
+          messageId: result.messageId,
+          channel: result.channel,
+        });
+      }
+    })();
 
     // The replies run together rather than one after another, because each one
     // waits out a quiet window before deciding whether it is the message that
@@ -218,11 +226,22 @@ export async function POST(request: Request) {
     // the customer would be answered a minute and a half after they finished
     // talking; in parallel they wait the same window once, and the last one
     // through answers for all three. See lib/ai/quietWindow.ts.
-    await Promise.all(
-      recorded.map((result) =>
+    //
+    // Settled, not `Promise.all`: the function stays alive only until this
+    // settles, and one early failure would end it while other customers' replies
+    // were still waiting out their window.
+    const outcomes = await Promise.allSettled([
+      naming,
+      notices,
+      ...recorded.map((result) =>
         answerAfterQuietWindow(result.businessId, result.conversationId, result.messageId),
       ),
-    );
+    ]);
+    for (const outcome of outcomes) {
+      if (outcome.status === "rejected") {
+        log.error("messenger webhook follow-up failed", outcome.reason);
+      }
+    }
   });
 
   // Ask Meta to send the batch again.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { themeCss, type Theme } from "@/lib/site/theme/css";
 import { GROUPS, TOKENS, defaultColors, type Shade } from "@/lib/site/theme/tokens";
 import { updateTheme } from "@/lib/admin/actions";
@@ -24,7 +24,6 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
   const [saved, setSaved] = useState<Theme>(initial);
   const [pending, start] = useTransition();
   const [status, setStatus] = useState<"idle" | "saved" | "failed">("idle");
-  const entered = useRef(opened);
   const changed = countChanges(draft, saved);
 
   // The draft, applied to the real page. This panel is one of the surfaces being
@@ -40,13 +39,21 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
   // Editing the light palette while looking at the dark one is guesswork, so the
   // tab switches what is on screen too. Restored on the way out — the choice
   // belongs to the theme toggle, not to this page.
+  //
+  // What gets restored is read off the document, before the effect below changes
+  // it. It used to be the tab this page opens on, which is always dark, so anyone
+  // browsing in light mode was switched to dark the moment they left.
+  useEffect(() => {
+    const root = document.documentElement;
+    const original = root.getAttribute("data-theme");
+    return () => {
+      if (original) root.setAttribute("data-theme", original);
+      else root.removeAttribute("data-theme");
+    };
+  }, []);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", shade);
   }, [shade]);
-  useEffect(() => {
-    const original = entered.current;
-    return () => document.documentElement.setAttribute("data-theme", original);
-  }, []);
 
   // Unsaved colours look saved: the whole panel is already wearing them. Without
   // this, closing the tab silently throws the work away.

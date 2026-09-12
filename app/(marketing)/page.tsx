@@ -17,7 +17,11 @@ import {
 
 export const generateMetadata = seoFor({ path: "/" });
 
-export const dynamic = "force-dynamic";
+// Served from the CDN and rebuilt in the background, not rendered for every
+// visit. Admin saves that touch this page call revalidatePath("/"), so an edit
+// shows on the next load. The minute is for the live figures, which change
+// without anyone saving anything — and the browser polls those on top.
+export const revalidate = 60;
 
 export default async function HomePage() {
   const [stats, benefits, heroSlides, heroIntervalMs, plans, texts] = await Promise.all([

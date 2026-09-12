@@ -13,8 +13,10 @@ export const generateMetadata = seoFor({
   path: "/about",
 });
 
-// The SEO fields are admin-editable, so metadata is read per request.
-export const dynamic = "force-dynamic";
+// Served from the CDN, not rendered for every visit. Saving this page's content
+// or SEO in the admin panel revalidates the path, so an edit shows on the next
+// load; the hour only catches rows changed outside the panel.
+export const revalidate = 3600;
 
 const crumbs: Crumb[] = [
   HOME_CRUMB,

@@ -286,13 +286,15 @@ request, not when their token eventually expires.
 | FAQ | marketing questions (bilingual, publishable) | contact page + FAQ rich-results |
 | SEO | homepage title + meta description | `<title>` and `<meta description>` |
 
-**How edits reach the site.** The affected marketing pages (home, pricing,
-contact) render with `export const dynamic = "force-dynamic"` and read the
-content from the database per request, so an edit shows up on the next page
-view. There's no cache to clear. If marketing traffic ever grows enough to make
-per-request reads matter, wrap the read helpers in `lib/site/content.ts` with
-`unstable_cache` and call `revalidateTag` from the admin actions — the call
-sites don't change.
+**How edits reach the site.** The marketing pages are cached on Vercel's CDN
+and rebuilt in the background (`export const revalidate` in each page). Every
+admin save calls `revalidatePath` for the pages it affects, so an edit shows up
+on the next page view — there is still no cache to clear by hand. A row changed
+outside the panel (Prisma Studio, SQL) shows within the hour, or within a minute
+on the home page. The site palette is also held in Next's data cache under the
+`site-theme` tag, which saving the theme expires. A new admin screen that writes
+public content needs the same `revalidatePath` call, or its edits will wait for
+the timer.
 
 **Plans are the single source of truth for prices.** The marketing pricing page
 and billing both read the `Plan` table; editing a price or a limit in /admin

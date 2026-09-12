@@ -84,8 +84,8 @@ export function pageMetadata({
  *
  *   export const generateMetadata = seoFor({ title: "ფასები", path: "/pricing" });
  *
- * The page must also be dynamic — otherwise the overrides are baked in at
- * build time and editing them in the panel would change nothing.
+ * Safe on a cached page: saving SEO in the panel revalidates the path, so the
+ * new tags go out on the next load rather than at the next deploy.
  */
 export function seoFor(base: Omit<PageMeta, "overrides">) {
   return async function generateMetadata(): Promise<Metadata> {

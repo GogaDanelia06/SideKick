@@ -1,13 +1,14 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import type { ChannelType, StatMode, SubscriptionStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { findGroup, findLegalDoc, legalTitleKey } from "@/lib/site/textKeys";
 import { THEME_KEY, sanitizeTheme } from "@/lib/site/theme/css";
+import { THEME_TAG } from "@/lib/site/theme/cached";
 import { ICON_NAMES } from "@/lib/content/icons";
 import { STAT_SOURCE_KEYS } from "@/lib/site/statSources";
 import { CHANNEL_TYPES } from "@/lib/dashboard/channels";
@@ -245,6 +246,8 @@ export async function updatePlan(id: string, fd: FormData): Promise<AdminResult>
 
   revalidatePath("/admin/plans");
   revalidatePath("/pricing");
+  // The landing page quotes the price range in its structured data.
+  revalidatePath("/");
   return { ok: true };
 }
 
@@ -1008,6 +1011,10 @@ export async function updateTheme(fd: FormData): Promise<AdminResult> {
     update: { valueKa: value },
   });
 
+  // The cached read behind the layout goes first (lib/site/theme/cached.ts).
+  // Left alone, every page refreshed below would be rebuilt from the palette
+  // this save has just replaced.
+  updateTag(THEME_TAG);
   // Every route sits under the root layout that reads this, so the whole tree
   // has to be refreshed — path by path would miss pages nobody thought of.
   revalidatePath("/", "layout");
