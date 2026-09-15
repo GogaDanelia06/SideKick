@@ -8,7 +8,10 @@ import { AddProductForm } from "./AddProductForm";
 import { FileUploadTab } from "./FileUploadTab";
 import { ProductTable } from "./ProductTable";
 import { ProductModal } from "./ProductModal";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+
+const TABS = ["manual", "file"] as const;
 
 function TabButton({ active, onClick, icon: TabIcon, children }: { active: boolean; onClick: () => void; icon: Icon; children: ReactNode }) {
   return (
@@ -24,7 +27,7 @@ function TabButton({ active, onClick, icon: TabIcon, children }: { active: boole
 
 export function ProductsView({ products }: { products: Product[] }) {
   const { t } = useLanguage();
-  const [tab, setTab] = useState<"manual" | "file">("manual");
+  const [tab, setTab] = useUrlTab("tab", TABS, "manual");
   const [editing, setEditing] = useState<Product | null>(null);
 
   /** Held locally so new rows appear without a server re-render (same newest-first order). */

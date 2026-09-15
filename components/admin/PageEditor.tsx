@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import type { HeroSlide, HeroSlideStat, LegalSection, Plan, SiteFaq, SiteStat } from "@prisma/client";
 import { IconExternalLink } from "@tabler/icons-react";
 import { findAdminPage } from "@/lib/admin/pages";
@@ -89,7 +89,8 @@ export function PageEditor({
   const { t } = useLanguage();
   // Looked up here: the registry holds icon components, which cannot be passed from the server.
   const page = findAdminPage(slug);
-  const [active, setActive] = useState(page?.sections[0]?.key ?? "");
+  const keys = page?.sections.map((s) => s.key) ?? [];
+  const [active, setActive] = useUrlTab("section", keys, keys[0] ?? "");
 
   if (!page) return null;
   const current = data[active];

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import clsx from "clsx";
 import type { AiConfig, Business } from "@prisma/client";
 import {
@@ -14,6 +13,7 @@ import {
   IconSquareRoundedLetterA,
 } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual, IconType } from "@/lib/content/types";
 import { BusinessSection } from "./sections/BusinessSection";
@@ -33,6 +33,8 @@ const NAV: { key: Key; label: Bilingual; icon: IconType }[] = [
   { key: "languages", label: { ka: "ენები", en: "Languages" }, icon: IconLanguage },
 ];
 
+const TABS: Key[] = [...NAV.map((n) => n.key), "tester"];
+
 export function AiView({
   config,
   business,
@@ -43,7 +45,7 @@ export function AiView({
   business: Business | null;
 }) {
   const { t } = useLanguage();
-  const [tab, setTab] = useState<Key>("business");
+  const [tab, setTab] = useUrlTab("tab", TABS, "business");
   const testing = tab === "tester";
 
   return (

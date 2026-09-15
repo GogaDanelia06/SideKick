@@ -7,11 +7,14 @@ import { Panel } from "@/components/dashboard/ui/Panel";
 import { OrderRow } from "./OrderRow";
 import { ORDER_TABS } from "@/lib/dashboard/orders";
 import type { OrdersData } from "@/lib/dashboard/queries";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+
+const STATUSES = ORDER_TABS.map((o) => o.key);
 
 export function OrdersView({ orders, counts }: OrdersData) {
   const { t } = useLanguage();
-  const [tab, setTab] = useState(ORDER_TABS[0].key);
+  const [tab, setTab] = useUrlTab("status", STATUSES, ORDER_TABS[0].key);
   const [openId, setOpenId] = useState<string | null>(null);
 
   const visible = orders.filter((o) => o.status === tab);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import type { ChannelGuide, Tutorial } from "@prisma/client";
 import { IconPlugConnected, IconVideo } from "@tabler/icons-react";
 import { AdminHeading } from "@/components/admin/ui/AdminHeading";
@@ -13,6 +13,8 @@ const SECTIONS: RailItem[] = [
   { key: "channels", label: { ka: "არხების დაკავშირება", en: "Channel setup" }, icon: IconPlugConnected },
 ];
 
+const SECTION_KEYS = SECTIONS.map((s) => s.key);
+
 export function TutorialsAdmin({
   tutorials,
   guides,
@@ -20,7 +22,7 @@ export function TutorialsAdmin({
   tutorials: Tutorial[];
   guides: ChannelGuide[];
 }) {
-  const [active, setActive] = useState(SECTIONS[0]!.key);
+  const [active, setActive] = useUrlTab("section", SECTION_KEYS, SECTION_KEYS[0]);
 
   return (
     <>
