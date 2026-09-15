@@ -56,7 +56,9 @@ const providers: Provider[] = [
 ];
 
 // Registered only when fully configured (the same check the login page uses).
-if (googleSignInEnabled()) providers.push(Google);
+// Google confirms email ownership, so a Google sign-in may attach to an existing
+// account with the same address; `signIn` below refuses emails Google has not verified.
+if (googleSignInEnabled()) providers.push(Google({ allowDangerousEmailAccountLinking: true }));
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -85,9 +87,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
       }
     },
+
+    /** Google has just proven the address belongs to this person, so it counts as confirmed. */
+    async linkAccount({ user, account }) {
+      if (account.provider !== "google" || !user.id) return;
+      try {
+        await prisma.user.updateMany({
+          where: { id: user.id, emailVerified: null },
+          data: { emailVerified: new Date() },
+        });
+      } catch (err) {
+        log.error("could not mark a Google-linked email as confirmed", err, { userId: user.id });
+      }
+    },
   },
   callbacks: {
     ...authConfig.callbacks,
+    signIn({ account, profile }) {
+      return account?.provider !== "google" || profile?.email_verified === true;
+    },
     async jwt({ token, user }) {
       if (user?.id) {
         token.uid = user.id;
