@@ -6,10 +6,11 @@ import { can, requirePermission } from "@/lib/auth/permissions";
 import { DASH } from "@/lib/dashboard/routes";
 import { optionalField } from "@/lib/forms";
 import { getContext } from "@/lib/session";
+import type { ActionResult } from "./result";
 
-export async function saveBusinessInfo(fd: FormData) {
+export async function saveBusinessInfo(fd: FormData): Promise<ActionResult> {
   const ctx = await requirePermission("business:write");
-  if (!ctx) return;
+  if (!ctx) return { ok: false, error: "forbidden" };
   const text = (name: string) => optionalField(fd, name);
 
   await prisma.business.update({
@@ -29,6 +30,7 @@ export async function saveBusinessInfo(fd: FormData) {
   });
   revalidatePath(DASH.ai);
   revalidatePath(DASH.profile);
+  return { ok: true };
 }
 
 export async function saveProfile(fd: FormData) {

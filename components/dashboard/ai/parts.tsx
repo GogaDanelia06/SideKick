@@ -1,32 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition, type ReactNode } from "react";
+import { useTransition, type ReactNode } from "react";
 import clsx from "clsx";
 import { IconCheck, IconSparkles } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual, IconType } from "@/lib/content/types";
+import { useToast } from "@/components/dashboard/ui/Toast";
+import type { ActionResult } from "@/lib/dashboard/actions/result";
+import { FORBIDDEN, SAVED, SAVE_ERROR } from "./saveMessages";
 
 export const INPUT =
   "h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue";
 export const AREA =
   "w-full rounded-[8px] border border-input bg-canvas p-3 text-sm outline-none placeholder:text-faint focus:border-blue";
-
-function useSavedFlag(ms = 2500): [boolean, () => void] {
-  const [on, setOn] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => () => {
-    if (timer.current) clearTimeout(timer.current);
-  }, []);
-
-  const trigger = useCallback(() => {
-    setOn(true);
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setOn(false), ms);
-  }, [ms]);
-
-  return [on, trigger];
-}
 
 export function SectionHead({
   icon: Icon,
@@ -68,25 +54,29 @@ export function SectionForm({
   title: Bilingual;
   hint?: Bilingual;
   right?: ReactNode;
-  action: (data: FormData) => Promise<void>;
+  action: (data: FormData) => Promise<ActionResult>;
   saveLabel?: Bilingual;
   extraActions?: ReactNode;
   children: ReactNode;
 }) {
   const { t } = useLanguage();
+  const notify = useToast();
   const [pending, start] = useTransition();
-  const [saved, markSaved] = useSavedFlag();
+
+  function submit(fd: FormData) {
+    start(async () => {
+      try {
+        const result = await action(fd);
+        if (result.ok) notify(t(SAVED));
+        else notify(t(result.error === "forbidden" ? FORBIDDEN : SAVE_ERROR), "error");
+      } catch {
+        notify(t(SAVE_ERROR), "error");
+      }
+    });
+  }
 
   return (
-    <form
-      action={(fd) =>
-        start(async () => {
-          await action(fd);
-          markSaved();
-        })
-      }
-      className="flex flex-col gap-5"
-    >
+    <form action={submit} className="flex flex-col gap-5">
       <SectionHead icon={icon} title={title} hint={hint} right={right} />
 
       {children}
@@ -101,11 +91,6 @@ export function SectionForm({
           {pending ? "…" : t(saveLabel ?? { ka: "შენახვა", en: "Save" })}
         </button>
         {extraActions}
-        {saved ? (
-          <span className="inline-flex items-center gap-1.5 text-[13px] text-green">
-            <IconCheck size={16} /> {t({ ka: "შენახულია", en: "Saved" })}
-          </span>
-        ) : null}
       </div>
     </form>
   );

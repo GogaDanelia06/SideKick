@@ -11,7 +11,7 @@ import {
   IconTrendingUp,
   IconUserPlus,
 } from "@tabler/icons-react";
-import { saveAiRules } from "@/lib/dashboard/actions";
+import { saveAiRules } from "@/lib/dashboard/actions/aiConfig";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual, IconType } from "@/lib/content/types";
 import { AREA, AreaField, CheckRow, SectionForm } from "../parts";

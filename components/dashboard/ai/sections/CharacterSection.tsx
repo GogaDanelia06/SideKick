@@ -2,7 +2,7 @@
 
 import type { AiConfig } from "@prisma/client";
 import { IconSquareRoundedLetterA } from "@tabler/icons-react";
-import { saveAiCharacter } from "@/lib/dashboard/actions";
+import { saveAiCharacter } from "@/lib/dashboard/actions/aiConfig";
 import { ChipChoice, SectionForm } from "../parts";
 
 const STYLE = ["მეგობრული", "პროფესიონალური", "ოფიციალური", "გაყიდვებზე ორიენტირებული", "კონსულტანტის სტილი"];

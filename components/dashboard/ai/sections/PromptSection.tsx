@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { AiConfig } from "@prisma/client";
 import { IconBrandYoutube, IconFileText } from "@tabler/icons-react";
-import { saveAiPrompt } from "@/lib/dashboard/actions";
+import { saveAiPrompt } from "@/lib/dashboard/actions/aiConfig";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { PromptAiActions } from "./PromptAiActions";
 import { AREA, SectionForm } from "../parts";
