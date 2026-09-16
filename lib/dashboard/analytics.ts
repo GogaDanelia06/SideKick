@@ -5,5 +5,5 @@ export const RANGES: Bilingual[] = [
   { ka: "1 თვე", en: "1 month" },
   { ka: "3 თვე", en: "3 months" },
   { ka: "6 თვე", en: "6 months" },
-  { ka: "1 წელი", en: "1 year" },
+  { ka: "12 თვე", en: "12 months" },
 ];
