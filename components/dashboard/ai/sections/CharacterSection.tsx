@@ -3,12 +3,8 @@
 import type { AiConfig } from "@prisma/client";
 import { IconSquareRoundedLetterA } from "@tabler/icons-react";
 import { saveAiCharacter } from "@/lib/dashboard/actions/aiConfig";
+import { AI_ADDRESS_FORMS, AI_DEFAULTS, AI_EMOJI_LEVELS, AI_LENGTHS, AI_STYLES } from "@/lib/ai/settings";
 import { ChipChoice, SectionForm } from "../parts";
-
-const STYLE = ["მეგობრული", "პროფესიონალური", "ოფიციალური", "გაყიდვებზე ორიენტირებული", "კონსულტანტის სტილი"];
-const LENGTH = ["მოკლე", "საშუალო", "დეტალური"];
-const EMOJI = ["არასოდეს", "ზომიერად", "ხშირად"];
-const ADDR = ["ფორმალური", "ფამილიარული"];
 
 export function CharacterSection({ config }: { config: AiConfig | null }) {
   return (
@@ -21,26 +17,26 @@ export function CharacterSection({ config }: { config: AiConfig | null }) {
         <ChipChoice
           name="style"
           label={{ ka: "კომუნიკაციის სტილი", en: "Communication style" }}
-          options={STYLE}
-          value={config?.style ?? null}
+          options={AI_STYLES}
+          value={config?.style ?? AI_DEFAULTS.style}
         />
         <ChipChoice
           name="length"
           label={{ ka: "პასუხის სიგრძე", en: "Response length" }}
-          options={LENGTH}
-          value={config?.length ?? null}
+          options={AI_LENGTHS}
+          value={config?.length ?? AI_DEFAULTS.length}
         />
         <ChipChoice
           name="emoji"
           label={{ ka: "ემოჯები", en: "Emoji" }}
-          options={EMOJI}
-          value={config?.emoji ?? null}
+          options={AI_EMOJI_LEVELS}
+          value={config?.emoji ?? AI_DEFAULTS.emoji}
         />
         <ChipChoice
           name="addressForm"
           label={{ ka: "მიმართვის ფორმა", en: "Form of address" }}
-          options={ADDR}
-          value={config?.addressForm ?? null}
+          options={AI_ADDRESS_FORMS}
+          value={config?.addressForm ?? AI_DEFAULTS.addressForm}
         />
       </div>
     </SectionForm>

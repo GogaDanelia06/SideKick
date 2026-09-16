@@ -17,7 +17,7 @@ import {
   sendOperatorReply,
   setConversationAi,
 } from "@/lib/dashboard/actions";
-import { handBackToAi } from "@/lib/dashboard/aiActions";
+import { handBackToAi } from "@/lib/dashboard/actions/conversations";
 import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { ConversationDetail } from "@/lib/dashboard/queries";
 import type { Bilingual } from "@/lib/content/types";

@@ -8,9 +8,11 @@ import {
   readJson,
   requireStr,
 } from "@/lib/agent/auth";
+import { acceptAiReply } from "@/lib/agent/aiReply";
 import { ownedConversation } from "@/lib/agent/conversation";
-import { checkLimit, countMessage } from "@/lib/billing/limits";
+import { countMessage } from "@/lib/billing/limits";
 import { deliverOutbound } from "@/lib/channels/send";
+import { markConversationActive } from "@/lib/conversations";
 
 export const dynamic = "force-dynamic";
 
@@ -35,42 +37,23 @@ export async function POST(request: Request) {
   const conversation = await ownedConversation(auth.businessId, conversationId);
   if (isDenial(conversation)) return conversation.response;
 
-  // Only AI messages count against the plan; customer messages are always recorded.
-  if (sender === "AI") {
-    const verdict = await checkLimit(auth.businessId, "messages");
-    if (!verdict.allowed) {
-      const expired = verdict.reason === "expired";
-      return NextResponse.json(
-        {
-          error: expired ? "subscription_expired" : "message_limit_reached",
-          message: expired
-            ? `This business's subscription has lapsed and its grace period is over. This reply was not recorded. Customer messages are still accepted — stop generating answers until it is renewed.`
-            : `The ${verdict.planName} plan allows ${verdict.limit} AI messages and ${verdict.used} have been used. This reply was not recorded. Customer messages are still accepted — stop generating answers for this business until the plan is upgraded.`,
-          limit: verdict.limit,
-          used: verdict.used,
-        },
-        { status: 402 },
-      );
-    }
-  }
+  // Only AI messages are restyled and count against the plan; customer messages are always recorded.
+  const content = sender === "AI" ? await acceptAiReply(auth.businessId, text) : text;
+  if (isDenial(content)) return content.response;
 
   const message = await prisma.message.create({
-    data: { conversationId: conversation.id, sender, text },
+    data: { conversationId: conversation.id, sender, text: content },
     select: { id: true, createdAt: true },
   });
 
   if (sender === "AI") await countMessage(auth.businessId);
 
-  // Traffic moves NEW to ACTIVE but never reopens a conversation marked DONE.
-  await prisma.conversation.updateMany({
-    where: { id: conversation.id, status: "NEW" },
-    data: { status: "ACTIVE" },
-  });
+  await markConversationActive(conversation.id);
 
   // Awaited so the caller sees the delivery outcome; a failed delivery does not
   // fail the request, because the message is already saved.
   const delivery =
-    sender === "CUSTOMER" ? null : await deliverOutbound(conversation.id, message.id, text);
+    sender === "CUSTOMER" ? null : await deliverOutbound(conversation.id, message.id, content);
 
   return NextResponse.json({
     messageId: message.id,

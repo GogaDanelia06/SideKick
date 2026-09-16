@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { IconFlask, IconSend, IconSparkles } from "@tabler/icons-react";
-import { testAiReply } from "@/lib/dashboard/aiActions";
+import { testAiReply } from "@/lib/dashboard/actions/assistant";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AiModuleNotice, INPUT } from "../parts";
 

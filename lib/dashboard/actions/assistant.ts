@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { aiConfigured, askAi, buildPrompt, editPrompt } from "@/lib/ai/client";
+import { applyReplyStyle } from "@/lib/ai/replyStyle";
 import { requirePermission } from "@/lib/auth/permissions";
 import { DASH } from "@/lib/dashboard/routes";
 
@@ -61,6 +62,7 @@ export async function testAiReply(message: string): Promise<TestReply> {
   if (!text) return { ok: false, error: "empty" };
 
   const answer = await askAi(access.businessId, `tester-${access.businessId}`, text);
-  if (!answer) return { ok: false, error: "failed" };
-  return { ok: true, reply: answer.reply, handoff: answer.handoffRequested };
+  const reply = answer && (await applyReplyStyle(access.businessId, answer.reply));
+  if (!answer || !reply) return { ok: false, error: "failed" };
+  return { ok: true, reply, handoff: answer.handoffRequested };
 }

@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import type { ChannelType, Prisma } from "@prisma/client";
+import { AI_DEFAULTS } from "@/lib/ai/settings";
+import { DEFAULT_AI_LANGUAGE } from "@/lib/dashboard/aiLanguages";
 
 const CHANNELS: ChannelType[] = ["FACEBOOK", "INSTAGRAM", "WHATSAPP", "WEBSITE"];
 
@@ -17,14 +19,7 @@ export async function provisionBusiness(
       field,
       memberships: { create: { userId, role: "OWNER" } },
       aiConfig: {
-        create: {
-          languages: ["ქართული"],
-          style: "პროფესიონალური",
-          length: "საშუალო",
-          emoji: "ზომიერად",
-          addressForm: "ფორმალური",
-          roles: ["info", "sales", "support"],
-        },
+        create: { ...AI_DEFAULTS, languages: [DEFAULT_AI_LANGUAGE], roles: ["info", "sales", "support"] },
       },
       channels: { create: CHANNELS.map((type) => ({ type })) },
       ...(plan ? { subscription: { create: { planId: plan.id, status: "TRIAL" } } } : {}),

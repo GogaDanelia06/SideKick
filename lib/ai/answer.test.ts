@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("@/lib/db", () => ({
   prisma: {
+    aiConfig: { findUnique: vi.fn() },
     conversation: { findUnique: vi.fn(), update: vi.fn() },
     message: { create: vi.fn(), update: vi.fn(), findFirst: vi.fn() },
   },

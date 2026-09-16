@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
 import { askAi, aiConfigured } from "./client";
+import { applyReplyStyle } from "./replyStyle";
 import { deliverOutbound } from "@/lib/channels/send";
 import { checkLimit, countMessage } from "@/lib/billing/limits";
 
@@ -43,14 +44,15 @@ export async function answerCustomer(
   }
 
   const answer = await askAi(businessId, conversationId, text);
+  const reply = answer && (await applyReplyStyle(businessId, answer.reply));
 
-  if (!answer) {
+  if (!answer || !reply) {
     await markLastMessage(conversationId, "ai_error");
     return;
   }
 
   const message = await prisma.message.create({
-    data: { conversationId, sender: "AI", text: answer.reply },
+    data: { conversationId, sender: "AI", text: reply },
     select: { id: true },
   });
 
@@ -58,7 +60,7 @@ export async function answerCustomer(
   await countMessage(businessId);
 
   // Stored before delivery, so the inbox always shows what the customer received.
-  await deliverOutbound(conversationId, message.id, answer.reply);
+  await deliverOutbound(conversationId, message.id, reply);
 
   if (answer.handoffRequested) {
     await prisma.conversation.update({

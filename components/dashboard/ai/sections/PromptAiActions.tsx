@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { IconSparkles, IconWand } from "@tabler/icons-react";
-import { generateAiPrompt, refineAiPrompt } from "@/lib/dashboard/aiActions";
+import { generateAiPrompt, refineAiPrompt } from "@/lib/dashboard/actions/assistant";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 type Props = {

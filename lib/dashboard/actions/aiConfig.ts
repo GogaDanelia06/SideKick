@@ -33,7 +33,6 @@ export async function saveAiCharacter(fd: FormData): Promise<ActionResult> {
     length: optionalField(fd, "length"),
     emoji: optionalField(fd, "emoji"),
     addressForm: optionalField(fd, "addressForm"),
-    roles: fd.getAll("roles").map(String),
   });
   return { ok: true };
 }
