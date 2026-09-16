@@ -96,7 +96,7 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
               />
             </label>
             <label className="block">
-              <span className={LABEL}>{t({ ka: "ფასი — 1 წელი (₾)", en: "Price — 1 year (₾)" })}</span>
+              <span className={LABEL}>{t({ ka: "ფასი — 1 წელი (₾)", en: "Price — 12 months (₾)" })}</span>
               <input
                 name="price12m"
                 type="number"

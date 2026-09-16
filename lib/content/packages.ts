@@ -36,7 +36,7 @@ export type BillingPeriod = {
 export const BILLING_PERIODS: BillingPeriod[] = [
   { months: 1, label: { ka: "1 თვე", en: "1 month" }, unit: { ka: "₾ / თვე", en: "₾ / mo" } },
   { months: 3, label: { ka: "3 თვე", en: "3 months" }, unit: { ka: "₾ / 3 თვე", en: "₾ / 3 mo" } },
-  { months: 12, label: { ka: "1 წელი", en: "1 year" }, unit: { ka: "₾ / წელი", en: "₾ / yr" } },
+  { months: 12, label: { ka: "12 თვე", en: "12 month" }, unit: { ka: "₾ / თვე", en: "₾ / yr" } },
 ];
 
 /** The price columns shared by the Plan row and the marketing Package. */
