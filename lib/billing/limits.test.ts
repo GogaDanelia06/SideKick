@@ -20,6 +20,8 @@ vi.mock("@/lib/db", () => ({
 
 const { checkLimit, countMessage } = await import("./limits");
 
+const BASIC = { ka: "ბეისიქი", en: "Basic" };
+
 /** A Basic-shaped plan: every cap small enough to hit in a test. */
 function plan(over: Partial<Record<string, number>> = {}, msgUsed = 0) {
   return {
@@ -59,10 +61,14 @@ describe("checkLimit", () => {
   it("blocks once the cap is reached", async () => {
     findUnique.mockResolvedValue(plan());
     productCount.mockResolvedValue(100);
-    expect(await checkLimit("b1", "products")).toEqual({ allowed: false, reason: "limit" as const, limit: 100,
-      used: 100,
-      planName: { ka: "ბეისიქი", en: "Basic" },
-    });
+    expect(await checkLimit("b1", "products")).toEqual({ allowed: false, reason: "limit", limit: 100, used: 100, planName: BASIC });
+  });
+
+  it("checks room for several items at once, for imports", async () => {
+    findUnique.mockResolvedValue(plan());
+    productCount.mockResolvedValue(95);
+    expect(await checkLimit("b1", "products", 5)).toEqual({ allowed: true });
+    expect((await checkLimit("b1", "products", 6)).allowed).toBe(false);
   });
 
   it("treats -1 as unlimited, which is how Premium is stored", async () => {
@@ -90,10 +96,7 @@ describe("checkLimit", () => {
   it("reads message usage from the subscription, not a count query", async () => {
     findUnique.mockResolvedValue(plan({}, 1000));
     const verdict = await checkLimit("b1", "messages");
-    expect(verdict).toEqual({ allowed: false, reason: "limit" as const, limit: 1000,
-      used: 1000,
-      planName: { ka: "ბეისიქი", en: "Basic" },
-    });
+    expect(verdict).toEqual({ allowed: false, reason: "limit", limit: 1000, used: 1000, planName: BASIC });
   });
 
   it("scopes every count to the business asking", async () => {

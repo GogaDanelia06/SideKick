@@ -213,6 +213,7 @@ bilingual message — see the `ERRORS` map in each view component.
 | `createProduct` | `products:write` | |
 | `updateProduct` | `products:write` | |
 | `deleteProduct` | `products:write` | |
+| `importProducts` | `products:write` | Rows from an .xlsx/.csv file, matched by code: new codes are created, known ones updated, nothing deleted; refused as a whole if the plan has no room for the new ones |
 | `saveProfile` | mixed | splits user fields from business fields by `can(role, "business:write")` |
 | `createLead` | `leads:write` | |
 | `setLeadStatus` | `leads:write` | |

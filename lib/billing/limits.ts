@@ -67,16 +67,13 @@ async function capsFor(businessId: string): Promise<PlanCaps | null> {
   };
 }
 
-/** Whether one more item is allowed. A business without a subscription row is not blocked. */
-export async function checkLimit(
-  businessId: string,
-  what: LimitName,
-): Promise<LimitVerdict> {
+/** Whether `adding` more items (one by default) are allowed. A business without a subscription row is not blocked. */
+export async function checkLimit(businessId: string, what: LimitName, adding = 1): Promise<LimitVerdict> {
   const caps = await capsFor(businessId);
   if (!caps) return { allowed: true };
 
   const deny = (limit: number, used: number): LimitVerdict =>
-    unlimited(limit) || used < limit
+    unlimited(limit) || used + adding <= limit
       ? { allowed: true }
       : { allowed: false, reason: "limit", limit, used, planName: caps.planName };
 

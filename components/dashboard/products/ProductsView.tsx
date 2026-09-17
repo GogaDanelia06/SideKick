@@ -32,6 +32,12 @@ export function ProductsView({ products }: { products: Product[] }) {
 
   /** Held locally so new rows appear without a server re-render (same newest-first order). */
   const [rows, setRows] = useState(products);
+  // A server refresh (an import, an edit, a delete) brings a new list; it replaces the local one.
+  const [served, setServed] = useState(products);
+  if (products !== served) {
+    setServed(products);
+    setRows(products);
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -49,7 +55,7 @@ export function ProductsView({ products }: { products: Product[] }) {
           <ProductTable products={rows} onEdit={setEditing} />
         </>
       ) : (
-        <FileUploadTab />
+        <FileUploadTab products={rows} />
       )}
       <ProductModal product={editing} onClose={() => setEditing(null)} />
     </div>
