@@ -5,13 +5,19 @@ import clsx from "clsx";
 import { IconRotate2 } from "@tabler/icons-react";
 import { isHex } from "@/lib/site/theme/derive";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { ColorPicker, PICKER_POPOVER_WIDTH } from "./ColorPicker";
 import { PICKER_WIDTH } from "./shades";
+import { usePopover } from "./usePopover";
 
-/** One theme's value of one colour: a swatch that opens the picker, and a hex box. */
+/** The popover's footprint; 250 is its height with some room to spare. */
+const POPOVER = { width: PICKER_POPOVER_WIDTH, height: 250 };
+
+/** One theme's value of one colour: a swatch that opens our picker, and a hex box. */
 export function ColorInput({
   label,
   value,
   saved,
+  fallback,
   onChange,
   onFocus,
 }: {
@@ -19,12 +25,15 @@ export function ColorInput({
   value: string;
   /** The value on the server, so this one field can be undone. */
   saved: string;
+  /** The shipped value. */
+  fallback: string;
   onChange: (hex: string) => void;
   onFocus: () => void;
 }) {
   const { t } = useLanguage();
   const [text, setText] = useState(value);
   const [lastSeen, setLastSeen] = useState(value);
+  const { open, place, box, trigger, toggle, close } = usePopover(POPOVER);
 
   // Sync with outside changes during render, so a stale value is never painted.
   if (value !== lastSeen) {
@@ -43,26 +52,24 @@ export function ColorInput({
 
   return (
     <div
+      ref={box}
       onFocus={onFocus}
       className={clsx(
-        "grid grid-cols-[28px_minmax(0,1fr)_22px] items-center gap-1.5 rounded-lg border p-1",
+        "relative grid grid-cols-[28px_minmax(0,1fr)_22px] items-center gap-1.5 rounded-lg border p-1",
         PICKER_WIDTH,
         changed ? "border-blue bg-blue-surface" : "border-border",
       )}
     >
-      {/* An invisible native colour input over a painted swatch; the inset line keeps dark colours visible. */}
-      <span
+      <button
+        ref={trigger}
+        type="button"
+        onClick={toggle}
+        aria-label={label}
+        aria-haspopup="dialog"
+        aria-expanded={open}
         style={{ background: value }}
-        className="relative size-7 overflow-hidden rounded-md shadow-[inset_0_0_0_1px_rgba(128,128,128,0.5)] focus-within:ring-2 focus-within:ring-blue-ring"
-      >
-        <input
-          type="color"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          aria-label={label}
-          className="absolute inset-0 size-full cursor-pointer opacity-0"
-        />
-      </span>
+        className="size-7 cursor-pointer rounded-md shadow-[inset_0_0_0_1px_rgba(128,128,128,0.5)] outline-none focus-visible:ring-2 focus-visible:ring-blue-ring"
+      />
       <input
         value={text}
         onChange={(e) => typed(e.target.value)}
@@ -85,6 +92,18 @@ export function ColorInput({
       ) : (
         <span aria-hidden />
       )}
+
+      {open ? (
+        <div
+          className={clsx(
+            "absolute z-30",
+            place.right ? "right-0" : "left-0",
+            place.up ? "bottom-full mb-1.5" : "top-full mt-1.5",
+          )}
+        >
+          <ColorPicker label={label} value={value} fallback={fallback} onChange={onChange} onDone={close} />
+        </div>
+      ) : null}
     </div>
   );
 }

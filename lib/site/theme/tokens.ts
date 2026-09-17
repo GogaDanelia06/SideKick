@@ -21,10 +21,10 @@ export type ThemeToken = {
 export const GROUPS: { id: TokenGroup; label: Bilingual; hint: Bilingual }[] = [
   { id: "site", label: { ka: "საიტი", en: "Public site" },
     hint: { ka: "მთავარი, ფასები, კონტაქტი — რასაც სტუმარი ხედავს", en: "Home, pricing, contact — what a visitor sees" } },
-  { id: "dash", label: { ka: "დაშბორდი და ადმინი", en: "Dashboard & admin" },
-    hint: { ka: "შესვლის შემდეგ — ეს გვერდიც აქ შედის", en: "After signing in — including this page" } },
   { id: "text", label: { ka: "ტექსტი და ველები", en: "Text & fields" },
     hint: { ka: "ერთნაირია საიტზეც და დაშბორდშიც", en: "Shared by the site and the dashboard" } },
+  { id: "dash", label: { ka: "დაშბორდი და ადმინი", en: "Dashboard & admin" },
+    hint: { ka: "შესვლის შემდეგ — ეს გვერდიც აქ შედის", en: "After signing in — including this page" } },
   { id: "accent", label: { ka: "აქცენტები", en: "Accents" },
     hint: { ka: "ღილაკები, ბმულები, სტატუსები", en: "Buttons, links, statuses" } },
 ];

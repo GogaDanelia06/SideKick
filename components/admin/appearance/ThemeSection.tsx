@@ -42,7 +42,7 @@ export function ThemeSection({
   const Glyph = ICONS[group];
 
   return (
-    <section className="overflow-hidden rounded-xl border border-border bg-card">
+    <section className="rounded-xl border border-border bg-card">
       <header className="flex items-start gap-3 border-b border-border2 p-3.5">
         <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-soft text-ink">
           <Glyph size={18} />

@@ -10,7 +10,7 @@ export function isHex(value: unknown): value is string {
   return typeof value === "string" && HEX.test(value);
 }
 
-function toRgb(hex: string): Rgb {
+export function toRgb(hex: string): Rgb {
   const n = Number.parseInt(hex.slice(1), 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }

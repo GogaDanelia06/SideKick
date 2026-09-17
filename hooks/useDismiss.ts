@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
  */
 export function useDismiss<T extends HTMLElement = HTMLDivElement>(
   open: boolean,
-  onClose: () => void,
+  onClose: (reason: "outside" | "escape") => void,
 ) {
   const ref = useRef<T>(null);
 
@@ -24,10 +24,10 @@ export function useDismiss<T extends HTMLElement = HTMLDivElement>(
 
     const onPointerDown = (event: PointerEvent) => {
       const el = ref.current;
-      if (el && !el.contains(event.target as Node)) close.current();
+      if (el && !el.contains(event.target as Node)) close.current("outside");
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close.current();
+      if (event.key === "Escape") close.current("escape");
     };
 
     document.addEventListener("pointerdown", onPointerDown);

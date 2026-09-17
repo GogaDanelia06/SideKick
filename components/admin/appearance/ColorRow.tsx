@@ -1,6 +1,5 @@
 "use client";
 
-import clsx from "clsx";
 import type { Theme } from "@/lib/site/theme/css";
 import { GROUPS, type Shade, type ThemeToken } from "@/lib/site/theme/tokens";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -12,17 +11,12 @@ export function ColorRow({
   token,
   draft,
   saved,
-  active,
-  onPoint,
   onChange,
   onShade,
 }: {
   token: ThemeToken;
   draft: Theme;
   saved: Theme;
-  /** Pointed at here or picked in the preview. */
-  active: boolean;
-  onPoint: (tokenId: string | null) => void;
   onChange: (shade: Shade, hex: string) => void;
   /** Editing a value shows the screen in that value's theme. */
   onShade: (shade: Shade) => void;
@@ -33,16 +27,7 @@ export function ColorRow({
   const name = group ? `${t(token.label)} (${t(group.label)})` : t(token.label);
 
   return (
-    <div
-      id={`color-${token.id}`}
-      onMouseEnter={() => onPoint(token.id)}
-      onMouseLeave={() => onPoint(null)}
-      onFocus={() => onPoint(token.id)}
-      className={clsx(
-        "grid scroll-mt-24 gap-2 rounded-lg border p-1.5 transition-colors @lg:grid-cols-[minmax(0,1fr)_auto_auto] @lg:items-center @lg:p-2",
-        active ? "border-[#f59e0b] bg-soft" : "border-transparent",
-      )}
-    >
+    <div className="grid gap-2 rounded-lg p-1.5 transition-colors hover:bg-soft @lg:grid-cols-[minmax(0,1fr)_auto_auto] @lg:items-center @lg:p-2">
       <div className="min-w-0 px-0.5">
         <div className="text-[13px] font-medium text-ink">{t(token.label)}</div>
         <div className="text-[12px] leading-snug text-muted">{t(token.hint)}</div>
@@ -61,6 +46,7 @@ export function ColorRow({
                 label={`${name} — ${t(SHADE_LABEL[shade])}`}
                 value={draft[shade][token.id]}
                 saved={saved[shade][token.id]}
+                fallback={token[shade]}
                 onChange={(hex) => onChange(shade, hex)}
                 onFocus={() => onShade(shade)}
               />
