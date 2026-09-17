@@ -5,12 +5,12 @@ import type { Bilingual } from "@/lib/content/types";
 
 const STEPS: Bilingual[] = [
   {
-    ka: "აირჩიე რომელ თემას ასწორებ — მუქს თუ ღიას. ეკრანიც მაშინვე გადაირთვება, რომ ის ხედავდე რასაც ცვლი.",
-    en: "Pick which theme you are editing — dark or light. The screen switches with it, so you are looking at what you change.",
+    ka: "ყველ ფერს ორი მნიშვნელობა აქვს — მუქი და ღია თემისთვის. რომელიც შეცვლი, ეკრანიც ის თემაზე გადაირთვება, რომ შედეგი ნახავ.",
+    en: "Every colour has two values: one for the dark theme and one for the light theme. Change either, and the screen switches to that theme so you see the result.",
   },
   {
-    ka: "აიღე მზა პალიტრა ან შეცვალე ცალკეული ფერი. ცვლილება მაშინვე ჩანს — ეს გვერდიც იმ ფერებშია.",
-    en: "Take a ready-made palette, or change single colours. You see it immediately — this page wears them too.",
+    ka: "მიიტანე მაუსი ფერზე — მარჯვნივ მოინიშნება, სად გამოიყენება. მზა პალიტრა ორივე თემას ერთდროულად ცვლის.",
+    en: "Point at a colour to see where it is used on the right. A ready-made palette sets both themes at once.",
   },
   {
     ka: "მარჯვნივ ნახავ, როგორ გამოიყურება საიტი და დაშბორდი. მოგწონს — შეინახე. არა — დააჭირე გაუქმებას.",
@@ -28,7 +28,7 @@ export function ThemeGuide() {
           <span className="grid size-5 shrink-0 place-items-center rounded-full bg-soft text-[11px] font-semibold text-ink">
             {i + 1}
           </span>
-          <span className="text-[12px] leading-snug text-muted">{t(step)}</span>
+          <span className="text-[13px] leading-snug text-muted">{t(step)}</span>
         </li>
       ))}
     </ol>

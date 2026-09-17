@@ -1,65 +1,60 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { themeCss, type Theme } from "@/lib/site/theme/css";
-import { GROUPS, TOKENS, defaultColors, type Shade } from "@/lib/site/theme/tokens";
+import { useMemo, useState, useTransition } from "react";
+import { defaultTheme, type Theme } from "@/lib/site/theme/css";
+import { presetColors, type Preset } from "@/lib/site/theme/presets";
+import { GROUPS, TOKENS, type Shade } from "@/lib/site/theme/tokens";
 import { updateTheme } from "@/lib/admin/actions/theme";
-import { ColorField } from "./ColorField";
+import { useTheme } from "@/lib/theme/useTheme";
+import { ColorRow } from "./ColorRow";
 import { ContrastNotes } from "./ContrastNotes";
+import { PreviewFocus } from "./previewFocus";
+import { SHADES } from "./shades";
 import { ThemeActions } from "./ThemeActions";
 import { ThemePreview } from "./ThemePreview";
 import { ThemeSection } from "./ThemeSection";
 import { ThemeToolbar } from "./ThemeToolbar";
+import { useLeaveWarning, useLiveTheme } from "./useLiveTheme";
 
 function countChanges(draft: Theme, saved: Theme): number {
-  return (["dark", "light"] as const).reduce(
-    (n, s) => n + TOKENS.filter((t) => draft[s][t.id] !== saved[s][t.id]).length,
-    0,
-  );
+  return SHADES.reduce((n, s) => n + TOKENS.filter((t) => draft[s][t.id] !== saved[s][t.id]).length, 0);
 }
 
-export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade: Shade }) {
-  const [shade, setShade] = useState<Shade>(opened);
+/** Both themes' colours side by side, with a live preview of the theme on screen. */
+export function ThemeEditor({ initial }: { initial: Theme }) {
+  // Opens on the theme the admin is already looking at.
+  const { theme: opened } = useTheme();
+  const [chosen, setChosen] = useState<Shade | null>(null);
+  const shade = chosen ?? opened;
+
   const [draft, setDraft] = useState<Theme>(initial);
   const [saved, setSaved] = useState<Theme>(initial);
+  const [active, setActive] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const [status, setStatus] = useState<"idle" | "saved" | "failed">("idle");
   const changed = countChanges(draft, saved);
 
-  // Preview the draft on the real page.
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.id = "theme-preview";
-    style.textContent = themeCss(draft);
-    document.head.append(style);
-    return () => style.remove();
-  }, [draft]);
+  useLiveTheme(draft, chosen);
+  useLeaveWarning(changed > 0);
 
-  // The page shows the palette being edited; the original theme is restored on exit
-  // (read before the effect below changes it).
-  useEffect(() => {
-    const root = document.documentElement;
-    const original = root.getAttribute("data-theme");
-    return () => {
-      if (original) root.setAttribute("data-theme", original);
-      else root.removeAttribute("data-theme");
-    };
-  }, []);
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", shade);
-  }, [shade]);
+  const focus = useMemo(
+    () => ({
+      active,
+      pick: (tokenId: string) => {
+        setActive(tokenId);
+        document.getElementById(`color-${tokenId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+        // A click marks the row for a moment; pointing at rows takes over after that.
+        window.setTimeout(() => setActive((current) => (current === tokenId ? null : current)), 2500);
+      },
+    }),
+    [active],
+  );
 
-  // Warn before leaving with unsaved changes.
-  useEffect(() => {
-    if (changed === 0) return;
-    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [changed]);
+  const setColor = (s: Shade, tokenId: string, hex: string) =>
+    setDraft((d) => ({ ...d, [s]: { ...d[s], [tokenId]: hex } }));
 
-  const colors = draft[shade];
-  const patch = (next: Record<string, string>) =>
-    setDraft((d) => ({ ...d, [shade]: { ...d[shade], ...next } }));
+  const applyPreset = (preset: Preset) =>
+    setDraft({ dark: presetColors(preset, "dark"), light: presetColors(preset, "light") });
 
   function save(fd: FormData) {
     setStatus("idle");
@@ -73,48 +68,53 @@ export function ThemeEditor({ initial, shade: opened }: { initial: Theme; shade:
   }
 
   return (
-    <form action={save} className="flex flex-col gap-5 xl:flex-row xl:items-start">
-      <input type="hidden" name="theme" value={JSON.stringify(draft)} />
+    <PreviewFocus.Provider value={focus}>
+      <form action={save} className="flex flex-col gap-5 xl:flex-row xl:items-start">
+        <input type="hidden" name="theme" value={JSON.stringify(draft)} />
 
-      <div className="flex min-w-0 flex-1 flex-col gap-5">
-        <ThemeToolbar shade={shade} onShade={setShade} onPreset={patch} />
+        <div className="flex min-w-0 flex-1 flex-col gap-5">
+          <ThemeToolbar shade={shade} onShade={setChosen} onPreset={applyPreset} />
 
-        {GROUPS.map((g) => {
-          const tokens = TOKENS.filter((x) => x.group === g.id);
-          return (
-            <ThemeSection
-              key={g.id}
-              group={g.id}
-              title={g.label}
-              hint={g.hint}
-              count={tokens.length}
-            >
-              {tokens.map((token) => (
-                <ColorField
-                  key={token.id}
-                  token={token}
-                  value={colors[token.id]}
-                  saved={saved[shade][token.id]}
-                  onChange={(hex) => patch({ [token.id]: hex })}
-                  onRevert={() => patch({ [token.id]: saved[shade][token.id] })}
-                />
-              ))}
-            </ThemeSection>
-          );
-        })}
-      </div>
+          {GROUPS.map((g) => {
+            const tokens = TOKENS.filter((x) => x.group === g.id);
+            return (
+              <ThemeSection
+                key={g.id}
+                group={g.id}
+                title={g.label}
+                hint={g.hint}
+                count={tokens.length}
+                shade={shade}
+              >
+                {tokens.map((token) => (
+                  <ColorRow
+                    key={token.id}
+                    token={token}
+                    draft={draft}
+                    saved={saved}
+                    active={active === token.id}
+                    onPoint={setActive}
+                    onChange={(s, hex) => setColor(s, token.id, hex)}
+                    onShade={setChosen}
+                  />
+                ))}
+              </ThemeSection>
+            );
+          })}
+        </div>
 
-      <aside className="flex w-full shrink-0 flex-col gap-3 xl:sticky xl:top-4 xl:w-[320px]">
-        <ThemePreview colors={colors} />
-        <ContrastNotes colors={colors} />
-        <ThemeActions
-          pending={pending}
-          status={status}
-          changed={changed}
-          onDiscard={() => setDraft(saved)}
-          onReset={() => patch(defaultColors(shade))}
-        />
-      </aside>
-    </form>
+        <aside className="flex w-full shrink-0 flex-col gap-3 xl:sticky xl:top-4 xl:w-[380px]">
+          <ThemePreview colors={draft[shade]} shade={shade} />
+          <ContrastNotes theme={draft} />
+          <ThemeActions
+            pending={pending}
+            status={status}
+            changed={changed}
+            onDiscard={() => setDraft(saved)}
+            onReset={() => setDraft(defaultTheme())}
+          />
+        </aside>
+      </form>
+    </PreviewFocus.Provider>
   );
 }

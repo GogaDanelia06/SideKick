@@ -39,7 +39,7 @@ export function ThemeActions({
         </button>
       </div>
 
-      <p className="text-[11px] text-muted">
+      <p className="text-[12px] text-muted">
         {status === "saved"
           ? t({ ka: "შენახულია — საიტზე უკვე აისახა.", en: "Saved — the site already shows it." })
           : status === "failed"
@@ -52,9 +52,9 @@ export function ThemeActions({
       <button
         type="button"
         onClick={onReset}
-        className="w-fit text-[11px] text-faint underline hover:text-muted"
+        className="w-fit text-[12px] text-muted underline hover:text-ink"
       >
-        {t({ ka: "ამ თემის ნაგულისხმევზე დაბრუნება", en: "Reset this theme to default" })}
+        {t({ ka: "ორივე თემის ნაგულისხმევზე დაბრუნება", en: "Reset both themes to default" })}
       </button>
     </div>
   );

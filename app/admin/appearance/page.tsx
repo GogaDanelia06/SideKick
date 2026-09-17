@@ -16,7 +16,7 @@ export default async function AdminAppearancePage() {
         }}
       />
       <ThemeGuide />
-      <ThemeEditor initial={theme} shade="dark" />
+      <ThemeEditor initial={theme} />
     </>
   );
 }
