@@ -5,6 +5,8 @@ import type { Payment, PaymentProvider, PaymentStatus, Plan, Subscription } from
 import { IconCreditCardOff, IconReceipt } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { cancelSubscription } from "@/lib/dashboard/actions";
+import { fmtDate } from "@/lib/dashboard/time";
+import { planLabel } from "@/lib/content/packages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
 import { PlanCheckout } from "./PlanCheckout";
@@ -32,9 +34,6 @@ const SUB_STATUS: Record<string, Bilingual> = {
   CANCELLED: { ka: "გაუქმებული", en: "Cancelled" },
 };
 
-const fmtDate = (d: Date) =>
-  new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" }).format(d);
-
 export function BillingView({
   subscription,
   payments,
@@ -61,7 +60,7 @@ export function BillingView({
           <div className="flex items-start justify-between">
             <div>
               <div className="text-xs text-muted">{t({ ka: "მიმდინარე პაკეტი", en: "Current plan" })}</div>
-              <div className="mt-1 text-2xl font-semibold">{plan?.name ?? "—"}</div>
+              <div className="mt-1 text-2xl font-semibold">{plan ? t(planLabel(plan)) : "—"}</div>
               {subscription ? (
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
                   <span>{t(SUB_STATUS[subscription.status] ?? { ka: "—", en: "—" })}</span>
@@ -72,7 +71,7 @@ export function BillingView({
                         {cancelled
                           ? t({ ka: "მოქმედებს", en: "Active until" })
                           : t({ ka: "განახლდება", en: "Renews" })}{" "}
-                        {fmtDate(new Date(subscription.renewsAt))}
+                        {fmtDate.format(new Date(subscription.renewsAt))}
                       </span>
                     </>
                   ) : null}
@@ -118,7 +117,7 @@ export function BillingView({
           <div className="h-2 overflow-hidden rounded-full bg-soft"><div className="h-full rounded-full bg-primary" style={{ width: `${unlimited ? 15 : pct}%` }} /></div>
           <div className="mt-2 text-xs text-muted">
             {t({ ka: "დარჩენილი", en: "Remaining" })} {unlimited ? "∞" : remaining.toLocaleString()}
-            {subscription?.renewsAt ? ` · ${t({ ka: "განულდება", en: "Resets" })} ${fmtDate(new Date(subscription.renewsAt))}` : ""}
+            {subscription?.renewsAt ? ` · ${t({ ka: "განულდება", en: "Resets" })} ${fmtDate.format(new Date(subscription.renewsAt))}` : ""}
           </div>
         </Panel>
 
@@ -135,7 +134,7 @@ export function BillingView({
                   <div className="min-w-0 flex-1">
                     <div className="truncate">{p.description}</div>
                     <div className="text-xs text-muted">
-                      {fmtDate(new Date(p.date))}
+                      {fmtDate.format(new Date(p.date))}
                       {p.provider ? ` · ${p.provider}` : ""}
                     </div>
                   </div>

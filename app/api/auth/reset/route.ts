@@ -6,33 +6,20 @@ import { sendMail } from "@/lib/mail/send";
 import { passwordChangedEmail } from "@/lib/mail/templates";
 import { resetSchema } from "@/lib/validation/auth";
 import { log } from "@/lib/logger";
-import { clientIp, consume, tooManyRequestsMessage } from "@/lib/security/rateLimit";
+import { clientIp, consume } from "@/lib/security/rateLimit";
+import { authError, invalidInput, throttled } from "@/lib/auth/apiError";
+import { AUTH_MESSAGES } from "@/lib/auth/messages";
 
 export async function POST(req: Request) {
   const limit = await consume("reset", clientIp(req));
-  if (!limit.ok) {
-    return NextResponse.json(
-      { error: tooManyRequestsMessage(limit.retryAfterSec) },
-      { status: 429, headers: { "Retry-After": String(limit.retryAfterSec) } },
-    );
-  }
+  if (!limit.ok) return throttled(limit.retryAfterSec);
 
   const body = await req.json().catch(() => null);
   const parsed = resetSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? "Invalid input" },
-      { status: 400 },
-    );
-  }
+  if (!parsed.success) return invalidInput(parsed.error);
 
   const record = await verifyResetToken(parsed.data.token);
-  if (!record) {
-    return NextResponse.json(
-      { error: "ბმული არასწორია ან ვადა გაუვიდა. მოითხოვეთ ახალი." },
-      { status: 400 },
-    );
-  }
+  if (!record) return authError(AUTH_MESSAGES.linkInvalid, { status: 400 });
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
 

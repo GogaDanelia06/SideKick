@@ -3,7 +3,9 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { provisionBusiness } from "@/lib/provision";
 import { registerSchema } from "@/lib/validation/auth";
-import { clientIp, consume, tooManyRequestsMessage } from "@/lib/security/rateLimit";
+import { clientIp, consume } from "@/lib/security/rateLimit";
+import { authError, invalidInput, throttled } from "@/lib/auth/apiError";
+import { AUTH_MESSAGES } from "@/lib/auth/messages";
 import { createVerificationToken } from "@/lib/auth/emailVerification";
 import { mailConfigured, sendMail } from "@/lib/mail/send";
 import { verifyEmailEmail } from "@/lib/mail/templates";
@@ -12,25 +14,16 @@ import { log } from "@/lib/logger";
 
 export async function POST(req: Request) {
   const limit = await consume("register", clientIp(req));
-  if (!limit.ok) {
-    return NextResponse.json(
-      { error: tooManyRequestsMessage(limit.retryAfterSec) },
-      { status: 429, headers: { "Retry-After": String(limit.retryAfterSec) } },
-    );
-  }
+  if (!limit.ok) return throttled(limit.retryAfterSec);
 
   const body = await req.json().catch(() => null);
   const parsed = registerSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
-  }
+  if (!parsed.success) return invalidInput(parsed.error);
   const { firstName, lastName, email, password, phone, company, field } = parsed.data;
   const normEmail = email.toLowerCase();
 
   const existing = await prisma.user.findUnique({ where: { email: normEmail } });
-  if (existing) {
-    return NextResponse.json({ error: "ეს მეილი უკვე რეგისტრირებულია" }, { status: 409 });
-  }
+  if (existing) return authError(AUTH_MESSAGES.emailTaken, { status: 409 });
 
   const passwordHash = await bcrypt.hash(password, 10);
 

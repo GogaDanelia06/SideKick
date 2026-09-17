@@ -53,15 +53,19 @@ export async function refineAiPrompt(instructions: string): Promise<PromptResult
   return savePrompt(access.businessId, await editPrompt(access.businessId, clean));
 }
 
-/** A test question for the assistant; nothing is stored. Uses a fixed per-business thread id. */
-export async function testAiReply(message: string): Promise<TestReply> {
+/** The tester names its chat; the AI service keeps that history under a thread of this business. */
+const TESTER_THREAD = /^[a-z0-9]{8,64}$/;
+
+/** A test question for the assistant. Nothing is stored here; the chat lives in the browser. */
+export async function testAiReply(message: string, thread: string): Promise<TestReply> {
   const access = await assistantAccess();
   if ("error" in access) return { ok: false, error: access.error };
 
   const text = message.trim();
   if (!text) return { ok: false, error: "empty" };
+  if (!TESTER_THREAD.test(thread)) return { ok: false, error: "failed" };
 
-  const answer = await askAi(access.businessId, `tester-${access.businessId}`, text);
+  const answer = await askAi(access.businessId, `tester-${access.businessId}-${thread}`, text);
   const reply = answer && (await applyReplyStyle(access.businessId, answer.reply));
   if (!answer || !reply) return { ok: false, error: "failed" };
   return { ok: true, reply, handoff: answer.handoffRequested };

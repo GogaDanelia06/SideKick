@@ -69,14 +69,14 @@ export async function cancelSubscription(): Promise<ActionResult> {
  */
 export async function switchPlanWithoutPayment(planKey: string): Promise<ActionResult> {
   const ctx = await requirePermission("billing:manage");
-  if (!ctx) return { ok: false, error: "ამის უფლება არ გაქვს" };
+  if (!ctx) return { ok: false, error: "forbidden" };
 
   if (availableProviders().length > 0) {
-    return { ok: false, error: "გადახდა ჩართულია — გეგმა ბანკის გავლით უნდა შეიცვალოს" };
+    return { ok: false, error: "payments_enabled" };
   }
 
   const plan = await prisma.plan.findUnique({ where: { key: planKey }, select: { id: true } });
-  if (!plan) return { ok: false, error: "გეგმა ვერ მოიძებნა" };
+  if (!plan) return { ok: false, error: "unknown_plan" };
 
   await prisma.subscription.upsert({
     where: { businessId: ctx.businessId },

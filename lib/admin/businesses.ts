@@ -31,7 +31,7 @@ export type AdminBusiness = Awaited<ReturnType<typeof getBusinessesForAdmin>>[nu
 export function getPlansForAdmin() {
   return prisma.plan.findMany({
     orderBy: { price: "asc" },
-    select: { id: true, key: true, name: true, price: true, msgLimit: true, channelCap: true },
+    select: { id: true, key: true, name: true, nameEn: true, price: true, msgLimit: true, channelCap: true },
   });
 }
 

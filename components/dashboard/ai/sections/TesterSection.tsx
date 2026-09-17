@@ -1,42 +1,41 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { IconFlask, IconSend, IconSparkles } from "@tabler/icons-react";
+import { useState } from "react";
+import { IconFlask, IconSend, IconTrash } from "@tabler/icons-react";
 import { testAiReply } from "@/lib/dashboard/actions/assistant";
+import { answerTester, askTester, clearTesterChat, useTesterChat } from "@/lib/dashboard/testerChat";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AiModuleNotice, INPUT } from "../parts";
+import { TesterTranscript } from "./TesterTranscript";
 
-type Turn = { from: "you" | "ai"; text: string; handoff?: boolean };
+const NO_ANSWER = {
+  ka: "AI სერვისმა ვერ უპასუხა. სცადე ხელახლა.",
+  en: "The AI service did not answer. Try again.",
+};
 
-/** Tries the current prompt against the real AI service; nothing is stored (see `testAiReply`). */
-export function TesterSection({ aiReady }: { aiReady: boolean }) {
+/** Tries the current prompt against the real AI service. The chat stays until logout. */
+export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId: string }) {
   const { t } = useLanguage();
+  const { turns, waiting, loaded } = useTesterChat(loginId);
   const [draft, setDraft] = useState("");
-  const [turns, setTurns] = useState<Turn[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [pending, start] = useTransition();
+  const [failed, setFailed] = useState(false);
 
-  function send() {
+  async function send() {
     const text = draft.trim();
-    if (!text || pending) return;
+    const thread = text ? askTester(loginId, text) : null;
+    if (!thread) return;
 
-    setError(null);
+    setFailed(false);
     setDraft("");
-    setTurns((t) => [...t, { from: "you", text }]);
+    const res = await testAiReply(text, thread).catch(() => null);
+    const answer = res?.ok ? { from: "ai" as const, text: res.reply, handoff: res.handoff } : null;
+    // Recorded even if this screen was left meanwhile; a failure is only shown if the chat is still this one.
+    if (answerTester(thread, answer) && !answer) setFailed(true);
+  }
 
-    start(async () => {
-      const res = await testAiReply(text);
-      if (res.ok) {
-        setTurns((t) => [...t, { from: "ai", text: res.reply, handoff: res.handoff }]);
-      } else {
-        setError(
-          t({
-            ka: "AI სერვისმა ვერ უპასუხა. სცადე ხელახლა.",
-            en: "The AI service did not answer. Try again.",
-          }),
-        );
-      }
-    });
+  function clear() {
+    clearTesterChat();
+    setFailed(false);
   }
 
   return (
@@ -45,13 +44,23 @@ export function TesterSection({ aiReady }: { aiReady: boolean }) {
         <span className="grid size-9 shrink-0 place-items-center rounded-[9px] bg-ai-surface text-ai">
           <IconFlask size={18} />
         </span>
-        <div>
+        <div className="flex-1">
           <h2 className="text-[15px] font-semibold">{t({ ka: "ტესტერი", en: "Tester" })}</h2>
           <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted">
             <span className={`size-1.5 rounded-full ${aiReady ? "bg-green" : "bg-faint"}`} />
             {t({ ka: "გატესტე მიმდინარე პრომპტი", en: "Test your current prompt" })}
           </p>
         </div>
+        {turns.length > 0 ? (
+          <button
+            type="button"
+            onClick={clear}
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] border border-border px-3 text-[12px] text-muted transition-colors hover:text-ink"
+          >
+            <IconTrash size={14} />
+            {t({ ka: "ჩატის გასუფთავება", en: "Clear chat" })}
+          </button>
+        ) : null}
       </div>
 
       {!aiReady ? (
@@ -64,56 +73,16 @@ export function TesterSection({ aiReady }: { aiReady: boolean }) {
       ) : null}
 
       <div className="flex h-[380px] flex-col overflow-hidden rounded-[10px] border border-border bg-canvas">
-        <div className="flex-1 space-y-3 overflow-y-auto p-4">
-          {turns.length === 0 ? (
-            <p className="pt-8 text-center text-[13px] text-muted">
-              {t({
-                ka: "დაწერე რამე, როგორც კლიენტი დაწერდა — და ნახე, როგორ უპასუხებს.",
-                en: "Write something a customer might, and see how it answers.",
-              })}
-            </p>
-          ) : null}
+        <TesterTranscript turns={turns} waiting={waiting} loaded={loaded} />
 
-          {turns.map((turn, i) =>
-            turn.from === "you" ? (
-              <div key={i} className="flex">
-                <span className="max-w-[80%] rounded-[10px] rounded-tl-sm border border-border bg-surface px-3.5 py-2.5 text-[13px]">
-                  {turn.text}
-                </span>
-              </div>
-            ) : (
-              <div key={i} className="flex justify-end">
-                <span className="max-w-[80%] whitespace-pre-wrap rounded-[10px] rounded-tr-sm border border-ai bg-ai-surface px-3.5 py-2.5 text-[13px] text-ai">
-                  <span className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold opacity-80">
-                    <IconSparkles size={12} />
-                    AI
-                    {turn.handoff
-                      ? ` · ${t({ ka: "ითხოვს ადამიანს", en: "asks for a person" })}`
-                      : ""}
-                  </span>
-                  {turn.text}
-                </span>
-              </div>
-            ),
-          )}
-
-          {pending ? (
-            <div className="flex justify-end">
-              <span className="rounded-[10px] border border-ai bg-ai-surface px-3.5 py-2.5 text-[13px] text-ai opacity-70">
-                {t({ ka: "წერს…", en: "Typing…" })}
-              </span>
-            </div>
-          ) : null}
-        </div>
-
-        {error ? <p className="px-4 pb-2 text-[13px] text-red">{error}</p> : null}
+        {failed ? <p className="px-4 pb-2 text-[13px] text-red">{t(NO_ANSWER)}</p> : null}
 
         <div className="flex items-center gap-2 border-t border-border p-3">
           <input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") send();
+              if (e.key === "Enter") void send();
             }}
             disabled={!aiReady}
             placeholder={t({ ka: "დაწერე შეტყობინება…", en: "Type a message…" })}
@@ -121,8 +90,8 @@ export function TesterSection({ aiReady }: { aiReady: boolean }) {
           />
           <button
             type="button"
-            onClick={send}
-            disabled={!aiReady || pending || !draft.trim()}
+            onClick={() => void send()}
+            disabled={!aiReady || waiting || !draft.trim()}
             className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-[8px] bg-primary px-4 text-[13px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             <IconSend size={16} />

@@ -41,13 +41,13 @@ export function BusinessSection({ business }: { business: Business | null }) {
           name="contactInfo"
           label={{ ka: "სხვა საკონტაქტო ინფორმაცია", en: "Other contact details" }}
           defaultValue={business?.contactInfo}
-          placeholder="Viber, Telegram, ფაქსი…"
+          placeholder={{ ka: "Viber, Telegram, ფაქსი…", en: "Viber, Telegram, fax…" }}
         />
         <TextField
           name="workingHours"
           label={{ ka: "სამუშაო საათები", en: "Working hours" }}
           defaultValue={business?.workingHours}
-          placeholder="ორშ–პარ 10:00–18:00"
+          placeholder={{ ka: "ორშ–პარ 10:00–18:00", en: "Mon–Fri 10:00–18:00" }}
         />
         <TextField
           name="site"
@@ -59,7 +59,10 @@ export function BusinessSection({ business }: { business: Business | null }) {
           name="branches"
           label={{ ka: "ფილიალების მდებარეობა", en: "Branch locations" }}
           defaultValue={business?.branches}
-          placeholder="მისამართები გამოყავით მძიმით: თბილისი …, ბათუმი …"
+          placeholder={{
+            ka: "მისამართები გამოყავით მძიმით: თბილისი …, ბათუმი …",
+            en: "Separate addresses with commas: Tbilisi …, Batumi …",
+          }}
         />
       </div>
 

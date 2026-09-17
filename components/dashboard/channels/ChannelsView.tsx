@@ -62,8 +62,8 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
                   if (!res.ok && res.error === "limit") {
                     setRefusal(
                       t({
-                        ka: `„${res.planName}" გეგმა ${res.limit} არხს უშვებს და ${res.used} უკვე ჩართულია. ჯერ სხვა გამორთე ან გეგმა შეცვალე.`,
-                        en: `The "${res.planName}" plan allows ${res.limit} channel(s) and ${res.used} are already on. Turn one off first, or change the plan.`,
+                        ka: `„${res.planName.ka}" გეგმა ${res.limit} არხს უშვებს და ${res.used} უკვე ჩართულია. ჯერ სხვა გამორთე ან გეგმა შეცვალე.`,
+                        en: `The "${res.planName.en}" plan allows ${res.limit} channel(s) and ${res.used} are already on. Turn one off first, or change the plan.`,
                       }),
                     );
                   }

@@ -14,18 +14,12 @@ import { LOGIN } from "@/lib/content/auth";
 import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { AUTH_MESSAGES } from "@/lib/auth/messages";
+import { EMAIL_PATTERN } from "@/lib/validation/patterns";
 
 type LoginField = "email" | "password";
 type LoginErrorKey = "emailRequired" | "emailInvalid" | "passwordRequired";
 type LoginErrors = Partial<Record<LoginField, LoginErrorKey>>;
-
-const LOGIN_VALIDATION_MESSAGES = {
-  emailRequired: { ka: "ელფოსტა სავალდებულოა", en: "Email is required" },
-  emailInvalid: { ka: "შეიყვანეთ სწორი ელფოსტა", en: "Enter a valid email address" },
-  passwordRequired: { ka: "პაროლი სავალდებულოა", en: "Password is required" },
-} as const;
 
 type LoginFormProps = {
   google: boolean;
@@ -167,7 +161,7 @@ export function LoginForm({ google }: LoginFormProps) {
           type="email"
           placeholder="you@company.com"
           autoComplete="email"
-          error={fieldErrors.email ? t(LOGIN_VALIDATION_MESSAGES[fieldErrors.email]) : undefined}
+          error={fieldErrors.email ? t(AUTH_MESSAGES[fieldErrors.email]) : undefined}
           onChange={() => clearFieldError("email")}
           required
         />
@@ -178,7 +172,7 @@ export function LoginForm({ google }: LoginFormProps) {
           type="password"
           placeholder="••••••••"
           autoComplete="current-password"
-          error={fieldErrors.password ? t(LOGIN_VALIDATION_MESSAGES[fieldErrors.password]) : undefined}
+          error={fieldErrors.password ? t(AUTH_MESSAGES[fieldErrors.password]) : undefined}
           onChange={() => clearFieldError("password")}
           required
         />

@@ -100,7 +100,7 @@ export function TextField({
   name, label, defaultValue, placeholder, required, type = "text",
 }: {
   name: string; label: Bilingual; defaultValue?: string | null;
-  placeholder?: string; required?: boolean; type?: string;
+  placeholder?: string | Bilingual; required?: boolean; type?: string;
 }) {
   const { t } = useLanguage();
   return (
@@ -111,7 +111,7 @@ export function TextField({
         type={type}
         required={required}
         defaultValue={defaultValue ?? ""}
-        placeholder={placeholder}
+        placeholder={typeof placeholder === "object" ? t(placeholder) : placeholder}
         className={INPUT}
       />
     </label>
@@ -141,10 +141,10 @@ export function AreaField({
 export function ChipChoice({
   name, label, options, value,
 }: {
-  name: string; label: Bilingual; options: string[]; value: string | null;
+  name: string; label: Bilingual; options: Bilingual[]; value: string | null;
 }) {
   const { t } = useLanguage();
-  const current = value && options.includes(value) ? value : options[0];
+  const current = options.find((o) => o.ka === value)?.ka ?? options[0].ka;
 
   return (
     <fieldset>
@@ -152,12 +152,12 @@ export function ChipChoice({
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <label
-            key={o}
+            key={o.ka}
             className="group inline-flex cursor-pointer items-center gap-1.5 rounded-[8px] border border-border px-3.5 py-2 text-[13px] transition-colors hover:border-blue has-[:checked]:border-primary has-[:checked]:bg-green-surface has-[:checked]:font-medium has-[:checked]:text-green"
           >
-            <input type="radio" name={name} value={o} defaultChecked={o === current} className="peer sr-only" />
+            <input type="radio" name={name} value={o.ka} defaultChecked={o.ka === current} className="peer sr-only" />
             <IconCheck size={14} className="hidden peer-checked:block" />
-            {o}
+            {t(o)}
           </label>
         ))}
       </div>

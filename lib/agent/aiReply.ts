@@ -17,7 +17,7 @@ export async function acceptAiReply(businessId: string, text: string): Promise<s
   const expired = verdict.reason === "expired";
   const message = expired
     ? "This business's subscription has lapsed and its grace period is over. This reply was not recorded. Customer messages are still accepted — stop generating answers until it is renewed."
-    : `The ${verdict.planName} plan allows ${verdict.limit} AI messages and ${verdict.used} have been used. This reply was not recorded. Customer messages are still accepted — stop generating answers for this business until the plan is upgraded.`;
+    : `The ${verdict.planName.en} plan allows ${verdict.limit} AI messages and ${verdict.used} have been used. This reply was not recorded. Customer messages are still accepted — stop generating answers for this business until the plan is upgraded.`;
 
   return {
     response: NextResponse.json(

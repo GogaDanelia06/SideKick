@@ -5,7 +5,9 @@ import { passwordResetEmail } from "@/lib/mail/templates";
 import { forgotSchema } from "@/lib/validation/auth";
 import { absoluteUrl } from "@/lib/seo/site";
 import { log } from "@/lib/logger";
-import { clientIp, consume, tooManyRequestsMessage } from "@/lib/security/rateLimit";
+import { clientIp, consume } from "@/lib/security/rateLimit";
+import { authError, invalidInput, throttled } from "@/lib/auth/apiError";
+import { AUTH_MESSAGES } from "@/lib/auth/messages";
 
 export async function POST(req: Request) {
   const ipLimit = await consume("forgotIp", clientIp(req));
@@ -13,12 +15,7 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => null);
   const parsed = forgotSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? "Invalid input" },
-      { status: 400 },
-    );
-  }
+  if (!parsed.success) return invalidInput(parsed.error);
 
   const emailLimit = await consume("forgot", parsed.data.email);
   if (!emailLimit.ok) return throttled(emailLimit.retryAfterSec);
@@ -29,13 +26,7 @@ export async function POST(req: Request) {
   // the rate limits above run before this lookup.
   if (!issued) {
     log.info("password reset requested for unknown address");
-    return NextResponse.json(
-      {
-        error: "ეს მეილი არ არის დარეგისტრირებული",
-        code: "not_registered",
-      },
-      { status: 404 },
-    );
+    return authError(AUTH_MESSAGES.emailUnknown, { status: 404, code: "not_registered" });
   }
 
   const link = absoluteUrl(`/reset?token=${issued.token}`);
@@ -46,11 +37,4 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ ok: true });
-}
-
-function throttled(retryAfterSec: number) {
-  return NextResponse.json(
-    { error: tooManyRequestsMessage(retryAfterSec) },
-    { status: 429, headers: { "Retry-After": String(retryAfterSec) } },
-  );
 }

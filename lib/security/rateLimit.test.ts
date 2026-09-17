@@ -13,7 +13,7 @@ vi.mock("@/lib/logger", () => ({
   log: { warn: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
-import { consume, clear, clientIp, tooManyRequestsMessage, LIMITS } from "./rateLimit";
+import { consume, clear, clientIp, LIMITS } from "./rateLimit";
 import { prisma } from "@/lib/db";
 
 const findMany = vi.mocked(prisma.rateLimitHit.findMany);
@@ -58,14 +58,6 @@ describe("clientIp()", () => {
 
   it("returns 'unknown' when no ip header is present", () => {
     expect(clientIp(req({}))).toBe("unknown");
-  });
-});
-
-describe("tooManyRequestsMessage()", () => {
-  it("rounds the wait up to whole minutes", () => {
-    expect(tooManyRequestsMessage(1)).toContain("1");
-    expect(tooManyRequestsMessage(90)).toContain("2");
-    expect(tooManyRequestsMessage(120)).toContain("2");
   });
 });
 

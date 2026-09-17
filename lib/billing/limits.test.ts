@@ -26,6 +26,7 @@ function plan(over: Partial<Record<string, number>> = {}, msgUsed = 0) {
     msgUsed,
     plan: {
       name: "ბეისიქი",
+      nameEn: "Basic",
       msgLimit: 1000,
       channelCap: 1,
       userCap: 1,
@@ -60,7 +61,7 @@ describe("checkLimit", () => {
     productCount.mockResolvedValue(100);
     expect(await checkLimit("b1", "products")).toEqual({ allowed: false, reason: "limit" as const, limit: 100,
       used: 100,
-      planName: "ბეისიქი",
+      planName: { ka: "ბეისიქი", en: "Basic" },
     });
   });
 
@@ -91,7 +92,7 @@ describe("checkLimit", () => {
     const verdict = await checkLimit("b1", "messages");
     expect(verdict).toEqual({ allowed: false, reason: "limit" as const, limit: 1000,
       used: 1000,
-      planName: "ბეისიქი",
+      planName: { ka: "ბეისიქი", en: "Basic" },
     });
   });
 

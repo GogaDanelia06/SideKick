@@ -8,6 +8,7 @@ import { Field } from "@/components/ui/Field";
 import { FORGOT } from "@/lib/content/auth";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { refusalMessage } from "@/lib/auth/messages";
 
 export function ForgotForm() {
   const { t } = useLanguage();
@@ -35,7 +36,7 @@ export function ForgotForm() {
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       if (data.code === "not_registered") return setNotRegistered(true);
-      return setError(data.error ?? t({ ka: "ვერ გაიგზავნა", en: "Could not send" }));
+      return setError(t(refusalMessage(data, { ka: "ვერ გაიგზავნა", en: "Could not send" })));
     }
 
     setSent(true);

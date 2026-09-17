@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useDismiss } from "@/hooks/useDismiss";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { logOut } from "@/lib/auth/logOut";
 import clsx from "clsx";
 import {
   IconExternalLink,
@@ -73,7 +73,7 @@ export function ProfileMenu({ account }: { account: Account }) {
           ) : null}
           <button
             type="button"
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={logOut}
             className="flex w-full items-center gap-2.5 rounded-[6px] px-2.5 py-2.5 text-left text-[13px] text-red hover:bg-red-surface"
           >
             <IconLogout size={17} /> {t({ ka: "გასვლა", en: "Log out" })}
@@ -90,7 +90,7 @@ export function ProfileMenu({ account }: { account: Account }) {
           <span className="block truncate text-[13px] font-semibold">{account.name}</span>
           <span className="block text-[11px] text-muted">
             {account.planName
-              ? `${account.planName} ${t({ ka: "პაკეტი", en: "plan" })}`
+              ? `${t(account.planName)} ${t({ ka: "პაკეტი", en: "plan" })}`
               : t({ ka: "პაკეტი არ არის", en: "No plan" })}
           </span>
         </span>

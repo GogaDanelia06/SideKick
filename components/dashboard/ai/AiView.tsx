@@ -35,15 +35,9 @@ const NAV: { key: Key; label: Bilingual; icon: IconType }[] = [
 
 const TABS: Key[] = [...NAV.map((n) => n.key), "tester"];
 
-export function AiView({
-  config,
-  business,
-  aiReady,
-}: {
-  aiReady: boolean;
-  config: AiConfig | null;
-  business: Business | null;
-}) {
+type Props = { config: AiConfig | null; business: Business | null; aiReady: boolean; loginId: string };
+
+export function AiView({ config, business, aiReady, loginId }: Props) {
   const { t } = useLanguage();
   const [tab, setTab] = useUrlTab("tab", TABS, "business");
   const testing = tab === "tester";
@@ -114,7 +108,7 @@ export function AiView({
         {tab === "rules" && <RulesSection config={config} />}
         {tab === "prompt" && <PromptSection config={config} aiReady={aiReady} />}
         {tab === "languages" && <LanguagesSection config={config} />}
-        {tab === "tester" && <TesterSection aiReady={aiReady} />}
+        {tab === "tester" && <TesterSection aiReady={aiReady} loginId={loginId} />}
       </Panel>
     </div>
   );

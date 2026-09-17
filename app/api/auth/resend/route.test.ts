@@ -11,7 +11,6 @@ vi.mock("@/lib/logger", () => ({
 vi.mock("@/lib/security/rateLimit", () => ({
   clientIp: () => "1.2.3.4",
   consume: vi.fn().mockResolvedValue({ ok: true, remaining: 2, retryAfterSec: 0 }),
-  tooManyRequestsMessage: () => "too many",
 }));
 
 import { POST } from "./route";

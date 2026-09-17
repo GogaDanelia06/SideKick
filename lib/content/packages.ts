@@ -1,3 +1,4 @@
+import { bilingual } from "./bilingual";
 import type { Bilingual } from "./types";
 
 export type Package = {
@@ -11,6 +12,11 @@ export type Package = {
   featured: boolean;
   features: Bilingual[];
 };
+
+/** A plan's name in both languages; a plan without an English name shows the Georgian one. */
+export function planLabel(plan: { name: string; nameEn: string }): Bilingual {
+  return bilingual(plan.name, plan.nameEn);
+}
 
 export const PLAN_SUPPORT: Record<string, Bilingual> = {
   basic: { ka: "მხარდაჭერა: ელფოსტა", en: "Support: email" },

@@ -28,7 +28,7 @@ export default function GlobalError({
           </div>
 
           <h1 style={{ fontSize: 22, fontWeight: 600, margin: "0 0 10px" }}>
-            რაღაც შეფერხდა
+            რაღაც შეფერხდა / Something went wrong
           </h1>
           <p style={{ margin: "0 0 6px", color: "#7d8590", fontSize: 14 }}>
             აპლიკაციის ჩატვირთვისას მოხდა შეცდომა. სცადეთ თავიდან.

@@ -19,13 +19,14 @@ import { REGISTER } from "@/lib/content/auth";
 import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { AUTH_MESSAGES, refusalMessage, type AuthMessageKey } from "@/lib/auth/messages";
+import {
+  EMAIL_PATTERN,
+  NAME_PATTERN,
+  PASSWORD_NUMBER_OR_SYMBOL_PATTERN,
+  PHONE_PATTERN,
+} from "@/lib/validation/patterns";
 import { RegisterTrialNotice } from "./RegisterTrialNotice";
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const NAME_PATTERN = /^[A-Za-zÀ-ÖØ-öø-ÿა-ჰ' -]+$/;
-const PHONE_PATTERN = /^\+?[0-9\s().-]+$/;
-const PASSWORD_NUMBER_OR_SYMBOL_PATTERN =
-  /[0-9]|[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/;
 
 type RegisterField =
   | "firstName"
@@ -37,72 +38,7 @@ type RegisterField =
   | "company"
   | "field";
 
-type RegisterErrorKey =
-  | "firstNameRequired"
-  | "nameInvalid"
-  | "emailRequired"
-  | "emailInvalid"
-  | "passwordRequired"
-  | "passwordLength"
-  | "passwordLowercase"
-  | "passwordUppercase"
-  | "passwordNumberOrSymbol"
-  | "repeatRequired"
-  | "passwordsMismatch"
-  | "phoneInvalid";
-
-type RegisterErrors = Partial<Record<RegisterField, RegisterErrorKey>>;
-
-const REGISTER_VALIDATION_MESSAGES = {
-  firstNameRequired: {
-    ka: "სახელი სავალდებულოა",
-    en: "First name is required",
-  },
-  nameInvalid: {
-    ka: "გამოიყენეთ მხოლოდ ასოები, გამოტოვება, დეფისი ან აპოსტროფი",
-    en: "Use only letters, spaces, hyphens, or apostrophes",
-  },
-  emailRequired: {
-    ka: "ელფოსტა სავალდებულოა",
-    en: "Email is required",
-  },
-  emailInvalid: {
-    ka: "შეიყვანეთ სწორი ელფოსტა",
-    en: "Enter a valid email address",
-  },
-  passwordRequired: {
-    ka: "პაროლი სავალდებულოა",
-    en: "Password is required",
-  },
-  passwordLength: {
-    ka: "პაროლი უნდა იყოს მინიმუმ 8 სიმბოლო",
-    en: "Password must be at least 8 characters",
-  },
-  passwordLowercase: {
-    ka: "პაროლი უნდა შეიცავდეს მინიმუმ ერთ პატარა ასოს",
-    en: "Password must contain at least one lowercase letter",
-  },
-  passwordUppercase: {
-    ka: "პაროლი უნდა შეიცავდეს მინიმუმ ერთ დიდ ასოს",
-    en: "Password must contain at least one uppercase letter",
-  },
-  passwordNumberOrSymbol: {
-    ka: "პაროლი უნდა შეიცავდეს მინიმუმ ერთ ციფრს ან სპეციალურ სიმბოლოს",
-    en: "Password must contain at least one number or special character",
-  },
-  repeatRequired: {
-    ka: "გაიმეორეთ პაროლი",
-    en: "Please repeat your password",
-  },
-  passwordsMismatch: {
-    ka: "პაროლები არ ემთხვევა",
-    en: "Passwords don't match",
-  },
-  phoneInvalid: {
-    ka: "შეიყვანეთ სწორი ტელეფონის ნომერი",
-    en: "Enter a valid phone number",
-  },
-} as const;
+type RegisterErrors = Partial<Record<RegisterField, AuthMessageKey>>;
 
 type RegisterFormProps = {
   google: boolean;
@@ -219,13 +155,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
 
-        setError(
-          data.error ??
-            t({
-              ka: "რეგისტრაცია ვერ მოხერხდა",
-              en: "Registration failed",
-            }),
-        );
+        setError(t(refusalMessage(data, { ka: "რეგისტრაცია ვერ მოხერხდა", en: "Registration failed" })));
         return;
       }
 
@@ -341,7 +271,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
               autoComplete="given-name"
               error={
                 fieldErrors.firstName
-                  ? t(REGISTER_VALIDATION_MESSAGES[fieldErrors.firstName])
+                  ? t(AUTH_MESSAGES[fieldErrors.firstName])
                   : undefined
               }
               onChange={() => clearFieldError("firstName")}
@@ -355,7 +285,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
               autoComplete="family-name"
               error={
                 fieldErrors.lastName
-                  ? t(REGISTER_VALIDATION_MESSAGES[fieldErrors.lastName])
+                  ? t(AUTH_MESSAGES[fieldErrors.lastName])
                   : undefined
               }
               onChange={() => clearFieldError("lastName")}
@@ -369,7 +299,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
             autoComplete="email"
             error={
               fieldErrors.email
-                ? t(REGISTER_VALIDATION_MESSAGES[fieldErrors.email])
+                ? t(AUTH_MESSAGES[fieldErrors.email])
                 : undefined
             }
             onChange={() => clearFieldError("email")}
@@ -384,7 +314,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
               autoComplete="new-password"
               error={
                 fieldErrors.password
-                  ? t(REGISTER_VALIDATION_MESSAGES[fieldErrors.password])
+                  ? t(AUTH_MESSAGES[fieldErrors.password])
                   : undefined
               }
               onChange={() => clearFieldError("password")}
@@ -399,7 +329,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
               error={
                 fieldErrors.repeatPassword
                   ? t(
-                      REGISTER_VALIDATION_MESSAGES[
+                      AUTH_MESSAGES[
                         fieldErrors.repeatPassword
                       ],
                     )
@@ -417,7 +347,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
             autoComplete="tel"
             error={
               fieldErrors.phone
-                ? t(REGISTER_VALIDATION_MESSAGES[fieldErrors.phone])
+                ? t(AUTH_MESSAGES[fieldErrors.phone])
                 : undefined
             }
             onChange={() => clearFieldError("phone")}
@@ -431,7 +361,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
             autoComplete="organization"
             error={
               fieldErrors.company
-                ? t(REGISTER_VALIDATION_MESSAGES[fieldErrors.company])
+                ? t(AUTH_MESSAGES[fieldErrors.company])
                 : undefined
             }
             onChange={() => clearFieldError("company")}
@@ -444,7 +374,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
             type="text"
             error={
               fieldErrors.field
-                ? t(REGISTER_VALIDATION_MESSAGES[fieldErrors.field])
+                ? t(AUTH_MESSAGES[fieldErrors.field])
                 : undefined
             }
             onChange={() => clearFieldError("field")}

@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/db";
+import { planLabel } from "@/lib/content/packages";
+import type { Bilingual } from "@/lib/content/types";
 import { isExpired } from "./subscriptionState";
 
 /** Plan caps; `-1` means unlimited. */
@@ -6,28 +8,25 @@ import { isExpired } from "./subscriptionState";
 export type LimitName = "messages" | "channels" | "users" | "products";
 
 /** `stoppedReason` values caused by billing rather than by an AI failure. */
-export const BILLING_STOPS: ReadonlySet<string> = new Set([
-  "limit_reached",
-  "subscription_expired",
-]);
+export const BILLING_STOPS: ReadonlySet<string> = new Set(["limit_reached", "subscription_expired"]);
 
-export type LimitVerdict =
-  | { allowed: true }
-  | {
-      allowed: false;
-      /** `limit`: upgrade the plan. `expired`: renew it. */
-      reason: "limit" | "expired";
-      limit: number;
-      used: number;
-      planName: string;
-    };
+/** Why one more item is refused. `limit`: upgrade the plan. `expired`: renew it. */
+export type LimitRefusal = {
+  allowed: false;
+  reason: "limit" | "expired";
+  limit: number;
+  used: number;
+  planName: Bilingual;
+};
+
+export type LimitVerdict = { allowed: true } | LimitRefusal;
 
 function unlimited(cap: number): boolean {
   return cap < 0;
 }
 
 type PlanCaps = {
-  planName: string;
+  planName: Bilingual;
   /** End of the paid period, or null for a trial that never had one. */
   renewsAt: Date | null;
   msgLimit: number;
@@ -46,6 +45,7 @@ async function capsFor(businessId: string): Promise<PlanCaps | null> {
       plan: {
         select: {
           name: true,
+          nameEn: true,
           msgLimit: true,
           channelCap: true,
           userCap: true,
@@ -57,7 +57,7 @@ async function capsFor(businessId: string): Promise<PlanCaps | null> {
   if (!subscription) return null;
 
   return {
-    planName: subscription.plan.name,
+    planName: planLabel(subscription.plan),
     renewsAt: subscription.renewsAt,
     msgLimit: subscription.plan.msgLimit,
     channelCap: subscription.plan.channelCap,

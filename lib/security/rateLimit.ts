@@ -89,8 +89,3 @@ export function clientIp(req: Request): string {
   if (fwd) return fwd.split(",")[0]!.trim();
   return req.headers.get("x-real-ip")?.trim() || "unknown";
 }
-
-export function tooManyRequestsMessage(retryAfterSec: number): string {
-  const minutes = Math.ceil(retryAfterSec / 60);
-  return `ძალიან ბევრი მცდელობა. სცადეთ ხელახლა ${minutes} წუთში.`;
-}

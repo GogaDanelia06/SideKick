@@ -9,6 +9,7 @@ import { Field } from "@/components/ui/Field";
 import { RESET } from "@/lib/content/auth";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { refusalMessage } from "@/lib/auth/messages";
 
 export function ResetForm() {
   const { t } = useLanguage();
@@ -59,7 +60,7 @@ export function ResetForm() {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      return setError(data.error ?? t({ ka: "ვერ შეიცვალა", en: "Could not change password" }));
+      return setError(t(refusalMessage(data, { ka: "ვერ შეიცვალა", en: "Could not change password" })));
     }
 
     setDone(true);

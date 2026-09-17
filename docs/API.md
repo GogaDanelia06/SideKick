@@ -15,6 +15,11 @@ be reachable over HTTP are route handlers.
 
 All under `app/api/`. All accept and return JSON unless stated otherwise.
 
+The auth endpoints refuse with `{ "error": "<Georgian text>", "message": { "ka": "…", "en": "…" } }`
+(written `refusal` below). The forms show `message` in the visitor's language; `error`
+stays for pages loaded before this shape existed. The texts live in
+`lib/auth/messages.ts`, and the validation schemas use its keys as their messages.
+
 ### `POST /api/auth/register`
 
 Creates a user, then provisions their business.
@@ -36,9 +41,9 @@ Creates a user, then provisions their business.
 | Status | Body | When |
 | --- | --- | --- |
 | `200` | `{ "ok": true }` | created |
-| `400` | `{ "error": "<first validation message>" }` | schema failure |
-| `409` | `{ "error": "ეს მეილი უკვე რეგისტრირებულია" }` | address taken |
-| `429` | `{ "error": "…" }` + `Retry-After` | more than 5 per hour from one IP |
+| `400` | refusal (first validation problem) | schema failure |
+| `409` | refusal ("This email is already registered") | address taken |
+| `429` | refusal + `Retry-After` | more than 5 per hour from one IP |
 
 **Side effects** — `lib/provision.ts` creates the Business, an `OWNER`
 Membership, a default `AiConfig`, four `Channel` rows (Facebook, Instagram,
@@ -59,13 +64,13 @@ Requests a password-reset link.
 
 | Status | Body | When |
 | --- | --- | --- |
-| `200` | `{ "ok": true }` | **always**, whether or not the address exists |
-| `400` | `{ "error": "…" }` | malformed email |
-| `429` | `{ "error": "…" }` + `Retry-After` | 3/hour per address, or 10/hour per IP |
+| `200` | `{ "ok": true }` | link sent |
+| `400` | refusal | malformed email |
+| `404` | refusal + `"code": "not_registered"` | no account uses this address |
+| `429` | refusal + `Retry-After` | 3/hour per address, or 10/hour per IP |
 
-The identical 200 is the point: a different response for unknown addresses would
-turn this into an account-enumeration oracle. Unknown addresses are logged
-server-side instead, which is how a sweep would be noticed.
+Unknown addresses are told so, because registration already reveals whether an
+address is taken. The rate limits run before the lookup, which keeps probing slow.
 
 Issuing a token invalidates any previous unused token for that user.
 
@@ -91,8 +96,8 @@ Sets a new password using a token from the reset link.
 | Status | Body | When |
 | --- | --- | --- |
 | `200` | `{ "ok": true }` | password changed |
-| `400` | `{ "error": "…" }` | validation failure, or token invalid/expired/used |
-| `429` | `{ "error": "…" }` + `Retry-After` | more than 10 per hour from one IP |
+| `400` | refusal | validation failure, or token invalid/expired/used |
+| `429` | refusal + `Retry-After` | more than 10 per hour from one IP |
 
 The password write and the token spend happen in one transaction, so a token can
 never be burned without the password actually changing. A confirmation email is

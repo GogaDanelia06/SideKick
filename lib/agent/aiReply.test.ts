@@ -12,7 +12,7 @@ import { checkLimit } from "@/lib/billing/limits";
 const styled = vi.mocked(applyReplyStyle);
 const limit = vi.mocked(checkLimit);
 
-const SPENT = { allowed: false, reason: "limit", used: 500, limit: 500, planName: "Basic" };
+const SPENT = { allowed: false, reason: "limit", used: 500, limit: 500, planName: { ka: "ბეისიქი", en: "Basic" } };
 
 async function refusal(result: string | AgentDenial) {
   if (typeof result === "string") throw new Error(`expected a refusal, got "${result}"`);
@@ -44,6 +44,7 @@ describe("acceptAiReply()", () => {
 
     expect(status).toBe(402);
     expect(body).toMatchObject({ error: "message_limit_reached", used: 500, limit: 500 });
+    expect(body.message).toContain("The Basic plan allows 500 AI messages");
   });
 
   it("says so when the subscription has lapsed", async () => {

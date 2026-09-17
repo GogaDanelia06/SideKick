@@ -9,7 +9,6 @@ vi.mock("@/lib/logger", () => ({
 vi.mock("@/lib/security/rateLimit", () => ({
   clientIp: () => "1.2.3.4",
   consume: vi.fn().mockResolvedValue({ ok: true, remaining: 2, retryAfterSec: 0 }),
-  tooManyRequestsMessage: () => "too many",
 }));
 
 import { POST } from "./route";
@@ -54,7 +53,10 @@ describe("POST /api/auth/forgot", () => {
 
     const res = await post("nobody@b.ge");
     expect(res.status).toBe(404);
-    expect(await res.json()).toMatchObject({ code: "not_registered" });
+    expect(await res.json()).toMatchObject({
+      code: "not_registered",
+      message: { en: "This email is not registered" },
+    });
     expect(mail).not.toHaveBeenCalled();
   });
 
@@ -76,6 +78,17 @@ describe("POST /api/auth/forgot", () => {
 
     const res = await post("nobody@b.ge");
     expect(res.status).toBe(429);
+    expect(res.headers.get("Retry-After")).toBe("600");
+    expect((await res.json()).message.en).toBe("Too many attempts. Try again in 10 minutes.");
     expect(issue).not.toHaveBeenCalled();
+  });
+
+  it("explains an invalid address in both languages", async () => {
+    const res = await post("not-an-email");
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({
+      error: "შეიყვანეთ სწორი ელფოსტა",
+      message: { ka: "შეიყვანეთ სწორი ელფოსტა", en: "Enter a valid email address" },
+    });
   });
 });

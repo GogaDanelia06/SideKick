@@ -1,65 +1,58 @@
 import { z } from "zod";
+import type { AuthMessageKey } from "@/lib/auth/messages";
+import { NAME_PATTERN, PASSWORD_NUMBER_OR_SYMBOL_PATTERN, PHONE_PATTERN } from "./patterns";
 
-const NAME_PATTERN = /^[A-Za-zÀ-ÖØ-öø-ÿა-ჰ' -]+$/;
-const PHONE_PATTERN = /^\+?[0-9\s().-]+$/;
-const PASSWORD_NUMBER_OR_SYMBOL_PATTERN =
-  /[0-9]|[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/;
+/** Messages are AUTH_MESSAGES keys; the route answers with the text in both languages. */
+const code = (key: AuthMessageKey) => key;
 
 export const passwordSchema = z
   .string()
-  .min(8, "პაროლი უნდა იყოს მინიმუმ 8 სიმბოლო")
-  .regex(/[a-z]/, "პაროლი უნდა შეიცავდეს მინიმუმ ერთ პატარა ასოს")
-  .regex(/[A-Z]/, "პაროლი უნდა შეიცავდეს მინიმუმ ერთ დიდ ასოს")
-  .regex(
-    PASSWORD_NUMBER_OR_SYMBOL_PATTERN,
-    "პაროლი უნდა შეიცავდეს მინიმუმ ერთ ციფრს ან სპეციალურ სიმბოლოს",
-  );
+  .min(8, code("passwordLength"))
+  .regex(/[a-z]/, code("passwordLowercase"))
+  .regex(/[A-Z]/, code("passwordUppercase"))
+  .regex(PASSWORD_NUMBER_OR_SYMBOL_PATTERN, code("passwordNumberOrSymbol"));
 
 export const registerSchema = z.object({
   firstName: z
     .string()
     .trim()
-    .min(1, "სახელი სავალდებულოა")
-    .regex(NAME_PATTERN, "სახელი შეიცავს დაუშვებელ სიმბოლოებს"),
+    .min(1, code("firstNameRequired"))
+    .regex(NAME_PATTERN, code("nameInvalid")),
   lastName: z
     .string()
     .trim()
-    .refine((value) => !value || NAME_PATTERN.test(value), {
-      message: "გვარი შეიცავს დაუშვებელ სიმბოლოებს",
-    })
+    .refine((value) => !value || NAME_PATTERN.test(value), { message: code("nameInvalid") })
     .optional()
     .default(""),
-  email: z.string().trim().email("არასწორი ელფოსტა"),
+  email: z.string().trim().email(code("emailInvalid")),
   password: passwordSchema,
   phone: z
     .string()
     .trim()
-    .refine((value) => !value || PHONE_PATTERN.test(value), {
-      message: "არასწორი ტელეფონის ნომერი",
-    })
+    .refine((value) => !value || PHONE_PATTERN.test(value), { message: code("phoneInvalid") })
     .optional()
     .default(""),
-  company: z.string().trim().max(120, "კომპანიის სახელი ძალიან გრძელია").optional().default(""),
-  field: z.string().trim().max(120, "საქმიანობის სფერო ძალიან გრძელია").optional().default(""),
+  company: z.string().trim().max(120, code("companyTooLong")).optional().default(""),
+  field: z.string().trim().max(120, code("fieldTooLong")).optional().default(""),
 });
 
 export const loginSchema = z.object({
-  email: z.string().trim().min(1, "ელფოსტა სავალდებულოა").email("არასწორი ელფოსტა"),
-  password: z.string().min(1, "პაროლი სავალდებულოა"),
+  email: z.string().trim().min(1, code("emailRequired")).email(code("emailInvalid")),
+  password: z.string().min(1, code("passwordRequired")),
 });
 
 export const forgotSchema = z.object({
-  email: z.string().trim().email("არასწორი ელფოსტა"),
+  email: z.string().trim().email(code("emailInvalid")),
 });
 
 export const resetSchema = z
   .object({
-    token: z.string().min(32, "ბმული არასწორია"),
+    token: z.string().min(32, code("linkInvalid")),
     password: passwordSchema,
     repeatPassword: z.string(),
   })
   .refine((data) => data.password === data.repeatPassword, {
-    message: "პაროლები არ ემთხვევა",
+    message: code("passwordsMismatch"),
     path: ["repeatPassword"],
   });
 

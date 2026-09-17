@@ -27,7 +27,7 @@ export function LimitCard({ limit }: { limit: HomeOverview["limit"] }) {
       <div className="mb-3.5 flex items-center justify-between gap-3">
         <h3 className="text-[15px] font-semibold">{t(LIMIT_LABELS.heading)}</h3>
         <span className="shrink-0 text-xs text-muted">
-          {limit.planName}
+          {t(limit.planName)}
           {unlimited ? ` · ${t(LIMIT_LABELS.unlimited)}` : ` · ${fmt(limit.total)}`}
         </span>
       </div>

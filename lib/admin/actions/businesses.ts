@@ -20,8 +20,8 @@ export async function setBusinessPlan(
     prisma.business.findUnique({ where: { id: businessId }, select: { id: true } }),
     prisma.plan.findUnique({ where: { id: planId }, select: { key: true } }),
   ]);
-  if (!business) return fail("ბიზნესი ვერ მოიძებნა");
-  if (!plan) return fail("გეგმა ვერ მოიძებნა");
+  if (!business) return fail("unknown_business");
+  if (!plan) return fail("unknown_plan");
 
   await prisma.subscription.upsert({
     where: { businessId },

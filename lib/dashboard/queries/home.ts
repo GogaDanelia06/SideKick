@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { planLabel } from "@/lib/content/packages";
 import { CHANNEL_FIELDS } from "./channels";
 import { COUNTED_ORDER, metric, minutesSince } from "./metrics";
 
@@ -62,7 +63,7 @@ export async function getHomeOverview(businessId: string) {
       revenue: metric(revToday._sum.total ?? 0, revYest._sum.total ?? 0),
     },
     limit: subscription && {
-      planName: subscription.plan.name,
+      planName: planLabel(subscription.plan),
       used: subscription.msgUsed,
       total: subscription.plan.msgLimit,
       renewsAt: subscription.renewsAt,

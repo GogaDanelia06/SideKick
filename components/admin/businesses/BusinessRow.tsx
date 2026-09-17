@@ -5,6 +5,8 @@ import type { SubscriptionStatus } from "@prisma/client";
 import { IconCheck } from "@tabler/icons-react";
 import { setBusinessPlan } from "@/lib/admin/actions/businesses";
 import type { AdminBusiness, AdminPlan } from "@/lib/admin/businesses";
+import { planLabel } from "@/lib/content/packages";
+import type { Bilingual } from "@/lib/content/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const SELECT =
@@ -12,11 +14,16 @@ const SELECT =
 
 const STATUSES: SubscriptionStatus[] = ["TRIAL", "ACTIVE", "PAST_DUE", "CANCELLED"];
 
-const STATUS_LABEL: Record<SubscriptionStatus, string> = {
-  TRIAL: "საცდელი",
-  ACTIVE: "აქტიური",
-  PAST_DUE: "გადაუხდელი",
-  CANCELLED: "გაუქმებული",
+const STATUS_LABEL: Record<SubscriptionStatus, Bilingual> = {
+  TRIAL: { ka: "საცდელი", en: "Trial" },
+  ACTIVE: { ka: "აქტიური", en: "Active" },
+  PAST_DUE: { ka: "გადაუხდელი", en: "Past due" },
+  CANCELLED: { ka: "გაუქმებული", en: "Cancelled" },
+};
+
+const ERRORS: Record<string, Bilingual> = {
+  unknown_business: { ka: "ბიზნესი ვერ მოიძებნა", en: "Business not found" },
+  unknown_plan: { ka: "პაკეტი ვერ მოიძებნა", en: "Plan not found" },
 };
 
 export function BusinessRow({ business, plans }: { business: AdminBusiness; plans: AdminPlan[] }) {
@@ -56,7 +63,7 @@ export function BusinessRow({ business, plans }: { business: AdminBusiness; plan
       <select value={planId} onChange={(e) => setPlanId(e.target.value)} className={SELECT} aria-label={t({ ka: "გეგმა", en: "Plan" })}>
         {plans.map((p) => (
           <option key={p.id} value={p.id}>
-            {p.name} — {p.price}₾
+            {t(planLabel(p))} — {p.price}₾
           </option>
         ))}
       </select>
@@ -69,7 +76,7 @@ export function BusinessRow({ business, plans }: { business: AdminBusiness; plan
       >
         {STATUSES.map((s) => (
           <option key={s} value={s}>
-            {STATUS_LABEL[s]}
+            {t(STATUS_LABEL[s])}
           </option>
         ))}
       </select>
@@ -101,7 +108,11 @@ export function BusinessRow({ business, plans }: { business: AdminBusiness; plan
           <IconCheck size={14} /> {t({ ka: "შენახულია", en: "Saved" })}
         </span>
       ) : null}
-      {error ? <span className="shrink-0 text-[12px] text-red">{error}</span> : null}
+      {error ? (
+        <span className="shrink-0 text-[12px] text-red">
+          {Object.hasOwn(ERRORS, error) ? t(ERRORS[error]) : error}
+        </span>
+      ) : null}
     </div>
   );
 }

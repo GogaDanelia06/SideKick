@@ -42,7 +42,7 @@ describe("addTeamMember", () => {
   it("creates no account when the plan refuses the invitation", async () => {
     vi.mocked(checkLimit).mockResolvedValue({ allowed: false, reason: "limit" as const, limit: 3,
       used: 3,
-      planName: "Basic",
+      planName: { ka: "ბეისიქი", en: "Basic" },
     });
 
     const result = await addTeamMember(form("new@example.com"));

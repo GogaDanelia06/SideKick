@@ -6,7 +6,8 @@ import { verifyEmailEmail } from "@/lib/mail/templates";
 import { forgotSchema } from "@/lib/validation/auth";
 import { absoluteUrl } from "@/lib/seo/site";
 import { log } from "@/lib/logger";
-import { clientIp, consume, tooManyRequestsMessage } from "@/lib/security/rateLimit";
+import { clientIp, consume } from "@/lib/security/rateLimit";
+import { invalidInput, throttled } from "@/lib/auth/apiError";
 
 /** Resends the signup confirmation link. The answer is identical for every address. */
 export async function POST(req: Request) {
@@ -15,12 +16,7 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => null);
   const parsed = forgotSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? "Invalid input" },
-      { status: 400 },
-    );
-  }
+  if (!parsed.success) return invalidInput(parsed.error);
 
   const email = parsed.data.email.toLowerCase().trim();
 
@@ -44,11 +40,4 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ ok: true });
-}
-
-function throttled(retryAfterSec: number) {
-  return NextResponse.json(
-    { error: tooManyRequestsMessage(retryAfterSec) },
-    { status: 429, headers: { "Retry-After": String(retryAfterSec) } },
-  );
 }

@@ -49,6 +49,12 @@ export async function getContext(): Promise<Ctx | null> {
   return { userId, businessId, role };
 }
 
+/** Changes with every sign-in, so what one login kept in the browser is never shown to the next. */
+export async function currentLoginId(): Promise<string> {
+  const session = await auth();
+  return `${session?.user?.id ?? "anonymous"}.${session?.user?.startedAt ?? 0}`;
+}
+
 export async function requireContext(): Promise<Ctx> {
   const ctx = await getContext();
   if (!ctx) redirect("/login");

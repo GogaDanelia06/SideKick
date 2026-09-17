@@ -1,6 +1,7 @@
 import type { ChannelType, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { BILLING_STOPS } from "@/lib/billing/limits";
+import { planLabel } from "@/lib/content/packages";
 import { fmtDate, fmtTime } from "./time";
 
 export function getLeads(businessId: string) {
@@ -194,7 +195,7 @@ export async function getHomeOverview(businessId: string) {
       revenue: metric(revToday._sum.total ?? 0, revYest._sum.total ?? 0),
     },
     limit: subscription && {
-      planName: subscription.plan.name,
+      planName: planLabel(subscription.plan),
       used: subscription.msgUsed,
       total: subscription.plan.msgLimit,
       renewsAt: subscription.renewsAt,
@@ -404,10 +405,7 @@ export async function getAccount(userId: string, businessId: string) {
       where: { id: userId },
       select: { name: true, email: true, isAdmin: true },
     }),
-    prisma.subscription.findUnique({
-      where: { businessId },
-      select: { plan: { select: { name: true } } },
-    }),
+    prisma.subscription.findUnique({ where: { businessId }, select: { plan: { select: { name: true, nameEn: true } } } }),
   ]);
 
   const name = user?.name?.trim() || user?.email?.split("@")[0] || "—";
@@ -415,7 +413,7 @@ export async function getAccount(userId: string, businessId: string) {
     name,
     email: user?.email ?? "",
     initial: name.charAt(0).toUpperCase(),
-    planName: subscription?.plan.name ?? null,
+    planName: subscription ? planLabel(subscription.plan) : null,
     isAdmin: user?.isAdmin ?? false,
   };
 }

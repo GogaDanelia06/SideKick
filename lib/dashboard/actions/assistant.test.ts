@@ -16,6 +16,7 @@ import { askAi } from "@/lib/ai/client";
 import { requirePermission } from "@/lib/auth/permissions";
 
 const ask = vi.mocked(askAi);
+const THREAD = "0a1b2c3d4e5f6a7b";
 
 function modelSays(reply: string) {
   ask.mockResolvedValue({ reply, handoffRequested: false, handoffReason: null });
@@ -27,21 +28,26 @@ beforeEach(() => {
   vi.mocked(prisma.aiConfig.findUnique).mockResolvedValue({ emoji: "არასოდეს" } as never);
 });
 
-describe("testAiReply() when the business turned emoji off", () => {
+describe("testAiReply()", () => {
   it("shows the reply without emoji", async () => {
     modelSays("Hi! 😄\n\nTake your time! I'm here to help. 🙌");
 
-    expect(await testAiReply(" hello ")).toEqual({
+    expect(await testAiReply(" hello ", THREAD)).toEqual({
       ok: true,
       reply: "Hi!\n\nTake your time! I'm here to help.",
       handoff: false,
     });
-    expect(ask).toHaveBeenCalledWith("b1", "tester-b1", "hello");
+    expect(ask).toHaveBeenCalledWith("b1", `tester-b1-${THREAD}`, "hello");
   });
 
   it("reports a failure when the reply was only emoji", async () => {
     modelSays("👍");
 
-    expect(await testAiReply("მადლობა")).toEqual({ ok: false, error: "failed" });
+    expect(await testAiReply("მადლობა", THREAD)).toEqual({ ok: false, error: "failed" });
+  });
+
+  it("refuses a malformed chat id without asking the AI", async () => {
+    expect(await testAiReply("hi", "../other-thread")).toEqual({ ok: false, error: "failed" });
+    expect(ask).not.toHaveBeenCalled();
   });
 });

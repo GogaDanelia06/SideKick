@@ -3,13 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { requirePermission } from "@/lib/auth/permissions";
-import { checkLimit } from "@/lib/billing/limits";
+import { checkLimit, type LimitRefusal } from "@/lib/billing/limits";
 import { DASH } from "@/lib/dashboard/routes";
 
 export type ChannelToggleResult =
   | { ok: true }
   | { ok: false; error: "forbidden" }
-  | { ok: false; error: "limit"; limit: number; used: number; planName: string };
+  | ({ ok: false; error: "limit" } & Pick<LimitRefusal, "limit" | "used" | "planName">);
 
 /** Toggles a channel; says why when the plan's channel cap refuses. */
 export async function setChannelConnected(channelId: string, connected: boolean): Promise<ChannelToggleResult> {

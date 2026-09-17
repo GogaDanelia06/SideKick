@@ -75,7 +75,7 @@ export function TextGroupEditor({ group, values }: { group: TextGroup; values: V
                 <div className="grid gap-2.5 sm:grid-cols-2">
                   <label className="block">
                     <span className="mb-1 block text-[11px] uppercase tracking-wide text-faint">
-                      ქართული
+                      {t({ ka: "ქართული", en: "Georgian" })}
                     </span>
                     <Field
                       name={f.key}
@@ -86,7 +86,7 @@ export function TextGroupEditor({ group, values }: { group: TextGroup; values: V
                   </label>
                   <label className="block">
                     <span className="mb-1 block text-[11px] uppercase tracking-wide text-faint">
-                      English
+                      {t({ ka: "ინგლისური", en: "English" })}
                     </span>
                     <Field
                       name={`${f.key}__en`}

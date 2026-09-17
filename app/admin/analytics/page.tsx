@@ -317,7 +317,7 @@ export default async function AdminAnalyticsPage() {
                   key: event.name,
                   label: event.label,
                   value: last30,
-                  aside: `${fmt(last7)} / 7დღე`,
+                  aside: { ka: `${fmt(last7)} / 7 დღე`, en: `${fmt(last7)} / 7d` },
                 }))}
               />
 

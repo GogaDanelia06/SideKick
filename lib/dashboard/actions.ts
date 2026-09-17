@@ -9,7 +9,7 @@ import { getContext } from "@/lib/session";
 import { can, requirePermission } from "@/lib/auth/permissions";
 import { availableProviders, parseProvider } from "@/lib/payments";
 import { isAllowedMonths, startCheckout } from "@/lib/billing/checkout";
-import { checkLimit } from "@/lib/billing/limits";
+import { checkLimit, type LimitRefusal } from "@/lib/billing/limits";
 import { deliverOutbound, type DeliveryStatus } from "@/lib/channels/send";
 import { log } from "@/lib/logger";
 import { DASH } from "./routes";
@@ -21,7 +21,7 @@ export type TeamResult = ActionResult;
 export type ChannelToggleResult =
   | { ok: true }
   | { ok: false; error: "forbidden" }
-  | { ok: false; error: "limit"; limit: number; used: number; planName: string };
+  | ({ ok: false; error: "limit" } & Pick<LimitRefusal, "limit" | "used" | "planName">);
 
 /** Toggles a channel; says why when the plan's channel cap refuses. */
 export async function setChannelConnected(
@@ -474,14 +474,14 @@ export type PlanSwitchResult = { ok: true } | { ok: false; error: string };
  */
 export async function switchPlanWithoutPayment(planKey: string): Promise<PlanSwitchResult> {
   const ctx = await requirePermission("billing:manage");
-  if (!ctx) return { ok: false, error: "ამის უფლება არ გაქვს" };
+  if (!ctx) return { ok: false, error: "forbidden" };
 
   if (availableProviders().length > 0) {
-    return { ok: false, error: "გადახდა ჩართულია — გეგმა ბანკის გავლით უნდა შეიცვალოს" };
+    return { ok: false, error: "payments_enabled" };
   }
 
   const plan = await prisma.plan.findUnique({ where: { key: planKey }, select: { id: true } });
-  if (!plan) return { ok: false, error: "გეგმა ვერ მოიძებნა" };
+  if (!plan) return { ok: false, error: "unknown_plan" };
 
   await prisma.subscription.upsert({
     where: { businessId: ctx.businessId },

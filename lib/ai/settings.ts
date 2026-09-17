@@ -1,12 +1,33 @@
-// AI character options. AiConfig stores these Georgian labels, and the AI service reads them as-is.
+import type { Bilingual } from "@/lib/content/types";
 
-export const AI_STYLES = ["მეგობრული", "პროფესიონალური", "ოფიციალური", "გაყიდვებზე ორიენტირებული", "კონსულტანტის სტილი"];
+/**
+ * AI character options. AiConfig stores the Georgian label (`ka`) and the AI service
+ * reads it as-is; `en` is only what the settings screen shows in English.
+ */
+export const AI_STYLES: Bilingual[] = [
+  { ka: "მეგობრული", en: "Friendly" },
+  { ka: "პროფესიონალური", en: "Professional" },
+  { ka: "ოფიციალური", en: "Formal" },
+  { ka: "გაყიდვებზე ორიენტირებული", en: "Sales-oriented" },
+  { ka: "კონსულტანტის სტილი", en: "Consultative" },
+];
 
-export const AI_LENGTHS = ["მოკლე", "საშუალო", "დეტალური"];
+export const AI_LENGTHS: Bilingual[] = [
+  { ka: "მოკლე", en: "Short" },
+  { ka: "საშუალო", en: "Medium" },
+  { ka: "დეტალური", en: "Detailed" },
+];
 
-export const AI_EMOJI_LEVELS = ["არასოდეს", "ზომიერად", "ხშირად"];
+export const AI_EMOJI_LEVELS: Bilingual[] = [
+  { ka: "არასოდეს", en: "Never" },
+  { ka: "ზომიერად", en: "Moderately" },
+  { ka: "ხშირად", en: "Often" },
+];
 
-export const AI_ADDRESS_FORMS = ["ფორმალური", "ფამილიარული"];
+export const AI_ADDRESS_FORMS: Bilingual[] = [
+  { ka: "ფორმალური", en: "Formal" },
+  { ka: "ფამილიარული", en: "Informal" },
+];
 
 /** The emoji level under which replies must contain no emoji at all. */
 export const NO_EMOJI = "არასოდეს";

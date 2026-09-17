@@ -7,7 +7,7 @@ export type Row = {
   label: Bilingual | string;
   value: number;
   /** A quieter second figure, e.g. the same count over seven days. */
-  aside?: string;
+  aside?: Bilingual;
   mono?: boolean;
 };
 
@@ -48,9 +48,10 @@ export function RankedList({
                 <span className="flex shrink-0 items-baseline gap-3">
                   <span className="font-mono tabular-nums">{fmt(r.value)}</span>
                   {r.aside ? (
-                    <span className="w-[68px] text-right font-mono text-[11px] tabular-nums text-faint">
-                      {r.aside}
-                    </span>
+                    <BiText
+                      className="w-[68px] text-right font-mono text-[11px] tabular-nums text-faint"
+                      value={r.aside}
+                    />
                   ) : null}
                 </span>
               </div>
