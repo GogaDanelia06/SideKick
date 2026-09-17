@@ -7,6 +7,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { DEFAULT_THEME, THEME_STORAGE_KEY, type Theme } from "./config";
+import { chosenTheme, rememberTheme, systemTheme, watchSystemTheme } from "./preference";
 
 type ThemeContextValue = {
   theme: Theme;
@@ -18,12 +19,28 @@ export const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const listeners = new Set<() => void>();
 
+function apply(theme: Theme) {
+  document.documentElement.dataset.theme = theme;
+  listeners.forEach((notify) => notify());
+}
+
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
-  window.addEventListener("storage", onChange);
+
+  // Without a pick of their own, visitors follow the system as it changes (e.g. at sunset).
+  const stopWatching = watchSystemTheme((theme) => {
+    if (!chosenTheme()) apply(theme);
+  });
+  // A pick made in another tab.
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === null || event.key === THEME_STORAGE_KEY) apply(chosenTheme() ?? systemTheme());
+  };
+
+  window.addEventListener("storage", onStorage);
   return () => {
     listeners.delete(onChange);
-    window.removeEventListener("storage", onChange);
+    stopWatching();
+    window.removeEventListener("storage", onStorage);
   };
 }
 
@@ -37,11 +54,8 @@ function getServerSnapshot(): Theme {
 }
 
 function commit(next: Theme) {
-  document.documentElement.dataset.theme = next;
-  try {
-    localStorage.setItem(THEME_STORAGE_KEY, next);
-  } catch {}
-  listeners.forEach((notify) => notify());
+  rememberTheme(next);
+  apply(next);
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
