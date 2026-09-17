@@ -188,8 +188,11 @@ own prompt, and their catalogue with prices already resolved.
 {
   "business": { "name": "დემო ბიზნესი", "field": "ელ-კომერცია" },
   "config": {
-    "languages": ["ქართული"],
+    "languages": ["ქართული", "English"],
     "style": "პროფესიონალური",
+    "length": "საშუალო",
+    "emoji": "არასოდეს",
+    "addressForm": "ფორმალური",
     "roles": ["info", "sales", "leads", "orders", "support"],
     "leadEnabled": false,
     "orderEnabled": false,
@@ -202,7 +205,20 @@ own prompt, and their catalogue with prices already resolved.
 ```
 
 `config: null` means the merchant has not set their assistant up yet — use your
-own defaults, it is not an error. `price` is what to quote; `listPrice` is the
+own defaults, it is not an error.
+
+The merchant sets these in the dashboard. The values are the Georgian labels shown there:
+
+| Field | How to reply |
+| --- | --- |
+| `languages` | Reply in the language of the customer's latest message when it is on this list, even if the prompt is written in another language. Otherwise reply in the first language on the list. Names are free text typed by the merchant (`"English"`, `"Русский"`, `"ქართული"`), not codes. |
+| `style` | `მეგობრული` friendly · `პროფესიონალური` professional · `ოფიციალური` formal · `გაყიდვებზე ორიენტირებული` sales-oriented · `კონსულტანტის სტილი` consultative |
+| `length` | `მოკლე` short · `საშუალო` medium · `დეტალური` detailed |
+| `emoji` | `არასოდეს` none at all · `ზომიერად` a few · `ხშირად` freely. With `არასოდეს`, Sidekick also strips any emoji from your reply before it is shown or sent. |
+| `addressForm` | `ფორმალური` formal (თქვენ) · `ფამილიარული` informal (შენ) |
+
+The dashboard tester sends `conversation_id` values of the form
+`tester-<businessId>-<chatId>`; every new tester chat gets a new `chatId`. `price` is what to quote; `listPrice` is the
 pre-discount figure, useful if you want to mention a saving. Capped at 500
 products per response.
 
