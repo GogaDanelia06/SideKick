@@ -69,7 +69,7 @@ export function ColorPicker({
             style={{ background: fallback }}
             className="size-3 rounded-sm shadow-[inset_0_0_0_1px_rgba(128,128,128,0.5)]"
           />
-          {t({ ka: "ნაგულისხმევი", en: "Default" })}
+          {t({ ka: "სტანდარტული", en: "Default" })}
         </button>
         <button
           type="button"

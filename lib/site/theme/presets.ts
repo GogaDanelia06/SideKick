@@ -18,7 +18,7 @@ export const DEFAULT_PRESET = "default";
 export const PRESETS: Preset[] = [
   {
     id: DEFAULT_PRESET,
-    label: { ka: "ნაგულისხმევი", en: "Default" },
+    label: { ka: "სტანდარტული", en: "Default" },
     dark: {},
     light: {},
   },

@@ -61,7 +61,7 @@ export function SeoEditor({
 
   const counter = (len: number, max: number) =>
     len === 0 ? (
-      <span className="text-faint">{t({ ka: "ნაგულისხმევი", en: "default" })}</span>
+      <span className="text-faint">{t({ ka: "სტანდარტული", en: "default" })}</span>
     ) : (
       <span className={len > max ? "text-amber" : "text-faint"}>
         {len} / {max}
@@ -79,7 +79,7 @@ export function SeoEditor({
         </div>
         <p className="text-[11px] text-faint">
           {t({
-            ka: "ცარიელი ველი ნიშნავს, რომ ნაგულისხმევი მნიშვნელობა გამოიყენება.",
+            ka: "ცარიელი ველი ნიშნავს, რომ სტანდარტული მნიშვნელობა გამოიყენება.",
             en: "A blank field means the built-in default is used.",
           })}
         </p>
