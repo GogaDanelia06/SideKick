@@ -13,10 +13,10 @@ type Member = TeamMember;
 type Role = Membership["role"];
 
 const ROLE: Record<Role, { pill: string; title: string; avatar: string; perms: Bilingual; desc: Bilingual }> = {
-  OWNER: { pill: "bg-green-surface text-green", title: "text-green", avatar: "bg-primary", perms: { ka: "სრული წვდომა", en: "Full access" }, desc: { ka: "სრული კონტროლი, ბილინგი, გუნდი", en: "Full control, billing, team" } },
-  ADMIN: { pill: "bg-blue-surface text-blue", title: "text-blue", avatar: "bg-blue", perms: { ka: "ყველა გვერდი, ბილინგის გარდა", en: "All pages except billing" }, desc: { ka: "ყველა ფუნქცია, ბილინგის გარდა", en: "All features except billing" } },
-  OPERATOR: { pill: "bg-ai-surface text-ai", title: "text-ai", avatar: "bg-ai", perms: { ka: "მიმოწერები, შეკვეთები, ლიდები", en: "Chats, orders, leads" }, desc: { ka: "მიმოწერა, შეკვეთა, ლიდები", en: "Chats, orders, leads" } },
-  VIEWER: { pill: "bg-soft text-muted", title: "text-muted", avatar: "bg-faint", perms: { ka: "მხოლოდ ნახვა", en: "View only" }, desc: { ka: "მხოლოდ ნახვის უფლება", en: "View permission only" } },
+  OWNER: { pill: "bg-green-surface text-green", title: "text-green", avatar: "bg-primary text-white", perms: { ka: "სრული წვდომა", en: "Full access" }, desc: { ka: "სრული კონტროლი, ბილინგი, გუნდი", en: "Full control, billing, team" } },
+  ADMIN: { pill: "bg-blue-surface text-blue", title: "text-blue", avatar: "bg-blue text-white", perms: { ka: "ყველა გვერდი, ბილინგის გარდა", en: "All pages except billing" }, desc: { ka: "ყველა ფუნქცია, ბილინგის გარდა", en: "All features except billing" } },
+  OPERATOR: { pill: "bg-ai-surface text-ai", title: "text-ai", avatar: "bg-ai text-on-ai", perms: { ka: "მიმოწერები, შეკვეთები, ლიდები", en: "Chats, orders, leads" }, desc: { ka: "მიმოწერა, შეკვეთა, ლიდები", en: "Chats, orders, leads" } },
+  VIEWER: { pill: "bg-soft text-muted", title: "text-muted", avatar: "bg-faint text-white", perms: { ka: "მხოლოდ ნახვა", en: "View only" }, desc: { ka: "მხოლოდ ნახვის უფლება", en: "View permission only" } },
 };
 
 const ROLES: Role[] = ["OWNER", "ADMIN", "OPERATOR", "VIEWER"];
@@ -173,7 +173,7 @@ export function TeamView({
                 <tr key={m.id} className="border-b border-border2 last:border-0">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <span className={`grid size-9 shrink-0 place-items-center rounded-full text-sm font-semibold text-white ${r.avatar}`}>
+                      <span className={`grid size-9 shrink-0 place-items-center rounded-full text-sm font-semibold ${r.avatar}`}>
                         {(m.user.name ?? m.user.email)[0]?.toUpperCase()}
                       </span>
                       <div className="min-w-0">

@@ -25,8 +25,9 @@ export function Switch({
     >
       <span
         className={clsx(
-          "absolute top-0.5 size-[18px] rounded-full bg-white shadow transition-[left]",
+          "absolute top-0.5 size-[18px] rounded-full shadow transition-[left]",
           on ? "left-[18px]" : "left-0.5",
+          on && tone === "ai" ? "bg-on-ai" : "bg-white",
         )}
       />
     </button>

@@ -39,7 +39,7 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 lg:min-h-0 lg:flex-1">
       <div className="flex items-start gap-2.5">
         <span className="grid size-9 shrink-0 place-items-center rounded-[9px] bg-ai-surface text-ai">
           <IconFlask size={18} />
@@ -72,7 +72,7 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
         />
       ) : null}
 
-      <div className="flex h-[380px] flex-col overflow-hidden rounded-[10px] border border-border bg-canvas">
+      <div className="flex h-[60vh] min-h-[340px] flex-col overflow-hidden rounded-[10px] border border-border bg-canvas lg:h-auto lg:min-h-0 lg:flex-1">
         <TesterTranscript turns={turns} waiting={waiting} loaded={loaded} />
 
         {failed ? <p className="px-4 pb-2 text-[13px] text-red">{t(NO_ANSWER)}</p> : null}

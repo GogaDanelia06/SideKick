@@ -44,7 +44,7 @@ export function VideosView({ tutorials }: { tutorials: TutorialView[] }) {
                   loading="lazy"
                 />
               ) : null}
-              <span className="relative grid size-12 place-items-center rounded-full bg-ai text-white transition-transform group-hover:scale-110">
+              <span className="relative grid size-12 place-items-center rounded-full bg-ai text-on-ai transition-transform group-hover:scale-110">
                 <IconPlayerPlayFilled size={22} />
               </span>
             </div>

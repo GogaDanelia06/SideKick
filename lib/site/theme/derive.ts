@@ -43,6 +43,11 @@ export function luminance(hex: string): number {
 const WHITE = "#ffffff";
 const BLACK = "#000000";
 
+/** White text where it stays readable (3:1, the minimum for UI controls), otherwise black. */
+export function readableOn(hex: string): string {
+  return 1.05 / (luminance(hex) + 0.05) >= 3 ? WHITE : BLACK;
+}
+
 /** Derived variables per scope. Hover and ink shifts go lighter on dark, darker on light. */
 export function derived(c: ThemeColors, shade: Shade): { root: ThemeColors; dash: ThemeColors } {
   const dark = shade === "dark";
@@ -67,6 +72,7 @@ export function derived(c: ThemeColors, shade: Shade): { root: ThemeColors; dash
       "--amber-surface": rgba(c.amber, 0.13),
       "--red-surface": rgba(c.red, 0.13),
       "--ai-surface": rgba(c.ai, 0.13),
+      "--on-ai": readableOn(c.ai),
     },
   };
 }

@@ -35,6 +35,9 @@ const NAV: { key: Key; label: Bilingual; icon: IconType }[] = [
 
 const TABS: Key[] = [...NAV.map((n) => n.key), "tester"];
 
+/** The sidebar always fills the screen; the tester panel matches it so the chat reaches the bottom. */
+const FULL_HEIGHT = "lg:h-[calc(100vh-7rem)] lg:min-h-[520px]";
+
 type Props = { config: AiConfig | null; business: Business | null; aiReady: boolean; loginId: string };
 
 export function AiView({ config, business, aiReady, loginId }: Props) {
@@ -44,7 +47,7 @@ export function AiView({ config, business, aiReady, loginId }: Props) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[260px_1fr] lg:items-start">
-      <Panel className="flex flex-col p-3 lg:sticky lg:top-4 lg:h-[calc(100vh-7rem)] lg:min-h-[520px]">
+      <Panel className={clsx("flex flex-col p-3 lg:sticky lg:top-4", FULL_HEIGHT)}>
         <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
           {t({ ka: "კონფიგურაცია", en: "Configuration" })}
         </div>
@@ -81,7 +84,7 @@ export function AiView({ config, business, aiReady, loginId }: Props) {
             className={clsx(
               "flex w-full items-center gap-2.5 rounded-[8px] border px-3 py-2.5 text-left text-[13px] font-medium transition-colors",
               testing
-                ? "border-ai bg-ai text-white"
+                ? "border-ai bg-ai text-on-ai"
                 : "border-ai bg-ai-surface text-ai hover:brightness-110",
             )}
           >
@@ -102,7 +105,7 @@ export function AiView({ config, business, aiReady, loginId }: Props) {
         </div>
       </Panel>
 
-      <Panel className="p-5">
+      <Panel className={clsx("p-5", testing && clsx("lg:flex lg:flex-col", FULL_HEIGHT))}>
         {tab === "business" && <BusinessSection business={business} />}
         {tab === "character" && <CharacterSection config={config} />}
         {tab === "rules" && <RulesSection config={config} />}
