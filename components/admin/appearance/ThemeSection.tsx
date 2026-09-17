@@ -58,8 +58,8 @@ export function ThemeSection({
         </div>
       </header>
 
-      <div className="p-2">
-        <div className="hidden gap-2 px-2 pb-1 pt-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+      <div className="@container p-2">
+        <div className="hidden gap-2 px-2 pb-1 pt-1 @lg:grid @lg:grid-cols-[minmax(0,1fr)_auto_auto]">
           <span />
           {SHADES.map((s) => {
             const ShadeIcon = SHADE_ICON[s];

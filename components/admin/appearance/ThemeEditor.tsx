@@ -69,7 +69,7 @@ export function ThemeEditor({ initial }: { initial: Theme }) {
 
   return (
     <PreviewFocus.Provider value={focus}>
-      <form action={save} className="flex flex-col gap-5 xl:flex-row xl:items-start">
+      <form action={save} className="flex flex-col gap-5 lg:flex-row lg:items-start">
         <input type="hidden" name="theme" value={JSON.stringify(draft)} />
 
         <div className="flex min-w-0 flex-1 flex-col gap-5">
@@ -78,14 +78,7 @@ export function ThemeEditor({ initial }: { initial: Theme }) {
           {GROUPS.map((g) => {
             const tokens = TOKENS.filter((x) => x.group === g.id);
             return (
-              <ThemeSection
-                key={g.id}
-                group={g.id}
-                title={g.label}
-                hint={g.hint}
-                count={tokens.length}
-                shade={shade}
-              >
+              <ThemeSection key={g.id} group={g.id} title={g.label} hint={g.hint} count={tokens.length} shade={shade}>
                 {tokens.map((token) => (
                   <ColorRow
                     key={token.id}
@@ -103,16 +96,17 @@ export function ThemeEditor({ initial }: { initial: Theme }) {
           })}
         </div>
 
-        <aside className="flex w-full shrink-0 flex-col gap-3 xl:sticky xl:top-4 xl:w-[380px]">
+        <aside className="flex w-full shrink-0 flex-col gap-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-8rem)] lg:w-[340px] xl:w-[360px]">
           <ThemePreview colors={draft[shade]} shade={shade} />
-          <ContrastNotes theme={draft} />
           <ThemeActions
             pending={pending}
             status={status}
             changed={changed}
             onDiscard={() => setDraft(saved)}
             onReset={() => setDraft(defaultTheme())}
-          />
+          >
+            <ContrastNotes theme={draft} />
+          </ThemeActions>
         </aside>
       </form>
     </PreviewFocus.Provider>

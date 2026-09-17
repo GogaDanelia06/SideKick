@@ -19,7 +19,7 @@ export function PreviewSite({ colors: c }: { colors: ThemeColors }) {
         as="div"
         tokens={["siteBorder"]}
         style={{ borderColor: c.siteBorder }}
-        className="flex items-center justify-between border-b px-3 py-2"
+        className="flex items-center justify-between border-b px-3 py-1.5"
       >
         <Spot tokens={["ink"]} style={{ color: c.ink }} className="text-[12px] font-bold tracking-wide">
           SIDEKICK
@@ -38,22 +38,19 @@ export function PreviewSite({ colors: c }: { colors: ThemeColors }) {
         </span>
       </Spot>
 
-      <div className="p-3">
+      <div className="p-2.5">
         <Spot as="div" tokens={["ink"]} style={{ color: c.ink }} className="text-[15px] font-semibold leading-tight">
           {t({ ka: "გაყიდვები ავტომატურად", en: "Sales, automatically" })}
         </Spot>
         <Spot as="div" tokens={["muted"]} style={{ color: c.muted }} className="mt-1 text-[12px] leading-snug">
-          {t({
-            ka: "აღწერის ტექსტი ორ ხაზზე, ისე როგორც მთავარ გვერდზეა.",
-            en: "Body copy over two lines, the way it reads on the home page.",
-          })}
+          {t({ ka: "ტექსტი, ისე როგორც მთავარ გვერდზე.", en: "Body text, as on the home page." })}
         </Spot>
 
         <Spot
           as="div"
           tokens={["card", "siteBorder"]}
           style={{ background: c.card, borderColor: c.siteBorder }}
-          className="mt-2.5 rounded-md border p-2.5"
+          className="mt-2 rounded-md border p-2"
         >
           <Spot as="div" tokens={["ink"]} style={{ color: c.ink }} className="text-[12px] font-semibold">
             {t({ ka: "ბარათი", en: "A card" })}

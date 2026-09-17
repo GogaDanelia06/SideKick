@@ -39,7 +39,7 @@ export function ColorRow({
       onMouseLeave={() => onPoint(null)}
       onFocus={() => onPoint(token.id)}
       className={clsx(
-        "grid scroll-mt-24 gap-2 rounded-lg border p-2 transition-colors sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center",
+        "grid scroll-mt-24 gap-2 rounded-lg border p-1.5 transition-colors @lg:grid-cols-[minmax(0,1fr)_auto_auto] @lg:items-center @lg:p-2",
         active ? "border-[#f59e0b] bg-soft" : "border-transparent",
       )}
     >
@@ -47,13 +47,13 @@ export function ColorRow({
         <div className="text-[13px] font-medium text-ink">{t(token.label)}</div>
         <div className="text-[12px] leading-snug text-muted">{t(token.hint)}</div>
       </div>
-      <div className="flex flex-wrap gap-2 sm:contents">
+      <div className="flex flex-wrap gap-2 @lg:contents">
         {SHADES.map((shade) => {
           const ShadeIcon = SHADE_ICON[shade];
           return (
-            <div key={shade} className="flex flex-col gap-1 sm:contents">
-              {/* On wide screens the section's column headings say which theme this is. */}
-              <span className="flex items-center gap-1 text-[11px] font-medium text-muted sm:hidden">
+            <div key={shade} className="flex flex-col gap-1 @lg:contents">
+              {/* In a wide section the column headings say which theme this is. */}
+              <span className="flex items-center gap-1 text-[11px] font-medium text-muted @lg:hidden">
                 <ShadeIcon size={12} />
                 {t(SHADE_LABEL[shade])}
               </span>

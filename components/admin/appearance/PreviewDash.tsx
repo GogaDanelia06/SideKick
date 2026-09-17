@@ -8,13 +8,13 @@ import { Spot } from "./previewFocus";
 /** A miniature of the dashboard: menu with the Tester button, a card, statuses and the AI parts. */
 export function PreviewDash({ colors: c }: { colors: ThemeColors }) {
   const { t } = useLanguage();
-  const label = "px-2 py-0.5 text-[11px]";
+  const label = "truncate px-1.5 py-0.5 text-[11px]";
 
   const chip = (token: string, text: string) => (
     <Spot
       tokens={[token]}
       style={{ background: rgba(c[token], 0.15), color: c[token], borderColor: rgba(c[token], 0.35) }}
-      className="rounded-full border px-2 py-0.5 text-[11px] font-semibold"
+      className="rounded-full border px-1.5 py-px text-[10px] font-semibold"
     >
       {text}
     </Spot>
@@ -26,7 +26,7 @@ export function PreviewDash({ colors: c }: { colors: ThemeColors }) {
         as="div"
         tokens={["surface", "dashBorder"]}
         style={{ background: c.surface, borderColor: c.dashBorder }}
-        className="flex w-[96px] shrink-0 flex-col gap-1 border-r p-2"
+        className="flex w-[90px] shrink-0 flex-col gap-1 border-r p-2"
       >
         <Spot tokens={["soft", "ink"]} style={{ background: c.soft, color: c.ink }} className={`${label} rounded-md font-semibold`}>
           {t({ ka: "მთავარი", en: "Home" })}
@@ -40,7 +40,7 @@ export function PreviewDash({ colors: c }: { colors: ThemeColors }) {
         <Spot
           tokens={["ai"]}
           style={{ background: c.ai, color: readableOn(c.ai) }}
-          className={`${label} mt-auto rounded-md text-center font-semibold`}
+          className={`${label} mt-1.5 rounded-md text-center font-semibold`}
         >
           {t({ ka: "ტესტერი", en: "Tester" })}
         </Spot>
@@ -51,7 +51,7 @@ export function PreviewDash({ colors: c }: { colors: ThemeColors }) {
           as="div"
           tokens={["surface", "dashBorder"]}
           style={{ background: c.surface, borderColor: c.dashBorder }}
-          className="rounded-md border p-2.5"
+          className="rounded-md border p-2"
         >
           <div className="flex items-baseline justify-between">
             <Spot tokens={["ink"]} style={{ color: c.ink }} className="text-[16px] font-semibold">
@@ -65,13 +65,13 @@ export function PreviewDash({ colors: c }: { colors: ThemeColors }) {
             {t({ ka: "შეტყობინება", en: "Messages" })}
           </Spot>
 
-          <div className="mt-2 flex flex-wrap gap-1">
+          <div className="mt-1.5 flex flex-wrap gap-1">
             {chip("green", t({ ka: "აქტიური", en: "Active" }))}
-            {chip("amber", t({ ka: "მოლოდინი", en: "Pending" }))}
+            {chip("amber", t({ ka: "ლოდინი", en: "Pending" }))}
             {chip("red", t({ ka: "შეცდომა", en: "Error" }))}
           </div>
 
-          <Spot as="div" tokens={["border2"]} style={{ borderColor: c.border2 }} className="mt-2 border-t pt-2">
+          <Spot as="div" tokens={["border2"]} style={{ borderColor: c.border2 }} className="mt-1.5 border-t pt-1.5">
             <Spot
               as="div"
               tokens={["ai"]}
@@ -83,7 +83,7 @@ export function PreviewDash({ colors: c }: { colors: ThemeColors }) {
             </Spot>
           </Spot>
 
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-1.5 flex items-center gap-2">
             <Spot
               tokens={["primary"]}
               style={{ background: c.primary, color: "#ffffff" }}

@@ -12,4 +12,4 @@ export const SHADE_LABEL: Record<Shade, Bilingual> = {
 export const SHADE_ICON: Record<Shade, Icon> = { dark: IconMoon, light: IconSun };
 
 /** Shared by each colour input and the column heading above it, so the two line up. */
-export const PICKER_WIDTH = "w-[164px]";
+export const PICKER_WIDTH = "w-[146px]";

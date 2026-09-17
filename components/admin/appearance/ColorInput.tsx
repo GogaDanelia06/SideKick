@@ -45,7 +45,7 @@ export function ColorInput({
     <div
       onFocus={onFocus}
       className={clsx(
-        "grid grid-cols-[32px_minmax(0,1fr)_24px] items-center gap-1.5 rounded-lg border p-1",
+        "grid grid-cols-[28px_minmax(0,1fr)_22px] items-center gap-1.5 rounded-lg border p-1",
         PICKER_WIDTH,
         changed ? "border-blue bg-blue-surface" : "border-border",
       )}
@@ -53,7 +53,7 @@ export function ColorInput({
       {/* An invisible native colour input over a painted swatch; the inset line keeps dark colours visible. */}
       <span
         style={{ background: value }}
-        className="relative size-8 overflow-hidden rounded-md shadow-[inset_0_0_0_1px_rgba(128,128,128,0.5)] focus-within:ring-2 focus-within:ring-blue-ring"
+        className="relative size-7 overflow-hidden rounded-md shadow-[inset_0_0_0_1px_rgba(128,128,128,0.5)] focus-within:ring-2 focus-within:ring-blue-ring"
       >
         <input
           type="color"
@@ -70,7 +70,7 @@ export function ColorInput({
         spellCheck={false}
         maxLength={7}
         aria-label={`${label} hex`}
-        className="w-full rounded-[6px] border border-input bg-canvas px-2 py-1.5 font-mono text-[12px] text-ink outline-none focus:border-blue"
+        className="w-full rounded-[6px] border border-input bg-canvas px-1.5 py-1 font-mono text-[12px] text-ink outline-none focus:border-blue"
       />
       {changed ? (
         <button
@@ -78,7 +78,7 @@ export function ColorInput({
           onClick={() => onChange(saved)}
           title={t({ ka: "დაბრუნება", en: "Undo this change" })}
           aria-label={`${label}: ${t({ ka: "დაბრუნება", en: "Undo this change" })}`}
-          className="grid size-6 place-items-center rounded-md text-blue hover:bg-blue-surface"
+          className="grid size-[22px] place-items-center rounded-md text-blue hover:bg-blue-surface"
         >
           <IconRotate2 size={14} />
         </button>

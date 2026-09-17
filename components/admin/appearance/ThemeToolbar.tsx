@@ -58,25 +58,26 @@ export function ThemeToolbar({
         <p className={HEADING}>
           {t({ ka: "მზა პალიტრები — ორივე თემას ერთად ცვლის", en: "Ready-made palettes — set both themes at once" })}
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">
           {PRESETS.map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => onPreset(p)}
-              className="flex items-center gap-2 rounded-lg border border-border bg-surface py-1.5 pl-1.5 pr-2.5 text-[13px] text-ink hover:border-blue"
+              title={t(p.label)}
+              className="flex min-w-0 items-center gap-1.5 rounded-lg border border-border bg-surface py-1.5 pl-1 pr-2 text-[13px] text-ink hover:border-blue"
             >
-              <span className="flex overflow-hidden rounded-md border border-border">
+              <span className="flex shrink-0 overflow-hidden rounded-md border border-border">
                 {presetSwatch(p, shade).map((hex, i) => (
                   <span
                     key={i}
                     aria-hidden
                     style={{ background: hex }}
-                    className="size-6 shadow-[inset_0_0_0_1px_rgba(128,128,128,0.35)]"
+                    className="size-5 shadow-[inset_0_0_0_1px_rgba(128,128,128,0.35)]"
                   />
                 ))}
               </span>
-              {t(p.label)}
+              <span className="truncate">{t(p.label)}</span>
             </button>
           ))}
         </div>

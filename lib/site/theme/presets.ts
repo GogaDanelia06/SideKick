@@ -79,8 +79,8 @@ export function presetColors(preset: Preset, shade: Shade): ThemeColors {
   return out;
 }
 
-/** Three colours that stand for the look, for the swatch in the toolbar. */
-export function presetSwatch(preset: Preset, shade: Shade): [string, string, string] {
+/** The page and card colours, which are what tell the palettes apart in the toolbar. */
+export function presetSwatch(preset: Preset, shade: Shade): [string, string] {
   const c = presetColors(preset, shade);
-  return [c.bg, c.surface, c.blue];
+  return [c.bg, c.card];
 }
