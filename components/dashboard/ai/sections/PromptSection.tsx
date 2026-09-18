@@ -3,10 +3,10 @@
 import { useState } from "react";
 import type { AiConfig } from "@prisma/client";
 import { IconBrandYoutube, IconFileText } from "@tabler/icons-react";
-import { saveAiPrompt } from "@/lib/dashboard/actions/aiConfig";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { PromptAiActions } from "./PromptAiActions";
-import { AREA, SectionForm } from "../parts";
+import { AREA } from "../parts";
+import { SectionForm } from "../SectionForm";
 
 export function PromptSection({ config, aiReady }: { config: AiConfig | null; aiReady: boolean }) {
   const { t } = useLanguage();
@@ -14,9 +14,9 @@ export function PromptSection({ config, aiReady }: { config: AiConfig | null; ai
 
   return (
     <SectionForm
+      section="prompt"
       icon={IconFileText}
       title={{ ka: "პრომპტი / ინსტრუქციები", en: "Prompt / instructions" }}
-      action={saveAiPrompt}
       right={
         <div className="flex shrink-0 gap-2">
 

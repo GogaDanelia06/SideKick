@@ -5,7 +5,7 @@ import { IconX } from "@tabler/icons-react";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { NavList } from "./NavList";
 import { ProfileMenu } from "./ProfileMenu";
-import type { Account } from "@/lib/dashboard/queries";
+import type { Account } from "@/lib/dashboard/queries/account";
 
 export function MobileDrawer({ open, onClose, account }: { open: boolean; onClose: () => void; account: Account }) {
   return (

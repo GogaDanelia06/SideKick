@@ -16,16 +16,11 @@ import { Panel } from "@/components/dashboard/ui/Panel";
 import { useUrlTab } from "@/hooks/useUrlTab";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual, IconType } from "@/lib/content/types";
-import { BusinessSection } from "./sections/BusinessSection";
-import { CharacterSection } from "./sections/CharacterSection";
-import { RulesSection } from "./sections/RulesSection";
-import { PromptSection } from "./sections/PromptSection";
-import { LanguagesSection } from "./sections/LanguagesSection";
-import { TesterSection } from "./sections/TesterSection";
+import type { AutosaveOwner } from "@/lib/dashboard/autosave/request";
+import { AiSections, type AiTab } from "./AiSections";
 
-type Key = "business" | "character" | "rules" | "prompt" | "languages" | "tester";
 
-const NAV: { key: Key; label: Bilingual; icon: IconType }[] = [
+const NAV: { key: AiTab; label: Bilingual; icon: IconType }[] = [
   { key: "business", label: { ka: "ბიზნესის ინფორმაცია", en: "Business info" }, icon: IconBuildingStore },
   { key: "character", label: { ka: "ხასიათი", en: "Character" }, icon: IconSquareRoundedLetterA },
   { key: "rules", label: { ka: "ქცევის წესები", en: "Behaviour rules" }, icon: IconListCheck },
@@ -33,14 +28,14 @@ const NAV: { key: Key; label: Bilingual; icon: IconType }[] = [
   { key: "languages", label: { ka: "ენები", en: "Languages" }, icon: IconLanguage },
 ];
 
-const TABS: Key[] = [...NAV.map((n) => n.key), "tester"];
+const TABS: AiTab[] = [...NAV.map((n) => n.key), "tester"];
 
 /** The sidebar always fills the screen; the tester panel matches it so the chat reaches the bottom. */
 const FULL_HEIGHT = "lg:h-[calc(100vh-7rem)] lg:min-h-[520px]";
 
-type Props = { config: AiConfig | null; business: Business | null; aiReady: boolean; loginId: string };
+type Props = { config: AiConfig | null; business: Business | null; aiReady: boolean; loginId: string; owner: AutosaveOwner };
 
-export function AiView({ config, business, aiReady, loginId }: Props) {
+export function AiView({ config, business, aiReady, loginId, owner }: Props) {
   const { t } = useLanguage();
   const [tab, setTab] = useUrlTab("tab", TABS, "business");
   const testing = tab === "tester";
@@ -106,12 +101,7 @@ export function AiView({ config, business, aiReady, loginId }: Props) {
       </Panel>
 
       <Panel className={clsx("p-5", testing && clsx("lg:flex lg:flex-col", FULL_HEIGHT))}>
-        {tab === "business" && <BusinessSection business={business} />}
-        {tab === "character" && <CharacterSection config={config} />}
-        {tab === "rules" && <RulesSection config={config} />}
-        {tab === "prompt" && <PromptSection config={config} aiReady={aiReady} />}
-        {tab === "languages" && <LanguagesSection config={config} />}
-        {tab === "tester" && <TesterSection aiReady={aiReady} loginId={loginId} />}
+        <AiSections tab={tab} config={config} business={business} aiReady={aiReady} loginId={loginId} owner={owner} />
       </Panel>
     </div>
   );

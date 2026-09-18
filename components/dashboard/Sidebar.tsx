@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { NavList } from "./NavList";
 import { ProfileMenu } from "./ProfileMenu";
-import type { Account } from "@/lib/dashboard/queries";
+import type { Account } from "@/lib/dashboard/queries/account";
 
 export function Sidebar({ className, account }: { className?: string; account: Account }) {
   return (

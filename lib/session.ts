@@ -49,10 +49,14 @@ export async function getContext(): Promise<Ctx | null> {
   return { userId, businessId, role };
 }
 
-/** Changes with every sign-in, so what one login kept in the browser is never shown to the next. */
+/**
+ * Changes with every sign-in and every business switch, so what one login kept in the
+ * browser is never shown to the next, nor in another business.
+ */
 export async function currentLoginId(): Promise<string> {
   const session = await auth();
-  return `${session?.user?.id ?? "anonymous"}.${session?.user?.startedAt ?? 0}`;
+  const user = session?.user;
+  return `${user?.id ?? "anonymous"}.${user?.startedAt ?? 0}.${user?.businessId ?? "none"}`;
 }
 
 export async function requireContext(): Promise<Ctx> {

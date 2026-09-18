@@ -1,13 +1,10 @@
 "use client";
 
-import { useTransition, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import clsx from "clsx";
 import { IconCheck, IconSparkles } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual, IconType } from "@/lib/content/types";
-import { useToast } from "@/components/dashboard/ui/Toast";
-import type { ActionResult } from "@/lib/dashboard/actions/result";
-import { FORBIDDEN, SAVED, SAVE_ERROR } from "./saveMessages";
 
 export const INPUT =
   "h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue";
@@ -37,62 +34,6 @@ export function SectionHead({
       </div>
       {right}
     </div>
-  );
-}
-
-export function SectionForm({
-  icon,
-  title,
-  hint,
-  right,
-  action,
-  saveLabel,
-  extraActions,
-  children,
-}: {
-  icon: IconType;
-  title: Bilingual;
-  hint?: Bilingual;
-  right?: ReactNode;
-  action: (data: FormData) => Promise<ActionResult>;
-  saveLabel?: Bilingual;
-  extraActions?: ReactNode;
-  children: ReactNode;
-}) {
-  const { t } = useLanguage();
-  const notify = useToast();
-  const [pending, start] = useTransition();
-
-  function submit(fd: FormData) {
-    start(async () => {
-      try {
-        const result = await action(fd);
-        if (result.ok) notify(t(SAVED));
-        else notify(t(result.error === "forbidden" ? FORBIDDEN : SAVE_ERROR), "error");
-      } catch {
-        notify(t(SAVE_ERROR), "error");
-      }
-    });
-  }
-
-  return (
-    <form action={submit} className="flex flex-col gap-5">
-      <SectionHead icon={icon} title={title} hint={hint} right={right} />
-
-      {children}
-
-      <div className="flex flex-wrap items-center gap-2.5">
-        <button
-          type="submit"
-          disabled={pending}
-          className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-primary px-5 text-[13px] font-medium text-white disabled:opacity-60"
-        >
-          <IconCheck size={16} />
-          {pending ? "…" : t(saveLabel ?? { ka: "შენახვა", en: "Save" })}
-        </button>
-        {extraActions}
-      </div>
-    </form>
   );
 }
 

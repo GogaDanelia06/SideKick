@@ -1,5 +1,5 @@
 import { requireContext } from "@/lib/session";
-import { getProfile } from "@/lib/dashboard/queries";
+import { getProfile } from "@/lib/dashboard/queries/account";
 import { ProfileView } from "@/components/dashboard/profile/ProfileView";
 
 export default async function ProfilePage() {

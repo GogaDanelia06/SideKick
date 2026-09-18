@@ -12,7 +12,7 @@ type Props = {
 
 const BTN = "inline-flex h-10 items-center gap-2 rounded-[8px] px-4 text-[13px] font-medium";
 
-/** Generate and refine buttons; the result goes into the textarea for review, not to the live config. */
+/** Generate and refine buttons; the server saves the result, and it replaces the textarea's text. */
 export function PromptAiActions({ ready, onPrompt }: Props) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();

@@ -6,6 +6,7 @@ import { IconAlertTriangle, IconDots, IconPlus, IconTrash, IconUserCog, IconX } 
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { addTeamMember, removeTeamMember, updateMemberRole } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { ROLE_LABEL } from "@/lib/dashboard/businesses";
 import type { Bilingual } from "@/lib/content/types";
 import type { TeamMember } from "@/lib/dashboard/queries";
 
@@ -23,7 +24,6 @@ const ROLES: Role[] = ["OWNER", "ADMIN", "OPERATOR", "VIEWER"];
 
 /** Mirrors the server's RANK (lib/dashboard/actions.ts). */
 const RANK: Record<Role, number> = { OWNER: 3, ADMIN: 2, OPERATOR: 1, VIEWER: 0 };
-const cap = (r: string) => r[0] + r.slice(1).toLowerCase();
 
 const ERRORS: Record<string, Bilingual> = {
   forbidden: { ka: "ამის უფლება არ გაქვთ", en: "You don't have permission for this" },
@@ -125,7 +125,7 @@ export function TeamView({
               aria-label={t({ ka: "როლი", en: "Role" })}
               className="h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none focus:border-blue"
             >
-              {grantable.map((r) => <option key={r} value={r}>{cap(r)}</option>)}
+              {grantable.map((r) => <option key={r} value={r}>{t(ROLE_LABEL[r])}</option>)}
             </select>
             <div className="flex gap-2">
               <button
@@ -186,7 +186,7 @@ export function TeamView({
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${r.pill}`}>{cap(m.role)}</span>
+                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${r.pill}`}>{t(ROLE_LABEL[m.role])}</span>
                   </td>
                   <td className="px-4 py-3 text-muted">{t(r.perms)}</td>
                   <td className="px-4 py-3 text-right">
@@ -215,7 +215,7 @@ export function TeamView({
                                 onClick={() => run(() => updateMemberRole(m.id, role), () => setMenuFor(null))}
                                 className="flex w-full items-center justify-between rounded-[6px] px-2.5 py-2 text-[13px] hover:bg-soft disabled:opacity-40"
                               >
-                                {cap(role)}
+                                {t(ROLE_LABEL[role])}
                                 {role === m.role ? <span className="text-xs text-muted">✓</span> : null}
                               </button>
                             ))}
@@ -245,7 +245,7 @@ export function TeamView({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {ROLES.map((r) => (
           <Panel key={r} className="p-4">
-            <div className={`text-sm font-semibold ${ROLE[r].title}`}>{cap(r)}</div>
+            <div className={`text-sm font-semibold ${ROLE[r].title}`}>{t(ROLE_LABEL[r])}</div>
             <p className="mt-1.5 text-xs text-muted">{t(ROLE[r].desc)}</p>
           </Panel>
         ))}

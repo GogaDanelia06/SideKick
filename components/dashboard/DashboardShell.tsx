@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
-import type { Account } from "@/lib/dashboard/queries";
+import type { Account } from "@/lib/dashboard/queries/account";
 import { Topbar } from "./Topbar";
 import { BottomNav } from "./BottomNav";
 import { MobileDrawer } from "./MobileDrawer";

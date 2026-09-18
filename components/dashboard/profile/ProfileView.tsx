@@ -5,7 +5,7 @@ import { Panel } from "@/components/dashboard/ui/Panel";
 import { saveProfile } from "@/lib/dashboard/actions";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual } from "@/lib/content/types";
-import type { ProfileUser } from "@/lib/dashboard/queries";
+import type { ProfileUser } from "@/lib/dashboard/queries/account";
 
 function Field({ name, label, defaultValue, disabled }: { name: string; label: Bilingual; defaultValue: string; disabled?: boolean }) {
   const { t } = useLanguage();

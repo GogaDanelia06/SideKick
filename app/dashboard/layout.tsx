@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireContext } from "@/lib/session";
-import { getAccount } from "@/lib/dashboard/queries";
+import { getAccount } from "@/lib/dashboard/queries/account";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 
 export const metadata: Metadata = { title: "Dashboard", robots: { index: false, follow: false } };

@@ -2,15 +2,15 @@
 
 import type { Business } from "@prisma/client";
 import { IconBuildingStore } from "@tabler/icons-react";
-import { saveBusinessInfo } from "@/lib/dashboard/actions/business";
-import { AreaField, SectionForm, TextField } from "../parts";
+import { AreaField, TextField } from "../parts";
+import { SectionForm } from "../SectionForm";
 
 export function BusinessSection({ business }: { business: Business | null }) {
   return (
     <SectionForm
+      section="business"
       icon={IconBuildingStore}
       title={{ ka: "ბიზნესის ინფორმაცია", en: "Business information" }}
-      action={saveBusinessInfo}
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField

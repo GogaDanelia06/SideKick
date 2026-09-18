@@ -2,16 +2,16 @@
 
 import type { AiConfig } from "@prisma/client";
 import { IconSquareRoundedLetterA } from "@tabler/icons-react";
-import { saveAiCharacter } from "@/lib/dashboard/actions/aiConfig";
 import { AI_ADDRESS_FORMS, AI_DEFAULTS, AI_EMOJI_LEVELS, AI_LENGTHS, AI_STYLES } from "@/lib/ai/settings";
-import { ChipChoice, SectionForm } from "../parts";
+import { ChipChoice } from "../parts";
+import { SectionForm } from "../SectionForm";
 
 export function CharacterSection({ config }: { config: AiConfig | null }) {
   return (
     <SectionForm
+      section="character"
       icon={IconSquareRoundedLetterA}
       title={{ ka: "ხასიათი", en: "Character" }}
-      action={saveAiCharacter}
     >
       <div className="grid gap-5">
         <ChipChoice

@@ -9,6 +9,7 @@ import { clear, clientIp, consume } from "@/lib/security/rateLimit";
 import { authConfig } from "./auth.config";
 import { googleSignInEnabled } from "@/lib/auth/providers";
 import { provisionBusiness } from "@/lib/provision";
+import { stampSignIn, switchTokenBusiness } from "@/lib/auth/token";
 import { log } from "@/lib/logger";
 
 export class RateLimitedSignin extends CredentialsSignin {
@@ -60,7 +61,7 @@ const providers: Provider[] = [
 // account with the same address; `signIn` below refuses emails Google has not verified.
 if (googleSignInEnabled()) providers.push(Google({ allowDangerousEmailAccountLinking: true }));
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
   providers,
@@ -106,26 +107,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn({ account, profile }) {
       return account?.provider !== "google" || profile?.email_verified === true;
     },
-    async jwt({ token, user }) {
-      if (user?.id) {
-        token.uid = user.id;
-
-        // Stamped once at sign-in (see lib/auth/sessionExpiry.ts). OAuth sign-ins are never remembered.
-        token.remember = user.remember === true;
-        token.startedAt = Date.now();
-        const [m, account] = await Promise.all([
-          prisma.membership.findFirst({
-            where: { userId: user.id },
-            orderBy: { createdAt: "asc" },
-          }),
-          prisma.user.findUnique({ where: { id: user.id }, select: { isAdmin: true } }),
-        ]);
-        if (m) {
-          token.businessId = m.businessId;
-          token.role = m.role;
-        }
-        token.isAdmin = account?.isAdmin ?? false;
-      }
+    async jwt({ token, user, trigger, session }) {
+      if (user?.id) return stampSignIn(token, { id: user.id, remember: user.remember });
+      // `unstable_update` from the business switcher; the membership is checked in there.
+      if (trigger === "update") return switchTokenBusiness(token, session?.user?.businessId);
       return token;
     },
   },

@@ -11,10 +11,10 @@ import {
   IconTrendingUp,
   IconUserPlus,
 } from "@tabler/icons-react";
-import { saveAiRules } from "@/lib/dashboard/actions/aiConfig";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual, IconType } from "@/lib/content/types";
-import { AREA, AreaField, CheckRow, SectionForm } from "../parts";
+import { AREA, AreaField, CheckRow } from "../parts";
+import { SectionForm } from "../SectionForm";
 
 const ROLES: { key: string; label: Bilingual; icon: IconType }[] = [
   { key: "info", label: { ka: "საინფორმაციო აგენტი", en: "Information agent" }, icon: IconInfoCircle },
@@ -31,9 +31,9 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
 
   return (
     <SectionForm
+      section="rules"
       icon={IconListCheck}
       title={{ ka: "ქცევის წესები", en: "Behaviour rules" }}
-      action={saveAiRules}
     >
       <fieldset>
         <legend className="mb-2 text-[13px] font-medium">

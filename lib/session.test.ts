@@ -7,7 +7,7 @@ vi.mock("@/lib/logger", () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
 
-import { getContext } from "./session";
+import { currentLoginId, getContext } from "./session";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
@@ -103,5 +103,15 @@ describe("diagnostics", () => {
 
     expect(vi.mocked(log.warn)).not.toHaveBeenCalled();
     expect(vi.mocked(log.info)).not.toHaveBeenCalled();
+  });
+});
+
+describe("currentLoginId()", () => {
+  it("differs per business, so the AI tester keeps one chat per business", async () => {
+    session.mockResolvedValue({ user: { id: "u1", businessId: "b1", startedAt: 5 } });
+    const first = await currentLoginId();
+    session.mockResolvedValue({ user: { id: "u1", businessId: "b2", startedAt: 5 } });
+    expect(first).toBe("u1.5.b1");
+    expect(await currentLoginId()).toBe("u1.5.b2");
   });
 });
