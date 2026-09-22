@@ -2,12 +2,12 @@
 
 import { unstable_update } from "@/auth";
 import { prisma } from "@/lib/db";
-import { BUSINESS_NAME_MAX, MAX_OWNED_BUSINESSES } from "@/lib/dashboard/businesses";
+import { BUSINESS_NAME_MAX, MAX_OWNED_BUSINESSES, cleanBusinessName } from "@/lib/dashboard/businesses";
 import { log } from "@/lib/logger";
 import { provisionBusiness } from "@/lib/provision";
 import { getContext } from "@/lib/session";
 
-export type AddBusinessError = "unauthorized" | "name" | "limit" | "failed";
+export type AddBusinessError = "unauthorized" | "name" | "taken" | "limit" | "failed";
 export type AddBusinessResult = { ok: true } | { ok: false; error: AddBusinessError };
 
 /** Moves the session into `businessId`, or leaves it where it was. */
@@ -35,14 +35,27 @@ export async function addBusiness(name: string): Promise<AddBusinessResult> {
   const ctx = await getContext();
   if (!ctx) return { ok: false, error: "unauthorized" };
 
-  const clean = typeof name === "string" ? name.trim() : "";
+  const clean = typeof name === "string" ? cleanBusinessName(name) : "";
   if (!clean || clean.length > BUSINESS_NAME_MAX) return { ok: false, error: "name" };
 
   try {
-    const owned = await prisma.membership.count({ where: { userId: ctx.userId, role: "OWNER" } });
-    if (owned >= MAX_OWNED_BUSINESSES) return { ok: false, error: "limit" };
+    const business = await prisma.$transaction(async (tx) => {
+      // One add at a time per person, so two quick submits cannot both pass the checks.
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${ctx.userId}))`;
+      const [owned, sameName] = await Promise.all([
+        tx.membership.count({ where: { userId: ctx.userId, role: "OWNER" } }),
+        // Among the businesses this person can open, not everyone's: two shops may share a name.
+        tx.membership.findFirst({
+          where: { userId: ctx.userId, business: { name: { equals: clean, mode: "insensitive" } } },
+          select: { id: true },
+        }),
+      ]);
+      if (owned >= MAX_OWNED_BUSINESSES) return "limit" as const;
+      if (sameName) return "taken" as const;
+      return provisionBusiness(ctx.userId, clean, undefined, tx);
+    });
+    if (typeof business === "string") return { ok: false, error: business };
 
-    const business = await provisionBusiness(ctx.userId, clean);
     log.info("business added", { userId: ctx.userId, businessId: business.id });
     // Should opening it fail, the new business is still listed in the switcher.
     await openBusiness(business.id).catch((err) =>

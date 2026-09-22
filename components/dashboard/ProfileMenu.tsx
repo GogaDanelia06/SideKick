@@ -23,7 +23,8 @@ import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { useTheme } from "@/lib/theme/useTheme";
 
-export function ProfileMenu({ account }: { account: Account }) {
+/** `onNavigate` closes what holds the menu, such as the mobile drawer. */
+export function ProfileMenu({ account, onNavigate }: { account: Account; onNavigate?: () => void }) {
   const { t, locale, toggle: toggleLang } = useLanguage();
   const { theme, toggle: toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
@@ -38,7 +39,13 @@ export function ProfileMenu({ account }: { account: Account }) {
             <div className="text-[13px] font-semibold">{account.name}</div>
             <div className="text-[11px] text-muted">{account.email}</div>
           </div>
-          <BusinessSwitcher account={account} />
+          <BusinessSwitcher
+            account={account}
+            onDone={() => {
+              setOpen(false);
+              onNavigate?.();
+            }}
+          />
           <Link href={DASH.profile} onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2.5 text-[13px] hover:bg-soft">
             <IconUserCircle size={17} /> {t({ ka: "პროფილი", en: "Profile" })}
           </Link>

@@ -33,7 +33,7 @@ export function MobileDrawer({ open, onClose, account }: { open: boolean; onClos
           </button>
         </div>
         <NavList onNavigate={onClose} />
-        <ProfileMenu account={account} />
+        <ProfileMenu account={account} onNavigate={onClose} />
       </aside>
     </div>
   );
