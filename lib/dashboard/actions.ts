@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
-import type { LeadStatus, OrderStatus, Product, Role } from "@prisma/client";
+import type { LeadStatus, OrderStatus, Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { fmtTime } from "./time";
 import { getContext } from "@/lib/session";
@@ -67,69 +66,7 @@ export async function setOrderStatus(orderId: string, status: OrderStatus) {
   revalidatePath(DASH.orders);
 }
 
-const num = (data: FormData, k: string) => {
-  const v = data.get(k);
-  return v ? Number(v) : null;
-};
 const str = (data: FormData, k: string) => ((data.get(k) as string) || "").trim() || null;
-
-export type ProductResult =
-  | { ok: true; product: Product }
-  | { ok: false; error: "forbidden" | "missing" | "limit" | "duplicate" | "error" };
-
-export async function createProduct(data: FormData): Promise<ProductResult> {
-  const ctx = await requirePermission("products:write");
-  if (!ctx) return { ok: false, error: "forbidden" };
-
-  const name = str(data, "name");
-  const code = str(data, "code");
-  if (!name || !code) return { ok: false, error: "missing" };
-
-  const verdict = await checkLimit(ctx.businessId, "products");
-  if (!verdict.allowed) return { ok: false, error: "limit" };
-
-  let product: Product;
-  try {
-    product = await prisma.product.create({
-      data: {
-        businessId: ctx.businessId, name, code,
-        price: num(data, "price") ?? 0, discountPct: num(data, "discountPct"), salePrice: num(data, "salePrice"),
-        size: str(data, "size"), description: str(data, "description"), quantity: num(data, "quantity") ?? 0,
-      },
-    });
-  } catch (err) {
-    // `[businessId, code]` is unique.
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-      return { ok: false, error: "duplicate" };
-    }
-    log.error("could not create a product", err, { businessId: ctx.businessId });
-    return { ok: false, error: "error" };
-  }
-
-  // No revalidatePath: the client inserts the returned row without a re-render.
-  return { ok: true, product };
-}
-
-export async function updateProduct(id: string, data: FormData) {
-  const ctx = await requirePermission("products:write");
-  if (!ctx) return;
-  await prisma.product.updateMany({
-    where: { id, businessId: ctx.businessId },
-    data: {
-      name: str(data, "name") ?? undefined, price: num(data, "price") ?? undefined,
-      discountPct: num(data, "discountPct"), salePrice: num(data, "salePrice"),
-      size: str(data, "size"), description: str(data, "description"), quantity: num(data, "quantity") ?? undefined,
-    },
-  });
-  revalidatePath(DASH.products);
-}
-
-export async function deleteProduct(id: string) {
-  const ctx = await requirePermission("products:write");
-  if (!ctx) return;
-  await prisma.product.deleteMany({ where: { id, businessId: ctx.businessId } });
-  revalidatePath(DASH.products);
-}
 
 export async function saveProfile(data: FormData) {
   const ctx = await getContext();

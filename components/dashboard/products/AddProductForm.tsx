@@ -1,12 +1,13 @@
 "use client";
 
 import { type ComponentProps, useRef, useState, useTransition } from "react";
-import { IconCheck, IconPhoto, IconPlus } from "@tabler/icons-react";
+import { IconCheck, IconPlus } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
-import { createProduct } from "@/lib/dashboard/actions";
+import { createProduct, type ProductResult } from "@/lib/dashboard/actions/products";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Product } from "@prisma/client";
-import type { Bilingual } from "@/lib/content/types";
+import { PhotoPicker } from "./PhotoPicker";
+import { PRODUCT_ERRORS } from "./productErrors";
 import { usePricing } from "./usePricing";
 
 const FIELD = "mt-1 w-full rounded-[6px] border border-input bg-soft px-3 py-2.5 text-[13px] outline-none focus:border-blue";
@@ -20,26 +21,14 @@ function Field({ label, ...input }: { label: string } & ComponentProps<"input">)
   );
 }
 
-const ERRORS: Record<string, Bilingual> = {
-  missing: { ka: "დასახელება და კოდი სავალდებულოა.", en: "Name and code are required." },
-  duplicate: {
-    ka: "ეს კოდი უკვე გაქვს სხვა პროდუქტზე. მიუთითე სხვა.",
-    en: "That code is already used by another product. Pick a different one.",
-  },
-  limit: {
-    ka: "შენი გეგმა მეტ პროდუქტს არ უშვებს. წაშალე რამე ან გეგმა შეცვალე.",
-    en: "Your plan does not allow more products. Delete one, or change the plan.",
-  },
-  forbidden: { ka: "პროდუქტის დამატების უფლება არ გაქვს.", en: "You may not add products." },
-  error: { ka: "ვერ დაემატა. სცადე ხელახლა.", en: "Could not add it. Try again." },
-};
-
 export function AddProductForm({ onAdded }: { onAdded: (product: Product) => void }) {
   const { t } = useLanguage();
   const money = usePricing();
   const form = useRef<HTMLFormElement>(null);
   const [pending, start] = useTransition();
   const [notice, setNotice] = useState<{ tone: "ok" | "bad"; key?: string } | null>(null);
+  // A new key empties the photo box once a product is added.
+  const [photoKey, setPhotoKey] = useState(0);
 
   return (
     <Panel className="p-5">
@@ -51,10 +40,11 @@ export function AddProductForm({ onAdded }: { onAdded: (product: Product) => voi
         action={(fd) =>
           start(async () => {
             setNotice(null);
-            const res = await createProduct(fd);
+            const res = await createProduct(fd).catch((): ProductResult => ({ ok: false, error: "error" }));
             if (res.ok) {
               form.current?.reset();
               money.reset();
+              setPhotoKey((k) => k + 1);
               setNotice({ tone: "ok" });
               onAdded(res.product);
             } else {
@@ -64,9 +54,7 @@ export function AddProductForm({ onAdded }: { onAdded: (product: Product) => voi
         }
         className="grid gap-4 sm:grid-cols-[120px_1fr]"
       >
-        <div className="grid h-[120px] place-items-center rounded-[10px] border-[1.5px] border-dashed border-border bg-soft text-center text-[11px] text-faint">
-          <span><IconPhoto size={24} className="mx-auto" /><span className="mt-1 block">{t({ ka: "ფოტოს ატვირთვა", en: "Upload photo" })}</span></span>
-        </div>
+        <PhotoPicker key={photoKey} label={{ ka: "ფოტოს ატვირთვა", en: "Upload photo" }} />
         <div className="grid gap-3">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Field name="name" label={t({ ka: "დასახელება", en: "Name" })} required />
@@ -109,7 +97,7 @@ export function AddProductForm({ onAdded }: { onAdded: (product: Product) => voi
                 {notice.tone === "ok" ? <IconCheck size={15} /> : null}
                 {notice.tone === "ok"
                   ? t({ ka: "პროდუქტი დაემატა.", en: "Product added." })
-                  : t(ERRORS[notice.key ?? "error"] ?? ERRORS.error)}
+                  : t(PRODUCT_ERRORS[notice.key ?? "error"] ?? PRODUCT_ERRORS.error)}
               </p>
             ) : null}
             <button

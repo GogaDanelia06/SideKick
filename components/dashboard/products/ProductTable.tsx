@@ -5,7 +5,7 @@ import clsx from "clsx";
 import type { Product } from "@prisma/client";
 import { IconEdit, IconPhoto, IconTrash } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
-import { deleteProduct } from "@/lib/dashboard/actions";
+import { deleteProduct } from "@/lib/dashboard/actions/products";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const ICON_BTN = "grid size-[30px] place-items-center rounded-[6px] border border-border bg-surface";
@@ -47,8 +47,13 @@ export function ProductTable({ products, onEdit }: { products: Product[]; onEdit
 
         return (
           <div key={p.id} className="flex items-center gap-3 border-b border-border2 px-4 py-3 last:border-b-0">
-            <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-border bg-soft text-faint">
-              <IconPhoto size={18} />
+            <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-soft text-faint">
+              {p.photos[0] ? (
+                // eslint-disable-next-line @next/next/no-img-element -- stored already shrunk (lib/products/resizePhoto.ts)
+                <img src={p.photos[0]} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
+              ) : (
+                <IconPhoto size={18} />
+              )}
             </span>
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-medium">{p.name}</div>

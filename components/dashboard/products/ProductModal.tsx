@@ -1,10 +1,12 @@
 "use client";
 
-import type { ComponentProps } from "react";
+import { useState, type ComponentProps } from "react";
 import type { Product } from "@prisma/client";
-import { IconDeviceFloppy, IconEdit, IconPhoto, IconX } from "@tabler/icons-react";
-import { updateProduct } from "@/lib/dashboard/actions";
+import { IconDeviceFloppy, IconEdit, IconX } from "@tabler/icons-react";
+import { updateProduct, type UpdateResult } from "@/lib/dashboard/actions/products";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { PhotoPicker } from "./PhotoPicker";
+import { PRODUCT_ERRORS } from "./productErrors";
 import { usePricing } from "./usePricing";
 
 const FIELD = "mt-1 w-full rounded-[6px] border border-input bg-soft px-3 py-2.5 text-[13px] text-ink outline-none focus:border-blue";
@@ -22,10 +24,16 @@ function Field({ label, ...input }: { label: string } & ComponentProps<"input">)
 function EditForm({ product, onClose }: { product: Product; onClose: () => void }) {
   const { t } = useLanguage();
   const money = usePricing(product);
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <form
-      action={async (fd) => { await updateProduct(product.id, fd); onClose(); }}
+      action={async (fd) => {
+        setError(null);
+        const res = await updateProduct(product.id, fd).catch((): UpdateResult => ({ ok: false, error: "error" }));
+        if (res.ok) onClose();
+        else setError(res.error);
+      }}
       className="relative w-full max-w-[560px] overflow-hidden rounded-[14px] border border-border bg-surface shadow-[0_24px_60px_rgba(0,0,0,0.4)]"
     >
       <div className="flex items-center gap-3 border-b border-border px-5 py-4">
@@ -38,9 +46,7 @@ function EditForm({ product, onClose }: { product: Product; onClose: () => void 
       </div>
       <div className="flex flex-col gap-3.5 p-5">
         <div className="grid gap-4 sm:grid-cols-[120px_1fr]">
-          <div className="grid h-[120px] place-items-center rounded-[10px] border-[1.5px] border-dashed border-border bg-soft text-center text-[11px] text-faint">
-            <span><IconPhoto size={24} className="mx-auto" /><span className="mt-1 block">{t({ ka: "ფოტოს შეცვლა", en: "Change photo" })}</span></span>
-          </div>
+          <PhotoPicker current={product.photos[0]} label={{ ka: "ფოტოს შეცვლა", en: "Change photo" }} />
           <div className="grid grid-cols-2 gap-3">
             <Field name="name" label={t({ ka: "დასახელება", en: "Name" })} defaultValue={product.name} />
             <Field label={t({ ka: "კოდი", en: "Code" })} defaultValue={product.code} readOnly className={`${FIELD} cursor-not-allowed font-mono text-faint`} />
@@ -73,6 +79,11 @@ function EditForm({ product, onClose }: { product: Product; onClose: () => void 
           />
           <Field name="quantity" label={t({ ka: "რაოდენობა", en: "Quantity" })} type="number" defaultValue={product.quantity} className={`${FIELD} font-mono`} />
         </div>
+        <label className="block">
+          <span className="text-[11px] text-muted">{t({ ka: "აღწერა (AI იყენებს იდენტიფიკაციისთვის)", en: "Description (used by AI for matching)" })}</span>
+          <textarea name="description" rows={2} defaultValue={product.description ?? ""} className={FIELD} />
+        </label>
+        {error ? <p role="alert" className="text-[13px] text-red">{t(PRODUCT_ERRORS[error] ?? PRODUCT_ERRORS.error)}</p> : null}
       </div>
       <div className="flex justify-end gap-2.5 border-t border-border bg-soft px-5 py-4">
         <button type="button" onClick={onClose} className="h-[38px] rounded-[6px] border border-border bg-surface px-4 text-[13px] font-medium">{t({ ka: "გაუქმება", en: "Cancel" })}</button>
