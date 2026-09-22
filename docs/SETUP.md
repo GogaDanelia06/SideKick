@@ -9,8 +9,8 @@ running app in about ten minutes.
 
 | Tool | Version | Check |
 | --- | --- | --- |
-| Node.js | 20 LTS or newer | `node -v` |
-| pnpm | 10.15.0 (pinned in `package.json`) | `pnpm -v` |
+| Node.js | 24 LTS (`engines` in `package.json`) | `node -v` |
+| pnpm | 10.34.5 (pinned in `package.json`) | `pnpm -v` |
 | PostgreSQL | 16 | `psql --version` |
 | Git | any recent | `git --version` |
 
@@ -19,7 +19,7 @@ pnpm is the required package manager — `packageManager` is pinned, and
 will produce a different dependency tree.
 
 ```bash
-npm install -g pnpm@10.15.0
+npm install -g pnpm@10.34.5
 ```
 
 Postgres can be a local install or the bundled Docker service (step 3).

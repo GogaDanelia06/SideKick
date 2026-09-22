@@ -2,14 +2,24 @@
   "name": "sidekick",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": "24.x"
+  },
   "pnpm": {
     "overrides": {
-      "sharp": ">=0.35.3",
-      "postcss@<8.5.18": ">=8.5.18"
+      "deepmerge-ts": "^8.0.2"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "eslint-plugin-import>eslint": "10",
+        "eslint-plugin-jsx-a11y>eslint": "10",
+        "eslint-plugin-react>eslint": "10"
+      }
     }
   },
-  "pnpmOverridesNote": "The overrides above force patched versions of two build-time deps that Next 16.2.11 still pins vulnerable (sharp, postcss). Both bumps stay within the same major, so they are safe. Remove each once a Next release ships the fix itself. Rationale: docs/DEPENDENCIES.md.",
+  "pnpmOverridesNote": "Prisma's config loader (@prisma/config, in Prisma 6.19 and 7.10 alike) pins deepmerge-ts 7.1.5, which has a high advisory (GHSA-ggr8-5vv4-36mx, patched in 8.0.0). Prisma only calls the plain deepmerge(), which 8.x left unchanged. Remove the override once Prisma ships deepmerge-ts 8 itself. Rationale: docs/DEPENDENCIES.md.",
+  "pnpmPeerRulesNote": "The three lint plugins inside eslint-config-next still declare ESLint 9 at most. They run on ESLint 10 through @eslint/compat (eslint.config.mjs), checked rule by rule. Remove each entry once the plugin declares ESLint 10 itself. Rationale: docs/DEPENDENCIES.md.",
   "scripts": {
     "predev": "prisma generate",
     "dev": "next dev",
@@ -29,32 +39,31 @@
     "admin:grant": "tsx prisma/grant-admin.ts"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.11.3",
-    "@prisma/client": "^6.19.3",
-    "@tabler/icons-react": "^3.36.0",
-    "@vercel/blob": "^2.6.1",
+    "@auth/prisma-adapter": "2.11.3",
+    "@prisma/client": "6.19.3",
+    "@tabler/icons-react": "^3.47.0",
+    "@vercel/blob": "^2.8.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "fflate": "^0.8.3",
-    "next": "16.2.11",
+    "next": "16.3.5",
     "next-auth": "5.0.0-beta.32",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "zod": "^4.4.3"
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/bcryptjs": "^3.0.0",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.10",
-    "prisma": "^6.19.3",
-    "tailwindcss": "^4",
-    "tsx": "^4.23.1",
-    "typescript": "^5",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.7"
+    "@eslint/compat": "^2.1.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.13.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^10.11.0",
+    "eslint-config-next": "16.3.5",
+    "prisma": "6.19.3",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.1"
   }
 }

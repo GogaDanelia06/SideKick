@@ -185,9 +185,9 @@ Documented, not hidden. Fuller treatment in
 
 | # | Control | Status | Evidence |
 | --- | --- | --- | --- |
-| 9.1 | No known vulnerabilities in production deps | ✅ | `pnpm audit --prod` → clean (2026-07-26) |
-| 9.2 | All licences permissive; no copyleft | ✅ | [DEPENDENCIES.md](DEPENDENCIES.md) |
-| 9.3 | Patched versions forced where upstream lags | ✅ | pnpm `overrides` for `sharp`, `postcss` |
+| 9.1 | No known vulnerabilities in production deps | ✅ | `pnpm audit` → clean (2026-09-22) |
+| 9.2 | No strong-copyleft (GPL/AGPL) licence; weak-copyleft libraries listed | ✅ | [DEPENDENCIES.md](DEPENDENCIES.md) |
+| 9.3 | Patched versions forced where upstream lags | ✅ | pnpm `overrides` for `deepmerge-ts` |
 | 9.4 | Update + audit policy documented | ✅ | [DEPENDENCIES.md](DEPENDENCIES.md#update-policy) |
 
 ---

@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from "vitest";
 import { log } from "./logger";
 
-let spies: ReturnType<typeof vi.spyOn>[] = [];
+let spies: MockInstance<typeof console.log>[] = [];
 function lastOutput(): string {
   const all = spies.flatMap((s) => s.mock.calls.map((c) => String(c[0])));
   return all.join("\n");
