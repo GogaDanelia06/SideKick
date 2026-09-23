@@ -9,11 +9,11 @@ import { DASH } from "@/lib/dashboard/routes";
 import { optionalField } from "@/lib/forms";
 import type { ActionResult } from "./result";
 
-export async function createLead(fd: FormData) {
+export async function createLead(fd: FormData): Promise<ActionResult> {
   const ctx = await requirePermission("leads:write");
-  if (!ctx) return;
+  if (!ctx) return { ok: false, error: "forbidden" };
   const name = optionalField(fd, "name");
-  if (!name) return;
+  if (!name) return { ok: false, error: "name" };
 
   await prisma.lead.create({
     data: {
@@ -26,33 +26,37 @@ export async function createLead(fd: FormData) {
     },
   });
   revalidatePath(DASH.leads);
+  return { ok: true };
 }
 
-export async function setLeadStatus(id: string, status: LeadStatus) {
+export async function setLeadStatus(id: string, status: LeadStatus): Promise<ActionResult> {
   const ctx = await requirePermission("leads:write");
-  if (!ctx) return;
+  if (!ctx) return { ok: false, error: "forbidden" };
 
   await prisma.lead.updateMany({ where: { id, businessId: ctx.businessId }, data: { status } });
   revalidatePath(DASH.leads);
+  return { ok: true };
 }
 
-export async function updateLeadComment(id: string, comment: string) {
+export async function updateLeadComment(id: string, comment: string): Promise<ActionResult> {
   const ctx = await requirePermission("leads:write");
-  if (!ctx) return;
+  if (!ctx) return { ok: false, error: "forbidden" };
 
   await prisma.lead.updateMany({
     where: { id, businessId: ctx.businessId },
     data: { comment: comment.trim() || null },
   });
   revalidatePath(DASH.leads);
+  return { ok: true };
 }
 
-export async function deleteLead(id: string) {
+export async function deleteLead(id: string): Promise<ActionResult> {
   const ctx = await requirePermission("leads:write");
-  if (!ctx) return;
+  if (!ctx) return { ok: false, error: "forbidden" };
 
   await prisma.lead.deleteMany({ where: { id, businessId: ctx.businessId } });
   revalidatePath(DASH.leads);
+  return { ok: true };
 }
 
 /** Creates a lead from a conversation; the unique `conversationId` prevents duplicates. */

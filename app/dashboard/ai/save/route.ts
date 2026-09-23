@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { saveBusinessInfo } from "@/lib/dashboard/actions/business";
 import { saveAiCharacter, saveAiPrompt, saveAiRules } from "@/lib/dashboard/actions/aiConfig";
 import type { ActionResult } from "@/lib/dashboard/actions/result";
-import { isSaveRequest, type AutosaveSection, type SaveError } from "@/lib/dashboard/autosave/request";
+import { isSaveRequest, type SectionKey, type SaveError } from "@/lib/dashboard/sectionSave/request";
 import { log } from "@/lib/logger";
 import { getContext } from "@/lib/session";
 
 /** The actions the section forms used to submit, so validation and permissions stay in one place. */
-const SAVERS: Record<AutosaveSection, (fd: FormData) => Promise<ActionResult>> = {
+const SAVERS: Record<SectionKey, (fd: FormData) => Promise<ActionResult>> = {
   business: saveBusinessInfo,
   character: saveAiCharacter,
   rules: saveAiRules,
@@ -28,9 +28,9 @@ function readBody(bytes: ArrayBuffer): unknown {
 }
 
 /**
- * Autosave for the AI page: a section sends its whole form when the user leaves it
- * (lib/dashboard/autosave). A fetch rather than a server action, because only a
- * `keepalive` fetch outlives a closing tab.
+ * Saving a section of the AI page: it sends its whole form when the user presses Save
+ * (lib/dashboard/sectionSave). A fetch rather than a server action, so the page can say
+ * how it went and put the section back the way it was when it did not.
  */
 export async function POST(request: Request) {
   // The session cookie is SameSite=Lax already; this also turns away other sites outright.
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     const result = await SAVERS[body.section](fd);
     return result.ok ? NextResponse.json({ ok: true }) : refuse("forbidden", 403);
   } catch (err) {
-    log.error("AI section autosave failed", err, { businessId: ctx.businessId, section: body.section });
+    log.error("saving an AI section failed", err, { businessId: ctx.businessId, section: body.section });
     return refuse("failed", 500);
   }
 }

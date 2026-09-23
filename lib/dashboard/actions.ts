@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { LeadStatus, OrderStatus, Role } from "@prisma/client";
+import type { Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { fmtTime } from "./time";
 import { getContext } from "@/lib/session";
@@ -56,79 +56,6 @@ export async function setChannelConnected(
   return { ok: true };
 }
 
-export async function setOrderStatus(orderId: string, status: OrderStatus) {
-  const ctx = await requirePermission("orders:write");
-  if (!ctx) return;
-  await prisma.order.updateMany({
-    where: { id: orderId, businessId: ctx.businessId },
-    data: { status },
-  });
-  revalidatePath(DASH.orders);
-}
-
-const str = (data: FormData, k: string) => ((data.get(k) as string) || "").trim() || null;
-
-export async function saveProfile(data: FormData) {
-  const ctx = await getContext();
-  if (!ctx) return;
-  const s = (k: string) => (data.get(k) as string) || null;
-
-  await prisma.user.update({
-    where: { id: ctx.userId },
-    data: { name: s("name"), phone: s("phone") },
-  });
-
-  if (can(ctx.role, "business:write")) {
-    await prisma.business.update({
-      where: { id: ctx.businessId },
-      data: { name: s("company") ?? undefined, field: s("field"), description: s("description") },
-    });
-  }
-
-  revalidatePath(DASH.profile);
-}
-
-export async function createLead(data: FormData) {
-  const ctx = await requirePermission("leads:write");
-  if (!ctx) return;
-  const name = str(data, "name");
-  if (!name) return;
-  await prisma.lead.create({
-    data: {
-      businessId: ctx.businessId,
-      name,
-      phone: str(data, "phone"),
-      interest: str(data, "interest"),
-      source: str(data, "source") ?? "manual",
-      comment: str(data, "comment"),
-    },
-  });
-  revalidatePath(DASH.leads);
-}
-
-export async function setLeadStatus(id: string, status: LeadStatus) {
-  const ctx = await requirePermission("leads:write");
-  if (!ctx) return;
-  await prisma.lead.updateMany({ where: { id, businessId: ctx.businessId }, data: { status } });
-  revalidatePath(DASH.leads);
-}
-
-export async function updateLeadComment(id: string, comment: string) {
-  const ctx = await requirePermission("leads:write");
-  if (!ctx) return;
-  await prisma.lead.updateMany({
-    where: { id, businessId: ctx.businessId },
-    data: { comment: comment.trim() || null },
-  });
-  revalidatePath(DASH.leads);
-}
-
-export async function deleteLead(id: string) {
-  const ctx = await requirePermission("leads:write");
-  if (!ctx) return;
-  await prisma.lead.deleteMany({ where: { id, businessId: ctx.businessId } });
-  revalidatePath(DASH.leads);
-}
 
 export async function setConversationAi(conversationId: string, aiEnabled: boolean) {
   const ctx = await requirePermission("conversations:write");

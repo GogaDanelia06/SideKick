@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type { OtherAccount } from "@/lib/auth/accountVault";
 import { accountsRequest, landingAfterSwitch, loginUrl } from "@/lib/auth/accountsClient";
-import { flushAutosave } from "@/lib/dashboard/autosave/flush";
 
 /**
  * The account list's behaviour, shared by the menu and the login page. `back` is where
@@ -21,7 +20,6 @@ export function useAccountList(accounts: OtherAccount[], { back, parkFirst }: { 
     setBusy(key);
     setError(null);
     // Unsaved AI settings belong to the account being left.
-    await flushAutosave();
     const failure = await work();
     if (failure === null) return;
     setBusy(null);

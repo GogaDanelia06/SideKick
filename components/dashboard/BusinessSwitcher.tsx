@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { IconPlus } from "@tabler/icons-react";
 import { switchBusiness } from "@/lib/dashboard/actions/businesses";
-import { flushAutosave } from "@/lib/dashboard/autosave/flush";
 import { MAX_OWNED_BUSINESSES, OWNED_LIMIT_TEXT } from "@/lib/dashboard/businesses";
 import type { Account } from "@/lib/dashboard/queries/account";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -30,7 +29,6 @@ export function BusinessSwitcher({ account, onDone }: { account: Account; onDone
     setOpening(businessId);
     setFailed(false);
     // Unsaved AI settings belong to the business being left.
-    await flushAutosave();
     const { ok } = await switchBusiness(businessId).catch(() => ({ ok: false }));
     if (ok) {
       settled(t({ ka: `„${name}“ გაიხსნა`, en: `Opened "${name}"` }));

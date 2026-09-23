@@ -10,9 +10,10 @@ import {
   IconWorld,
 } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
+import { useToast } from "@/components/dashboard/ui/Toast";
 import { ConnectButton, ConnectResult } from "./ConnectMeta";
 import { ChannelStatus } from "./ChannelStatus";
-import { setChannelConnected } from "@/lib/dashboard/actions";
+import { setChannelConnected } from "@/lib/dashboard/actions/channels";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const META = {
@@ -24,6 +25,7 @@ const META = {
 
 export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
   const { t } = useLanguage();
+  const notify = useToast();
   const [pending, start] = useTransition();
   const [refusal, setRefusal] = useState<string | null>(null);
 
@@ -59,6 +61,9 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
                 start(async () => {
                   setRefusal(null);
                   const res = await setChannelConnected(c.id, !c.connected);
+                  if (res.ok) {
+                    notify(t(c.connected ? { ka: `${m.name} გამოირთო`, en: `${m.name} disconnected` } : { ka: `${m.name} ჩაირთო`, en: `${m.name} connected` }));
+                  }
                   if (!res.ok && res.error === "limit") {
                     setRefusal(
                       t({

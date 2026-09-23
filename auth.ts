@@ -8,9 +8,9 @@ import { prisma } from "@/lib/db";
 import { clear, clientIp, consume } from "@/lib/security/rateLimit";
 import { authConfig } from "./auth.config";
 import { googleSignInEnabled } from "@/lib/auth/providers";
-import { provisionBusiness } from "@/lib/provision";
+import { googleSignInAllowed } from "@/lib/auth/googleSignIn";
+import { authEvents } from "@/lib/auth/events";
 import { stampSignIn, switchTokenBusiness } from "@/lib/auth/token";
-import { log } from "@/lib/logger";
 
 export class RateLimitedSignin extends CredentialsSignin {
   code = "rate_limited";
@@ -57,56 +57,27 @@ const providers: Provider[] = [
 ];
 
 // Registered only when fully configured (the same check the login page uses).
-// Google confirms email ownership, so a Google sign-in may attach to an existing
-// account with the same address; `signIn` below refuses emails Google has not verified.
-if (googleSignInEnabled()) providers.push(Google({ allowDangerousEmailAccountLinking: true }));
+// Google confirms email ownership, so a Google sign-in may attach to an existing account
+// with the same address; `signIn` below (lib/auth/googleSignIn.ts) decides what is allowed.
+// `select_account` makes Google ask which account every time, rather than quietly reusing
+// whichever one the browser is signed in to — which matters once several are in play.
+if (googleSignInEnabled()) {
+  providers.push(
+    Google({
+      allowDangerousEmailAccountLinking: true,
+      authorization: { params: { prompt: "select_account" } },
+    }),
+  );
+}
 
 export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
   providers,
-  events: {
-    /** Provisions a business for a new Google account (email signups get one at registration). */
-    async createUser({ user }) {
-      if (!user.id) return;
-
-      try {
-        const existing = await prisma.membership.findFirst({
-          where: { userId: user.id },
-          select: { id: true },
-        });
-        if (existing) return;
-
-        const person = user.name?.trim() || user.email?.split("@")[0] || "New";
-        await provisionBusiness(user.id, `${person}'s business`);
-
-        log.info("provisioned a business for a new OAuth account", { userId: user.id });
-      } catch (err) {
-        // Sign-in still succeeds; scripts/find-orphan-users.ts --fix repairs the account.
-        log.error("could not provision a business for a new OAuth account", err, {
-          userId: user.id,
-        });
-      }
-    },
-
-    /** Google has just proven the address belongs to this person, so it counts as confirmed. */
-    async linkAccount({ user, account }) {
-      if (account.provider !== "google" || !user.id) return;
-      try {
-        await prisma.user.updateMany({
-          where: { id: user.id, emailVerified: null },
-          data: { emailVerified: new Date() },
-        });
-      } catch (err) {
-        log.error("could not mark a Google-linked email as confirmed", err, { userId: user.id });
-      }
-    },
-  },
+  events: authEvents,
   callbacks: {
     ...authConfig.callbacks,
-    signIn({ account, profile }) {
-      return account?.provider !== "google" || profile?.email_verified === true;
-    },
+    signIn: googleSignInAllowed,
     async jwt({ token, user, trigger, session }) {
       if (user?.id) return stampSignIn(token, { id: user.id, remember: user.remember });
       // `unstable_update` from the business switcher; the membership is checked in there.

@@ -3,10 +3,11 @@
 import { useState, type ComponentProps } from "react";
 import type { Product } from "@prisma/client";
 import { IconDeviceFloppy, IconEdit, IconX } from "@tabler/icons-react";
+import { useToast } from "@/components/dashboard/ui/Toast";
 import { updateProduct, type UpdateResult } from "@/lib/dashboard/actions/products";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { PhotoPicker } from "./PhotoPicker";
-import { PRODUCT_ERRORS } from "./productErrors";
+import { PRODUCT_ERRORS, PRODUCT_SAVED } from "./productErrors";
 import { usePricing } from "./usePricing";
 
 const FIELD = "mt-1 w-full rounded-[6px] border border-input bg-soft px-3 py-2.5 text-[13px] text-ink outline-none focus:border-blue";
@@ -24,6 +25,7 @@ function Field({ label, ...input }: { label: string } & ComponentProps<"input">)
 function EditForm({ product, onClose }: { product: Product; onClose: () => void }) {
   const { t } = useLanguage();
   const money = usePricing(product);
+  const notify = useToast();
   const [error, setError] = useState<string | null>(null);
 
   return (
@@ -31,8 +33,9 @@ function EditForm({ product, onClose }: { product: Product; onClose: () => void 
       action={async (fd) => {
         setError(null);
         const res = await updateProduct(product.id, fd).catch((): UpdateResult => ({ ok: false, error: "error" }));
-        if (res.ok) onClose();
-        else setError(res.error);
+        if (!res.ok) return setError(res.error);
+        notify(t(PRODUCT_SAVED));
+        onClose();
       }}
       className="relative w-full max-w-[560px] overflow-hidden rounded-[14px] border border-border bg-surface shadow-[0_24px_60px_rgba(0,0,0,0.4)]"
     >

@@ -5,8 +5,10 @@ import clsx from "clsx";
 import type { Product } from "@prisma/client";
 import { IconEdit, IconPhoto, IconTrash } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
+import { useToast } from "@/components/dashboard/ui/Toast";
 import { deleteProduct } from "@/lib/dashboard/actions/products";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { PRODUCT_DELETED } from "./productErrors";
 
 const ICON_BTN = "grid size-[30px] place-items-center rounded-[6px] border border-border bg-surface";
 
@@ -17,6 +19,7 @@ const COL = { price: "w-[92px]", sale: "w-[104px]", stock: "w-[96px]" };
 
 export function ProductTable({ products, onEdit }: { products: Product[]; onEdit: (p: Product) => void }) {
   const { t } = useLanguage();
+  const notify = useToast();
   const [pending, start] = useTransition();
 
   return (
@@ -84,7 +87,10 @@ export function ProductTable({ products, onEdit }: { products: Product[]; onEdit
               <button type="button" onClick={() => onEdit(p)} aria-label={t({ ka: "რედაქტირება", en: "Edit" })} className={clsx(ICON_BTN, "text-blue")}>
                 <IconEdit size={16} />
               </button>
-              <button type="button" disabled={pending} onClick={() => start(() => deleteProduct(p.id))} aria-label={t({ ka: "წაშლა", en: "Delete" })} className={clsx(ICON_BTN, "text-red disabled:opacity-50")}>
+              <button type="button" disabled={pending} onClick={() => start(async () => {
+                await deleteProduct(p.id);
+                notify(t(PRODUCT_DELETED));
+              })} aria-label={t({ ka: "წაშლა", en: "Delete" })} className={clsx(ICON_BTN, "text-red disabled:opacity-50")}>
                 <IconTrash size={16} />
               </button>
             </div>

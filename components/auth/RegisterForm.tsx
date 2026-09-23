@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, signInWithGoogle } from "@/lib/auth/browserSignIn";
 import {
   IconArrowRight,
   IconMailCheck,
@@ -215,7 +215,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
         <>
           <GoogleButton
             label={t(REGISTER.google)}
-            onClick={() => signIn("google", { callbackUrl })}
+            onClick={() => signInWithGoogle(callbackUrl)}
           />
           <OrDivider />
         </>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useTransition } from "react";
 import clsx from "clsx";
 import {
   IconCalendarEvent,
@@ -11,9 +10,9 @@ import {
   IconTruck,
   IconX,
 } from "@tabler/icons-react";
-import { setOrderStatus } from "@/lib/dashboard/actions";
 import type { OrderRowData } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { useOrderStatus } from "./useOrderStatus";
 
 const CELL = "rounded-[10px] border border-border bg-surface px-3 py-2.5";
 const BTN = "inline-flex h-9 items-center gap-1.5 rounded-[6px] px-4 text-[13px] font-medium disabled:opacity-60";
@@ -28,7 +27,7 @@ export function OrderRow({
   onToggle: () => void;
 }) {
   const { t } = useLanguage();
-  const [pending, start] = useTransition();
+  const { pending, change } = useOrderStatus(order.id);
   const dash = "—";
 
   return (
@@ -99,7 +98,7 @@ export function OrderRow({
             <button
               type="button"
               disabled={pending || order.status === "TO_SEND"}
-              onClick={() => start(() => setOrderStatus(order.id, "TO_SEND"))}
+              onClick={() => change("TO_SEND")}
               className={`${BTN} bg-primary text-white`}
             >
               <IconTruck size={16} /> {t({ ka: "დადასტურება", en: "Accept" })}
@@ -107,7 +106,7 @@ export function OrderRow({
             <button
               type="button"
               disabled={pending || order.status === "DONE"}
-              onClick={() => start(() => setOrderStatus(order.id, "DONE"))}
+              onClick={() => change("DONE")}
               className={`${BTN} border border-border bg-surface text-green`}
             >
               <IconCircleCheck size={16} /> {t({ ka: "დასრულება", en: "Complete" })}
@@ -122,7 +121,7 @@ export function OrderRow({
             <button
               type="button"
               disabled={pending || order.status === "CANCELLED"}
-              onClick={() => start(() => setOrderStatus(order.id, "CANCELLED"))}
+              onClick={() => change("CANCELLED")}
               className={`${BTN} border border-border bg-surface text-red`}
             >
               <IconX size={16} /> {t({ ka: "გაუქმება", en: "Cancel" })}

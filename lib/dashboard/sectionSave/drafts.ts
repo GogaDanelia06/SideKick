@@ -1,5 +1,5 @@
 import type { Fields } from "./fields";
-import type { AutosaveOwner, AutosaveSection } from "./request";
+import type { SectionOwner, SectionKey } from "./request";
 
 /**
  * Changes the server has not confirmed yet, kept in this browser so a failed or
@@ -8,7 +8,7 @@ import type { AutosaveOwner, AutosaveSection } from "./request";
  */
 const PREFIX = "sidekick.ai-draft:";
 
-export type DraftPlace = AutosaveOwner & { section: AutosaveSection };
+export type DraftPlace = SectionOwner & { section: SectionKey };
 type Draft = { id: number; fields: Fields };
 
 const keyOf = ({ userId, businessId, section }: DraftPlace) => `${PREFIX}${userId}:${businessId}:${section}`;

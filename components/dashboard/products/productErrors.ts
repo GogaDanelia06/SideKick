@@ -22,6 +22,9 @@ export const PRODUCT_ERRORS: Record<string, Bilingual> = {
   error: { ka: "ვერ შეინახა. სცადე ხელახლა.", en: "Could not save it. Try again." },
 };
 
+export const PRODUCT_SAVED: Bilingual = { ka: "პროდუქტი შენახულია", en: "Product saved" };
+export const PRODUCT_DELETED: Bilingual = { ka: "პროდუქტი წაიშალა", en: "Product deleted" };
+
 /** Problems found in the browser, before anything is sent. */
 export const PHOTO_ERRORS: Record<ResizeError, Bilingual> = {
   unreadable: {

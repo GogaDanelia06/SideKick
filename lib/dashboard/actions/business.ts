@@ -2,10 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { can, requirePermission } from "@/lib/auth/permissions";
+import { requirePermission } from "@/lib/auth/permissions";
 import { DASH } from "@/lib/dashboard/routes";
 import { optionalField } from "@/lib/forms";
-import { getContext } from "@/lib/session";
 import type { ActionResult } from "./result";
 
 export async function saveBusinessInfo(fd: FormData): Promise<ActionResult> {
@@ -31,23 +30,4 @@ export async function saveBusinessInfo(fd: FormData): Promise<ActionResult> {
   revalidatePath(DASH.ai);
   revalidatePath(DASH.profile);
   return { ok: true };
-}
-
-export async function saveProfile(fd: FormData) {
-  const ctx = await getContext();
-  if (!ctx) return;
-  const text = (name: string) => optionalField(fd, name);
-
-  await prisma.user.update({
-    where: { id: ctx.userId },
-    data: { name: text("name"), phone: text("phone") },
-  });
-
-  if (can(ctx.role, "business:write")) {
-    await prisma.business.update({
-      where: { id: ctx.businessId },
-      data: { name: text("company") ?? undefined, field: text("field"), description: text("description") },
-    });
-  }
-  revalidatePath(DASH.profile);
 }

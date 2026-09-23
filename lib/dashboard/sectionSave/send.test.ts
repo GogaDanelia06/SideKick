@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { sendSave } from "./send";
-import { flushAutosave, onFlush } from "./flush";
 
 const fetchMock = vi.fn();
 const request = { userId: "u1", businessId: "b1", section: "business" as const, entries: [["name", "Shop"]] as [string, string][] };
@@ -48,20 +47,5 @@ describe("sendSave()", () => {
   it("reports a network failure instead of throwing", async () => {
     fetchMock.mockRejectedValue(new TypeError("offline"));
     expect(await sendSave(request)).toEqual({ ok: false, error: "failed" });
-  });
-});
-
-describe("flushAutosave()", () => {
-  it("waits for every open section, even when one fails, and forgets closed ones", async () => {
-    const done: string[] = [];
-    const closeA = onFlush(async () => void done.push("a"));
-    onFlush(async () => {
-      throw new Error("down");
-    });
-
-    await flushAutosave();
-    closeA();
-    await flushAutosave();
-    expect(done).toEqual(["a"]);
   });
 });

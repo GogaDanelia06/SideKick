@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from "react";
 import { deleteBusiness, type DeleteBusinessError, type DeleteBusinessResult } from "@/lib/dashboard/actions/deleteBusiness";
-import { flushAutosave } from "@/lib/dashboard/autosave/flush";
 import type { Bilingual } from "@/lib/i18n/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
@@ -37,7 +36,6 @@ export function DeleteBusinessForm({ business, onCancel, onSettled }: Props) {
     if (busy || !matches) return;
     setBusy(true);
     setError(null);
-    await flushAutosave();
     const result = await deleteBusiness(business.id, typed).catch((): DeleteBusinessResult => ({ ok: false, error: "failed" }));
     if (result.ok) {
       onSettled(t({ ka: `„${business.name}“ წაიშალა`, en: `Deleted "${business.name}"` }));

@@ -2,8 +2,8 @@
 
 import { Activity, type ReactNode } from "react";
 import type { AiConfig, Business } from "@prisma/client";
-import type { AutosaveOwner } from "@/lib/dashboard/autosave/request";
-import { AutosaveOwnerContext } from "./autosaveOwner";
+import type { SectionOwner } from "@/lib/dashboard/sectionSave/request";
+import { SectionOwnerContext } from "./sectionOwner";
 import { BusinessSection } from "./sections/BusinessSection";
 import { CharacterSection } from "./sections/CharacterSection";
 import { RulesSection } from "./sections/RulesSection";
@@ -19,10 +19,10 @@ type Props = {
   business: Business | null;
   aiReady: boolean;
   loginId: string;
-  owner: AutosaveOwner;
+  owner: SectionOwner;
 };
 
-/** Keeps a form mounted while hidden; hiding it runs its effects' cleanup, which saves it. */
+/** Keeps a form mounted while hidden, so what was typed in it survives a look elsewhere. */
 function Kept({ show, children }: { show: boolean; children: ReactNode }) {
   // `hidden` too: the React canary in Next 16.2 left the first section added after hydration visible.
   return (
@@ -34,12 +34,12 @@ function Kept({ show, children }: { show: boolean; children: ReactNode }) {
 
 /**
  * The open section. The four forms stay mounted while hidden (Activity), so what was
- * typed survives switching sections, and hiding one is what saves it (useSectionAutosave).
+ * typed survives switching sections until its Save button is pressed (useSectionSave).
  * Languages save on every click, and the tester has nothing to save.
  */
 export function AiSections({ tab, config, business, aiReady, loginId, owner }: Props) {
   return (
-    <AutosaveOwnerContext.Provider value={owner}>
+    <SectionOwnerContext.Provider value={owner}>
       <Kept show={tab === "business"}>
         <BusinessSection business={business} />
       </Kept>
@@ -54,6 +54,6 @@ export function AiSections({ tab, config, business, aiReady, loginId, owner }: P
       </Kept>
       {tab === "languages" && <LanguagesSection config={config} />}
       {tab === "tester" && <TesterSection aiReady={aiReady} loginId={loginId} />}
-    </AutosaveOwnerContext.Provider>
+    </SectionOwnerContext.Provider>
   );
 }

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { IconLoader2, IconLogout } from "@tabler/icons-react";
 import { accountsRequest, landingAfterSwitch, logOutLabel, loginUrl } from "@/lib/auth/accountsClient";
 import { logOut } from "@/lib/auth/logOut";
-import { flushAutosave } from "@/lib/dashboard/autosave/flush";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const ROW = "flex w-full items-center gap-2.5 rounded-[6px] px-2.5 py-2.5 text-left text-[13px] text-red hover:bg-red-surface disabled:opacity-60";
@@ -19,7 +18,6 @@ export function LogoutButtons({ others }: { others: number }) {
 
   async function leaveThisOne() {
     setLeaving(true);
-    await flushAutosave();
     const reply = await accountsRequest("leave");
     const next = reply.ok ? reply.next : null;
     // Another person, or nobody: either way a full load.

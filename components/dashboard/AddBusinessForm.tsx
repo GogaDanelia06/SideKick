@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from "react";
 import { addBusiness, type AddBusinessError, type AddBusinessResult } from "@/lib/dashboard/actions/businesses";
-import { flushAutosave } from "@/lib/dashboard/autosave/flush";
 import { BUSINESS_NAME_MAX, OWNED_LIMIT_TEXT, sameBusinessName } from "@/lib/dashboard/businesses";
 import type { Bilingual } from "@/lib/i18n/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -32,8 +31,6 @@ export function AddBusinessForm({ taken, onCancel, onSettled }: Props) {
     if (busy || repeated) return;
     setBusy(true);
     setError(null);
-    // The new business opens next; unsaved AI settings belong to this one.
-    await flushAutosave();
     const result = await addBusiness(name).catch((): AddBusinessResult => ({ ok: false, error: "failed" }));
     if (result.ok) {
       const added = name.trim();

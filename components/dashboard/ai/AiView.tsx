@@ -16,7 +16,7 @@ import { Panel } from "@/components/dashboard/ui/Panel";
 import { useUrlTab } from "@/hooks/useUrlTab";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Bilingual, IconType } from "@/lib/content/types";
-import type { AutosaveOwner } from "@/lib/dashboard/autosave/request";
+import type { SectionOwner } from "@/lib/dashboard/sectionSave/request";
 import { AiSections, type AiTab } from "./AiSections";
 
 
@@ -33,7 +33,7 @@ const TABS: AiTab[] = [...NAV.map((n) => n.key), "tester"];
 /** The sidebar always fills the screen; the tester panel matches it so the chat reaches the bottom. */
 const FULL_HEIGHT = "lg:h-[calc(100vh-7rem)] lg:min-h-[520px]";
 
-type Props = { config: AiConfig | null; business: Business | null; aiReady: boolean; loginId: string; owner: AutosaveOwner };
+type Props = { config: AiConfig | null; business: Business | null; aiReady: boolean; loginId: string; owner: SectionOwner };
 
 export function AiView({ config, business, aiReady, loginId, owner }: Props) {
   const { t } = useLanguage();

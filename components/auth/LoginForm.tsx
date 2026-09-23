@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, signInWithGoogle } from "@/lib/auth/browserSignIn";
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
 import { ResendVerification } from "./ResendVerification";
@@ -126,7 +126,7 @@ export function LoginForm({ google }: LoginFormProps) {
         <>
           <GoogleButton
             label={t(LOGIN.google)}
-            onClick={() => signIn("google", { callbackUrl })}
+            onClick={() => signInWithGoogle(callbackUrl)}
           />
 
           <OrDivider />

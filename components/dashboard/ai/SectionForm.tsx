@@ -1,15 +1,16 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { IconCloudCheck, IconRestore } from "@tabler/icons-react";
+import { IconRestore } from "@tabler/icons-react";
 import type { Bilingual, IconType } from "@/lib/content/types";
-import type { AutosaveSection } from "@/lib/dashboard/autosave/request";
+import type { SectionKey } from "@/lib/dashboard/sectionSave/request";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { SectionHead } from "./parts";
-import { AUTOSAVE_HINT, RESTORED } from "./saveMessages";
-import { useSectionAutosave } from "./useSectionAutosave";
+import { RESTORED } from "./saveMessages";
+import { SaveBar } from "./SaveBar";
+import { useSectionSave } from "./useSectionSave";
 
-/** A section of the AI page. It has no save button: it saves itself when the user leaves it. */
+/** A section of the AI page: it is saved by its own Save button, and by nothing else. */
 export function SectionForm({
   section,
   icon,
@@ -19,7 +20,7 @@ export function SectionForm({
   extraActions,
   children,
 }: {
-  section: AutosaveSection;
+  section: SectionKey;
   icon: IconType;
   title: Bilingual;
   hint?: Bilingual;
@@ -28,11 +29,18 @@ export function SectionForm({
   children: ReactNode;
 }) {
   const { t } = useLanguage();
-  const { formRef, restored } = useSectionAutosave(section, title);
+  const { formRef, restored, dirty, saving, save, cancel } = useSectionSave(section, title);
 
   return (
-    // Enter in a field must not submit: a plain form would put every field into the URL.
-    <form ref={formRef} onSubmit={(event) => event.preventDefault()} className="flex flex-col gap-5">
+    <form
+      ref={formRef}
+      // Nothing is posted: Enter in a field saves the section, like the button.
+      onSubmit={(event) => {
+        event.preventDefault();
+        void save();
+      }}
+      className="flex flex-col gap-5"
+    >
       <SectionHead icon={icon} title={title} hint={hint} right={right} />
 
       {restored ? (
@@ -45,10 +53,7 @@ export function SectionForm({
       {children}
 
       {extraActions}
-      <p className="flex items-center gap-1.5 text-xs text-muted">
-        <IconCloudCheck size={15} className="shrink-0" />
-        {t(AUTOSAVE_HINT)}
-      </p>
+      <SaveBar dirty={dirty} saving={saving} onCancel={cancel} />
     </form>
   );
 }

@@ -1,13 +1,13 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import type { Lead } from "@prisma/client";
 import { IconMessage, IconPlus, IconTrash, IconX } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
-import { createLead, deleteLead, setLeadStatus } from "@/lib/dashboard/actions";
 import { DASH } from "@/lib/dashboard/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { useLeadSaves } from "./useLeadSaves";
 import type { Bilingual } from "@/lib/content/types";
 
 const STATUS: Record<Lead["status"], { label: Bilingual; cls: string }> = {
@@ -22,7 +22,7 @@ const INPUT =
 
 export function LeadsView({ leads }: { leads: Lead[] }) {
   const { t } = useLanguage();
-  const [pending, start] = useTransition();
+  const { pending, add, setStatus, remove } = useLeadSaves();
   const [adding, setAdding] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -32,8 +32,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
   ];
 
   function submit(formData: FormData) {
-    start(async () => {
-      await createLead(formData);
+    add(formData, () => {
       formRef.current?.reset();
       setAdding(false);
     });
@@ -99,9 +98,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
                     <select
                       value={l.status}
                       disabled={pending}
-                      onChange={(e) =>
-                        start(() => setLeadStatus(l.id, e.target.value as Lead["status"]))
-                      }
+                      onChange={(e) => setStatus(l.id, e.target.value as Lead["status"])}
                       aria-label={t({ ka: "სტატუსი", en: "Status" })}
                       className={`cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-semibold outline-none ${st.cls}`}
                     >
@@ -123,7 +120,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
                       <button
                         type="button"
                         disabled={pending}
-                        onClick={() => start(() => deleteLead(l.id))}
+                        onClick={() => remove(l.id)}
                         aria-label={t({ ka: "წაშლა", en: "Delete" })}
                         className="inline-grid size-8 place-items-center rounded-[6px] border border-border bg-surface text-red hover:border-red disabled:opacity-60"
                       >
