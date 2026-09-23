@@ -4,6 +4,7 @@ import { Panel } from "@/components/dashboard/ui/Panel";
 import { LIMIT_LABELS } from "@/lib/dashboard/home";
 import type { HomeOverview } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { longDate } from "@/lib/content/longDate";
 
 export function LimitCard({ limit }: { limit: HomeOverview["limit"] }) {
   const { t, locale } = useLanguage();
@@ -47,10 +48,7 @@ export function LimitCard({ limit }: { limit: HomeOverview["limit"] }) {
         {limit.renewsAt ? (
           <span>
             {t(LIMIT_LABELS.renews)}{" "}
-            {new Date(limit.renewsAt).toLocaleDateString(locale === "ka" ? "ka-GE" : "en-US", {
-              day: "numeric",
-              month: "long",
-            })}
+            {longDate(limit.renewsAt, locale)}
           </span>
         ) : (
           <span>{unlimited ? "" : fmt(limit.total)}</span>

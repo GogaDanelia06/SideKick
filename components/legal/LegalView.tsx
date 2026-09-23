@@ -4,6 +4,9 @@ import { IconAlertTriangle } from "@tabler/icons-react";
 import { Container } from "@/components/ui/Container";
 import type { LegalDoc } from "@/lib/content/legal";
 import { LEGAL_REVIEW_NOTICE } from "@/lib/content/legal";
+import { draftedBlocks, type LegalSectionView } from "@/lib/content/legalBlocks";
+import { longDate } from "@/lib/content/longDate";
+import { LegalBlocks } from "./LegalBlocks";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Text } from "@/lib/i18n/messages";
 
@@ -17,19 +20,25 @@ export function LegalView({
   title,
 }: {
   doc: LegalDoc;
-  sections?: LegalDoc["sections"];
+  sections?: LegalSectionView[];
   title?: Text;
 }) {
   const { t, locale } = useLanguage();
 
-  const list = sections && sections.length > 0 ? sections : doc.sections;
+  // The admin panel's sections when it has any, and the drafted copy until then.
+  const list: LegalSectionView[] =
+    sections && sections.length > 0
+      ? sections
+      : doc.sections.map((s) => ({ heading: s.heading, blocks: draftedBlocks(s) }));
 
   const isDraftVisible = process.env.NODE_ENV !== "production";
   const unfilled =
     isDraftVisible &&
     list.some((s) =>
-      [...(s.paragraphs ?? []), ...(s.bullets ?? [])].some(
-        (b) => PLACEHOLDER.test(b.ka) || PLACEHOLDER.test(b.en),
+      s.blocks.some((block) =>
+        (block.kind === "list" ? block.items : [block.text]).some(
+          (b) => PLACEHOLDER.test(b.ka) || PLACEHOLDER.test(b.en),
+        ),
       ),
     );
 
@@ -42,11 +51,7 @@ export function LegalView({
           </h1>
           <p className="mt-2 text-sm text-muted">
             {t("legal.view.lastUpdated")}:{" "}
-            {new Date(doc.updated).toLocaleDateString(locale === "ka" ? "ka-GE" : "en-GB", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
+            {longDate(doc.updated, locale)}
           </p>
 
           {isDraftVisible ? (
@@ -71,22 +76,7 @@ export function LegalView({
               <section key={i}>
                 <h2 className="mb-3 text-lg font-semibold">{t(s.heading)}</h2>
 
-                {s.paragraphs?.map((p, j) => (
-                  <p key={j} className="mb-3 leading-relaxed text-muted last:mb-0">
-                    {t(p)}
-                  </p>
-                ))}
-
-                {s.bullets ? (
-                  <ul className="mt-2 flex flex-col gap-2">
-                    {s.bullets.map((b, j) => (
-                      <li key={j} className="flex gap-2.5 leading-relaxed text-muted">
-                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
-                        <span>{t(b)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
+                <LegalBlocks blocks={s.blocks} />
               </section>
             ))}
           </div>

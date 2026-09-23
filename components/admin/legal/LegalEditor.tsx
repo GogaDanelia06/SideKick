@@ -70,6 +70,8 @@ function SectionFields({ initial }: { initial?: Fields }) {
         </label>
       </div>
 
+      <p className="text-[12px] text-faint">{t("admin.legal.editor.bulletsNote")}</p>
+
       <div className="grid gap-2.5 sm:grid-cols-2">
         <label className="block">
           <span className={LABEL}>{t("admin.legal.editor.bulletsGeorgian")}</span>

@@ -273,43 +273,8 @@ export async function getServiceBoxes(): Promise<BoxView[]> {
   }));
 }
 
-export type LegalSectionView = {
-  heading: Bilingual;
-  paragraphs: Bilingual[];
-  bullets: Bilingual[];
-};
+export { getLegalSections, getLegalTitle, type LegalSectionView } from "./content/legal";
 
-/** Published sections of a legal document, in order. Empty means the caller
- *  should fall back to the drafted copy in lib/content/legal.ts. */
-export async function getLegalSections(doc: string): Promise<LegalSectionView[]> {
-  const rows = await prisma.legalSection.findMany({
-    where: { doc, published: true },
-    orderBy: { order: "asc" },
-  });
-
-  const split = (ka: string, en: string, sep: RegExp): Bilingual[] => {
-    const a = ka.split(sep).map((s) => s.trim()).filter(Boolean);
-    const b = en.split(sep).map((s) => s.trim()).filter(Boolean);
-    return a.map((text, i) => ({ ka: text, en: b[i] ?? text }));
-  };
-
-  return rows.map((r) => ({
-    heading: { ka: r.headingKa, en: r.headingEn || r.headingKa },
-    paragraphs: split(r.bodyKa, r.bodyEn, /\n\s*\n/),
-    bullets: split(r.bulletsKa, r.bulletsEn, /\n/),
-  }));
-}
-
-/** A legal document's admin-set heading, or null to use the drafted title. */
-export async function getLegalTitle(doc: string): Promise<Bilingual | null> {
-  const row = await prisma.siteSetting.findUnique({ where: { key: `legal_${doc}_title` } });
-  const ka = row?.valueKa.trim();
-  if (!ka) return null;
-  return { ka, en: row?.valueEn.trim() || ka };
-}
-
-/** What an admin has overridden for one page. Empty strings mean "not set",
- *  which the metadata builder reads as "use the built-in default". */
 export type PageSeoOverrides = {
   title: string;
   description: string;

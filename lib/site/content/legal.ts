@@ -1,28 +1,22 @@
 import { prisma } from "@/lib/db";
 import { bilingual } from "@/lib/content/bilingual";
+import { pairBlocks, pairItems, type LegalSectionView } from "@/lib/content/legalBlocks";
 import type { Bilingual } from "@/lib/content/types";
 import { legalTitleKey } from "@/lib/site/textKeys";
 
-export type LegalSectionView = {
-  heading: Bilingual;
-  paragraphs: Bilingual[];
-  bullets: Bilingual[];
-};
-
-/** Pairs Georgian and English parts by index; English falls back to the Georgian. */
-function pairParts(ka: string, en: string, separator: RegExp): Bilingual[] {
-  const parts = (text: string) => text.split(separator).map((s) => s.trim()).filter(Boolean);
-  const english = parts(en);
-  return parts(ka).map((text, i) => ({ ka: text, en: english[i] ?? text }));
-}
+export type { LegalSectionView };
 
 /** Published sections of a legal document; empty means the drafted copy in lib/content/legal.ts applies. */
 export async function getLegalSections(doc: string): Promise<LegalSectionView[]> {
-  const rows = await prisma.legalSection.findMany({ where: { doc, published: true }, orderBy: { order: "asc" } });
+  const rows = await prisma.legalSection.findMany({
+    where: { doc, published: true },
+    orderBy: { order: "asc" },
+  });
+
   return rows.map((r) => ({
     heading: bilingual(r.headingKa, r.headingEn),
-    paragraphs: pairParts(r.bodyKa, r.bodyEn, /\n\s*\n/),
-    bullets: pairParts(r.bulletsKa, r.bulletsEn, /\n/),
+    // The bullets box, where a section still uses it, is a list after the text.
+    blocks: [...pairBlocks(r.bodyKa, r.bodyEn), ...pairItems(r.bulletsKa, r.bulletsEn)],
   }));
 }
 
