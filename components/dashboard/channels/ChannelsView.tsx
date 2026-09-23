@@ -20,7 +20,7 @@ const META = {
   FACEBOOK: { name: "Facebook", Icon: IconBrandFacebook, color: "#1877f2" },
   INSTAGRAM: { name: "Instagram", Icon: IconBrandInstagram, color: "#c13584" },
   WHATSAPP: { name: "WhatsApp", Icon: IconBrandWhatsapp, color: "#25d366" },
-  WEBSITE: { name: "API for websites", Icon: IconWorld, color: "var(--blue)" },
+  WEBSITE: { name: "dashboard.channels.view.websiteApi", Icon: IconWorld, color: "var(--blue)" },
 } as const;
 
 export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
@@ -44,7 +44,7 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
             <div className="min-w-0 flex-1">
               <div className="font-semibold">{m.name}</div>
               <div className="text-xs text-muted">
-                {t({ ka: "ბოლო სინქრონიზაცია", en: "Last sync" })}: {c.lastSyncAt ? new Date(c.lastSyncAt).toISOString().slice(0, 10) : "—"}
+                {t("dashboard.channels.view.lastSync")}: {c.lastSyncAt ? new Date(c.lastSyncAt).toISOString().slice(0, 10) : "—"}
               </div>
             </div>
             <ChannelStatus connected={c.connected} linked={c.linked} />
@@ -62,13 +62,14 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
                   setRefusal(null);
                   const res = await setChannelConnected(c.id, !c.connected);
                   if (res.ok) {
-                    notify(t(c.connected ? { ka: `${m.name} გამოირთო`, en: `${m.name} disconnected` } : { ka: `${m.name} ჩაირთო`, en: `${m.name} connected` }));
+                    notify(t(c.connected ? "dashboard.channels.view.disconnectedToast" : "dashboard.channels.view.connectedToast", { name: m.name }));
                   }
                   if (!res.ok && res.error === "limit") {
                     setRefusal(
-                      t({
-                        ka: `„${res.planName.ka}" გეგმა ${res.limit} არხს უშვებს და ${res.used} უკვე ჩართულია. ჯერ სხვა გამორთე ან გეგმა შეცვალე.`,
-                        en: `The "${res.planName.en}" plan allows ${res.limit} channel(s) and ${res.used} are already on. Turn one off first, or change the plan.`,
+                      t("dashboard.channels.view.planLimit", {
+                        plan: t(res.planName),
+                        limit: res.limit,
+                        used: res.used,
                       }),
                     );
                   }
@@ -76,7 +77,7 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
               }
               className={`h-9 rounded-[8px] px-4 text-sm font-medium disabled:opacity-60 ${c.connected ? "border border-border text-red" : "bg-primary text-white"}`}
             >
-              {c.connected ? t({ ka: "გათიშვა", en: "Disconnect" }) : t({ ka: "ჩართვა", en: "Turn on" })}
+              {c.connected ? t("dashboard.channels.view.disconnect") : t("dashboard.channels.view.turnOn")}
             </button>
               </>
             )}

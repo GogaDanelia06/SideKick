@@ -6,6 +6,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, softwareAppSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { seoFor } from "@/lib/seo/metadata";
 import { getPlans, getServiceBoxes, getSiteTexts } from "@/lib/site/content";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { textIn } from "@/lib/i18n/messages";
 
 export const generateMetadata = seoFor({
   title: "ფასები",
@@ -17,7 +19,7 @@ export const generateMetadata = seoFor({
 // Cached: admin saves revalidate this path; the timer catches edits made outside the panel.
 export const revalidate = 3600;
 
-const crumbs: Crumb[] = [HOME_CRUMB, { label: { ka: "ფასები", en: "Pricing" }, href: "/pricing" }];
+const crumbs: Crumb[] = [HOME_CRUMB, { label: "pricing.pricing", href: "/pricing" }];
 
 export default async function PricingPage() {
   const [packages, serviceBoxes, texts] = await Promise.all([
@@ -36,7 +38,7 @@ export default async function PricingPage() {
 
   return (
     <>
-      <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: c.label.ka, path: c.href })))} />
+      <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: textIn(DEFAULT_LOCALE, c.label), path: c.href })))} />
       {prices.length > 0 ? (
         <JsonLd
           data={softwareAppSchema({

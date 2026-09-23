@@ -26,12 +26,12 @@ export function ThemeActions({
 
   const message =
     status === "saved"
-      ? t({ ka: "შენახულია — საიტზე უკვე აისახა.", en: "Saved — the site already shows it." })
+      ? t("admin.appearance.themeActions.savedTheSiteAlready")
       : status === "failed"
-        ? t({ ka: "ვერ შეინახა. სცადე ხელახლა.", en: "Could not save. Try again." })
+        ? t("admin.appearance.themeActions.couldNotSaveTry")
         : changed === 0
-          ? t({ ka: "შენახულის იდენტურია.", en: "Matches what is saved." })
-          : `${changed} ${t({ ka: "შეუნახავი ცვლილება", en: "unsaved change(s)" })}`;
+          ? t("admin.appearance.themeActions.matchesWhatIsSaved")
+          : `${changed} ${t("admin.appearance.themeActions.unsavedChangeS")}`;
 
   return (
     <div className="sticky bottom-4 z-10 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-border bg-card p-3 shadow-[0_8px_28px_rgba(0,0,0,0.2)]">
@@ -45,14 +45,14 @@ export function ThemeActions({
           disabled={pending || changed === 0}
           className="h-9 rounded-[8px] border border-border px-3 text-[13px] text-muted hover:text-ink disabled:opacity-40"
         >
-          {t({ ka: "გაუქმება", en: "Discard" })}
+          {t("admin.appearance.themeActions.discard")}
         </button>
         <button
           type="submit"
           disabled={pending || changed === 0}
           className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60 sm:min-w-[110px]"
         >
-          {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+          {pending ? "…" : t("admin.appearance.themeActions.save")}
         </button>
       </div>
     </div>

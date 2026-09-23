@@ -15,6 +15,7 @@ Next.js 16 · React 19 · TypeScript strict · Prisma 6 · PostgreSQL · Auth.js
 | [docs/SETUP.md](docs/SETUP.md) | getting the project running on a new machine |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | you need to understand how it fits together |
 | [docs/API.md](docs/API.md) | adding or calling an endpoint or Server Action |
+| [docs/TEXT.md](docs/TEXT.md) | writing, translating or renaming anything the interface says |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | shipping to production |
 | [docs/HANDOVER.md](docs/HANDOVER.md) | taking ownership — access, gaps, trade-offs |
 | [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md) | Annex 8 — every library, version and licence |

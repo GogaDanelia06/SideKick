@@ -83,8 +83,8 @@ export function ColorInput({
         <button
           type="button"
           onClick={() => onChange(saved)}
-          title={t({ ka: "დაბრუნება", en: "Undo this change" })}
-          aria-label={`${label}: ${t({ ka: "დაბრუნება", en: "Undo this change" })}`}
+          title={t("admin.appearance.colorInput.undoThisChange")}
+          aria-label={`${label}: ${t("admin.appearance.colorInput.undoThisChange")}`}
           className="grid size-[22px] place-items-center rounded-md text-blue hover:bg-blue-surface"
         >
           <IconRotate2 size={14} />

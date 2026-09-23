@@ -16,16 +16,16 @@ import {
 import { saveChannelGuide, toggleChannelGuidePublished } from "@/lib/admin/actions/channelGuides";
 import { CHANNEL_NAMES, CHANNEL_TYPES } from "@/lib/dashboard/channels";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 const INPUT =
   "h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue";
 const AREA =
   "min-h-[132px] w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm leading-relaxed outline-none placeholder:text-faint focus:border-blue";
 
-const ERRORS: Record<string, Bilingual> = {
-  bad_url: { ka: "მიუთითეთ სწორი YouTube ბმული", en: "Enter a valid YouTube link" },
-  not_found: { ka: "ვერ მოიძებნა", en: "Not found" },
+const ERRORS: Record<string, Text> = {
+  bad_url: "admin.tutorials.channelGuidesEditor.enterAValidYoutube",
+  not_found: "admin.tutorials.channelGuidesEditor.notFound",
 };
 
 const ICONS: Record<ChannelType, { Icon: Icon; color: string }> = {
@@ -65,7 +65,7 @@ function GuideForm({ type, guide }: { type: ChannelType; guide?: ChannelGuide })
           type="button"
           disabled={pending}
           onClick={() => start(async () => { await toggleChannelGuidePublished(type, !published); })}
-          aria-label={t({ ka: "გამოქვეყნება", en: "Toggle publish" })}
+          aria-label={t("admin.tutorials.channelGuidesEditor.togglePublish")}
           className="grid size-8 shrink-0 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40"
         >
           {published ? <IconEye size={15} /> : <IconEyeOff size={15} />}
@@ -76,30 +76,30 @@ function GuideForm({ type, guide }: { type: ChannelType; guide?: ChannelGuide })
         <input
           name="youtubeUrl"
           defaultValue={guide?.youtubeUrl ?? ""}
-          placeholder={t({ ka: "YouTube ბმული (არასავალდებულო)", en: "YouTube link (optional)" })}
+          placeholder={t("admin.tutorials.channelGuidesEditor.youtubeLinkOptional")}
           className={INPUT}
         />
         <div className="grid gap-2.5 sm:grid-cols-2">
-          <textarea name="bodyKa" defaultValue={guide?.bodyKa ?? ""} placeholder={t({ ka: "ნაბიჯები (ქართ.) — თითო ხაზზე თითო", en: "Steps (KA) — one per line" })} className={AREA} />
-          <textarea name="bodyEn" defaultValue={guide?.bodyEn ?? ""} placeholder={t({ ka: "ნაბიჯები (ინგ.) — თითო ხაზზე თითო", en: "Steps (EN) — one per line" })} className={AREA} />
+          <textarea name="bodyKa" defaultValue={guide?.bodyKa ?? ""} placeholder={t("admin.tutorials.channelGuidesEditor.stepsKaOnePer")} className={AREA} />
+          <textarea name="bodyEn" defaultValue={guide?.bodyEn ?? ""} placeholder={t("admin.tutorials.channelGuidesEditor.stepsEnOnePer")} className={AREA} />
         </div>
       </div>
 
       {error ? (
         <div className="mt-3 flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
           <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? { ka: "ვერ შესრულდა", en: "Something went wrong" })}
+          {t(ERRORS[error] ?? "admin.tutorials.channelGuidesEditor.somethingWentWrong")}
         </div>
       ) : null}
 
       <div className="mt-3 flex items-center justify-end gap-3">
         {saved && !pending ? (
           <span className="inline-flex items-center gap-1 text-[13px] text-green">
-            <IconCheck size={15} /> {t({ ka: "შენახულია", en: "Saved" })}
+            <IconCheck size={15} /> {t("admin.tutorials.channelGuidesEditor.saved")}
           </span>
         ) : null}
         <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-          {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+          {pending ? "…" : t("admin.tutorials.channelGuidesEditor.save")}
         </button>
       </div>
     </form>
@@ -114,10 +114,7 @@ export function ChannelGuidesEditor({ guides }: { guides: ChannelGuide[] }) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-[12px] text-faint">
-        {t({
-          ka: "ეს ინსტრუქციები გამოჩნდება მომხმარებლის „არხების“ გვერდზე, თითოეული არხის გვერდით.",
-          en: "These appear next to each channel on the tenant's Channels screen.",
-        })}
+        {t("admin.tutorials.channelGuidesEditor.theseAppearNextTo")}
       </p>
 
       {CHANNEL_TYPES.map((type) => (

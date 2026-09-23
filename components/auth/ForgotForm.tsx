@@ -36,7 +36,7 @@ export function ForgotForm() {
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       if (data.code === "not_registered") return setNotRegistered(true);
-      return setError(t(refusalMessage(data, { ka: "ვერ გაიგზავნა", en: "Could not send" })));
+      return setError(t(refusalMessage(data, "auth.forgotForm.couldNotSend")));
     }
 
     setSent(true);
@@ -46,7 +46,7 @@ export function ForgotForm() {
     <AuthShell
       icon={sent ? IconMailCheck : IconLockQuestion}
       iconTone="outline"
-      title={sent ? { ka: "შეამოწმე ფოსტა", en: "Check your email" } : FORGOT.title}
+      title={sent ? "auth.forgotForm.checkYourEmail" : FORGOT.title}
       sub={sent ? FORGOT.sentNote : FORGOT.sub}
       footer={
         <Link href={ROUTES.login} className="inline-flex items-center gap-1 font-medium text-blue">

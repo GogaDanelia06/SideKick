@@ -15,17 +15,18 @@ import {
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { useUrlTab } from "@/hooks/useUrlTab";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual, IconType } from "@/lib/content/types";
+import type { IconType } from "@/lib/content/types";
 import type { SectionOwner } from "@/lib/dashboard/sectionSave/request";
 import { AiSections, type AiTab } from "./AiSections";
+import type { Text } from "@/lib/i18n/messages";
 
 
-const NAV: { key: AiTab; label: Bilingual; icon: IconType }[] = [
-  { key: "business", label: { ka: "ბიზნესის ინფორმაცია", en: "Business info" }, icon: IconBuildingStore },
-  { key: "character", label: { ka: "ხასიათი", en: "Character" }, icon: IconSquareRoundedLetterA },
-  { key: "rules", label: { ka: "ქცევის წესები", en: "Behaviour rules" }, icon: IconListCheck },
-  { key: "prompt", label: { ka: "პრომპტი / ინსტრუქციები", en: "Prompt / instructions" }, icon: IconFileText },
-  { key: "languages", label: { ka: "ენები", en: "Languages" }, icon: IconLanguage },
+const NAV: { key: AiTab; label: Text; icon: IconType }[] = [
+  { key: "business", label: "dashboard.ai.view.businessInfo", icon: IconBuildingStore },
+  { key: "character", label: "dashboard.ai.view.character", icon: IconSquareRoundedLetterA },
+  { key: "rules", label: "dashboard.ai.view.behaviourRules", icon: IconListCheck },
+  { key: "prompt", label: "dashboard.ai.view.promptInstructions", icon: IconFileText },
+  { key: "languages", label: "dashboard.ai.view.languages", icon: IconLanguage },
 ];
 
 const TABS: AiTab[] = [...NAV.map((n) => n.key), "tester"];
@@ -44,7 +45,7 @@ export function AiView({ config, business, aiReady, loginId, owner }: Props) {
     <div className="grid gap-4 lg:grid-cols-[260px_1fr] lg:items-start">
       <Panel className={clsx("flex flex-col p-3 lg:sticky lg:top-4", FULL_HEIGHT)}>
         <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
-          {t({ ka: "კონფიგურაცია", en: "Configuration" })}
+          {t("dashboard.ai.view.configuration")}
         </div>
 
         <nav className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
@@ -84,7 +85,7 @@ export function AiView({ config, business, aiReady, loginId, owner }: Props) {
             )}
           >
             <IconFlask size={17} className="shrink-0" />
-            <span className="flex-1">{t({ ka: "ტესტერი", en: "Tester" })}</span>
+            <span className="flex-1">{t("dashboard.ai.view.tester")}</span>
             {testing ? (
               <IconChevronRight size={15} className="shrink-0" />
             ) : (
@@ -92,10 +93,7 @@ export function AiView({ config, business, aiReady, loginId, owner }: Props) {
             )}
           </button>
           <p className="mt-2 px-1 text-[11px] leading-snug text-faint">
-            {t({
-              ka: "დააჭირე „ტესტერი“ პრომპტის ცვლად გასატესტად",
-              en: "Open the tester to try your current prompt",
-            })}
+            {t("dashboard.ai.view.openTheTesterTo")}
           </p>
         </div>
       </Panel>

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 export function AdminHeading({
   title,
@@ -10,8 +10,8 @@ export function AdminHeading({
   /** Status or controls that belong beside the title, not under it. */
   aside,
 }: {
-  title: Bilingual;
-  subtitle?: Bilingual;
+  title: Text;
+  subtitle?: Text;
   aside?: ReactNode;
 }) {
   const { t } = useLanguage();

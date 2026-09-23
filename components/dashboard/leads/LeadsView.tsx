@@ -8,12 +8,12 @@ import { Panel } from "@/components/dashboard/ui/Panel";
 import { DASH } from "@/lib/dashboard/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { useLeadSaves } from "./useLeadSaves";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
-const STATUS: Record<Lead["status"], { label: Bilingual; cls: string }> = {
-  NEW: { label: { ka: "ახალი", en: "New" }, cls: "bg-blue-surface text-blue" },
-  ACTIVE: { label: { ka: "მიმდინარე", en: "Active" }, cls: "bg-amber-surface text-amber" },
-  CLOSED: { label: { ka: "დახურული", en: "Closed" }, cls: "bg-green-surface text-green" },
+const STATUS: Record<Lead["status"], { label: Text; cls: string }> = {
+  NEW: { label: "dashboard.leads.view.new", cls: "bg-blue-surface text-blue" },
+  ACTIVE: { label: "dashboard.leads.view.active", cls: "bg-amber-surface text-amber" },
+  CLOSED: { label: "dashboard.leads.view.closed", cls: "bg-green-surface text-green" },
 };
 const STATUSES: Lead["status"][] = ["NEW", "ACTIVE", "CLOSED"];
 
@@ -26,9 +26,9 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
   const [adding, setAdding] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const cols: Bilingual[] = [
-    { ka: "სახელი გვარი", en: "Name" }, { ka: "ტელეფონი", en: "Phone" }, { ka: "ინტერესი", en: "Interest" },
-    { ka: "წყარო", en: "Source" }, { ka: "სტატუსი", en: "Status" }, { ka: "კომენტარი", en: "Comment" },
+  const cols: Text[] = [
+    "dashboard.leads.view.name", "dashboard.leads.view.phone", "dashboard.leads.view.interest",
+    "dashboard.leads.view.source", "dashboard.leads.view.status", "dashboard.leads.view.comment",
   ];
 
   function submit(formData: FormData) {
@@ -42,7 +42,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm text-muted">
-          {leads.length} {t({ ka: "ლიდი", en: "leads" })}
+          {leads.length} {t("dashboard.leads.view.leads")}
         </span>
         <button
           type="button"
@@ -50,20 +50,20 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
           className="inline-flex h-9 items-center gap-1.5 rounded-[8px] bg-primary px-4 text-[13px] font-medium text-white"
         >
           {adding ? <IconX size={16} /> : <IconPlus size={16} />}
-          {adding ? t({ ka: "დახურვა", en: "Close" }) : t({ ka: "ლიდის დამატება", en: "Add lead" })}
+          {adding ? t("dashboard.leads.view.close") : t("dashboard.leads.view.addLead")}
         </button>
       </div>
 
       {adding ? (
         <Panel className="p-4">
           <form ref={formRef} action={submit} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <input name="name" required placeholder={t({ ka: "სახელი გვარი *", en: "Name *" })} className={INPUT} />
-            <input name="phone" placeholder={t({ ka: "ტელეფონი", en: "Phone" })} className={INPUT} />
-            <input name="interest" placeholder={t({ ka: "ინტერესი", en: "Interest" })} className={INPUT} />
-            <input name="source" placeholder={t({ ka: "წყარო", en: "Source" })} className={INPUT} />
+            <input name="name" required placeholder={t("dashboard.leads.view.name2")} className={INPUT} />
+            <input name="phone" placeholder={t("dashboard.leads.view.phone")} className={INPUT} />
+            <input name="interest" placeholder={t("dashboard.leads.view.interest")} className={INPUT} />
+            <input name="source" placeholder={t("dashboard.leads.view.source")} className={INPUT} />
             <input
               name="comment"
-              placeholder={t({ ka: "კომენტარი", en: "Comment" })}
+              placeholder={t("dashboard.leads.view.comment")}
               className={`${INPUT} sm:col-span-2 lg:col-span-3`}
             />
             <button
@@ -71,7 +71,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
               disabled={pending}
               className="h-9 rounded-[8px] bg-primary text-[13px] font-medium text-white disabled:opacity-60"
             >
-              {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+              {pending ? "…" : t("dashboard.leads.view.save")}
             </button>
           </form>
         </Panel>
@@ -99,7 +99,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
                       value={l.status}
                       disabled={pending}
                       onChange={(e) => setStatus(l.id, e.target.value as Lead["status"])}
-                      aria-label={t({ ka: "სტატუსი", en: "Status" })}
+                      aria-label={t("dashboard.leads.view.status")}
                       className={`cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-semibold outline-none ${st.cls}`}
                     >
                       {STATUSES.map((s) => (
@@ -112,7 +112,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
                     <div className="flex items-center justify-end gap-1.5">
                       <Link
                         href={DASH.conversations}
-                        aria-label={t({ ka: "მიმოწერაზე გადასვლა", en: "Go to chat" })}
+                        aria-label={t("dashboard.leads.view.goToChat")}
                         className="inline-grid size-8 place-items-center rounded-[6px] border border-border bg-surface text-blue hover:border-blue"
                       >
                         <IconMessage size={16} />
@@ -121,7 +121,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
                         type="button"
                         disabled={pending}
                         onClick={() => remove(l.id)}
-                        aria-label={t({ ka: "წაშლა", en: "Delete" })}
+                        aria-label={t("dashboard.leads.view.delete")}
                         className="inline-grid size-8 place-items-center rounded-[6px] border border-border bg-surface text-red hover:border-red disabled:opacity-60"
                       >
                         <IconTrash size={16} />
@@ -134,7 +134,7 @@ export function LeadsView({ leads }: { leads: Lead[] }) {
             {leads.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center text-muted">
-                  {t({ ka: "ლიდები ჯერ არ არის", en: "No leads yet" })}
+                  {t("dashboard.leads.view.noLeadsYet")}
                 </td>
               </tr>
             )}

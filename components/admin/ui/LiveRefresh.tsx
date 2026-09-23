@@ -28,8 +28,8 @@ export function LiveRefresh() {
         <span className="size-full rounded-full bg-green" />
       </span>
       {at
-        ? t({ ka: `განახლდა ${at}`, en: `Updated ${at}` })
-        : t({ ka: "ლაივ — თვითონ განახლდება", en: "Live — refreshes itself" })}
+        ? t("admin.liveRefresh.updatedAt", { at })
+        : t("admin.liveRefresh.liveRefreshesItself")}
     </span>
   );
 }

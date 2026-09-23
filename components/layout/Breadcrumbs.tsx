@@ -11,7 +11,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
 
   return (
     <Container>
-      <nav aria-label="Breadcrumb" className="pt-6">
+      <nav aria-label={t("layout.breadcrumb")} className="pt-6">
         <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted">
           {items.map((item, i) => {
             const last = i === items.length - 1;

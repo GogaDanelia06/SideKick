@@ -21,7 +21,7 @@ export function RememberedAccounts({ accounts }: { accounts: OtherAccount[] }) {
 
   return (
     <Card className="w-full rounded-lg p-3">
-      <p className="mb-1.5 px-2 text-[13px] text-muted">{t({ ka: "ამ ბრაუზერის ანგარიშები:", en: "Accounts on this browser:" })}</p>
+      <p className="mb-1.5 px-2 text-[13px] text-muted">{t("auth.rememberedAccounts.accountsOnThisBrowser")}</p>
       {list.shown.map((account) => (
         <AccountRow
           key={account.uid}

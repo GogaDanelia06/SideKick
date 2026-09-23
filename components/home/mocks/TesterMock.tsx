@@ -5,14 +5,14 @@ import { Card } from "@/components/ui/Card";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const COPY = {
-  title: { ka: "AI ტესტერი", en: "AI tester" },
-  mode: { ka: "სატესტო რეჟიმი", en: "test mode" },
-  prompt: { ka: "რა ღირს AirPods Pro?", en: "How much are the AirPods Pro?" },
-  run: { ka: "გატესტე", en: "Test it" },
-  q: { ka: "რა ღირს AirPods Pro და მარაგშია?", en: "How much are the AirPods Pro, and are they in stock?" },
-  label: { ka: "✦ AI — სატესტო პასუხი", en: "✦ AI — test reply" },
-  a: { ka: "AirPods Pro ღირს 649₾ და ამჟამად მარაგშია. გსურთ შეკვეთა?", en: "The AirPods Pro cost ₾649 and are currently in stock. Would you like to order?" },
-};
+  title: "home.mocks.testerMock.aiTester",
+  mode: "home.mocks.testerMock.testMode",
+  prompt: "home.mocks.testerMock.howMuchAreThe",
+  run: "home.mocks.testerMock.testIt",
+  q: "home.mocks.testerMock.howMuchAreThe2",
+  label: "home.mocks.testerMock.aiTestReply",
+  a: "home.mocks.testerMock.theAirpodsProCost",
+} as const;
 
 export function TesterMock() {
   const { t } = useLanguage();

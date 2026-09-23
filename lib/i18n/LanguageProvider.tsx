@@ -7,13 +7,15 @@ import {
   useSyncExternalStore,
 } from "react";
 import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY } from "./config";
-import type { Bilingual, Locale } from "./types";
+import { textIn, type Text, type Vars } from "./messages";
+import type { Locale } from "./types";
 
 type LanguageContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   toggle: () => void;
-  t: <T>(value: Bilingual<T>) => T;
+  /** A key from messages/*.json, or text the database holds in both languages. */
+  t: (value: Text, vars?: Vars) => string;
 };
 
 export const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -58,7 +60,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value = useMemo<LanguageContextValue>(
-    () => ({ locale, setLocale, toggle, t: (v) => v[locale] }),
+    () => ({ locale, setLocale, toggle, t: (value, vars) => textIn(locale, value, vars) }),
     [locale, setLocale, toggle],
   );
 

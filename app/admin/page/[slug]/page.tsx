@@ -6,6 +6,7 @@ import { statSourceOptions } from "@/lib/site/statSources";
 import { getHeroIntervalMs } from "@/lib/site/content";
 import { SITE } from "@/lib/seo/site";
 import { PageEditor, type SectionData } from "@/components/admin/PageEditor";
+import { textIn } from "@/lib/i18n/messages";
 
 export function generateStaticParams() {
   return ADMIN_PAGES.map((p) => ({ slug: p.slug }));
@@ -106,7 +107,7 @@ async function loadSection(
         doc,
         sections: rows,
         title: { ka: titleRow?.valueKa ?? "", en: titleRow?.valueEn ?? "" },
-        defaultTitle: findLegalDoc(doc)?.title.ka ?? "",
+        defaultTitle: legalTitle(doc),
       };
     }
 
@@ -137,6 +138,12 @@ async function loadSection(
 }
 
 /** One admin page; every section loads in parallel. */
+/** The drafted heading of a legal document, in Georgian: what the admin field falls back to. */
+const legalTitle = (doc: string) => {
+  const drafted = findLegalDoc(doc);
+  return drafted ? textIn("ka", drafted.title) : "";
+};
+
 export default async function AdminPageEditor({
   params,
 }: {

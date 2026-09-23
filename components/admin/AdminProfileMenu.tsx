@@ -38,7 +38,7 @@ export function AdminProfileMenu({ name, email, otherAccounts }: Props) {
 
             <div className="flex items-center gap-2.5 px-2.5 py-2.5 text-[13px]">
               <IconLanguage size={17} />
-              <span className="flex-1">{t({ ka: "ენა", en: "Language" })}</span>
+              <span className="flex-1">{t("admin.profileMenu.language")}</span>
               <button
                 type="button"
                 onClick={toggleLang}
@@ -51,8 +51,8 @@ export function AdminProfileMenu({ name, email, otherAccounts }: Props) {
             <div className="flex items-center gap-2.5 px-2.5 py-2.5 text-[13px]">
               <span className="flex-1">
                 {theme === "dark"
-                  ? t({ ka: "მუქი თემა", en: "Dark theme" })
-                  : t({ ka: "ღია თემა", en: "Light theme" })}
+                  ? t("admin.profileMenu.darkTheme")
+                  : t("admin.profileMenu.lightTheme")}
               </span>
               <Switch on={theme === "dark"} onToggle={toggleTheme} ariaLabel="Theme" />
             </div>
@@ -63,7 +63,7 @@ export function AdminProfileMenu({ name, email, otherAccounts }: Props) {
               className="mt-1 flex items-center gap-2.5 border-t border-border2 px-2.5 pb-2.5 pt-3 text-[13px] hover:bg-soft"
             >
               <IconLayoutDashboard size={17} />
-              <span className="flex-1">{t({ ka: "დაშბორდი", en: "Dashboard" })}</span>
+              <span className="flex-1">{t("admin.profileMenu.dashboard")}</span>
               <IconExternalLink size={14} className="text-faint" />
             </Link>
 
@@ -86,7 +86,7 @@ export function AdminProfileMenu({ name, email, otherAccounts }: Props) {
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[13px] font-semibold">{name}</span>
           <span className="block text-[11px] text-muted">
-            {t({ ka: "პლატფორმის ადმინი", en: "Platform admin" })}
+            {t("admin.profileMenu.platformAdmin")}
           </span>
         </span>
         <IconSelector size={18} className="text-muted" />

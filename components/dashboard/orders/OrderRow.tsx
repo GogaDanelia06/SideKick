@@ -58,22 +58,22 @@ export function OrderRow({
               <IconClock size={15} /> <b className="font-mono text-ink">{order.timeLabel}</b>
             </span>
             <span className="ml-auto text-muted">
-              {t({ ka: "ჯამი", en: "Total" })}{" "}
+              {t("dashboard.orders.row.total")}{" "}
               <b className="font-mono text-base text-ink">{order.total}₾</b>
             </span>
           </div>
 
           <div className="grid gap-2.5 sm:grid-cols-3">
             <div className={CELL}>
-              <div className="mb-1 text-[11px] text-muted">{t({ ka: "სახელი გვარი", en: "Name" })}</div>
+              <div className="mb-1 text-[11px] text-muted">{t("dashboard.orders.row.name")}</div>
               <div className="text-sm font-medium">{order.customerName ?? dash}</div>
             </div>
             <div className={CELL}>
-              <div className="mb-1 text-[11px] text-muted">{t({ ka: "ნომერი", en: "Phone" })}</div>
+              <div className="mb-1 text-[11px] text-muted">{t("dashboard.orders.row.phone")}</div>
               <div className="font-mono text-sm">{order.phone ?? dash}</div>
             </div>
             <div className={CELL}>
-              <div className="mb-1 text-[11px] text-muted">{t({ ka: "მისამართი", en: "Address" })}</div>
+              <div className="mb-1 text-[11px] text-muted">{t("dashboard.orders.row.address")}</div>
               <div className="text-sm">{order.address ?? dash}</div>
             </div>
           </div>
@@ -101,7 +101,7 @@ export function OrderRow({
               onClick={() => change("TO_SEND")}
               className={`${BTN} bg-primary text-white`}
             >
-              <IconTruck size={16} /> {t({ ka: "დადასტურება", en: "Accept" })}
+              <IconTruck size={16} /> {t("dashboard.orders.row.accept")}
             </button>
             <button
               type="button"
@@ -109,14 +109,14 @@ export function OrderRow({
               onClick={() => change("DONE")}
               className={`${BTN} border border-border bg-surface text-green`}
             >
-              <IconCircleCheck size={16} /> {t({ ka: "დასრულება", en: "Complete" })}
+              <IconCircleCheck size={16} /> {t("dashboard.orders.row.complete")}
             </button>
             <button
               type="button"
               onClick={() => window.print()}
               className={`${BTN} border border-border bg-surface`}
             >
-              <IconPrinter size={16} /> {t({ ka: "ბეჭდვა", en: "Print" })}
+              <IconPrinter size={16} /> {t("dashboard.orders.row.print")}
             </button>
             <button
               type="button"
@@ -124,7 +124,7 @@ export function OrderRow({
               onClick={() => change("CANCELLED")}
               className={`${BTN} border border-border bg-surface text-red`}
             >
-              <IconX size={16} /> {t({ ka: "გაუქმება", en: "Cancel" })}
+              <IconX size={16} /> {t("dashboard.orders.row.cancel")}
             </button>
           </div>
         </div>

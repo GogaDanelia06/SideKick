@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { planLabel } from "@/lib/content/packages";
-import type { Bilingual } from "@/lib/content/types";
 import { isExpired } from "./subscriptionState";
+import type { Text } from "@/lib/i18n/messages";
 
 /** Plan caps; `-1` means unlimited. */
 
@@ -16,7 +16,7 @@ export type LimitRefusal = {
   reason: "limit" | "expired";
   limit: number;
   used: number;
-  planName: Bilingual;
+  planName: Text;
 };
 
 export type LimitVerdict = { allowed: true } | LimitRefusal;
@@ -26,7 +26,7 @@ function unlimited(cap: number): boolean {
 }
 
 type PlanCaps = {
-  planName: Bilingual;
+  planName: Text;
   /** End of the paid period, or null for a trial that never had one. */
   renewsAt: Date | null;
   msgLimit: number;

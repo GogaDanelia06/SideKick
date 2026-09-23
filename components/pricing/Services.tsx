@@ -5,7 +5,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ServiceCard } from "./ServiceCard";
 import { SERVICES, SERVICES_HEADING } from "@/lib/content/services";
 import type { BoxView } from "@/lib/site/content";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 /** Admin-editable heading and boxes; each falls back to the shipped copy when
  *  the admin hasn't set it. The title here is the page's H1. */
@@ -16,9 +16,9 @@ export function Services({
   sub,
 }: {
   boxes?: BoxView[];
-  badge?: Bilingual;
-  title?: Bilingual;
-  sub?: Bilingual;
+  badge?: Text;
+  title?: Text;
+  sub?: Text;
 }) {
   const useDb = Boolean(boxes && boxes.length > 0);
 

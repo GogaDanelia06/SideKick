@@ -12,17 +12,18 @@ import {
   IconUserPlus,
 } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual, IconType } from "@/lib/content/types";
+import type { IconType } from "@/lib/content/types";
 import { AREA, AreaField, CheckRow } from "../parts";
 import { SectionForm } from "../SectionForm";
+import type { Text } from "@/lib/i18n/messages";
 
-const ROLES: { key: string; label: Bilingual; icon: IconType }[] = [
-  { key: "info", label: { ka: "საინფორმაციო აგენტი", en: "Information agent" }, icon: IconInfoCircle },
-  { key: "sales", label: { ka: "გაყიდვების სპეციალისტი", en: "Sales specialist" }, icon: IconTrendingUp },
-  { key: "leads", label: { ka: "ლიდების შემგროვებელი", en: "Lead collector" }, icon: IconUserPlus },
-  { key: "booking", label: { ka: "შეხვედრის დაჯავშნა", en: "Appointment booking" }, icon: IconCalendarPlus },
-  { key: "orders", label: { ka: "შეკვეთის მიღება", en: "Order taking" }, icon: IconShoppingCart },
-  { key: "support", label: { ka: "მხარდაჭერის აგენტი", en: "Support agent" }, icon: IconHeadset },
+const ROLES: { key: string; label: Text; icon: IconType }[] = [
+  { key: "info", label: "dashboard.ai.rulesSection.informationAgent", icon: IconInfoCircle },
+  { key: "sales", label: "dashboard.ai.rulesSection.salesSpecialist", icon: IconTrendingUp },
+  { key: "leads", label: "dashboard.ai.rulesSection.leadCollector", icon: IconUserPlus },
+  { key: "booking", label: "dashboard.ai.rulesSection.appointmentBooking", icon: IconCalendarPlus },
+  { key: "orders", label: "dashboard.ai.rulesSection.orderTaking", icon: IconShoppingCart },
+  { key: "support", label: "dashboard.ai.rulesSection.supportAgent", icon: IconHeadset },
 ];
 
 export function RulesSection({ config }: { config: AiConfig | null }) {
@@ -33,11 +34,11 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
     <SectionForm
       section="rules"
       icon={IconListCheck}
-      title={{ ka: "ქცევის წესები", en: "Behaviour rules" }}
+      title={"dashboard.ai.rulesSection.behaviourRules"}
     >
       <fieldset>
         <legend className="mb-2 text-[13px] font-medium">
-          <span className="text-muted">1.</span> {t({ ka: "როლები", en: "Roles" })}
+          <span className="text-muted">1.</span> {t("dashboard.ai.rulesSection.roles")}
         </legend>
         <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {ROLES.map((r) => (
@@ -63,16 +64,13 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
       <div>
         <div className="mb-2 text-[13px] font-medium">
           <span className="text-muted">2.</span>{" "}
-          {t({ ka: "როდის გადასცეს საჭირო ადამიანს", en: "When to hand off to a person" })}
+          {t("dashboard.ai.rulesSection.whenToHandOff")}
         </div>
         <textarea
           name="handoffRule"
           rows={3}
           defaultValue={config?.handoffRule ?? ""}
-          placeholder={t({
-            ka: "მაგ: როცა კლიენტი ითხოვს ოპერატორს ან საჩივარია…",
-            en: "e.g. when the customer asks for a human, or it's a complaint…",
-          })}
+          placeholder={t("dashboard.ai.rulesSection.eGWhenThe")}
           className={AREA}
         />
       </div>
@@ -80,7 +78,7 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
       <div>
         <div className="mb-2 text-[13px] font-medium">
           <span className="text-muted">3.</span>{" "}
-          {t({ ka: "რამდენ ხანს დაელოდოს პასუხამდე", en: "How long to wait before replying" })}
+          {t("dashboard.ai.rulesSection.howLongToWait")}
         </div>
         <div className="flex items-center gap-2">
           <input
@@ -91,13 +89,10 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
             defaultValue={config?.replyDelaySec ?? 30}
             className="h-10 w-[90px] rounded-[8px] border border-input bg-soft px-3 text-[13px] outline-none focus:border-blue"
           />
-          <span className="text-[13px] text-muted">{t({ ka: "წამი", en: "seconds" })}</span>
+          <span className="text-[13px] text-muted">{t("dashboard.ai.rulesSection.seconds")}</span>
         </div>
         <p className="mt-1.5 text-[12px] text-faint">
-          {t({
-            ka: "კლიენტი ხშირად რამდენიმე მოკლე მესიჯს აგზავნის ზედიზედ. ლოდინი მათ ერთად კრებს და ერთ პასუხს აძლევს — 0 ნიშნავს მაშინვე პასუხს.",
-            en: "Customers often send several short messages in a row. Waiting gathers them into one question and one answer — 0 replies immediately.",
-          })}
+          {t("dashboard.ai.rulesSection.customersOftenSendSeveral")}
         </p>
       </div>
 
@@ -109,14 +104,14 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
             label={
               <>
                 <span className="text-muted">3.</span>{" "}
-                {t({ ka: "ლიდების შეგროვება", en: "Lead capture" })}
+                {t("dashboard.ai.rulesSection.leadCapture")}
               </>
             }
           />
           <input
             name="leadRule"
             defaultValue={config?.leadRule ?? ""}
-            placeholder={t({ ka: "რა აქტივობა ჩაითვლება ლიდად", en: "What counts as a lead" })}
+            placeholder={t("dashboard.ai.rulesSection.whatCountsAsA")}
             className="mt-2 h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue"
           />
         </div>
@@ -128,14 +123,14 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
             label={
               <>
                 <span className="text-muted">4.</span>{" "}
-                {t({ ka: "შეკვეთების შეგროვება", en: "Order capture" })}
+                {t("dashboard.ai.rulesSection.orderCapture")}
               </>
             }
           />
           <input
             name="orderRule"
             defaultValue={config?.orderRule ?? ""}
-            placeholder={t({ ka: "რა ნაბიჯი ჩაითვალოს შეკვეთად", en: "What counts as an order" })}
+            placeholder={t("dashboard.ai.rulesSection.whatCountsAsAn")}
             className="mt-2 h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue"
           />
         </div>
@@ -146,10 +141,7 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
           label={
             <>
               <span className="text-muted">5.</span>{" "}
-              {t({
-                ka: "შეკვეთის ჩასწორება / გაუქმების უფლება",
-                en: "May amend / cancel an order",
-              })}
+              {t("dashboard.ai.rulesSection.mayAmendCancelAn")}
             </>
           }
         />
@@ -158,13 +150,13 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
       <div>
         <div className="mb-2 text-[13px] font-medium">
           <span className="text-muted">6.</span>{" "}
-          {t({ ka: "ხშირად დასმული კითხვები (FAQ)", en: "Frequently asked questions (FAQ)" })}
+          {t("dashboard.ai.rulesSection.frequentlyAskedQuestionsFaq")}
         </div>
         <textarea
           name="faqText"
           rows={3}
           defaultValue={config?.faqText ?? ""}
-          placeholder={t({ ka: "კითხვა → პასუხი…", en: "question → answer…" })}
+          placeholder={t("dashboard.ai.rulesSection.questionAnswer")}
           className={AREA}
         />
       </div>
@@ -172,10 +164,7 @@ export function RulesSection({ config }: { config: AiConfig | null }) {
       <AreaField
         name="policies"
         rows={3}
-        label={{
-          ka: "7. მიწოდების / დაბრუნების წესები",
-          en: "7. Delivery / returns policy",
-        }}
+        label={"dashboard.ai.rulesSection.7DeliveryReturnsPolicy"}
         defaultValue={config?.policies}
       />
     </SectionForm>

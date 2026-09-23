@@ -11,27 +11,28 @@ import {
   IconCreditCard,
   IconBrandYoutube,
 } from "@tabler/icons-react";
-import type { Bilingual, IconType } from "@/lib/content/types";
+import type { IconType } from "@/lib/content/types";
 import { DASH } from "./routes";
+import type { Text } from "@/lib/i18n/messages";
 
 export type DashNavItem = {
   href: string;
   icon: IconType;
-  label: Bilingual;
+  label: Text;
 };
 
 export const DASH_NAV: DashNavItem[] = [
-  { href: DASH.home, icon: IconLayoutDashboard, label: { ka: "მთავარი", en: "Overview" } },
-  { href: DASH.conversations, icon: IconMessages, label: { ka: "მიმოწერები", en: "Conversations" } },
-  { href: DASH.ai, icon: IconRobot, label: { ka: "AI ასისტენტი", en: "AI assistant" } },
-  { href: DASH.channels, icon: IconPlugConnected, label: { ka: "არხები", en: "Channels" } },
-  { href: DASH.products, icon: IconPackage, label: { ka: "პროდუქტები", en: "Products" } },
-  { href: DASH.orders, icon: IconShoppingCart, label: { ka: "შეკვეთები", en: "Orders" } },
-  { href: DASH.leads, icon: IconUserPlus, label: { ka: "ლიდები", en: "Leads" } },
-  { href: DASH.analytics, icon: IconChartBar, label: { ka: "ანალიტიკა", en: "Analytics" } },
-  { href: DASH.team, icon: IconUsers, label: { ka: "გუნდი", en: "Team" } },
-  { href: DASH.billing, icon: IconCreditCard, label: { ka: "ბილინგი", en: "Billing" } },
-  { href: DASH.videos, icon: IconBrandYoutube, label: { ka: "ვიდეო ინსტრუქციები", en: "Tutorials" } },
+  { href: DASH.home, icon: IconLayoutDashboard, label: "dashboard.nav.overview" },
+  { href: DASH.conversations, icon: IconMessages, label: "dashboard.nav.conversations" },
+  { href: DASH.ai, icon: IconRobot, label: "dashboard.nav.aiAssistant" },
+  { href: DASH.channels, icon: IconPlugConnected, label: "dashboard.nav.channels" },
+  { href: DASH.products, icon: IconPackage, label: "dashboard.nav.products" },
+  { href: DASH.orders, icon: IconShoppingCart, label: "dashboard.nav.orders" },
+  { href: DASH.leads, icon: IconUserPlus, label: "dashboard.nav.leads" },
+  { href: DASH.analytics, icon: IconChartBar, label: "dashboard.nav.analytics" },
+  { href: DASH.team, icon: IconUsers, label: "dashboard.nav.team" },
+  { href: DASH.billing, icon: IconCreditCard, label: "dashboard.nav.billing" },
+  { href: DASH.videos, icon: IconBrandYoutube, label: "dashboard.nav.tutorials" },
 ];
 
 export const DASH_TABS = [DASH.home, DASH.conversations, DASH.orders, DASH.products, DASH.analytics];

@@ -23,7 +23,7 @@ export function MobileMenu() {
     <div ref={ref} className="md:hidden">
       <button
         type="button"
-        aria-label="Menu"
+        aria-label={t("layout.menu")}
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
         className="grid size-[34px] place-items-center rounded-sm border border-border text-muted"

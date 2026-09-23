@@ -8,11 +8,8 @@ export default async function AdminAppearancePage() {
   return (
     <>
       <AdminHeading
-        title={{ ka: "იერსახე", en: "Appearance" }}
-        subtitle={{
-          ka: "საიტისა და დაშბორდის ფერები — ერთ ადგილას.",
-          en: "The colours of the site and the dashboard, in one place.",
-        }}
+        title={"admin.appearance.appearance"}
+        subtitle={"admin.appearance.subtitle"}
       />
       <ThemeEditor initial={theme} />
     </>

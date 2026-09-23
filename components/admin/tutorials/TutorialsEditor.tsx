@@ -22,17 +22,17 @@ import {
 } from "@/lib/admin/actions/tutorials";
 import { youtubeThumbnail } from "@/lib/dashboard/youtube";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 const INPUT =
   "h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue";
 const AREA =
   "min-h-[64px] w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-blue";
 
-const ERRORS: Record<string, Bilingual> = {
-  title_required: { ka: "ქართული სათაური სავალდებულოა", en: "Georgian title is required" },
-  bad_url: { ka: "მიუთითეთ სწორი YouTube ბმული", en: "Enter a valid YouTube link" },
-  not_found: { ka: "ვერ მოიძებნა", en: "Not found" },
+const ERRORS: Record<string, Text> = {
+  title_required: "admin.tutorials.editor.georgianTitleIsRequired",
+  bad_url: "admin.tutorials.editor.enterAValidYoutube",
+  not_found: "admin.tutorials.editor.notFound",
 };
 
 function Fields({ initial }: { initial?: Tutorial }) {
@@ -47,12 +47,12 @@ function Fields({ initial }: { initial?: Tutorial }) {
         className={INPUT}
       />
       <div className="grid gap-2.5 sm:grid-cols-2">
-        <input name="titleKa" required defaultValue={initial?.titleKa} placeholder={t({ ka: "სათაური (ქართ.) *", en: "Title (KA) *" })} className={INPUT} />
-        <input name="titleEn" defaultValue={initial?.titleEn} placeholder={t({ ka: "სათაური (ინგ.)", en: "Title (EN)" })} className={INPUT} />
-        <textarea name="descKa" defaultValue={initial?.descKa} placeholder={t({ ka: "აღწერა (ქართ.)", en: "Description (KA)" })} className={AREA} />
-        <textarea name="descEn" defaultValue={initial?.descEn} placeholder={t({ ka: "აღწერა (ინგ.)", en: "Description (EN)" })} className={AREA} />
-        <input name="categoryKa" defaultValue={initial?.categoryKa} placeholder={t({ ka: "კატეგორია (ქართ.)", en: "Category (KA)" })} className={INPUT} />
-        <input name="categoryEn" defaultValue={initial?.categoryEn} placeholder={t({ ka: "კატეგორია (ინგ.)", en: "Category (EN)" })} className={INPUT} />
+        <input name="titleKa" required defaultValue={initial?.titleKa} placeholder={t("admin.tutorials.editor.titleKa")} className={INPUT} />
+        <input name="titleEn" defaultValue={initial?.titleEn} placeholder={t("admin.tutorials.editor.titleEn")} className={INPUT} />
+        <textarea name="descKa" defaultValue={initial?.descKa} placeholder={t("admin.tutorials.editor.descriptionKa")} className={AREA} />
+        <textarea name="descEn" defaultValue={initial?.descEn} placeholder={t("admin.tutorials.editor.descriptionEn")} className={AREA} />
+        <input name="categoryKa" defaultValue={initial?.categoryKa} placeholder={t("admin.tutorials.editor.categoryKa")} className={INPUT} />
+        <input name="categoryEn" defaultValue={initial?.categoryEn} placeholder={t("admin.tutorials.editor.categoryEn")} className={INPUT} />
       </div>
     </div>
   );
@@ -96,13 +96,10 @@ export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="text-sm text-muted">
-            {tutorials.length} {t({ ka: "ვიდეო", en: "videos" })}
+            {tutorials.length} {t("admin.tutorials.editor.videos")}
           </div>
           <p className="mt-0.5 text-[12px] text-faint">
-            {t({
-              ka: "ეს ვიდეოები ყველა ბიზნესს უჩანს დაშბორდში, „ვიდეო ინსტრუქციების“ ჩანართში.",
-              en: "Every business sees these under Tutorials in their dashboard.",
-            })}
+            {t("admin.tutorials.editor.everyBusinessSeesThese")}
           </p>
         </div>
         <button
@@ -111,14 +108,14 @@ export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
           className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas"
         >
           {adding ? <IconX size={16} /> : <IconPlus size={16} />}
-          {adding ? t({ ka: "დახურვა", en: "Close" }) : t({ ka: "ვიდეოს დამატება", en: "Add video" })}
+          {adding ? t("admin.tutorials.editor.close") : t("admin.tutorials.editor.addVideo")}
         </button>
       </div>
 
       {error ? (
         <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
           <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? { ka: "ვერ შესრულდა", en: "Something went wrong" })}
+          {t(ERRORS[error] ?? "admin.tutorials.editor.somethingWentWrong")}
         </div>
       ) : null}
 
@@ -131,7 +128,7 @@ export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
           <Fields />
           <div className="mt-3 flex justify-end">
             <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-              {pending ? "…" : t({ ka: "დამატება", en: "Add" })}
+              {pending ? "…" : t("admin.tutorials.editor.add")}
             </button>
           </div>
         </form>
@@ -139,7 +136,7 @@ export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
 
       {tutorials.length === 0 && !adding ? (
         <div className="rounded-lg border border-border bg-card px-6 py-10 text-center text-sm text-muted">
-          {t({ ka: "ჯერ არცერთი ვიდეო.", en: "No videos yet." })}
+          {t("admin.tutorials.editor.noVideosYet")}
         </div>
       ) : null}
 
@@ -153,10 +150,10 @@ export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
                   <Fields initial={v} />
                   <div className="mt-3 flex justify-end gap-2">
                     <button type="button" onClick={() => { setEditing(null); setError(null); }} className="h-9 rounded-[8px] border border-border px-4 text-[13px] font-medium">
-                      {t({ ka: "გაუქმება", en: "Cancel" })}
+                      {t("admin.tutorials.editor.cancel")}
                     </button>
                     <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-                      {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+                      {pending ? "…" : t("admin.tutorials.editor.save")}
                     </button>
                   </div>
                 </form>
@@ -182,19 +179,19 @@ export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
                   </div>
 
                   <div className="flex shrink-0 items-center gap-1">
-                    <button type="button" disabled={pending || i === 0} onClick={() => run(() => moveTutorial(v.id, "up"))} aria-label={t({ ka: "აწევა", en: "Move up" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
+                    <button type="button" disabled={pending || i === 0} onClick={() => run(() => moveTutorial(v.id, "up"))} aria-label={t("admin.tutorials.editor.moveUp")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
                       <IconChevronUp size={16} />
                     </button>
-                    <button type="button" disabled={pending || i === tutorials.length - 1} onClick={() => run(() => moveTutorial(v.id, "down"))} aria-label={t({ ka: "ჩამოწევა", en: "Move down" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
+                    <button type="button" disabled={pending || i === tutorials.length - 1} onClick={() => run(() => moveTutorial(v.id, "down"))} aria-label={t("admin.tutorials.editor.moveDown")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
                       <IconChevronDown size={16} />
                     </button>
-                    <button type="button" disabled={pending} onClick={() => run(() => toggleTutorialPublished(v.id, !v.published))} aria-label={t({ ka: "გამოქვეყნება", en: "Toggle publish" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
+                    <button type="button" disabled={pending} onClick={() => run(() => toggleTutorialPublished(v.id, !v.published))} aria-label={t("admin.tutorials.editor.togglePublish")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
                       {v.published ? <IconEye size={15} /> : <IconEyeOff size={15} />}
                     </button>
-                    <button type="button" disabled={pending} onClick={() => { setEditing(v.id); setError(null); }} aria-label={t({ ka: "რედაქტირება", en: "Edit" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
+                    <button type="button" disabled={pending} onClick={() => { setEditing(v.id); setError(null); }} aria-label={t("admin.tutorials.editor.edit")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
                       <IconPencil size={15} />
                     </button>
-                    <button type="button" disabled={pending} onClick={() => remove(v.id)} aria-label={t({ ka: "წაშლა", en: "Delete" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
+                    <button type="button" disabled={pending} onClick={() => remove(v.id)} aria-label={t("admin.tutorials.editor.delete")} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
                       <IconTrash size={15} />
                     </button>
                   </div>

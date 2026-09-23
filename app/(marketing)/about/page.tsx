@@ -5,6 +5,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { seoFor } from "@/lib/seo/metadata";
 import { getSiteTexts, getSiteValue } from "@/lib/site/content";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { textIn } from "@/lib/i18n/messages";
 
 export const generateMetadata = seoFor({
   title: "ჩვენ შესახებ",
@@ -18,7 +20,7 @@ export const revalidate = 3600;
 
 const crumbs: Crumb[] = [
   HOME_CRUMB,
-  { label: { ka: "ჩვენ შესახებ", en: "About us" }, href: "/about" },
+  { label: "about.aboutUs", href: "/about" },
 ];
 
 export default async function AboutPage() {
@@ -29,7 +31,7 @@ export default async function AboutPage() {
 
   return (
     <>
-      <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: c.label.ka, path: c.href })))} />
+      <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: textIn(DEFAULT_LOCALE, c.label), path: c.href })))} />
       <JsonLd
         data={webPageSchema({
           type: "AboutPage",

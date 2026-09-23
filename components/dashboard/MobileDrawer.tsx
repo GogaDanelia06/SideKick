@@ -6,8 +6,10 @@ import { Wordmark } from "@/components/ui/Wordmark";
 import { NavList } from "./NavList";
 import { ProfileMenu } from "./ProfileMenu";
 import type { Account } from "@/lib/dashboard/queries/account";
+import { useLanguage } from "@/lib/i18n/useLanguage";
 
 export function MobileDrawer({ open, onClose, account }: { open: boolean; onClose: () => void; account: Account }) {
+  const { t } = useLanguage();
   return (
     <div className={clsx("lg:hidden", !open && "pointer-events-none")}>
       <button
@@ -28,7 +30,7 @@ export function MobileDrawer({ open, onClose, account }: { open: boolean; onClos
       >
         <div className="flex h-[60px] items-center gap-2.5 border-b border-border2 px-[18px] text-base font-semibold">
           <Wordmark className="h-[28px]" tagline />
-          <button type="button" onClick={onClose} aria-label="Close menu" className="ml-auto text-muted">
+          <button type="button" onClick={onClose} aria-label={t("layout.closeMenu")} className="ml-auto text-muted">
             <IconX size={20} />
           </button>
         </div>

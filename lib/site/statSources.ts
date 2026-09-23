@@ -1,8 +1,8 @@
 import { cache } from "react";
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
-import type { Bilingual } from "@/lib/content/types";
 import { formatStat, type StatFormat, type StatSourceOption } from "./statFormat";
+import type { Text } from "@/lib/i18n/messages";
 
 /**
  * Figures the platform counts for itself. Aggregates only — never a name, a
@@ -10,12 +10,12 @@ import { formatStat, type StatFormat, type StatSourceOption } from "./statFormat
  */
 export type StatSource = {
   key: string;
-  label: Bilingual;
+  label: Text;
   format: StatFormat;
   count: () => Promise<number>;
 };
 
-const ka = (ka: string, en: string): Bilingual => ({ ka, en });
+const ka = (ka: string, en: string): Text => ({ ka, en });
 
 /** Midnight UTC today — the boundary for the "today" counters. */
 function startOfToday(): Date {

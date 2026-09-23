@@ -7,10 +7,10 @@ export function ChannelStatus({ connected, linked }: { connected: boolean; linke
   const { t } = useLanguage();
 
   const [tone, label] = !connected
-    ? ["bg-soft text-muted", { ka: "გათიშულია", en: "Disconnected" }]
+    ? (["bg-soft text-muted", "dashboard.channels.status.disconnected"] as const)
     : linked
-      ? ["bg-green-surface text-green", { ka: "დაკავშირებულია", en: "Connected" }]
-      : ["bg-amber-surface text-amber", { ka: "ავტორიზაცია საჭიროა", en: "Needs authorising" }];
+      ? (["bg-green-surface text-green", "dashboard.channels.status.connected"] as const)
+      : (["bg-amber-surface text-amber", "dashboard.channels.status.needsAuthorising"] as const);
 
   return (
     <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>{t(label)}</span>

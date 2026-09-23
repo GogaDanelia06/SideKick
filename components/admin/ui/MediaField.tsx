@@ -3,20 +3,17 @@
 import { useRef, useState } from "react";
 import { IconPhoto, IconTrash, IconUpload, IconVideo } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 const INPUT =
   "w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-blue";
 
-const ERRORS: Record<string, Bilingual> = {
-  not_configured: {
-    ka: "ფაილების საცავი არ არის დაკავშირებული (Vercel → Storage → Blob). ამასობაში ჩასვი ბმული ქვემოთ.",
-    en: "File storage is not connected (Vercel → Storage → Blob). Paste a URL below in the meantime.",
-  },
-  bad_type: { ka: "დაუშვებელი ფორმატი", en: "Unsupported file type" },
-  too_large: { ka: "ფაილი 8MB-ზე დიდია", en: "File is larger than 8MB" },
-  forbidden: { ka: "უფლება არ გაქვთ", en: "Not allowed" },
-  upload_failed: { ka: "ატვირთვა ვერ მოხერხდა", en: "Upload failed" },
+const ERRORS: Record<string, Text> = {
+  not_configured: "admin.mediaField.fileStorageIsNot",
+  bad_type: "admin.mediaField.unsupportedFileType",
+  too_large: "admin.mediaField.fileIsLargerThan",
+  forbidden: "admin.mediaField.notAllowed",
+  upload_failed: "admin.mediaField.uploadFailed",
 };
 
 /** Upload-or-paste media picker; the URL field works even without blob storage. */
@@ -36,7 +33,7 @@ export function MediaField({
   /** Refuse video wherever the result is rendered with <img>. */
   imagesOnly?: boolean;
   /** Replaces the standing advice under the field, which is slide-specific. */
-  note?: Bilingual;
+  note?: Text;
 }) {
   const { t } = useLanguage();
   const [url, setUrl] = useState(initialUrl ?? "");
@@ -73,8 +70,8 @@ export function MediaField({
     <div>
       <span className="mb-1 block text-[11px] uppercase tracking-wide text-faint">
         {imagesOnly
-          ? t({ ka: "ფოტო", en: "Photo" })
-          : t({ ka: "ფოტო ან ვიდეო", en: "Photo or video" })}
+          ? t("admin.mediaField.photo")
+          : t("admin.mediaField.photoOrVideo")}
       </span>
 
       <input type="hidden" name={name} value={url} />
@@ -96,7 +93,7 @@ export function MediaField({
           <button
             type="button"
             onClick={() => { setUrl(""); setType(""); }}
-            aria-label={t({ ka: "წაშლა", en: "Remove" })}
+            aria-label={t("admin.mediaField.remove")}
             className="grid size-8 shrink-0 place-items-center rounded-[7px] border border-border text-red hover:border-red"
           >
             <IconTrash size={15} />
@@ -112,7 +109,7 @@ export function MediaField({
           className="inline-flex h-9 items-center gap-1.5 rounded-[8px] border border-border px-3 text-[13px] font-medium disabled:opacity-60"
         >
           {busy ? "…" : <IconUpload size={15} />}
-          {t({ ka: "ატვირთვა", en: "Upload" })}
+          {t("admin.mediaField.upload")}
         </button>
         <input
           ref={fileRef}
@@ -125,7 +122,7 @@ export function MediaField({
           }}
         />
         <span className="text-[12px] text-faint">
-          {t({ ka: "ან ჩასვი ბმული:", en: "or paste a URL:" })}
+          {t("admin.mediaField.orPasteAUrl")}
         </span>
         <input
           value={url}
@@ -137,15 +134,12 @@ export function MediaField({
 
       {error ? (
         <p className="mt-1.5 text-[12px] text-amber">
-          {t(ERRORS[error] ?? { ka: "ვერ შესრულდა", en: "Something went wrong" })}
+          {t(ERRORS[error] ?? "admin.mediaField.somethingWentWrong")}
         </p>
       ) : (
         <p className="mt-1.5 text-[12px] text-faint">
           {t(
-            note ?? {
-              ka: "ცარიელი რომ დატოვო, სლაიდზე ჩაშენებული ანიმაცია გამოჩნდება. მაქს. 8MB.",
-              en: "Leave empty to use the slide's built-in animation. Max 8MB.",
-            },
+            note ?? "admin.mediaField.leaveEmptyToUse",
           )}
           <IconPhoto size={12} className="ml-1 inline" />
         </p>

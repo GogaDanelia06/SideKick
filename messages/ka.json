@@ -1,0 +1,1351 @@
+{
+  "about": {
+    "aboutUs": "ჩვენ შესახებ",
+    "view": {
+      "tryForFree": "სცადე უფასოდ"
+    }
+  },
+  "admin": {
+    "analytics": {
+      "actions": "ქმედებები",
+      "active": "აქტიური",
+      "businesses": "ბიზნესი",
+      "businessesNewThisMonth": "+{count} ამ თვეში",
+      "cancelled": "გაუქმებული",
+      "collectedInTotal": "სულ მიღებული",
+      "collectedThisMonth": "ამ თვეში მიღებული",
+      "connectedChannels": "მიერთებული არხი",
+      "conversations": "მიმოწერა",
+      "conversationsActive": "{count} აქტიური",
+      "dailyBars": {
+        "busiestDay": "დღიური მაქსიმუმი"
+      },
+      "everySubscriptionTrialsIncluded": "ყველა გამოწერა, საცდელის ჩათვლით.",
+      "funnel": {
+        "ofStart": "საწყისიდან",
+        "signUpFunnel": "რეგისტრაციის გზა",
+        "startingPoint": "საწყისი"
+      },
+      "insideTheApp": "აპლიკაციაში",
+      "last30Days": "ბოლო 30 დღე.",
+      "leads": "ლიდი",
+      "leadsClosed": "{count} დახურული",
+      "messages": "შეტყობინება",
+      "messagesFromAi": "{share}% AI-სგან",
+      "monthlyRecurringMrr": "თვიური შემოსავალი (MRR)",
+      "newBusinesses6Months": "ახალი ბიზნესები (6 თვე)",
+      "note": "ავტორიზებული მომხმარებლების ეკრანები — მარკეტინგულ ციფრს არ ერევა.",
+      "nothingRecordedYetFigures": "ჯერ არაფერი დაფიქსირებულა — ციფრები პირველი ვიზიტებიდან გაჩნდება.",
+      "ourIncome": "ჩვენი შემოსავალი",
+      "overSevenDays": "{value} / 7 დღე",
+      "pageViews": "გვერდის ნახვა",
+      "pastDue": "ვადაგადაცილებული",
+      "paymentProblems": "პრობლემური გადახდები",
+      "paymentsFailedPending": "{failed} ჩავარდნილი · {pending} მიმდინარე",
+      "planDistribution": "პაკეტების განაწილება",
+      "platformAnalytics": "პლატფორმის ანალიტიკა",
+      "products": "პროდუქტი",
+      "publicPages": "საიტის გვერდები",
+      "rankedList": {
+        "nothingYet": "ჯერ არაფერი"
+      },
+      "subscriptionsActive": "{count} აქტიური გამოწერა",
+      "subtitle": "ჯამური მაჩვენებლები ყველა კლიენტზე. მიმოწერების შიგთავსი აქ არ ჩანს — მხოლოდ რიცხვები.",
+      "tenantsSales": "კლიენტების გაყიდვები",
+      "tenantsTurnover": "{total}₾ — მათი ბრუნვა, არა ჩვენი",
+      "trial": "საცდელი",
+      "users": "მომხმარებელი",
+      "visitsAndActions": "ვიზიტები და ქმედებები"
+    },
+    "appearance": {
+      "appearance": "იერსახე",
+      "colorInput": {
+        "undoThisChange": "დაბრუნება"
+      },
+      "colorPicker": {
+        "default": "სტანდარტული",
+        "done": "მზაა"
+      },
+      "contrastNotes": {
+        "everyTextColourIs": "ორივე თემაში ყველა ტექსტი იკითხება",
+        "hardToRead": "{count} ძნელად იკითხება",
+        "needs": "საჭიროა",
+        "youCanStillSave": "შენახვა მაინც შესაძლებელია — ეს გაფრთხილებაა, არა შეზღუდვა."
+      },
+      "pickerParts": {
+        "hue": "ელფერი",
+        "saturationAndBrightness": "გაჯერებულობა და სიკაშკაშე"
+      },
+      "shades": {
+        "darkTheme": "მუქი თემა",
+        "lightTheme": "ღია თემა"
+      },
+      "subtitle": "საიტისა და დაშბორდის ფერები — ერთ ადგილას.",
+      "themeActions": {
+        "couldNotSaveTry": "ვერ შეინახა. სცადე ხელახლა.",
+        "discard": "გაუქმება",
+        "matchesWhatIsSaved": "შენახულის იდენტურია.",
+        "save": "შენახვა",
+        "savedTheSiteAlready": "შენახულია — საიტზე უკვე აისახა.",
+        "unsavedChangeS": "შეუნახავი ცვლილება"
+      },
+      "themeSection": {
+        "colour": "{count} ფერი",
+        "colours": "{count} ფერი"
+      },
+      "themeToolbar": {
+        "editingAColourSwitches": "ფერის შეცვლისას ეკრანი თვითონ ის თემაზე გადაირთვება.",
+        "onScreen": "ეკრანზე ჩანს",
+        "readyMadePalettesSet": "მზა პალიტრები — ორივე თემას ერთად ცვლის"
+      }
+    },
+    "boxes": {
+      "editor": {
+        "add": "დამატება",
+        "addBox": "ბოქსის დამატება",
+        "boxes": "ბოქსი",
+        "cancel": "გაუქმება",
+        "close": "დახურვა",
+        "delete": "წაშლა",
+        "descriptionEnglish": "აღწერა — English",
+        "descriptionGeorgian": "აღწერა — ქართული",
+        "edit": "რედაქტირება",
+        "icon": "აიკონი",
+        "moveDown": "ჩამოწევა",
+        "moveUp": "აწევა",
+        "noBoxesYet": "ჯერ არცერთი ბოქსი.",
+        "notFound": "ვერ მოიძებნა",
+        "save": "შენახვა",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "titleEnglish": "სათაური — English",
+        "titleGeorgian": "სათაური — ქართული",
+        "titleIsRequiredIn": "სათაური ორივე ენაზე სავალდებულოა",
+        "togglePublish": "გამოქვეყნება"
+      }
+    },
+    "businesses": {
+      "businessPlans": {
+        "businesses": "ბიზნესები",
+        "noBusinesses": "ბიზნესები არ არის",
+        "noPlansExistYet": "გეგმები ჯერ არ არის შექმნილი. დაამატე ფასების გვერდის რედაქტორში.",
+        "total": "სულ"
+      },
+      "businessRow": {
+        "active": "აქტიური",
+        "businessNotFound": "ბიზნესი ვერ მოიძებნა",
+        "cancelled": "გაუქმებული",
+        "channels": "არხი",
+        "chats": "მიმოწერა",
+        "members": "წევრი",
+        "messages": "მესიჯები",
+        "pastDue": "გადაუხდელი",
+        "plan": "გეგმა",
+        "planNotFound": "პაკეტი ვერ მოიძებნა",
+        "products": "პროდუქტი",
+        "resetCounter": "მრიცხველის განულება",
+        "save": "შენახვა",
+        "saved": "შენახულია",
+        "saving": "ინახება…",
+        "status": "სტატუსი",
+        "trial": "საცდელი"
+      },
+      "businessesPlans": "ბიზნესები და გეგმები",
+      "subtitle": "სანამ ბანკები არ დაუკავშირდება, გეგმა აქ ხელით ენიშნება. ცვლილება მაშინვე მოქმედებს."
+    },
+    "content": {
+      "textGroupEditor": {
+        "appearsOn": "ჩანს აქ:",
+        "english": "ინგლისური",
+        "georgian": "ქართული",
+        "save": "შენახვა",
+        "saved": "შენახულია",
+        "somethingWentWrong": "ვერ შესრულდა"
+      }
+    },
+    "controlPanel": "მართვის პანელი",
+    "faq": {
+      "editor": {
+        "add": "დამატება",
+        "addQuestion": "დამატება",
+        "answerEn": "პასუხი (ინგ.)",
+        "answerKa": "პასუხი (ქართ.)",
+        "cancel": "გაუქმება",
+        "close": "დახურვა",
+        "delete": "წაშლა",
+        "edit": "რედაქტირება",
+        "fillInAllFour": "შეავსეთ ოთხივე ველი",
+        "moveDown": "ჩამოწევა",
+        "moveUp": "აწევა",
+        "noQuestionsYet": "ჯერ არცერთი კითხვა.",
+        "notFound": "ვერ მოიძებნა",
+        "questionEn": "კითხვა (ინგ.)",
+        "questionKa": "კითხვა (ქართ.)",
+        "questions": "კითხვა",
+        "save": "შენახვა",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "togglePublish": "გამოქვეყნება"
+      }
+    },
+    "hero": {
+      "editor": {
+        "add": "დამატება",
+        "addSlide": "სლაიდის დამატება",
+        "autoAdvanceSeconds": "ავტომატური გადასვლა (წამი)",
+        "badgeEnglish": "ბეჯი — English",
+        "badgeGeorgian": "ბეჯი — ქართ.",
+        "builtInAnimationShown": "ჩაშენებული ანიმაცია — ჩანს მაშინ, თუ მედია არ არის ატვირთული",
+        "buttonEnglish": "ღილაკი — English",
+        "buttonGeorgian": "ღილაკი — ქართ.",
+        "buttonUrl": "ღილაკის ბმული",
+        "cancel": "გაუქმება",
+        "chat": "ჩატი",
+        "close": "დახურვა",
+        "dashboard": "დეშბორდი",
+        "delete": "წაშლა",
+        "edit": "რედაქტირება",
+        "learnMore": "გაიგე მეტი",
+        "media": "მედია",
+        "moveDown": "ჩამოწევა",
+        "moveUp": "აწევა",
+        "noMedia": "მედიის გარეშე",
+        "noSlidesYetThe": "ჯერ არცერთი სლაიდი — მთავარ გვერდზე ჩაშენებული კარუსელი ჩანს.",
+        "none": "— არცერთი —",
+        "notFound": "ვერ მოიძებნა",
+        "save": "შენახვა",
+        "saved": "შენახულია",
+        "secondsMustBeBetween": "წამები უნდა იყოს 1-დან 60-მდე",
+        "slides": "სლაიდი",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "tester": "ტესტერი",
+        "textEnglish": "ტექსტი — English",
+        "textGeorgian": "ტექსტი — ქართ.",
+        "theRightHandPanel": "მარჯვენა პანელზე ერთი რამ ჩანს: ჯერ მედია, შემდეგ ანიმაცია, ბოლოს — ქვემოთ დამატებული ციფრები.",
+        "titleEnglish": "სათაური — English",
+        "titleGeorgian": "სათაური — ქართ.",
+        "titleIsRequiredIn": "სათაური ორივე ენაზე სავალდებულოა",
+        "togglePublish": "გამოქვეყნება"
+      },
+      "slideStats": {
+        "aHandMadeFigure": "ხელით ჩაწერილი ციფრი მხოლოდ ვიზუალურად მოძრაობს — ის არაფერს ითვლის.",
+        "add": "დამატება",
+        "byHandADrifting": "ხელით — მოძრავი ციფრი",
+        "cancel": "გაუქმება",
+        "changeMax": "ცვლილება max",
+        "changeMin": "ცვლილება min",
+        "close": "დახურვა",
+        "delete": "წაშლა",
+        "edit": "შეცვლა",
+        "figuresOnTheSlide": "ციფრები სლაიდზე",
+        "intervalMaxMs": "ინტერვალი max (მწმ)",
+        "intervalMinMs": "ინტერვალი min (მწმ)",
+        "labelEnglish": "დასახელება — English",
+        "labelGeorgian": "დასახელება — ქართ.",
+        "live": "ლაივ",
+        "rightNow": "ახლა: {value}. ციფრი ბაზიდან იკითხება და საიტზე თვითონ იზრდება, როცა ახალი მომხმარებელი დარეგისტრირდება.",
+        "save": "შენახვა",
+        "startValue": "საწყისი",
+        "suffix": "სუფიქსი",
+        "whereTheFigureComes": "საიდან მოდის ციფრი"
+      }
+    },
+    "legal": {
+      "editor": {
+        "add": "დამატება",
+        "addSection": "სექციის დამატება",
+        "bodyEnglish": "ტექსტი — English",
+        "bodyGeorgian": "ტექსტი — ქართული",
+        "bullets": "პუნქტი",
+        "bulletsEnglish": "ჩამონათვალი — English",
+        "bulletsGeorgian": "ჩამონათვალი — ქართული",
+        "cancel": "გაუქმება",
+        "close": "დახურვა",
+        "delete": "წაშლა",
+        "documentHeadingH1": "დოკუმენტის სათაური (H1)",
+        "edit": "რედაქტირება",
+        "headingEnglish": "სათაური — English",
+        "headingGeorgian": "სათაური — ქართული",
+        "headingIsRequiredIn": "სათაური ორივე ენაზე სავალდებულოა",
+        "inEnglish": "ინგლისურად",
+        "moveDown": "ჩამოწევა",
+        "moveUp": "აწევა",
+        "notFound": "ვერ მოიძებნა",
+        "oneItemPerLine": "თითო პუნქტი ახალ ხაზზე (არასავალდებულო)",
+        "save": "შენახვა",
+        "saved": "შენახულია",
+        "sections": "სექცია",
+        "separateParagraphsWithA": "აბზაცები ცარიელი ხაზით გაყავი",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "togglePublish": "გამოქვეყნება",
+        "unknownDocument": "დოკუმენტი ვერ მოიძებნა"
+      }
+    },
+    "liveRefresh": {
+      "liveRefreshesItself": "ლაივ — თვითონ განახლდება",
+      "updatedAt": "განახლდა {at}"
+    },
+    "mediaField": {
+      "fileIsLargerThan": "ფაილი 8MB-ზე დიდია",
+      "fileStorageIsNot": "ფაილების საცავი არ არის დაკავშირებული (Vercel → Storage → Blob). ამასობაში ჩასვი ბმული ქვემოთ.",
+      "leaveEmptyToUse": "ცარიელი რომ დატოვო, სლაიდზე ჩაშენებული ანიმაცია გამოჩნდება. მაქს. 8MB.",
+      "notAllowed": "უფლება არ გაქვთ",
+      "orPasteAUrl": "ან ჩასვი ბმული:",
+      "photo": "ფოტო",
+      "photoOrVideo": "ფოტო ან ვიდეო",
+      "remove": "წაშლა",
+      "somethingWentWrong": "ვერ შესრულდა",
+      "unsupportedFileType": "დაუშვებელი ფორმატი",
+      "upload": "ატვირთვა",
+      "uploadFailed": "ატვირთვა ვერ მოხერხდა"
+    },
+    "nav": {
+      "sitePages": "საიტის გვერდები"
+    },
+    "pageEditor": {
+      "pickASectionAnd": "აირჩიე სექცია და დაარედაქტირე.",
+      "viewPage": "გვერდის ნახვა"
+    },
+    "plans": {
+      "editor": {
+        "channels": "არხები",
+        "emptyNoDiscountMonthly": "ცარიელი = ფასდაკლების გარეშე (თვიური × თვეების რაოდენობა).",
+        "extraEnglish": "{n}. ინგლისურად",
+        "extraFeatures5Slots": "დამატებითი პარამეტრები (5 ველი)",
+        "extraGeorgian": "{n}. ქართულად",
+        "featured": "გამორჩეული",
+        "featuredPlan": "გამორჩეული პაკეტი",
+        "limitsMustBeNumbers": "ლიმიტი უნდა იყოს რიცხვი (-1 = შეუზღუდავი)",
+        "messages": "შეტყობინება",
+        "nameEn": "სახელი (ინგ.)",
+        "nameIsRequired": "სახელი სავალდებულოა",
+        "nameKa": "სახელი (ქართ.)",
+        "price12Months": "ფასი — 1 წელი (₾)",
+        "price3Months": "ფასი — 3 თვე (₾)",
+        "priceMo": "ფასი (₾ / თვე)",
+        "priceMustBeA": "ფასი უნდა იყოს დადებითი მთელი რიცხვი",
+        "products": "პროდუქტი",
+        "save": "შენახვა",
+        "saved": "შენახულია",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "users": "მომხმარებელი"
+      }
+    },
+    "profileMenu": {
+      "darkTheme": "მუქი თემა",
+      "dashboard": "დაშბორდი",
+      "language": "ენა",
+      "lightTheme": "ღია თემა",
+      "platformAdmin": "პლატფორმის ადმინი"
+    },
+    "routes": {
+      "analytics": "ანალიტიკა",
+      "appearance": "იერსახე",
+      "businessesPlans": "ბიზნესები და გეგმები",
+      "helpContent": "ინსტრუქციები",
+      "overview": "მთავარი"
+    },
+    "sectionRail": {
+      "sections": "სექციები"
+    },
+    "seo": {
+      "editor": {
+        "1200630RecommendedBlank": "რეკომენდებულია 1200×630. ცარიელი = ავტომატურად გენერირებული სურათი.",
+        "aBlankFieldMeans": "ცარიელი ველი ნიშნავს, რომ სტანდარტული მნიშვნელობა გამოიყენება.",
+        "blankThePageS": "ცარიელი = გვერდის საკუთარი მისამართი.",
+        "canonicalMustBeA": "Canonical უნდა იყოს სრული მისამართი (https://…) ან დაიწყოს „/“-ით",
+        "canonicalUrl": "კანონიკური URL",
+        "default": "სტანდარტული",
+        "description": "აღწერა (description)",
+        "googlePreview": "გადახედვა Google-ში",
+        "indexVisibleInSearch": "Index — ჩანს ძებნაში",
+        "indexing": "ინდექსაცია",
+        "noindexHiddenFromSearch": "Noindex — დამალულია ძებნისგან",
+        "ogDescription": "OG აღწერა",
+        "ogImage": "OG სურათი",
+        "ogTitle": "OG სათაური",
+        "page": "გვერდი:",
+        "previewOnly": "მხოლოდ საჩვენებლად",
+        "save": "შენახვა",
+        "saved": "შენახულია",
+        "slugUrl": "Slug (მისამართი)",
+        "socialSharingOpenGraph": "სოციალური ქსელები (Open Graph)",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "theAddressIsDefined": "მისამართი კოდშია განსაზღვრული — შეცვლა დეველოპერს სჭირდება.",
+        "theTwitterCardReuses": "Twitter Card ავტომატურად იმავე სათაურს, აღწერასა და სურათს იყენებს (summary_large_image).",
+        "thisAppearsInGoogle": "ეს ჩანს Google-ის შედეგებში და ბრაუზერის ჩანართზე — არა თვით გვერდზე.",
+        "thisIsWhatGoogle": "ეს არის ის, რასაც Google აჩვენებს. შესაცვლელად გამოიყენე ზემოთ მოცემული ველები.",
+        "thisSectionOnlyChanges": "აქ მხოლოდ ის იცვლება, რასაც საძიებო სისტემა ხედავს. გვერდზე დაწერილი დიდი სათაური (H1) და ტექსტები ამავე გვერდის სხვა სექციებშია.",
+        "title": "სათაური (title)",
+        "unknownPage": "უცნობი გვერდი"
+      }
+    },
+    "shell": {
+      "admin": "ადმინი"
+    },
+    "stats": {
+      "editor": {
+        "add": "დამატება",
+        "addStat": "დამატება",
+        "automatic": "ავტომატური",
+        "automaticGrowth": "ავტომატური ზრდა",
+        "byHand": "ხელით",
+        "cancel": "გაუქმება",
+        "close": "დახურვა",
+        "delete": "წაშლა",
+        "edit": "რედაქტირება",
+        "figureEG1": "ციფრი, მაგ. 1,200+",
+        "fillInEveryField": "შეავსეთ ყველა ველი",
+        "hint": "რასაც ჩაწერ, ის ჩანს. არ იცვლება.",
+        "hint2": "იწყება საწყისი ციფრიდან და თვითონ იზრდება მითითებულ დიაპაზონებში. ციფრი სერვერზე ინახება, ამიტომ ყველა ვიზიტორი ერთსა და იმავეს ხედავს და გვერდის განახლება მას თავიდან არ იწყებს.",
+        "hint3": "ნამდვილი ციფრი ბაზიდან. საიტზე მწვანე წერტილით აღინიშნება.",
+        "howMuchItGrows": "რამდენით გაიზარდოს (დიაპაზონი)",
+        "howOftenInSeconds": "რა სიხშირით, წამებში (დიაპაზონი)",
+        "labelEn": "წარწერა (ინგ.)",
+        "labelKa": "წარწერა (ქართ.)",
+        "live": "ლაივ",
+        "liveCounter": "ლაივ მთვლელი",
+        "moveDown": "ჩამოწევა",
+        "moveUp": "აწევა",
+        "noStatsYetThe": "ჯერ არცერთი მაჩვენებელი. საიტზე სექცია არ ჩანს.",
+        "notFound": "ვერ მოიძებნა",
+        "pickACounter": "აირჩიე მთვლელი",
+        "pickHowTheFigure": "აირჩიე ციფრის ტიპი",
+        "rightNow": "ახლა: {value}. ხელით შეცვლა აღარ სჭირდება.",
+        "s": "წმ",
+        "save": "შენახვა",
+        "savingRestartsTheFigure": "შენახვისას ციფრი თავიდან იწყებს ზრდას საწყისი ციფრიდან.",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "startValue": "საწყისი ციფრი",
+        "stats": "მაჩვენებელი",
+        "suffix": "სუფიქსი",
+        "theStripAtThe": "მთავარი გვერდის ქვედა ზოლი. თითოეული ციფრი სამი ტიპიდან ერთია — ხელით ჩაწერილი, ავტომატურად მზარდი, ან ნამდვილი მთვლელი ბაზიდან.",
+        "typeAFigure": "ჩაწერე ციფრი"
+      }
+    },
+    "subtitle": "აირჩიე გვერდი, შემდეგ სექცია. ცვლილება მაშინვე აისახება საიტზე.",
+    "tutorials": {
+      "admin": {
+        "channelSetup": "არხების დაკავშირება",
+        "helpContent": "ინსტრუქციები",
+        "subtitle": "ვიდეოები და ტექსტი, რომელსაც მომხმარებელი დაშბორდში ხედავს.",
+        "tutorials": "ვიდეო ინსტრუქციები"
+      },
+      "channelGuidesEditor": {
+        "enterAValidYoutube": "მიუთითეთ სწორი YouTube ბმული",
+        "notFound": "ვერ მოიძებნა",
+        "save": "შენახვა",
+        "saved": "შენახულია",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "stepsEnOnePer": "ნაბიჯები (ინგ.) — თითო ხაზზე თითო",
+        "stepsKaOnePer": "ნაბიჯები (ქართ.) — თითო ხაზზე თითო",
+        "theseAppearNextTo": "ეს ინსტრუქციები გამოჩნდება მომხმარებლის „არხების“ გვერდზე, თითოეული არხის გვერდით.",
+        "togglePublish": "გამოქვეყნება",
+        "youtubeLinkOptional": "YouTube ბმული (არასავალდებულო)"
+      },
+      "editor": {
+        "add": "დამატება",
+        "addVideo": "ვიდეოს დამატება",
+        "cancel": "გაუქმება",
+        "categoryEn": "კატეგორია (ინგ.)",
+        "categoryKa": "კატეგორია (ქართ.)",
+        "close": "დახურვა",
+        "delete": "წაშლა",
+        "descriptionEn": "აღწერა (ინგ.)",
+        "descriptionKa": "აღწერა (ქართ.)",
+        "edit": "რედაქტირება",
+        "enterAValidYoutube": "მიუთითეთ სწორი YouTube ბმული",
+        "everyBusinessSeesThese": "ეს ვიდეოები ყველა ბიზნესს უჩანს დაშბორდში, „ვიდეო ინსტრუქციების“ ჩანართში.",
+        "georgianTitleIsRequired": "ქართული სათაური სავალდებულოა",
+        "moveDown": "ჩამოწევა",
+        "moveUp": "აწევა",
+        "noVideosYet": "ჯერ არცერთი ვიდეო.",
+        "notFound": "ვერ მოიძებნა",
+        "save": "შენახვა",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "titleEn": "სათაური (ინგ.)",
+        "titleKa": "სათაური (ქართ.) *",
+        "togglePublish": "გამოქვეყნება",
+        "videos": "ვიდეო"
+      }
+    }
+  },
+  "ai": {
+    "settings": {
+      "consultative": "კონსულტანტის სტილი",
+      "detailed": "დეტალური",
+      "formal": "ოფიციალური",
+      "formal2": "ფორმალური",
+      "friendly": "მეგობრული",
+      "informal": "ფამილიარული",
+      "medium": "საშუალო",
+      "moderately": "ზომიერად",
+      "never": "არასოდეს",
+      "often": "ხშირად",
+      "professional": "პროფესიონალური",
+      "salesOriented": "გაყიდვებზე ორიენტირებული",
+      "short": "მოკლე"
+    }
+  },
+  "auth": {
+    "accountRow": {
+      "logOutOfThis": "ამ ანგარიშიდან გასვლა",
+      "sessionExpired": "სესია დასრულდა"
+    },
+    "accountSwitcher": {
+      "addAnotherAccount": "სხვა ანგარიშის დამატება",
+      "atMostAccounts": "ერთდროულად მაქსიმუმ {max} ანგარიში",
+      "somethingWentWrongTry": "ვერ მოხერხდა. სცადე ხელახლა.",
+      "thatAccountSSession": "ამ ანგარიშის სესია დასრულდა. შედი მასში ხელახლა.",
+      "yourSessionHasEnded": "სესია დასრულდა. შედი ხელახლა."
+    },
+    "accountsClient": {
+      "logOut": "გასვლა",
+      "logOutOfAll": "ყველა ანგარიშიდან გასვლა"
+    },
+    "forgotForm": {
+      "checkYourEmail": "შეამოწმე ფოსტა",
+      "couldNotSend": "ვერ გაიგზავნა"
+    },
+    "logoutButtons": {
+      "logOutOfThis": "ამ ანგარიშიდან გასვლა"
+    },
+    "messages": {
+      "emailIsRequired": "ელფოსტა სავალდებულოა",
+      "enterAValidEmail": "შეიყვანეთ სწორი ელფოსტა",
+      "enterAValidPhone": "შეიყვანეთ სწორი ტელეფონის ნომერი",
+      "firstNameIsRequired": "სახელი სავალდებულოა",
+      "passwordIsRequired": "პაროლი სავალდებულოა",
+      "passwordMustBeAt": "პაროლი უნდა იყოს მინიმუმ 8 სიმბოლო",
+      "passwordMustContainAt": "პაროლი უნდა შეიცავდეს მინიმუმ ერთ პატარა ასოს",
+      "passwordMustContainAt2": "პაროლი უნდა შეიცავდეს მინიმუმ ერთ დიდ ასოს",
+      "passwordMustContainAt3": "პაროლი უნდა შეიცავდეს მინიმუმ ერთ ციფრს ან სპეციალურ სიმბოლოს",
+      "passwordsDonTMatch": "პაროლები არ ემთხვევა",
+      "pleaseRepeatYourPassword": "გაიმეორეთ პაროლი",
+      "someOfTheDetails": "შეყვანილი მონაცემები არასწორია",
+      "theCompanyNameIs": "კომპანიის სახელი ძალიან გრძელია",
+      "theFieldOfActivity": "საქმიანობის სფერო ძალიან გრძელია",
+      "theLinkIsInvalid": "ბმული არასწორია ან ვადა გაუვიდა. მოითხოვეთ ახალი.",
+      "thisEmailIsAlready": "ეს მეილი უკვე რეგისტრირებულია",
+      "thisEmailIsNot": "ეს მეილი არ არის დარეგისტრირებული",
+      "useOnlyLettersSpaces": "გამოიყენეთ მხოლოდ ასოები, გამოტოვება, დეფისი ან აპოსტროფი"
+    },
+    "registerForm": {
+      "aNetworkErrorOccurred": "დაფიქსირდა ქსელის შეცდომა. სცადეთ თავიდან.",
+      "continue": "გაგრძელება",
+      "registrationCompletedPleaseSign": "რეგისტრაცია დასრულდა. გთხოვთ, შეხვიდეთ ანგარიშზე.",
+      "registrationFailed": "რეგისტრაცია ვერ მოხერხდა"
+    },
+    "registerTrialNotice": {
+      "afterRegistrationYouGet": "რეგისტრაციის შემდეგ მიიღებთ 5-დღიან სატესტო პერიოდს და 1 თვე უფასო მომსახურებას."
+    },
+    "rememberedAccounts": {
+      "accountsOnThisBrowser": "ამ ბრაუზერის ანგარიშები:"
+    },
+    "resetForm": {
+      "couldNotChangePassword": "ვერ შეიცვალა"
+    }
+  },
+  "breadcrumbs": {
+    "home": "მთავარი"
+  },
+  "chat": {
+    "bot": {
+      "happyToHelpFor": "სიამოვნებით! უფასო დემოსთვის დაგჭირდებათ მხოლოდ რეგისტრაცია — შემდეგ პირდაპირ თქვენს პროდუქტებზე დაატესტებთ ბოტს. გავხსნა რეგისტრაციის გვერდი?",
+      "helloHowCanI": "გამარჯობა! 😊 რით შემიძლია დაგეხმაროთ დღეს?",
+      "iConnectToFacebook": "ვუკავშირდები Facebook-ს, Instagram-სა და WhatsApp-ს რამდენიმე წუთში — კოდის გარეშე. თითოეულ არხს აქვს ვიდეო-ინსტრუქცია. რომელი გაინტერესებთ?",
+      "thanksForYourQuestion": "დიდი მადლობა კითხვისთვის! Sidekick პასუხობს კლიენტებს 24/7, აგროვებს ლიდებს და აფორმებს შეკვეთებს ავტომატურად. დამისვით უფრო კონკრეტული კითხვა და დეტალურად აგიხსნით.",
+      "thanksIVeGot": "მადლობა, ფაილი მივიღე. აღწერეთ ორიოდე სიტყვით რასთან დაკავშირებით არის და დაგეხმარებით — ან დაგიკავშირდება ჩვენი გუნდი.",
+      "theStandardPlanIs": "Standard პაკეტი ღირს 99₾/თვე და პირველი თვე სრულიად უფასოა (ბარათი არ სჭირდება). გნებავთ დაგეხმაროთ რეგისტრაციაში?"
+    }
+  },
+  "common": {
+    "back": "უკან",
+    "close": "დახურვა"
+  },
+  "contact": {
+    "contact": "კონტაქტი"
+  },
+  "dashboard": {
+    "addBusinessForm": {
+      "add": "დამატება",
+      "addedAndOpened": "„{name}“ დაემატა და გაიხსნა",
+      "businessName": "ბიზნესის სახელი",
+      "cancel": "გაუქმება",
+      "couldNotAddIt": "ვერ დაემატა. სცადე ხელახლა.",
+      "enterTheBusinessName": "ჩაწერე ბიზნესის სახელი",
+      "youAlreadyHaveA": "ამ სახელით ბიზნესი უკვე გაქვს",
+      "yourSessionHasEnded": "სესია ამოიწურა. შედი და სცადე თავიდან."
+    },
+    "ai": {
+      "businessSection": {
+        "additionalInformation": "დამატებითი ინფორმაცია",
+        "branchLocations": "ფილიალების მდებარეობა",
+        "businessInformation": "ბიზნესის ინფორმაცია",
+        "companyName": "კომპანიის დასახელება",
+        "detailedDescription": "საქმიანობის დეტალური აღწერა",
+        "email": "იმეილი",
+        "industry": "საქმიანობის სფერო",
+        "otherContactDetails": "სხვა საკონტაქტო ინფორმაცია",
+        "phoneNumber": "ტელეფონის ნომერი",
+        "placeholder": "ორშ–პარ 10:00–18:00",
+        "placeholder2": "მისამართები გამოყავით მძიმით: თბილისი …, ბათუმი …",
+        "viberTelegramFax": "Viber, Telegram, ფაქსი…",
+        "website": "საიტი",
+        "workingHours": "სამუშაო საათები"
+      },
+      "characterSection": {
+        "character": "ხასიათი",
+        "communicationStyle": "კომუნიკაციის სტილი",
+        "emoji": "ემოჯები",
+        "formOfAddress": "მიმართვის ფორმა",
+        "responseLength": "პასუხის სიგრძე"
+      },
+      "languageControls": {
+        "add": "დამატება",
+        "addLanguage": "ენის დამატება",
+        "languageName": "ენის სახელი",
+        "suggested": "შემოთავაზებული"
+      },
+      "languagesSection": {
+        "added": "{name} დაემატა",
+        "atMostLanguages": "მაქსიმუმ {max} ენა",
+        "empty": "ერთი ენა მაინც საჭიროა",
+        "hint": "რომელ ენებზე უპასუხოს ბოტმა",
+        "languages": "ენები",
+        "remove": "წაშლა",
+        "removed": "{name} წაიშალა"
+      },
+      "promptAiActions": {
+        "eGAnswerMore": "მაგ: უფრო მოკლედ პასუხობდეს და ფასი ყოველთვის დაასახელოს",
+        "generatePrompt": "დააგენერირე პრომპტი",
+        "refineWithAi": "დაარედაქტირე AI-ით",
+        "requiresTheAiModule": "საჭიროებს AI მოდულს",
+        "rewrite": "გადააკეთე",
+        "theAiServiceDid": "AI სერვისმა ვერ უპასუხა. სცადე ხელახლა.",
+        "working": "მუშავდება…"
+      },
+      "promptSection": {
+        "promptInstructions": "პრომპტი / ინსტრუქციები",
+        "video": "ვიდეო",
+        "youAreCompanyS": "შენ ხარ [კომპანიის] ვირტუალური ასისტენტი…"
+      },
+      "rulesSection": {
+        "7DeliveryReturnsPolicy": "7. მიწოდების / დაბრუნების წესები",
+        "appointmentBooking": "შეხვედრის დაჯავშნა",
+        "behaviourRules": "ქცევის წესები",
+        "customersOftenSendSeveral": "კლიენტი ხშირად რამდენიმე მოკლე მესიჯს აგზავნის ზედიზედ. ლოდინი მათ ერთად კრებს და ერთ პასუხს აძლევს — 0 ნიშნავს მაშინვე პასუხს.",
+        "eGWhenThe": "მაგ: როცა კლიენტი ითხოვს ოპერატორს ან საჩივარია…",
+        "frequentlyAskedQuestionsFaq": "ხშირად დასმული კითხვები (FAQ)",
+        "howLongToWait": "რამდენ ხანს დაელოდოს პასუხამდე",
+        "informationAgent": "საინფორმაციო აგენტი",
+        "leadCapture": "ლიდების შეგროვება",
+        "leadCollector": "ლიდების შემგროვებელი",
+        "mayAmendCancelAn": "შეკვეთის ჩასწორება / გაუქმების უფლება",
+        "orderCapture": "შეკვეთების შეგროვება",
+        "orderTaking": "შეკვეთის მიღება",
+        "questionAnswer": "კითხვა → პასუხი…",
+        "roles": "როლები",
+        "salesSpecialist": "გაყიდვების სპეციალისტი",
+        "seconds": "წამი",
+        "supportAgent": "მხარდაჭერის აგენტი",
+        "whatCountsAsA": "რა აქტივობა ჩაითვლება ლიდად",
+        "whatCountsAsAn": "რა ნაბიჯი ჩაითვალოს შეკვეთად",
+        "whenToHandOff": "როდის გადასცეს საჭირო ადამიანს"
+      },
+      "saveMessages": {
+        "cancel": "გაუქმება",
+        "couldnTSaveTry": "ვერ შეინახა — სცადე ხელახლა",
+        "couldnTSaveYour": "ვერ შეინახა. ცვლილებები ამ ბრაუზერში დარჩა — სცადე ხელახლა.",
+        "everythingIsSaved": "ყველაფერი შენახულია",
+        "save": "შენახვა",
+        "saved": "შენახულია",
+        "saving": "ინახება…",
+        "unsavedChanges": "შეუნახავი ცვლილებები",
+        "youDonTHave": "ამის შეცვლის უფლება არ გაქვს",
+        "youSwitchedToAnother": "სხვა ბიზნესზე გადაერთე. ცვლილებები შეინახება, როცა ამ ბიზნესს დაუბრუნდები.",
+        "yourSessionEndedYour": "სესია დასრულდა. ცვლილებები ამ ბრაუზერში დარჩა — შედი და შეინახე ხელახლა.",
+        "yourUnsavedChangesWere": "აღდგა შეუნახავი ცვლილებები. დააჭირე „შენახვას“, რომ დარჩეს."
+      },
+      "testerSection": {
+        "clearChat": "ჩატის გასუფთავება",
+        "send": "გაგზავნა",
+        "testYourCurrentPrompt": "გატესტე მიმდინარე პრომპტი",
+        "tester": "ტესტერი",
+        "text": "ტესტერს AI სერვისი სჭირდება, რომელიც ჯერ არ არის დაკავშირებული.",
+        "theAiServiceDid": "AI სერვისმა ვერ უპასუხა. სცადე ხელახლა.",
+        "typeAMessage": "დაწერე შეტყობინება…"
+      },
+      "testerTranscript": {
+        "asksForAPerson": "ითხოვს ადამიანს",
+        "typing": "წერს…",
+        "writeSomethingACustomer": "დაწერე რამე, როგორც კლიენტი დაწერდა — და ნახე, როგორ უპასუხებს."
+      },
+      "view": {
+        "behaviourRules": "ქცევის წესები",
+        "businessInfo": "ბიზნესის ინფორმაცია",
+        "character": "ხასიათი",
+        "configuration": "კონფიგურაცია",
+        "languages": "ენები",
+        "openTheTesterTo": "დააჭირე „ტესტერი“ პრომპტის ცვლად გასატესტად",
+        "promptInstructions": "პრომპტი / ინსტრუქციები",
+        "tester": "ტესტერი"
+      }
+    },
+    "analytics": {
+      "12Months": "12 თვე",
+      "1Month": "1 თვე",
+      "1Week": "1 კვირა",
+      "3Months": "3 თვე",
+      "6Months": "6 თვე",
+      "activityChart": {
+        "activity": "აქტივობა",
+        "noDataForThis": "ამ პერიოდში მონაცემი არ არის"
+      },
+      "channelBoxes": {
+        "leads": "ლიდები",
+        "noData": "მონაცემი არ არის",
+        "orders": "შეკვეთები",
+        "revenue": "შემოსავალი"
+      },
+      "channelFilter": {
+        "allChannels": "ყველა არხი"
+      },
+      "kpis": {
+        "conversations": "მიმოწერები",
+        "leads": "ლიდები",
+        "noPreviousPeriod": "წინა პერიოდი ცარიელია",
+        "revenue": "შემოსავალი",
+        "sales": "გაყიდვები"
+      },
+      "topProducts": {
+        "noSalesInThis": "ამ პერიოდში გაყიდვა არ ყოფილა",
+        "topProducts": "ტოპ პროდუქტები"
+      }
+    },
+    "billing": {
+      "checkoutParts": {
+        "bankOfGeorgia": "საქართველოს ბანკი",
+        "cardDetailsAreEntered": "ბარათის მონაცემები ბანკის გვერდზე შეიყვანება — ჩვენთან არ ინახება.",
+        "couldNotReachThe": "ბანკთან დაკავშირება ვერ მოხერხდა. სცადეთ ხელახლა ან აირჩიეთ სხვა ბანკი.",
+        "current": "მიმდინარე",
+        "onlyTheOwnerCan": "მხოლოდ მფლობელს შეუძლია პაკეტის შეცვლა",
+        "payOnTheBank": "გადახდა ბანკის გვერდზე:",
+        "paymentsAreOnChange": "გადახდა ჩართულია — პაკეტი ბანკის გავლით შეცვალეთ",
+        "pickABank": "აირჩიეთ ბანკი",
+        "pickAPeriod": "აირჩიეთ პერიოდი",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "tbcBank": "TBC ბანკი",
+        "thatBankIsNot": "ეს ბანკი ჯერ არ არის ჩართული",
+        "thatPlanCouldNot": "ეს პაკეტი ვერ მოიძებნა",
+        "yourSessionHasEnded": "სესია ამოიწურა — შედით ხელახლა"
+      },
+      "freePlanSwitch": {
+        "switch": "გადართვა"
+      },
+      "return": {
+        "backToBilling": "ბილინგზე დაბრუნება",
+        "body": "პაკეტი გააქტიურდა. მადლობა!",
+        "body2": "ბანკი ჯერ ამუშავებს გადახდას. ეს ჩვეულებრივ რამდენიმე წამია — განაახლეთ გვერდი ცოტა ხანში.",
+        "body3": "თანხა არ ჩამოგეჭრათ. სცადეთ ხელახლა ან აირჩიეთ სხვა ბანკი.",
+        "paymentComplete": "გადახდა შესრულდა",
+        "paymentDidNotGo": "გადახდა ვერ შესრულდა",
+        "paymentIsProcessing": "გადახდა მუშავდება"
+      },
+      "view": {
+        "aCardIsSaved": "ბარათი შეინახება პირველი გადახდისას, რომ გამოწერა ავტომატურად განახლდეს.",
+        "active": "აქტიური",
+        "activeUntil": "მოქმედებს",
+        "cancelSubscription": "გააუქმე გამოწერა",
+        "cancelled": "გაუქმებული",
+        "changeOrRenewPlan": "პაკეტის შეცვლა ან გაგრძელება",
+        "chooseAPlan": "პაკეტის არჩევა",
+        "close": "დახურვა",
+        "currentPlan": "მიმდინარე პაკეტი",
+        "expired": "ვადაგასული",
+        "failed": "ვერ შესრულდა",
+        "messageLimit": "შეტყობინებების ლიმიტი",
+        "mo": "თვე",
+        "noPaymentsYet": "გადახდები ჯერ არ არის",
+        "paid": "გადახდილი",
+        "pastDue": "გადახდის ვადა გავიდა",
+        "paymentHistory": "გადახდის ისტორია",
+        "pending": "მიმდინარე",
+        "remaining": "დარჩენილი",
+        "renews": "განახლდება",
+        "resets": "განულდება",
+        "savedCard": "შენახული ბარათი",
+        "subscriptionCancelled": "გამოწერა გაუქმებულია",
+        "text": "—",
+        "theCardIsStored": "ბარათი ბანკის მხარეს ინახება. ჩვენ მხოლოდ მიბმის კოდი გვაქვს.",
+        "trial": "საცდელი პერიოდი"
+      }
+    },
+    "bottomNav": {
+      "chats": "ჩათი",
+      "home": "მთავარი",
+      "orders": "შეკვეთა",
+      "products": "პროდ.",
+      "stats": "სტატ."
+    },
+    "businessSwitcher": {
+      "addBusiness": "ბიზნესის დამატება",
+      "businesses": "ბიზნესები",
+      "couldNotSwitchTry": "გადართვა ვერ მოხერხდა. სცადე ხელახლა.",
+      "opened": "„{name}“ გაიხსნა"
+    },
+    "businesses": {
+      "admin": "ადმინისტრატორი",
+      "operator": "ოპერატორი",
+      "ownedLimit": "ერთ ადამიანს მაქსიმუმ {max} საკუთარი ბიზნესი შეიძლება ჰქონდეს",
+      "owner": "მფლობელი",
+      "viewer": "მნახველი"
+    },
+    "channels": {
+      "connectMeta": {
+        "connect": "დაკავშირება",
+        "connected": "დაკავშირდა.",
+        "connectionCancelled": "დაკავშირება შეწყდა.",
+        "noSignInFlow": "ავტორიზაცია ჯერ არ არის გამართული ამ არხისთვის",
+        "reconnect": "ხელახლა დაკავშირება",
+        "text": "Facebook დაკავშირდა. ამ გვერდს Instagram მიბმული არ აქვს — Instagram ცალკე დააკავშირე.",
+        "text10": "ერთზე მეტი გვერდი მოგვეცი. თავიდან სცადე და მხოლოდ ერთი აირჩიე.",
+        "text11": "მოთხოვნა ვერ დადასტურდა. დაიწყე თავიდან.",
+        "text12": "სესია ამოიწურა. შედი და სცადე თავიდან.",
+        "text13": "META_APP_ID არ არის მითითებული.",
+        "text14": "Meta-მ კოდი არ მიიღო. სცადე თავიდან.",
+        "text2": "INSTAGRAM_APP_ID არ არის მითითებული.",
+        "text3": "Instagram-მა გრძელვადიანი ტოკენი არ გასცა. სცადე თავიდან.",
+        "text4": "Instagram-ის ანგარიში ვერ წავიკითხეთ. დარწმუნდი, რომ ანგარიში პროფესიულია.",
+        "text5": "ანგარიში დაუკავშირდა, მაგრამ Meta-მ მესიჯებზე გამოწერა არ დაუშვა. სცადე თავიდან.",
+        "text6": "არხების მართვის უფლება არ გაქვს. მიმართე ბიზნესის მფლობელს.",
+        "text7": "შენი გეგმა მეტ არხს არ უშვებს. ჯერ სხვა გამორთე ან გეგმა შეცვალე.",
+        "text8": "ეს ანგარიში სხვა ბიზნესზეა უკვე მიბმული.",
+        "text9": "გვერდი არ მოგვცემია. თანხმობის ეკრანზე აირჩიე ის გვერდი, რომელიც გინდა.",
+        "thatDidNotWork": "ვერ მოხერხდა.",
+        "walksThroughMetaS": "ხელახლა გაატარებს Meta-ს თანხმობის ეკრანზე და ახალ ტოკენს აიღებს"
+      },
+      "status": {
+        "connected": "დაკავშირებულია",
+        "disconnected": "გათიშულია",
+        "needsAuthorising": "ავტორიზაცია საჭიროა"
+      },
+      "view": {
+        "connectedToast": "{name} ჩაირთო",
+        "disconnect": "გათიშვა",
+        "disconnectedToast": "{name} გამოირთო",
+        "lastSync": "ბოლო სინქრონიზაცია",
+        "planLimit": "„{plan}“ გეგმა {limit} არხს უშვებს და {used} უკვე ჩართულია. ჯერ სხვა გამორთე ან გეგმა შეცვალე.",
+        "turnOn": "ჩართვა",
+        "websiteApi": "API ვებსაიტებისთვის"
+      }
+    },
+    "conversations": {
+      "chatDetail": {
+        "adminManual": "ადმინი (ხელით)",
+        "aiReply": "AI პასუხი",
+        "conversationNotFound": "მიმოწერა ვერ მოიძებნა.",
+        "createALeadFrom": "შექმენი ლიდი ამ მიმოწერიდან",
+        "done": "დასრულებული",
+        "giveBackToAi": "დაუბრუნე AI-ს",
+        "handingBack": "ბრუნდება…",
+        "lead": "ლიდი",
+        "new": "ახალი",
+        "noMessages": "შეტყობინებები არ არის",
+        "onceFacebookInstagramWhatsapp": "როგორც კი Facebook / Instagram / WhatsApp დაუკავშირდება, კლიენტების შეტყობინებები აქ ავტომატურად გამოჩნდება.",
+        "ongoing": "მიმდინარე",
+        "order": "შეკვეთა",
+        "ordersAreCreatedFrom": "შეკვეთა იქმნება შეკვეთების გვერდიდან",
+        "savedButMessengerWould": "პასუხი შენახულია, მაგრამ Messenger-მა არ მიიღო: კლიენტს 24 საათია არ მოუწერია. ხელახლა ცდა ვერ უშველის — დაელოდე, სანამ თვითონ დაგიკავშირდება.",
+        "savedButSendingFailed": "პასუხი შენახულია, მაგრამ გაგზავნა ვერ მოხერხდა. სცადე ხელახლა.",
+        "savedNotSentTo": "პასუხი შენახულია. კლიენტთან არ გაგზავნილა — ეს არხი ჯერ არ არის ბოლომდე მიერთებული.",
+        "selectAConversation": "აირჩიე მიმოწერა",
+        "send": "გაგზავნა",
+        "somethingWentWrongTry": "ვერ შესრულდა. სცადე ხელახლა.",
+        "theAiAskedFor": "AI-მ ადამიანი მოითხოვა. დააბრუნე ბოტთან, როცა დაასრულებ.",
+        "thisConversationAlreadyHas": "ამ მიმოწერას უკვე აქვს ლიდი",
+        "writeAReply": "დაწერე პასუხი…",
+        "youDoNotHave": "ამის უფლება არ გაქვს."
+      },
+      "chatList": {
+        "aiError": "AI შეცდომა",
+        "aiOff": "AI გათიშული",
+        "all": "ყველა",
+        "days": "{d} დღე",
+        "hours": "{h} სთ",
+        "lead": "ლიდი",
+        "messagesAppearHereAs": "შეტყობინებები აქ გამოჩნდება, როგორც კი არხი დაუკავშირდება (Facebook, Instagram, WhatsApp).",
+        "minutes": "{min} წთ",
+        "noConversationsYet": "მიმოწერა ჯერ არ არის",
+        "now": "ახლა",
+        "order": "შეკვეთა",
+        "planSpentOrLapsed": "გეგმა ამოიწურა",
+        "waitingForAHuman": "ელოდება ადამიანს"
+      }
+    },
+    "deleteBusinessForm": {
+      "cancel": "გაუქმება",
+      "couldnTDeleteIt": "ვერ წაიშალა. სცადე ხელახლა.",
+      "delete": "წაშლა",
+      "deleted": "„{name}“ წაიშალა",
+      "onlyTheOwnerCan": "ბიზნესის წაშლა მხოლოდ მის მფლობელს შეუძლია",
+      "removeTheOtherTeam": "ჯერ გუნდის სხვა წევრები წაშალე, „გუნდი“ გვერდზე",
+      "theNameDoesnT": "სახელი არ ემთხვევა",
+      "thisBusinessHasPayments": "ამ ბიზნესს გადახდები აქვს, ამიტომ აქედან ვერ წაიშლება. მოგვწერე და დაგეხმარებით.",
+      "typeTheBusinessName": "დასადასტურებლად ჩაწერე ბიზნესის სახელი",
+      "warning": "„{name}“ სამუდამოდ წაიშლება, მისი პროდუქტებით, შეკვეთებით, მიმოწერებით და AI-ის პარამეტრებით. ამის დაბრუნება შეუძლებელია.",
+      "youCanTDelete": "ერთადერთ ბიზნესს ვერ წაშლი",
+      "yourSessionHasEnded": "სესია ამოიწურა. შედი და სცადე თავიდან."
+    },
+    "error": {
+      "overview": "მთავარზე"
+    },
+    "home": {
+      "active": "აქტიური",
+      "channelStatusCard": {
+        "channelStatus": "არხების სტატუსი",
+        "noChannelsYet": "არხები ჯერ არ არის დამატებული"
+      },
+      "issue": "ხარვეზია",
+      "kpiGrid": {
+        "noDataForYesterday": "გუშინდელი მონაცემი არ არის",
+        "vsYesterday": "გუშინდელთან"
+      },
+      "left": "დარჩა",
+      "newLeads": "ახალი ლიდები",
+      "newOrders": "ახალი შეკვეთები",
+      "noActivePlan": "აქტიური პაკეტი არ არის",
+      "offline": "გათიშული",
+      "remainingMessageLimit": "დარჩენილი შეტყობინებების ლიმიტი",
+      "renews": "განახლდება",
+      "revenue": "შემოსავალი",
+      "stoppedMessages": {
+        "botStatusStoppedMessages": "ბოტის სტატუსი — გაჩერებული შეტყობინებები",
+        "days": "{d} დღე",
+        "hours": "{h} სთ",
+        "minutes": "{min} წთ",
+        "noStoppedMessages": "გაჩერებული შეტყობინება არ არის",
+        "unknown": "უცნობი",
+        "viewAll": "ყველას ნახვა →"
+      },
+      "todaySConversations": "დღევანდელი მიმოწერები",
+      "unlimited": "ულიმიტო",
+      "used": "გამოყენებული"
+    },
+    "leads": {
+      "useLeadSaves": {
+        "couldnTSaveTry": "ვერ შეინახა — სცადე ხელახლა",
+        "enterAName": "ჩაწერე სახელი",
+        "leadAdded": "ლიდი დაემატა",
+        "leadDeleted": "ლიდი წაიშალა",
+        "statusChanged": "სტატუსი შეიცვალა",
+        "youMayNotChange": "ლიდების შეცვლის უფლება არ გაქვს"
+      },
+      "view": {
+        "active": "მიმდინარე",
+        "addLead": "ლიდის დამატება",
+        "close": "დახურვა",
+        "closed": "დახურული",
+        "comment": "კომენტარი",
+        "delete": "წაშლა",
+        "goToChat": "მიმოწერაზე გადასვლა",
+        "interest": "ინტერესი",
+        "leads": "ლიდი",
+        "name": "სახელი გვარი",
+        "name2": "სახელი გვარი *",
+        "new": "ახალი",
+        "noLeadsYet": "ლიდები ჯერ არ არის",
+        "phone": "ტელეფონი",
+        "save": "შენახვა",
+        "source": "წყარო",
+        "status": "სტატუსი"
+      }
+    },
+    "meta": {
+      "aiAssistant": "AI ასისტენტი",
+      "analytics": "ანალიტიკა",
+      "billing": "ბილინგი",
+      "botConfiguration": "ბოტის კონფიგურაცია",
+      "channels": "არხები",
+      "conversations": "მიმოწერები",
+      "dashboard": "Dashboard",
+      "detailedStatistics": "დეტალური სტატისტიკა",
+      "everyChatInOne": "ყველა ჩათი ერთ სივრცეში",
+      "guides": "სახელმძღვანელო",
+      "integrations": "ინტეგრაციები",
+      "leads": "ლიდები",
+      "membersAndRoles": "წევრები და როლები",
+      "orderManagement": "შეკვეთების მართვა",
+      "orders": "შეკვეთები",
+      "overview": "მთავარი მიმოხილვა",
+      "personalInformation": "პირადი ინფორმაცია",
+      "potentialCustomers": "პოტენციური კლიენტები",
+      "productsInventory": "პროდუქტები / საწყობი",
+      "profile": "პროფილი",
+      "stockManagement": "მარაგის მართვა",
+      "subscriptionAndPayments": "გამოწერა და გადახდები",
+      "team": "გუნდი",
+      "tutorials": "ვიდეო ინსტრუქციები"
+    },
+    "nav": {
+      "aiAssistant": "AI ასისტენტი",
+      "analytics": "ანალიტიკა",
+      "billing": "ბილინგი",
+      "channels": "არხები",
+      "conversations": "მიმოწერები",
+      "leads": "ლიდები",
+      "orders": "შეკვეთები",
+      "overview": "მთავარი",
+      "products": "პროდუქტები",
+      "team": "გუნდი",
+      "tutorials": "ვიდეო ინსტრუქციები"
+    },
+    "orders": {
+      "cancelled": "გაუქმებული",
+      "done": "დასრულებული",
+      "issues": "პრობლემური",
+      "new": "ახალი",
+      "row": {
+        "accept": "დადასტურება",
+        "address": "მისამართი",
+        "cancel": "გაუქმება",
+        "complete": "დასრულება",
+        "name": "სახელი გვარი",
+        "phone": "ნომერი",
+        "print": "ბეჭდვა",
+        "total": "ჯამი"
+      },
+      "toShip": "გასაგზავნი",
+      "useOrderStatus": {
+        "couldnTChangeIt": "ვერ შეიცვალა — სცადე ხელახლა",
+        "orderAccepted": "შეკვეთა დადასტურდა",
+        "orderCancelled": "შეკვეთა გაუქმდა",
+        "orderCompleted": "შეკვეთა დასრულდა",
+        "orderUpdated": "შეკვეთა განახლდა"
+      },
+      "view": {
+        "noOrdersWithThis": "ამ სტატუსით შეკვეთა არ არის"
+      }
+    },
+    "products": {
+      "addProductForm": {
+        "add": "დამატება",
+        "addProduct": "პროდუქტის დამატება",
+        "adding": "ემატება…",
+        "code": "კოდი",
+        "descriptionUsedByAi": "აღწერა (AI იყენებს იდენტიფიკაციისთვის)",
+        "discount": "ფასდაკლება %",
+        "name": "დასახელება",
+        "price": "ფასი",
+        "productAdded": "პროდუქტი დაემატა.",
+        "quantity": "რაოდენობა",
+        "salePrice": "ფასდაკლ. ფასი",
+        "size": "ზომა",
+        "uploadPhoto": "ფოტოს ატვირთვა"
+      },
+      "chosenFileCard": {
+        "andMore": "…და კიდევ {count}",
+        "errorS": "შეცდომა",
+        "fixTheseRowsIn": "გაასწორე ეს ხაზები ფაილში და ატვირთე ხელახლა:",
+        "importCount": "შემოიტანე {count} პროდუქტი",
+        "importing": "შემოდის…",
+        "products": "პროდუქტი",
+        "removeFile": "ფაილის მოშორება"
+      },
+      "errors": {
+        "error": "ვერ შეინახა. სცადე ხელახლა.",
+        "nameAndCodeAre": "დასახელება და კოდი სავალდებულოა.",
+        "photoStorageIsNot": "ფოტოების საცავი ჯერ არ არის მოწყობილი. შეინახე ფოტოს გარეშე.",
+        "productDeleted": "პროდუქტი წაიშალა",
+        "productSaved": "პროდუქტი შენახულია",
+        "thatCodeIsAlready": "ეს კოდი უკვე გაქვს სხვა პროდუქტზე. მიუთითე სხვა.",
+        "thePhotoIsToo": "ფოტო ძალიან დიდია.",
+        "thePhotoIsToo2": "ფოტო შემცირების შემდეგაც ძალიან დიდია. სცადე სხვა.",
+        "thePhotoMustBe": "ფოტო უნდა იყოს JPG, PNG ან WebP.",
+        "thisFileCanT": "ამ ფაილს ვერ ვკითხულობ. აირჩიე JPG, PNG ან WebP ფოტო.",
+        "youMayNotChange": "პროდუქტის შეცვლის უფლება არ გაქვს.",
+        "yourPlanDoesNot": "შენი გეგმა მეტ პროდუქტს არ უშვებს. წაშალე რამე ან გეგმა შეცვალე."
+      },
+      "fileUploadTab": {
+        "downloadStock": "ჩამოტვირთე მარაგი",
+        "downloadTemplate": "ჩამოტვირთე შაბლონი",
+        "readingTheFile": "ფაილი იკითხება…",
+        "uploadExcelCsv": "ატვირთე EXCEL / CSV"
+      },
+      "importText": {
+        "aTextIsToo": "ტექსტი ძალიან გრძელია",
+        "atMostRows": "ერთ ფაილში მაქსიმუმ {max} პროდუქტი.",
+        "done": "მზაა: {created} დაემატა, {updated} განახლდა.",
+        "duplicateOfRow": "იგივე კოდი უკვე არის {other} ხაზზე",
+        "empty": "ფაილში პროდუქტები არ არის.",
+        "planLimit": "შენი გეგმა {limit} პროდუქტს უშვებს: უკვე გაქვს {used}, ფაილი {adding} ახალს დაამატებდა.",
+        "productsAreMatchedBy": "პროდუქტები კოდით მოიძებნება: ახალი კოდი დაემატება, არსებული განახლდება. ცარიელი უჯრა მნიშვნელობას არ ცვლის, არაფერი წაიშლება.",
+        "theCodeIsEmpty": "კოდი ცარიელია",
+        "theDiscountMustBe": "ფასდაკლება უნდა იყოს 0-დან 100-მდე",
+        "theFileCouldNot": "ფაილი ვერ წაიკითხა. შეინახე ხელახლა .xlsx ან .csv ფორმატში.",
+        "theFileIsLarger": "ფაილი 5 MB-ზე დიდია.",
+        "theFileNeedsThe": "ფაილში არ მოიძებნა სვეტები „კოდი“, „დასახელება“ და „ფასი“. ჩამოტვირთე შაბლონი და გამოიყენე ის.",
+        "theFileSData": "ფაილის მონაცემები არასწორია. ატვირთე ხელახლა.",
+        "theImportFailedTry": "შემოტანა ვერ მოხერხდა. სცადე ხელახლა.",
+        "theNameIsEmpty": "დასახელება ცარიელია",
+        "thePriceMustBe": "ფასი უნდა იყოს რიცხვი, 0 ან მეტი",
+        "theQuantityMustBe": "რაოდენობა უნდა იყოს მთელი რიცხვი, 0 ან მეტი",
+        "theSalePriceMust": "ფასდაკლებული ფასი ფასზე მეტი არ უნდა იყოს",
+        "uploadAnXlsxOr": "ატვირთე .xlsx ან .csv ფაილი.",
+        "youMayNotImport": "პროდუქტების შემოტანის უფლება არ გაქვს."
+      },
+      "modal": {
+        "cancel": "გაუქმება",
+        "changePhoto": "ფოტოს შეცვლა",
+        "code": "კოდი",
+        "descriptionUsedByAi": "აღწერა (AI იყენებს იდენტიფიკაციისთვის)",
+        "discount": "ფასდაკლება %",
+        "editProduct": "პროდუქტის რედაქტირება",
+        "name": "დასახელება",
+        "price": "ფასი",
+        "quantity": "რაოდენობა",
+        "salePrice": "ფასდაკლ. ფასი",
+        "save": "შენახვა",
+        "size": "ზომა"
+      },
+      "photoPicker": {
+        "removePhoto": "ფოტოს წაშლა"
+      },
+      "table": {
+        "count": "სულ {count} პროდუქტი",
+        "delete": "წაშლა",
+        "edit": "რედაქტირება",
+        "inStock": "მარაგში",
+        "noProducts": "პროდუქტები არ არის",
+        "outOfStock": "ამოიწურა",
+        "price": "ფასი",
+        "product": "პროდუქტი",
+        "productList": "პროდუქტების ჩამონათვალი",
+        "salePrice": "ფასდაკლებით"
+      },
+      "view": {
+        "fileUpload": "ფაილით ატვირთვა",
+        "manualEntry": "ხელით შევსება"
+      }
+    },
+    "profile": {
+      "fields": {
+        "couldnTSaveTry": "ვერ შეინახა — სცადე ხელახლა",
+        "enterTheCompanyName": "ჩაწერე კომპანიის სახელი",
+        "profileSaved": "პროფილი შენახულია",
+        "youAlreadyHaveA": "ამ სახელით ბიზნესი უკვე გაქვს",
+        "yourSessionEndedLog": "სესია დასრულდა. შედი და სცადე ხელახლა."
+      },
+      "view": {
+        "businessInfo": "ბიზნესის ინფორმაცია",
+        "company": "კომპანია",
+        "description": "აღწერა",
+        "email": "ელფოსტა",
+        "field": "საქმიანობის სფერო",
+        "name": "სახელი",
+        "personalInfo": "პირადი ინფორმაცია",
+        "phone": "ტელეფონი",
+        "save": "შენახვა",
+        "saving": "ინახება…"
+      }
+    },
+    "profileMenu": {
+      "adminPanel": "ადმინ პანელი",
+      "darkTheme": "მუქი თემა",
+      "goToTheSite": "საიტზე გადასვლა",
+      "language": "ენა",
+      "lightTheme": "ღია თემა",
+      "noPlan": "პაკეტი არ არის",
+      "plan": "პაკეტი",
+      "profile": "პროფილი"
+    },
+    "sidebar": {
+      "admin": "ადმინი"
+    },
+    "switcherRow": {
+      "delete": "წაშლა"
+    },
+    "team": {
+      "messages": {
+        "aBusinessNeedsAt": "ბიზნესს ერთი მფლობელი მაინც სჭირდება",
+        "allFeaturesExceptBilling": "ყველა ფუნქცია, ბილინგის გარდა",
+        "allPagesExceptBilling": "ყველა გვერდი, ბილინგის გარდა",
+        "chatsOrdersLeads": "მიმოწერები, შეკვეთები, ლიდები",
+        "chatsOrdersLeads2": "მიმოწერა, შეკვეთა, ლიდები",
+        "emailIsRequired": "ელფოსტა სავალდებულოა",
+        "fullAccess": "სრული წვდომა",
+        "fullControlBillingTeam": "სრული კონტროლი, ბილინგი, გუნდი",
+        "memberNotFound": "წევრი ვერ მოიძებნა",
+        "teamUpdated": "გუნდი განახლდა",
+        "thatIsNotA": "ასეთი როლი არ არსებობს",
+        "thisPersonIsAlready": "ეს მომხმარებელი უკვე გუნდშია",
+        "viewOnly": "მხოლოდ ნახვა",
+        "viewPermissionOnly": "მხოლოდ ნახვის უფლება",
+        "youCanTRemove": "საკუთარ თავს ვერ წაშლი",
+        "youDonTHave": "ამის უფლება არ გაქვთ"
+      },
+      "view": {
+        "actions": "მოქმედებები",
+        "add": "დამატება",
+        "addMember": "წევრის დამატება",
+        "cancel": "გაუქმება",
+        "changeRole": "როლის შეცვლა",
+        "email": "ელფოსტა *",
+        "fullName": "სახელი გვარი",
+        "member": "წევრი",
+        "permissions": "უფლებები",
+        "removeFromTeam": "გუნდიდან წაშლა",
+        "role": "როლი",
+        "secondStage": "მეორე ეტაპი",
+        "somethingWentWrong": "ვერ შესრულდა",
+        "theMemberIsAdded": "წევრი დაემატება ანგარიშით. პაროლს თავად დააყენებს „პაროლის აღდგენით“.",
+        "you": "თქვენ",
+        "youCanTRemove": "საკუთარ თავს ვერ წაშლი"
+      }
+    },
+    "videos": {
+      "view": {
+        "noTutorialsYet": "ვიდეო ინსტრუქციები ჯერ არ არის",
+        "videoGuidesForUsing": "ხელსაწყოს გამოყენების ვიდეო სახელმძღვანელოები.",
+        "watchOnYoutube": "ნახე YouTube-ზე"
+      }
+    }
+  },
+  "dataProtection": {
+    "personalDataProtection": "პერსონალურ მონაცემთა დაცვა"
+  },
+  "home": {
+    "liveFigure": {
+      "liveFigure": "ლაივ მონაცემი"
+    },
+    "mocks": {
+      "chatMock": {
+        "aiTaggedAsA": "✦ AI — ლიდად მონიშნა",
+        "doYouHaveThe": "iPhone 15 Pro გაქვთ მარაგში? 📱",
+        "greatSendMeYour": "შესანიშნავი! მომწერეთ სახელი და ტელეფონი მიწოდებისთვის.",
+        "yesIDLike": "კი, მინდა შევუკვეთო",
+        "yesItSAvailable": "დიახ! ხელმისაწვდომია — 3,500₾. გსურთ შეკვეთის გაფორმება?"
+      },
+      "dashboardMock": {
+        "chats": "ჩათები",
+        "leads": "ლიდები",
+        "sales": "გაყიდვა",
+        "salesWeek": "გაყიდვები / კვირა"
+      },
+      "testerMock": {
+        "aiTestReply": "✦ AI — სატესტო პასუხი",
+        "aiTester": "AI ტესტერი",
+        "howMuchAreThe": "რა ღირს AirPods Pro?",
+        "howMuchAreThe2": "რა ღირს AirPods Pro და მარაგშია?",
+        "testIt": "გატესტე",
+        "testMode": "სატესტო რეჟიმი",
+        "theAirpodsProCost": "AirPods Pro ღირს 649₾ და ამჟამად მარაგშია. გსურთ შეკვეთა?"
+      }
+    },
+    "story": {
+      "aboutUs": "ჩვენ შესახებ"
+    }
+  },
+  "layout": {
+    "breadcrumb": "ნავიგაცია",
+    "closeMenu": "მენიუს დახურვა",
+    "menu": "მენიუ",
+    "openMenu": "მენიუს გახსნა",
+    "themeToggle": "თემის შეცვლა"
+  },
+  "legal": {
+    "view": {
+      "lastUpdated": "ბოლო განახლება",
+      "thisDocumentStillContains": "დოკუმენტში დარჩა 【】-ში ჩასმული ადგილები, რომლებიც უნდა შეივსოს გამოქვეყნებამდე.",
+      "visibleInDevelopmentOnly": "მხოლოდ დეველოპმენტში ჩანს"
+    }
+  },
+  "pricing": {
+    "periodSwitch": {
+      "billingPeriod": "გამოწერის პერიოდი"
+    },
+    "pricing": "ფასები"
+  },
+  "privacy": {
+    "privacyPolicy": "კონფიდენციალურობის პოლიტიკა"
+  },
+  "products": {
+    "columns": {
+      "code": "კოდი",
+      "description": "აღწერა",
+      "discount": "ფასდაკლება %",
+      "name": "დასახელება",
+      "price": "ფასი",
+      "quantity": "რაოდენობა",
+      "salePrice": "ფასდაკლებული ფასი",
+      "size": "ზომა"
+    }
+  },
+  "site": {
+    "theme": {
+      "contrast": {
+        "hints": "მინიშნებები",
+        "label": "ტექსტი მენიუსა და ბარათებზე",
+        "linksOnACard": "ბმულები ბარათზე",
+        "secondaryTextInThe": "მეორეული ტექსტი დაშბორდში",
+        "secondaryTextOnThe": "მეორეული ტექსტი საიტზე",
+        "textOnACard": "ტექსტი ბარათზე",
+        "textOnTheDashboard": "ტექსტი დაშბორდის ფონზე",
+        "textOnTheSite": "ტექსტი საიტის ფონზე"
+      },
+      "presets": {
+        "default": "სტანდარტული",
+        "forest": "მწვანე",
+        "mono": "ნაცრისფერი",
+        "plum": "იასამნისფერი",
+        "slate": "ლურჯი",
+        "warm": "თბილი"
+      },
+      "tokens": {
+        "accents": "აქცენტები",
+        "activeConnectedGrowth": "აქტიური, დაკავშირებულია, ზრდა",
+        "ai": "AI",
+        "background": "ფონი",
+        "behindEveryPublicPage": "საჯარო გვერდების ფონი",
+        "buttonsLinksStatuses": "ღილაკები, ბმულები, სტატუსები",
+        "cards": "ბარათები",
+        "dashboardAdmin": "დაშბორდი და ადმინი",
+        "descriptionsLabelsMenuItems": "აღწერები, ლეიბლები, მენიუს პუნქტები",
+        "error": "შეცდომა",
+        "errorsDeleteButtons": "შეცდომები, წაშლა",
+        "faintDivider": "სუსტი გამყოფი",
+        "fieldBorders": "ველების ჩარჩო",
+        "hint": "მთავარი, ფასები, კონტაქტი — რასაც სტუმარი ხედავს",
+        "hint10": "AI-ს პასუხები, ტესტერის ღილაკი, AI გადამრთველები",
+        "hint2": "ერთნაირია საიტზეც და დაშბორდშიც",
+        "hint3": "შესვლის შემდეგ — ეს გვერდიც აქ შედის",
+        "hint4": "ფასების ბოქსები, FAQ და სხვა ბლოკები",
+        "hint5": "ბარათების ჩარჩოები და მენიუს ქვედა ხაზი",
+        "hint6": "დაშბორდისა და ადმინის ფონი",
+        "hint7": "მარცხენა მენიუ, პანელები, ფანჯრები",
+        "hint8": "სათაურები და ტექსტი — საიტზე და დაშბორდში",
+        "hint9": "ტექსტის ველები — შესვლა, ფორმები, დაშბორდი",
+        "hints": "მინიშნებები",
+        "lines": "ხაზები",
+        "linesBetweenListRows": "ხაზები სიის ელემენტებს შორის",
+        "links": "ბმულები",
+        "linksFocusRingsSelected": "ბმულები, ფოკუსი, მონიშნული ველი",
+        "mainText": "მთავარი ტექსტი",
+        "panelAndCardOutlines": "პანელებისა და ბარათების ჩარჩოები",
+        "pendingNeedsAttention": "მოლოდინში, ყურადღება",
+        "primaryButton": "მთავარი ღილაკი",
+        "publicSite": "საიტი",
+        "saveSendGetStarted": "შენახვა, გაგზავნა, დაწყება",
+        "secondaryText": "მეორეული ტექსტი",
+        "selectedMenuItemHover": "მონიშნული მენიუს პუნქტი, hover, ჩიპები",
+        "sidebarCards": "გვერდითი მენიუ და ბარათები",
+        "smallGreyCaptions": "პატარა ნაცრისფერი წარწერები",
+        "subtleFill": "მსუბუქი შევსება",
+        "success": "წარმატება",
+        "textFields": "ტექსტი და ველები",
+        "warning": "გაფრთხილება"
+      }
+    }
+  },
+  "terms": {
+    "termsAndConditions": "წესები და პირობები"
+  }
+}

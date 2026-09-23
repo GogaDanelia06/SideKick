@@ -101,7 +101,7 @@ export function PageEditor({
         <div>
           <h1 className="text-[22px] font-semibold">{t(page.label)}</h1>
           <p className="mt-1 text-sm text-muted">
-            {t({ ka: "აირჩიე სექცია და დაარედაქტირე.", en: "Pick a section and edit it." })}
+            {t("admin.pageEditor.pickASectionAnd")}
           </p>
         </div>
         <a
@@ -111,7 +111,7 @@ export function PageEditor({
           className="inline-flex h-9 items-center gap-1.5 rounded-[8px] border border-border px-3 text-[13px] font-medium text-muted hover:text-ink"
         >
           <IconExternalLink size={15} />
-          {t({ ka: "გვერდის ნახვა", en: "View page" })}
+          {t("admin.pageEditor.viewPage")}
         </a>
       </div>
 

@@ -35,7 +35,7 @@ export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
       })}
 
       <div className="mb-1 mt-4 px-2.5 text-[11px] font-semibold uppercase tracking-wide text-faint">
-        {t({ ka: "საიტის გვერდები", en: "Site pages" })}
+        {t("admin.nav.sitePages")}
       </div>
       {ADMIN_PAGES.map((p) => {
         const href = `/admin/page/${p.slug}`;

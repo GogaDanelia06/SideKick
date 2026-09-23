@@ -1,44 +1,29 @@
-import type { Bilingual } from "@/lib/content/types";
 import type { SaveError } from "@/lib/dashboard/sectionSave/request";
+import type { Text } from "@/lib/i18n/messages";
 
-export const SAVE: Bilingual = { ka: "შენახვა", en: "Save" };
-export const CANCEL: Bilingual = { ka: "გაუქმება", en: "Cancel" };
-export const SAVING: Bilingual = { ka: "ინახება…", en: "Saving…" };
-export const SAVED: Bilingual = { ka: "შენახულია", en: "Saved" };
+export const SAVE: Text = "dashboard.ai.saveMessages.save";
+export const CANCEL: Text = "dashboard.ai.saveMessages.cancel";
+export const SAVING: Text = "dashboard.ai.saveMessages.saving";
+export const SAVED: Text = "dashboard.ai.saveMessages.saved";
 
 /** For a save with nothing more to say about it than that it did not happen. */
-export const SAVE_ERROR: Bilingual = { ka: "ვერ შეინახა — სცადე ხელახლა", en: "Couldn't save — try again" };
+export const SAVE_ERROR: Text = "dashboard.ai.saveMessages.couldnTSaveTry";
 
-export const UNSAVED: Bilingual = { ka: "შეუნახავი ცვლილებები", en: "Unsaved changes" };
-export const ALL_SAVED: Bilingual = { ka: "ყველაფერი შენახულია", en: "Everything is saved" };
+export const UNSAVED: Text = "dashboard.ai.saveMessages.unsavedChanges";
+export const ALL_SAVED: Text = "dashboard.ai.saveMessages.everythingIsSaved";
 
-export const FORBIDDEN: Bilingual = {
-  ka: "ამის შეცვლის უფლება არ გაქვს",
-  en: "You don't have permission to change this",
-};
+export const FORBIDDEN: Text = "dashboard.ai.saveMessages.youDonTHave";
 
 /** Shown when the section opens with changes from last time that never reached the server. */
-export const RESTORED: Bilingual = {
-  ka: "აღდგა შეუნახავი ცვლილებები. დააჭირე „შენახვას“, რომ დარჩეს.",
-  en: "Your unsaved changes were restored. Press Save to keep them.",
-};
+export const RESTORED: Text = "dashboard.ai.saveMessages.yourUnsavedChangesWere";
 
-const NOT_SAVED: Bilingual = {
-  ka: "ვერ შეინახა. ცვლილებები ამ ბრაუზერში დარჩა — სცადე ხელახლა.",
-  en: "Couldn't save. Your changes stay in this browser — try again.",
-};
+const NOT_SAVED: Text = "dashboard.ai.saveMessages.couldnTSaveYour";
 
 /** Why a save did not go through; the changes are kept wherever that helps. */
-export const SAVE_OUTCOME: Record<SaveError, Bilingual> = {
+export const SAVE_OUTCOME: Record<SaveError, Text> = {
   forbidden: FORBIDDEN,
-  signed_out: {
-    ka: "სესია დასრულდა. ცვლილებები ამ ბრაუზერში დარჩა — შედი და შეინახე ხელახლა.",
-    en: "Your session ended. Your changes stay in this browser — log in and save again.",
-  },
-  moved: {
-    ka: "სხვა ბიზნესზე გადაერთე. ცვლილებები შეინახება, როცა ამ ბიზნესს დაუბრუნდები.",
-    en: "You switched to another business. The changes are waiting for you back in this one.",
-  },
+  signed_out: "dashboard.ai.saveMessages.yourSessionEndedYour",
+  moved: "dashboard.ai.saveMessages.youSwitchedToAnother",
   invalid: NOT_SAVED,
   failed: NOT_SAVED,
 };

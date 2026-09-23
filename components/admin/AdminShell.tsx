@@ -26,7 +26,7 @@ export function AdminShell({
     <div className="flex h-[60px] items-center gap-2.5 border-b border-border2 px-[18px] text-base font-semibold">
       <Wordmark className="h-[28px]" tagline />
       <span className="ml-auto rounded-full border border-ink/30 bg-soft px-2 py-0.5 text-[11px] font-semibold text-ink">
-        {t({ ka: "ადმინი", en: "Admin" })}
+        {t("admin.shell.admin")}
       </span>
     </div>
   );
@@ -54,12 +54,12 @@ export function AdminShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex h-[56px] items-center gap-3 border-b border-border bg-surface px-4 lg:hidden">
-          <button type="button" onClick={() => setDrawer(true)} aria-label="Menu">
+          <button type="button" onClick={() => setDrawer(true)} aria-label={t("layout.menu")}>
             <IconMenu2 size={22} />
           </button>
           <span className="font-semibold">Sidekick</span>
           <span className="rounded-full border border-ink/30 bg-soft px-2 py-0.5 text-[11px] font-semibold">
-            {t({ ka: "ადმინი", en: "Admin" })}
+            {t("admin.shell.admin")}
           </span>
         </div>
 

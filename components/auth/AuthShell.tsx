@@ -5,7 +5,8 @@ import type { ReactNode } from "react";
 import { Card } from "@/components/ui/Card";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual, IconType } from "@/lib/content/types";
+import type { IconType } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 export function AuthShell({
   icon: Icon,
@@ -19,8 +20,8 @@ export function AuthShell({
   /** Tile icon for forgot/reset; sign-in and sign-up show the logo instead. */
   icon?: IconType;
   iconTone?: "primary" | "outline";
-  title: Bilingual;
-  sub: Bilingual;
+  title: Text;
+  sub: Text;
   width?: number;
   children: ReactNode;
   footer?: ReactNode;

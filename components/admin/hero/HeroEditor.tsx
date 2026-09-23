@@ -26,16 +26,16 @@ import { MediaField } from "@/components/admin/ui/MediaField";
 import { SlideStats } from "./SlideStats";
 import type { StatSourceOption } from "@/lib/site/statFormat";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 const INPUT =
   "w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-blue";
 const LABEL = "mb-1 block text-[11px] uppercase tracking-wide text-faint";
 
-const ERRORS: Record<string, Bilingual> = {
-  title_required: { ka: "სათაური ორივე ენაზე სავალდებულოა", en: "Title is required in both languages" },
-  bad_interval: { ka: "წამები უნდა იყოს 1-დან 60-მდე", en: "Seconds must be between 1 and 60" },
-  not_found: { ka: "ვერ მოიძებნა", en: "Not found" },
+const ERRORS: Record<string, Text> = {
+  title_required: "admin.hero.editor.titleIsRequiredIn",
+  bad_interval: "admin.hero.editor.secondsMustBeBetween",
+  not_found: "admin.hero.editor.notFound",
 };
 
 export type SlideWithStats = HeroSlide & { stats: HeroSlideStat[] };
@@ -53,69 +53,63 @@ function SlideFields({ initial }: { initial?: SlideWithStats }) {
 
       <label className="block">
         <span className={LABEL}>
-          {t({
-            ka: "ჩაშენებული ანიმაცია — ჩანს მაშინ, თუ მედია არ არის ატვირთული",
-            en: "Built-in animation — shown when no media is uploaded",
-          })}
+          {t("admin.hero.editor.builtInAnimationShown")}
         </span>
         <select name="mock" defaultValue={initial?.mock ?? ""} className={INPUT}>
-          <option value="">{t({ ka: "— არცერთი —", en: "— none —" })}</option>
-          <option value="chat">{t({ ka: "ჩატი", en: "Chat" })}</option>
-          <option value="dashboard">{t({ ka: "დეშბორდი", en: "Dashboard" })}</option>
-          <option value="tester">{t({ ka: "ტესტერი", en: "Tester" })}</option>
+          <option value="">{t("admin.hero.editor.none")}</option>
+          <option value="chat">{t("admin.hero.editor.chat")}</option>
+          <option value="dashboard">{t("admin.hero.editor.dashboard")}</option>
+          <option value="tester">{t("admin.hero.editor.tester")}</option>
         </select>
         <p className="mt-1.5 text-[12px] text-faint">
-          {t({
-            ka: "მარჯვენა პანელზე ერთი რამ ჩანს: ჯერ მედია, შემდეგ ანიმაცია, ბოლოს — ქვემოთ დამატებული ციფრები.",
-            en: "The right-hand panel shows one thing: media first, then the animation, and the figures below only if neither is set.",
-          })}
+          {t("admin.hero.editor.theRightHandPanel")}
         </p>
       </label>
 
       <div className="grid gap-2.5 sm:grid-cols-2">
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ბეჯი — ქართ.", en: "Badge — Georgian" })}</span>
+          <span className={LABEL}>{t("admin.hero.editor.badgeGeorgian")}</span>
           <input name="badgeKa" defaultValue={initial?.badgeKa} className={INPUT} />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ბეჯი — English", en: "Badge — English" })}</span>
+          <span className={LABEL}>{t("admin.hero.editor.badgeEnglish")}</span>
           <input name="badgeEn" defaultValue={initial?.badgeEn} className={INPUT} />
         </label>
       </div>
 
       <div className="grid gap-2.5 sm:grid-cols-2">
         <label className="block">
-          <span className={LABEL}>{t({ ka: "სათაური — ქართ.", en: "Title — Georgian" })}</span>
+          <span className={LABEL}>{t("admin.hero.editor.titleGeorgian")}</span>
           <input name="titleKa" required defaultValue={initial?.titleKa} className={INPUT} />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "სათაური — English", en: "Title — English" })}</span>
+          <span className={LABEL}>{t("admin.hero.editor.titleEnglish")}</span>
           <input name="titleEn" required defaultValue={initial?.titleEn} className={INPUT} />
         </label>
       </div>
 
       <div className="grid gap-2.5 sm:grid-cols-2">
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ტექსტი — ქართ.", en: "Text — Georgian" })}</span>
+          <span className={LABEL}>{t("admin.hero.editor.textGeorgian")}</span>
           <textarea name="textKa" defaultValue={initial?.textKa} className={`${INPUT} min-h-[100px]`} />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ტექსტი — English", en: "Text — English" })}</span>
+          <span className={LABEL}>{t("admin.hero.editor.textEnglish")}</span>
           <textarea name="textEn" defaultValue={initial?.textEn} className={`${INPUT} min-h-[100px]`} />
         </label>
       </div>
 
       <div className="grid gap-2.5 sm:grid-cols-3">
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ღილაკი — ქართ.", en: "Button — Georgian" })}</span>
-          <input name="ctaLabelKa" defaultValue={initial?.ctaLabelKa} placeholder={t({ ka: "გაიგე მეტი", en: "Learn more" })} className={INPUT} />
+          <span className={LABEL}>{t("admin.hero.editor.buttonGeorgian")}</span>
+          <input name="ctaLabelKa" defaultValue={initial?.ctaLabelKa} placeholder={t("admin.hero.editor.learnMore")} className={INPUT} />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ღილაკი — English", en: "Button — English" })}</span>
+          <span className={LABEL}>{t("admin.hero.editor.buttonEnglish")}</span>
           <input name="ctaLabelEn" defaultValue={initial?.ctaLabelEn} className={INPUT} />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ღილაკის ბმული", en: "Button URL" })}</span>
+          <span className={LABEL}>{t("admin.hero.editor.buttonUrl")}</span>
           <input name="ctaUrl" defaultValue={initial?.ctaUrl ?? "/pricing"} placeholder="/pricing" className={INPUT} />
         </label>
       </div>
@@ -177,7 +171,7 @@ export function HeroEditor({
       >
         <label className="block">
           <span className={LABEL}>
-            {t({ ka: "ავტომატური გადასვლა (წამი)", en: "Auto-advance (seconds)" })}
+            {t("admin.hero.editor.autoAdvanceSeconds")}
           </span>
           <input
             name="seconds"
@@ -189,18 +183,18 @@ export function HeroEditor({
           />
         </label>
         <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-          {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+          {pending ? "…" : t("admin.hero.editor.save")}
         </button>
         {savedInterval ? (
           <span className="inline-flex items-center gap-1 text-[13px] text-green">
-            <IconCheck size={15} /> {t({ ka: "შენახულია", en: "Saved" })}
+            <IconCheck size={15} /> {t("admin.hero.editor.saved")}
           </span>
         ) : null}
       </form>
 
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted">
-          {slides.length} {t({ ka: "სლაიდი", en: "slides" })}
+          {slides.length} {t("admin.hero.editor.slides")}
         </span>
         <button
           type="button"
@@ -208,14 +202,14 @@ export function HeroEditor({
           className="inline-flex h-9 items-center gap-1.5 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas"
         >
           {adding ? <IconX size={16} /> : <IconPlus size={16} />}
-          {adding ? t({ ka: "დახურვა", en: "Close" }) : t({ ka: "სლაიდის დამატება", en: "Add slide" })}
+          {adding ? t("admin.hero.editor.close") : t("admin.hero.editor.addSlide")}
         </button>
       </div>
 
       {error ? (
         <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
           <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? { ka: "ვერ შესრულდა", en: "Something went wrong" })}
+          {t(ERRORS[error] ?? "admin.hero.editor.somethingWentWrong")}
         </div>
       ) : null}
 
@@ -228,7 +222,7 @@ export function HeroEditor({
           <SlideFields />
           <div className="mt-3 flex justify-end">
             <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-              {pending ? "…" : t({ ka: "დამატება", en: "Add" })}
+              {pending ? "…" : t("admin.hero.editor.add")}
             </button>
           </div>
         </form>
@@ -236,7 +230,7 @@ export function HeroEditor({
 
       {slides.length === 0 && !adding ? (
         <div className="rounded-lg border border-border bg-card px-6 py-10 text-center text-sm text-muted">
-          {t({ ka: "ჯერ არცერთი სლაიდი — მთავარ გვერდზე ჩაშენებული კარუსელი ჩანს.", en: "No slides yet — the landing page shows the built-in carousel." })}
+          {t("admin.hero.editor.noSlidesYetThe")}
         </div>
       ) : null}
 
@@ -248,10 +242,10 @@ export function HeroEditor({
                 <SlideFields initial={s} />
                 <div className="mt-3 flex justify-end gap-2">
                   <button type="button" onClick={() => { setEditing(null); setError(null); }} className="h-9 rounded-[8px] border border-border px-4 text-[13px] font-medium">
-                    {t({ ka: "გაუქმება", en: "Cancel" })}
+                    {t("admin.hero.editor.cancel")}
                   </button>
                   <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-                    {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+                    {pending ? "…" : t("admin.hero.editor.save")}
                   </button>
                 </div>
               </form>
@@ -267,25 +261,25 @@ export function HeroEditor({
                     </div>
                     <div className="mt-0.5 line-clamp-1 text-[13px] text-muted">{s.textKa}</div>
                     <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-faint">
-                      <span>{s.mediaUrl ? t({ ka: "მედია", en: "media" }) : s.mock || t({ ka: "მედიის გარეშე", en: "no media" })}</span>
+                      <span>{s.mediaUrl ? t("admin.hero.editor.media") : s.mock || t("admin.hero.editor.noMedia")}</span>
                       <span>·</span>
                       <span>{s.ctaUrl}</span>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">
-                    <button type="button" disabled={pending || i === 0} onClick={() => run(() => moveSlide(s.id, "up"))} aria-label={t({ ka: "აწევა", en: "Move up" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
+                    <button type="button" disabled={pending || i === 0} onClick={() => run(() => moveSlide(s.id, "up"))} aria-label={t("admin.hero.editor.moveUp")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
                       <IconChevronUp size={16} />
                     </button>
-                    <button type="button" disabled={pending || i === slides.length - 1} onClick={() => run(() => moveSlide(s.id, "down"))} aria-label={t({ ka: "ჩამოწევა", en: "Move down" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
+                    <button type="button" disabled={pending || i === slides.length - 1} onClick={() => run(() => moveSlide(s.id, "down"))} aria-label={t("admin.hero.editor.moveDown")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
                       <IconChevronDown size={16} />
                     </button>
-                    <button type="button" disabled={pending} onClick={() => run(() => toggleSlidePublished(s.id, !s.published))} aria-label={t({ ka: "გამოქვეყნება", en: "Toggle publish" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
+                    <button type="button" disabled={pending} onClick={() => run(() => toggleSlidePublished(s.id, !s.published))} aria-label={t("admin.hero.editor.togglePublish")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
                       {s.published ? <IconEye size={15} /> : <IconEyeOff size={15} />}
                     </button>
-                    <button type="button" disabled={pending} onClick={() => { setEditing(s.id); setError(null); }} aria-label={t({ ka: "რედაქტირება", en: "Edit" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
+                    <button type="button" disabled={pending} onClick={() => { setEditing(s.id); setError(null); }} aria-label={t("admin.hero.editor.edit")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
                       <IconPencil size={15} />
                     </button>
-                    <button type="button" disabled={pending} onClick={() => remove(s.id)} aria-label={t({ ka: "წაშლა", en: "Delete" })} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
+                    <button type="button" disabled={pending} onClick={() => remove(s.id)} aria-label={t("admin.hero.editor.delete")} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
                       <IconTrash size={15} />
                     </button>
                   </div>

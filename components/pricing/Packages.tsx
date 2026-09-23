@@ -14,7 +14,7 @@ import {
   type Package,
 } from "@/lib/content/packages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 export function Packages({
   packages,
@@ -22,9 +22,9 @@ export function Packages({
 }: {
   packages: Package[];
   free?: {
-    badge?: Bilingual;
-    title?: Bilingual;
-    text?: Bilingual;
+    badge?: Text;
+    title?: Text;
+    text?: Text;
   };
 }) {
   const { t } = useLanguage();

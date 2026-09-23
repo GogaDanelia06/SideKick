@@ -16,7 +16,8 @@ import { BiText } from "@/components/admin/ui/BiText";
 import { DailyBars } from "@/components/admin/analytics/DailyBars";
 import { Funnel } from "@/components/admin/analytics/Funnel";
 import { RankedList } from "@/components/admin/analytics/RankedList";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
+import { phrase } from "@/lib/i18n/messages";
 
 export const dynamic = "force-dynamic";
 
@@ -29,9 +30,9 @@ function Card({
   sub,
 }: {
   icon: typeof IconUsers;
-  label: Bilingual;
+  label: Text;
   value: string;
-  sub?: Bilingual;
+  sub?: Text;
 }) {
   return (
     <div className="rounded-lg border border-border bg-card p-5">
@@ -54,9 +55,9 @@ function Figure({
   sub,
   strong,
 }: {
-  label: Bilingual;
+  label: Text;
   value: string;
-  sub?: Bilingual;
+  sub?: Text;
   strong?: boolean;
 }) {
   return (
@@ -74,7 +75,7 @@ function Figure({
   );
 }
 
-function SubCount({ label, count, tone }: { label: Bilingual; count: number; tone: string }) {
+function SubCount({ label, count, tone }: { label: Text; count: number; tone: string }) {
   return (
     <span className="inline-flex items-center gap-1.5">
       <BiText value={label} />
@@ -90,11 +91,8 @@ export default async function AdminAnalyticsPage() {
   return (
     <>
       <AdminHeading
-        title={{ ka: "პლატფორმის ანალიტიკა", en: "Platform analytics" }}
-        subtitle={{
-          ka: "ჯამური მაჩვენებლები ყველა კლიენტზე. მიმოწერების შიგთავსი აქ არ ჩანს — მხოლოდ რიცხვები.",
-          en: "Aggregate figures across every tenant. No conversation content is shown here — numbers only.",
-        }}
+        title={"admin.analytics.platformAnalytics"}
+        subtitle={"admin.analytics.subtitle"}
         aside={<LiveRefresh />}
       />
 
@@ -102,54 +100,48 @@ export default async function AdminAnalyticsPage() {
         <BiText
           as="h2"
           className="mb-4 text-base font-semibold"
-          value={{ ka: "ჩვენი შემოსავალი", en: "Our income" }}
+          value={"admin.analytics.ourIncome"}
         />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <Figure
-            label={{ ka: "თვიური შემოსავალი (MRR)", en: "Monthly recurring (MRR)" }}
+            label={"admin.analytics.monthlyRecurringMrr"}
             value={`${fmt(s.income.mrr)}₾`}
-            sub={{
-              ka: `${s.subscriptions.active} აქტიური გამოწერა`,
-              en: `${s.subscriptions.active} active subscriptions`,
-            }}
+            sub={phrase("admin.analytics.subscriptionsActive", { count: fmt(s.subscriptions.active) })}
             strong
           />
           <Figure
-            label={{ ka: "ამ თვეში მიღებული", en: "Collected this month" }}
+            label={"admin.analytics.collectedThisMonth"}
             value={`${fmt(s.income.collectedThisMonth)}₾`}
           />
           <Figure
-            label={{ ka: "სულ მიღებული", en: "Collected in total" }}
+            label={"admin.analytics.collectedInTotal"}
             value={`${fmt(s.income.collectedTotal)}₾`}
           />
           <Figure
-            label={{ ka: "პრობლემური გადახდები", en: "Payment problems" }}
+            label={"admin.analytics.paymentProblems"}
             value={fmt(s.income.failedThisMonth + s.income.pending)}
-            sub={{
-              ka: `${s.income.failedThisMonth} ჩავარდნილი · ${s.income.pending} მიმდინარე`,
-              en: `${s.income.failedThisMonth} failed · ${s.income.pending} pending`,
-            }}
+            sub={phrase("admin.analytics.paymentsFailedPending", { failed: s.income.failedThisMonth, pending: s.income.pending })}
           />
         </div>
 
         <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1.5 border-t border-border2 pt-4 text-[12px] text-muted">
           <SubCount
-            label={{ ka: "საცდელი", en: "Trial" }}
+            label={"admin.analytics.trial"}
             count={s.subscriptions.trial}
             tone="text-ink"
           />
           <SubCount
-            label={{ ka: "აქტიური", en: "Active" }}
+            label={"admin.analytics.active"}
             count={s.subscriptions.active}
             tone="text-green"
           />
           <SubCount
-            label={{ ka: "ვადაგადაცილებული", en: "Past due" }}
+            label={"admin.analytics.pastDue"}
             count={s.subscriptions.pastDue}
             tone="text-amber"
           />
           <SubCount
-            label={{ ka: "გაუქმებული", en: "Cancelled" }}
+            label={"admin.analytics.cancelled"}
             count={s.subscriptions.cancelled}
             tone="text-faint"
           />
@@ -159,71 +151,53 @@ export default async function AdminAnalyticsPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card
           icon={IconBuildingStore}
-          label={{ ka: "ბიზნესი", en: "Businesses" }}
+          label={"admin.analytics.businesses"}
           value={fmt(s.businesses.total)}
-          sub={{
-            ka: `+${s.businesses.newThisMonth} ამ თვეში`,
-            en: `+${s.businesses.newThisMonth} this month`,
-          }}
+          sub={phrase("admin.analytics.businessesNewThisMonth", { count: s.businesses.newThisMonth })}
         />
-        <Card icon={IconUsers} label={{ ka: "მომხმარებელი", en: "Users" }} value={fmt(s.users)} />
+        <Card icon={IconUsers} label={"admin.analytics.users"} value={fmt(s.users)} />
         <Card
           icon={IconMessages}
-          label={{ ka: "მიმოწერა", en: "Conversations" }}
+          label={"admin.analytics.conversations"}
           value={fmt(s.conversations.total)}
-          sub={{
-            ka: `${s.conversations.active} აქტიური`,
-            en: `${s.conversations.active} active`,
-          }}
+          sub={phrase("admin.analytics.conversationsActive", { count: fmt(s.conversations.active) })}
         />
         <Card
           icon={IconRobot}
-          label={{ ka: "შეტყობინება", en: "Messages" }}
+          label={"admin.analytics.messages"}
           value={fmt(s.messages.total)}
-          sub={{
-            ka: `${s.messages.aiSharePct}% AI-სგან`,
-            en: `${s.messages.aiSharePct}% from AI`,
-          }}
+          sub={phrase("admin.analytics.messagesFromAi", { share: s.messages.aiSharePct })}
         />
         <Card
           icon={IconShoppingCart}
-          label={{ ka: "კლიენტების გაყიდვები", en: "Tenants' sales" }}
+          label={"admin.analytics.tenantsSales"}
           value={fmt(s.tenantSales.orders)}
-          sub={{
-            ka: `${fmt(s.tenantSales.total)}₾ — მათი ბრუნვა, არა ჩვენი`,
-            en: `${fmt(s.tenantSales.total)}₾ — their turnover, not ours`,
-          }}
+          sub={phrase("admin.analytics.tenantsTurnover", { total: fmt(s.tenantSales.total) })}
         />
         <Card
           icon={IconUserPlus}
-          label={{ ka: "ლიდი", en: "Leads" }}
+          label={"admin.analytics.leads"}
           value={fmt(s.leads.total)}
-          sub={{
-            ka: `${s.leads.converted} დახურული`,
-            en: `${s.leads.converted} closed`,
-          }}
+          sub={phrase("admin.analytics.leadsClosed", { count: fmt(s.leads.converted) })}
         />
         <Card
           icon={IconPlugConnected}
-          label={{ ka: "მიერთებული არხი", en: "Connected channels" }}
+          label={"admin.analytics.connectedChannels"}
           value={fmt(s.channelsConnected)}
         />
-        <Card icon={IconPackage} label={{ ka: "პროდუქტი", en: "Products" }} value={fmt(s.products)} />
+        <Card icon={IconPackage} label={"admin.analytics.products"} value={fmt(s.products)} />
       </div>
 
       <div className="mt-6 rounded-lg border border-border bg-card p-5">
         <BiText
           as="h2"
           className="mb-1 text-base font-semibold"
-          value={{ ka: "პაკეტების განაწილება", en: "Plan distribution" }}
+          value={"admin.analytics.planDistribution"}
         />
         <BiText
           as="p"
           className="mb-4 text-[12px] text-faint"
-          value={{
-            ka: "ყველა გამოწერა, საცდელის ჩათვლით.",
-            en: "Every subscription, trials included.",
-          }}
+          value={"admin.analytics.everySubscriptionTrialsIncluded"}
         />
         <div className="flex flex-col gap-3">
           {s.plans.map((p) => {
@@ -252,7 +226,7 @@ export default async function AdminAnalyticsPage() {
         <BiText
           as="h2"
           className="mb-4 text-base font-semibold"
-          value={{ ka: "ახალი ბიზნესები (6 თვე)", en: "New businesses (6 months)" }}
+          value={"admin.analytics.newBusinesses6Months"}
         />
         <div className="flex h-[140px] items-end gap-3">
           {s.growth.map((g) => (
@@ -272,22 +246,19 @@ export default async function AdminAnalyticsPage() {
         <BiText
           as="h2"
           className="mb-1 text-base font-semibold"
-          value={{ ka: "ვიზიტები და ქმედებები", en: "Visits and actions" }}
+          value={"admin.analytics.visitsAndActions"}
         />
         <BiText
           as="p"
           className="mb-4 text-[12px] text-faint"
-          value={{ ka: "ბოლო 30 დღე.", en: "Last 30 days." }}
+          value={"admin.analytics.last30Days"}
         />
 
         {traffic.empty ? (
           <BiText
             as="p"
             className="py-6 text-center text-sm text-muted"
-            value={{
-              ka: "ჯერ არაფერი დაფიქსირებულა — ციფრები პირველი ვიზიტებიდან გაჩნდება.",
-              en: "Nothing recorded yet — figures appear once visitors arrive.",
-            }}
+            value={"admin.analytics.nothingRecordedYetFigures"}
           />
         ) : (
           <>
@@ -297,7 +268,7 @@ export default async function AdminAnalyticsPage() {
               </span>
               <BiText
                 className="text-[12px] text-muted"
-                value={{ ka: "გვერდის ნახვა", en: "page views" }}
+                value={"admin.analytics.pageViews"}
               />
             </div>
             <div className="mb-6">
@@ -312,18 +283,18 @@ export default async function AdminAnalyticsPage() {
 
             <div className="grid gap-6 lg:grid-cols-2">
               <RankedList
-                title={{ ka: "ქმედებები", en: "Actions" }}
+                title={"admin.analytics.actions"}
                 rows={traffic.events.map(({ event, last30, last7 }) => ({
                   key: event.name,
                   label: event.label,
                   value: last30,
-                  aside: { ka: `${fmt(last7)} / 7 დღე`, en: `${fmt(last7)} / 7d` },
+                  aside: phrase("admin.analytics.overSevenDays", { value: fmt(last7) }),
                 }))}
               />
 
               <div className="flex flex-col gap-5">
                 <RankedList
-                  title={{ ka: "საიტის გვერდები", en: "Public pages" }}
+                  title={"admin.analytics.publicPages"}
                   rows={traffic.publicPages.map((p) => ({
                     key: p.path,
                     label: p.path,
@@ -331,16 +302,13 @@ export default async function AdminAnalyticsPage() {
                   }))}
                 />
                 <RankedList
-                  title={{ ka: "აპლიკაციაში", en: "Inside the app" }}
+                  title={"admin.analytics.insideTheApp"}
                   rows={traffic.appPages.map((p) => ({
                     key: p.path,
                     label: p.path,
                     value: p.views,
                   }))}
-                  note={{
-                    ka: "ავტორიზებული მომხმარებლების ეკრანები — მარკეტინგულ ციფრს არ ერევა.",
-                    en: "Signed-in screens — kept out of the marketing figures.",
-                  }}
+                  note={"admin.analytics.note"}
                 />
               </div>
             </div>

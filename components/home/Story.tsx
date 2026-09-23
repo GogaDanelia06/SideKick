@@ -7,10 +7,10 @@ import { Container } from "@/components/ui/Container";
 import { STORY } from "@/lib/content/home";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 /** Landing story block: the whole card links to /about; title and body fall back to built-in copy. */
-export function Story({ title, body }: { title?: Bilingual; body?: Bilingual }) {
+export function Story({ title, body }: { title?: Text; body?: Text }) {
   const { t } = useLanguage();
 
   const heading = title ?? STORY.heading;
@@ -45,7 +45,7 @@ export function Story({ title, body }: { title?: Bilingual; body?: Bilingual }) 
           ))}
 
           <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
-            {t({ ka: "ჩვენ შესახებ", en: "About us" })}
+            {t("home.story.aboutUs")}
             <IconArrowRight
               size={16}
               className="transition-transform group-hover:translate-x-0.5"

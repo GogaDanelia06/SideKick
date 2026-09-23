@@ -3,10 +3,7 @@
 import { IconGift } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-const TRIAL_INFO = {
-  ka: "რეგისტრაციის შემდეგ მიიღებთ 5-დღიან სატესტო პერიოდს და 1 თვე უფასო მომსახურებას.",
-  en: "After registration, you get a 5-day trial period and 1 month of free service.",
-};
+const TRIAL_INFO = "auth.registerTrialNotice.afterRegistrationYouGet";
 
 export function RegisterTrialNotice() {
   const { t } = useLanguage();

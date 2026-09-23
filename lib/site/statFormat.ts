@@ -1,9 +1,9 @@
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 /** A format name rather than a function, so it can cross to the client. */
 export type StatFormat = "number" | "money";
 
-export type StatSourceOption = { key: string; label: Bilingual; format: StatFormat; value: string };
+export type StatSourceOption = { key: string; label: Text; format: StatFormat; value: string };
 
 const nf = new Intl.NumberFormat("en-US");
 

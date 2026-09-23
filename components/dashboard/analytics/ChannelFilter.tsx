@@ -29,7 +29,7 @@ export function ChannelFilter({
     return () => document.removeEventListener("click", close);
   }, [open]);
 
-  const all = t({ ka: "ყველა არხი", en: "All channels" });
+  const all = t("dashboard.analytics.channelFilter.allChannels");
   const current = value ? CHANNEL_META[value] : null;
 
   return (

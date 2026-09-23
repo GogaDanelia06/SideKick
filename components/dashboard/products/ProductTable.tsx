@@ -25,21 +25,21 @@ export function ProductTable({ products, onEdit }: { products: Product[]; onEdit
   return (
     <Panel className="overflow-hidden">
       <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
-        <h3 className="text-sm font-semibold">{t({ ka: "პროდუქტების ჩამონათვალი", en: "Product list" })}</h3>
+        <h3 className="text-sm font-semibold">{t("dashboard.products.table.productList")}</h3>
         <span className="text-xs text-muted">
-          {t({ ka: `სულ ${products.length} პროდუქტი`, en: `${products.length} products` })}
+          {t("dashboard.products.table.count", { count: products.length })}
         </span>
       </div>
 
       {products.length > 0 ? (
         <div className="hidden items-center gap-3 border-b border-border bg-soft px-4 py-2 text-[11px] uppercase tracking-wide text-faint sm:flex">
           <span className="size-10 shrink-0" />
-          <span className="min-w-0 flex-1">{t({ ka: "პროდუქტი", en: "Product" })}</span>
-          <span className={clsx(COL.price, "text-right")}>{t({ ka: "ფასი", en: "Price" })}</span>
+          <span className="min-w-0 flex-1">{t("dashboard.products.table.product")}</span>
+          <span className={clsx(COL.price, "text-right")}>{t("dashboard.products.table.price")}</span>
           <span className={clsx(COL.sale, "hidden text-right md:block")}>
-            {t({ ka: "ფასდაკლებით", en: "Sale price" })}
+            {t("dashboard.products.table.salePrice")}
           </span>
-          <span className={clsx(COL.stock, "text-right")}>{t({ ka: "მარაგში", en: "In stock" })}</span>
+          <span className={clsx(COL.stock, "text-right")}>{t("dashboard.products.table.inStock")}</span>
           <span className="w-[72px] shrink-0" />
         </div>
       ) : null}
@@ -80,17 +80,17 @@ export function ProductTable({ products, onEdit }: { products: Product[]; onEdit
             </div>
 
             <div className={clsx(COL.stock, "text-right font-mono text-sm", stockCls(p.quantity))}>
-              {p.quantity === 0 ? t({ ka: "ამოიწურა", en: "Out of stock" }) : p.quantity}
+              {p.quantity === 0 ? t("dashboard.products.table.outOfStock") : p.quantity}
             </div>
 
             <div className="flex w-[72px] shrink-0 justify-end gap-1.5">
-              <button type="button" onClick={() => onEdit(p)} aria-label={t({ ka: "რედაქტირება", en: "Edit" })} className={clsx(ICON_BTN, "text-blue")}>
+              <button type="button" onClick={() => onEdit(p)} aria-label={t("dashboard.products.table.edit")} className={clsx(ICON_BTN, "text-blue")}>
                 <IconEdit size={16} />
               </button>
               <button type="button" disabled={pending} onClick={() => start(async () => {
                 await deleteProduct(p.id);
                 notify(t(PRODUCT_DELETED));
-              })} aria-label={t({ ka: "წაშლა", en: "Delete" })} className={clsx(ICON_BTN, "text-red disabled:opacity-50")}>
+              })} aria-label={t("dashboard.products.table.delete")} className={clsx(ICON_BTN, "text-red disabled:opacity-50")}>
                 <IconTrash size={16} />
               </button>
             </div>
@@ -100,7 +100,7 @@ export function ProductTable({ products, onEdit }: { products: Product[]; onEdit
 
       {products.length === 0 && (
         <div className="px-4 py-10 text-center text-sm text-muted">
-          {t({ ka: "პროდუქტები არ არის", en: "No products" })}
+          {t("dashboard.products.table.noProducts")}
         </div>
       )}
     </Panel>

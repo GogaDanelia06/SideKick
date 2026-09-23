@@ -23,7 +23,7 @@ export function ThemeToolbar({
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-3.5">
       <div>
-        <p className={HEADING}>{t({ ka: "ეკრანზე ჩანს", en: "On screen" })}</p>
+        <p className={HEADING}>{t("admin.appearance.themeToolbar.onScreen")}</p>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex w-fit gap-1 rounded-[9px] border border-border bg-soft p-1">
             {SHADES.map((s) => {
@@ -46,17 +46,14 @@ export function ThemeToolbar({
             })}
           </div>
           <span className="text-[12px] text-muted">
-            {t({
-              ka: "ფერის შეცვლისას ეკრანი თვითონ ის თემაზე გადაირთვება.",
-              en: "Editing a colour switches the screen to its theme.",
-            })}
+            {t("admin.appearance.themeToolbar.editingAColourSwitches")}
           </span>
         </div>
       </div>
 
       <div>
         <p className={HEADING}>
-          {t({ ka: "მზა პალიტრები — ორივე თემას ერთად ცვლის", en: "Ready-made palettes — set both themes at once" })}
+          {t("admin.appearance.themeToolbar.readyMadePalettesSet")}
         </p>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">
           {PRESETS.map((p) => (

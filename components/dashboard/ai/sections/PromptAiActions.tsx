@@ -20,11 +20,8 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
   const [instructions, setInstructions] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const offline = t({ ka: "საჭიროებს AI მოდულს", en: "Requires the AI module" });
-  const failed = t({
-    ka: "AI სერვისმა ვერ უპასუხა. სცადე ხელახლა.",
-    en: "The AI service did not answer. Try again.",
-  });
+  const offline = t("dashboard.ai.promptAiActions.requiresTheAiModule");
+  const failed = t("dashboard.ai.promptAiActions.theAiServiceDid");
 
   function run(work: () => Promise<{ ok: boolean; prompt?: string }>) {
     setError(null);
@@ -51,7 +48,7 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
           className={`${BTN} border border-ai text-ai disabled:cursor-not-allowed disabled:opacity-60`}
         >
           <IconSparkles size={16} />
-          {t({ ka: "დააგენერირე პრომპტი", en: "Generate prompt" })}
+          {t("dashboard.ai.promptAiActions.generatePrompt")}
         </button>
 
         <button
@@ -62,7 +59,7 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
           className={`${BTN} border border-border text-muted disabled:cursor-not-allowed disabled:opacity-60`}
         >
           <IconWand size={16} />
-          {t({ ka: "დაარედაქტირე AI-ით", en: "Refine with AI" })}
+          {t("dashboard.ai.promptAiActions.refineWithAi")}
         </button>
       </div>
 
@@ -72,10 +69,7 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
             rows={2}
             value={instructions}
             onChange={(e) => setInstructions(e.target.value)}
-            placeholder={t({
-              ka: "მაგ: უფრო მოკლედ პასუხობდეს და ფასი ყოველთვის დაასახელოს",
-              en: "e.g. answer more briefly and always state the price",
-            })}
+            placeholder={t("dashboard.ai.promptAiActions.eGAnswerMore")}
             className="w-full rounded-[8px] border border-border bg-transparent p-2.5 text-[13px]"
           />
           <button
@@ -85,14 +79,14 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
             className={`${BTN} self-start bg-primary text-white disabled:opacity-60`}
           >
             {pending
-              ? t({ ka: "მუშავდება…", en: "Working…" })
-              : t({ ka: "გადააკეთე", en: "Rewrite" })}
+              ? t("dashboard.ai.promptAiActions.working")
+              : t("dashboard.ai.promptAiActions.rewrite")}
           </button>
         </div>
       ) : null}
 
       {pending && !refining ? (
-        <p className="text-[13px] text-muted">{t({ ka: "მუშავდება…", en: "Working…" })}</p>
+        <p className="text-[13px] text-muted">{t("dashboard.ai.promptAiActions.working")}</p>
       ) : null}
       {error ? <p className="text-[13px] text-red">{error}</p> : null}
     </div>

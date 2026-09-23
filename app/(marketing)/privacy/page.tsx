@@ -6,6 +6,8 @@ import { breadcrumbSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { seoFor } from "@/lib/seo/metadata";
 import { getLegalSections, getLegalTitle } from "@/lib/site/content";
 import { PRIVACY } from "@/lib/content/legal";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { textIn } from "@/lib/i18n/messages";
 
 export const generateMetadata = seoFor({
   title: PRIVACY.title.ka,
@@ -18,7 +20,7 @@ export const revalidate = 3600;
 
 const crumbs: Crumb[] = [
   HOME_CRUMB,
-  { label: { ka: "კონფიდენციალურობის პოლიტიკა", en: "Privacy Policy" }, href: "/privacy" },
+  { label: "privacy.privacyPolicy", href: "/privacy" },
 ];
 
 
@@ -29,7 +31,7 @@ export default async function Page() {
   ]);
   return (
     <>
-      <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: c.label.ka, path: c.href })))} />
+      <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: textIn(DEFAULT_LOCALE, c.label), path: c.href })))} />
       <JsonLd
         data={webPageSchema({
           name: `${PRIVACY.title.ka} | Sidekick`,

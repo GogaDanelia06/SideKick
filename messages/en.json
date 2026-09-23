@@ -1,0 +1,1351 @@
+{
+  "about": {
+    "aboutUs": "About us",
+    "view": {
+      "tryForFree": "Try for free"
+    }
+  },
+  "admin": {
+    "analytics": {
+      "actions": "Actions",
+      "active": "Active",
+      "businesses": "Businesses",
+      "businessesNewThisMonth": "+{count} this month",
+      "cancelled": "Cancelled",
+      "collectedInTotal": "Collected in total",
+      "collectedThisMonth": "Collected this month",
+      "connectedChannels": "Connected channels",
+      "conversations": "Conversations",
+      "conversationsActive": "{count} active",
+      "dailyBars": {
+        "busiestDay": "busiest day"
+      },
+      "everySubscriptionTrialsIncluded": "Every subscription, trials included.",
+      "funnel": {
+        "ofStart": "of start",
+        "signUpFunnel": "Sign-up funnel",
+        "startingPoint": "starting point"
+      },
+      "insideTheApp": "Inside the app",
+      "last30Days": "Last 30 days.",
+      "leads": "Leads",
+      "leadsClosed": "{count} closed",
+      "messages": "Messages",
+      "messagesFromAi": "{share}% from AI",
+      "monthlyRecurringMrr": "Monthly recurring (MRR)",
+      "newBusinesses6Months": "New businesses (6 months)",
+      "note": "Signed-in screens — kept out of the marketing figures.",
+      "nothingRecordedYetFigures": "Nothing recorded yet — figures appear once visitors arrive.",
+      "ourIncome": "Our income",
+      "overSevenDays": "{value} / 7d",
+      "pageViews": "page views",
+      "pastDue": "Past due",
+      "paymentProblems": "Payment problems",
+      "paymentsFailedPending": "{failed} failed · {pending} pending",
+      "planDistribution": "Plan distribution",
+      "platformAnalytics": "Platform analytics",
+      "products": "Products",
+      "publicPages": "Public pages",
+      "rankedList": {
+        "nothingYet": "Nothing yet"
+      },
+      "subscriptionsActive": "{count} active subscriptions",
+      "subtitle": "Aggregate figures across every tenant. No conversation content is shown here — numbers only.",
+      "tenantsSales": "Tenants' sales",
+      "tenantsTurnover": "{total}₾ — their turnover, not ours",
+      "trial": "Trial",
+      "users": "Users",
+      "visitsAndActions": "Visits and actions"
+    },
+    "appearance": {
+      "appearance": "Appearance",
+      "colorInput": {
+        "undoThisChange": "Undo this change"
+      },
+      "colorPicker": {
+        "default": "Default",
+        "done": "Done"
+      },
+      "contrastNotes": {
+        "everyTextColourIs": "Every text colour is readable in both themes",
+        "hardToRead": "{count} hard to read",
+        "needs": "needs",
+        "youCanStillSave": "You can still save — this is a warning, not a limit."
+      },
+      "pickerParts": {
+        "hue": "Hue",
+        "saturationAndBrightness": "Saturation and brightness"
+      },
+      "shades": {
+        "darkTheme": "Dark theme",
+        "lightTheme": "Light theme"
+      },
+      "subtitle": "The colours of the site and the dashboard, in one place.",
+      "themeActions": {
+        "couldNotSaveTry": "Could not save. Try again.",
+        "discard": "Discard",
+        "matchesWhatIsSaved": "Matches what is saved.",
+        "save": "Save",
+        "savedTheSiteAlready": "Saved — the site already shows it.",
+        "unsavedChangeS": "unsaved change(s)"
+      },
+      "themeSection": {
+        "colour": "{count} colour",
+        "colours": "{count} colours"
+      },
+      "themeToolbar": {
+        "editingAColourSwitches": "Editing a colour switches the screen to its theme.",
+        "onScreen": "On screen",
+        "readyMadePalettesSet": "Ready-made palettes — set both themes at once"
+      }
+    },
+    "boxes": {
+      "editor": {
+        "add": "Add",
+        "addBox": "Add box",
+        "boxes": "boxes",
+        "cancel": "Cancel",
+        "close": "Close",
+        "delete": "Delete",
+        "descriptionEnglish": "Description — English",
+        "descriptionGeorgian": "Description — Georgian",
+        "edit": "Edit",
+        "icon": "Icon",
+        "moveDown": "Move down",
+        "moveUp": "Move up",
+        "noBoxesYet": "No boxes yet.",
+        "notFound": "Not found",
+        "save": "Save",
+        "somethingWentWrong": "Something went wrong",
+        "titleEnglish": "Title — English",
+        "titleGeorgian": "Title — Georgian",
+        "titleIsRequiredIn": "Title is required in both languages",
+        "togglePublish": "Toggle publish"
+      }
+    },
+    "businesses": {
+      "businessPlans": {
+        "businesses": "Businesses",
+        "noBusinesses": "No businesses",
+        "noPlansExistYet": "No plans exist yet. Add them in the pricing page editor.",
+        "total": "total"
+      },
+      "businessRow": {
+        "active": "Active",
+        "businessNotFound": "Business not found",
+        "cancelled": "Cancelled",
+        "channels": "channels",
+        "chats": "chats",
+        "members": "members",
+        "messages": "Messages",
+        "pastDue": "Past due",
+        "plan": "Plan",
+        "planNotFound": "Plan not found",
+        "products": "products",
+        "resetCounter": "Reset counter",
+        "save": "Save",
+        "saved": "Saved",
+        "saving": "Saving…",
+        "status": "Status",
+        "trial": "Trial"
+      },
+      "businessesPlans": "Businesses & plans",
+      "subtitle": "Until the banks are connected, plans are assigned here by hand. Changes take effect immediately."
+    },
+    "content": {
+      "textGroupEditor": {
+        "appearsOn": "Appears on:",
+        "english": "English",
+        "georgian": "Georgian",
+        "save": "Save",
+        "saved": "Saved",
+        "somethingWentWrong": "Something went wrong"
+      }
+    },
+    "controlPanel": "Control panel",
+    "faq": {
+      "editor": {
+        "add": "Add",
+        "addQuestion": "Add question",
+        "answerEn": "Answer (EN)",
+        "answerKa": "Answer (KA)",
+        "cancel": "Cancel",
+        "close": "Close",
+        "delete": "Delete",
+        "edit": "Edit",
+        "fillInAllFour": "Fill in all four fields",
+        "moveDown": "Move down",
+        "moveUp": "Move up",
+        "noQuestionsYet": "No questions yet.",
+        "notFound": "Not found",
+        "questionEn": "Question (EN)",
+        "questionKa": "Question (KA)",
+        "questions": "questions",
+        "save": "Save",
+        "somethingWentWrong": "Something went wrong",
+        "togglePublish": "Toggle publish"
+      }
+    },
+    "hero": {
+      "editor": {
+        "add": "Add",
+        "addSlide": "Add slide",
+        "autoAdvanceSeconds": "Auto-advance (seconds)",
+        "badgeEnglish": "Badge — English",
+        "badgeGeorgian": "Badge — Georgian",
+        "builtInAnimationShown": "Built-in animation — shown when no media is uploaded",
+        "buttonEnglish": "Button — English",
+        "buttonGeorgian": "Button — Georgian",
+        "buttonUrl": "Button URL",
+        "cancel": "Cancel",
+        "chat": "Chat",
+        "close": "Close",
+        "dashboard": "Dashboard",
+        "delete": "Delete",
+        "edit": "Edit",
+        "learnMore": "Learn more",
+        "media": "media",
+        "moveDown": "Move down",
+        "moveUp": "Move up",
+        "noMedia": "no media",
+        "noSlidesYetThe": "No slides yet — the landing page shows the built-in carousel.",
+        "none": "— none —",
+        "notFound": "Not found",
+        "save": "Save",
+        "saved": "Saved",
+        "secondsMustBeBetween": "Seconds must be between 1 and 60",
+        "slides": "slides",
+        "somethingWentWrong": "Something went wrong",
+        "tester": "Tester",
+        "textEnglish": "Text — English",
+        "textGeorgian": "Text — Georgian",
+        "theRightHandPanel": "The right-hand panel shows one thing: media first, then the animation, and the figures below only if neither is set.",
+        "titleEnglish": "Title — English",
+        "titleGeorgian": "Title — Georgian",
+        "titleIsRequiredIn": "Title is required in both languages",
+        "togglePublish": "Toggle publish"
+      },
+      "slideStats": {
+        "aHandMadeFigure": "A hand-made figure only moves for looks — it is not counting anything.",
+        "add": "Add",
+        "byHandADrifting": "By hand — a drifting figure",
+        "cancel": "Cancel",
+        "changeMax": "Change max",
+        "changeMin": "Change min",
+        "close": "Close",
+        "delete": "Delete",
+        "edit": "Edit",
+        "figuresOnTheSlide": "Figures on the slide",
+        "intervalMaxMs": "Interval max (ms)",
+        "intervalMinMs": "Interval min (ms)",
+        "labelEnglish": "Label — English",
+        "labelGeorgian": "Label — Georgian",
+        "live": "Live",
+        "rightNow": "Right now: {value}. Read from the database and it climbs on the site by itself when a real customer signs up.",
+        "save": "Save",
+        "startValue": "Start value",
+        "suffix": "Suffix",
+        "whereTheFigureComes": "Where the figure comes from"
+      }
+    },
+    "legal": {
+      "editor": {
+        "add": "Add",
+        "addSection": "Add section",
+        "bodyEnglish": "Body — English",
+        "bodyGeorgian": "Body — Georgian",
+        "bullets": "bullets",
+        "bulletsEnglish": "Bullets — English",
+        "bulletsGeorgian": "Bullets — Georgian",
+        "cancel": "Cancel",
+        "close": "Close",
+        "delete": "Delete",
+        "documentHeadingH1": "Document heading (H1)",
+        "edit": "Edit",
+        "headingEnglish": "Heading — English",
+        "headingGeorgian": "Heading — Georgian",
+        "headingIsRequiredIn": "Heading is required in both languages",
+        "inEnglish": "In English",
+        "moveDown": "Move down",
+        "moveUp": "Move up",
+        "notFound": "Not found",
+        "oneItemPerLine": "One item per line (optional)",
+        "save": "Save",
+        "saved": "Saved",
+        "sections": "sections",
+        "separateParagraphsWithA": "Separate paragraphs with a blank line",
+        "somethingWentWrong": "Something went wrong",
+        "togglePublish": "Toggle publish",
+        "unknownDocument": "Unknown document"
+      }
+    },
+    "liveRefresh": {
+      "liveRefreshesItself": "Live — refreshes itself",
+      "updatedAt": "Updated {at}"
+    },
+    "mediaField": {
+      "fileIsLargerThan": "File is larger than 8MB",
+      "fileStorageIsNot": "File storage is not connected (Vercel → Storage → Blob). Paste a URL below in the meantime.",
+      "leaveEmptyToUse": "Leave empty to use the slide's built-in animation. Max 8MB.",
+      "notAllowed": "Not allowed",
+      "orPasteAUrl": "or paste a URL:",
+      "photo": "Photo",
+      "photoOrVideo": "Photo or video",
+      "remove": "Remove",
+      "somethingWentWrong": "Something went wrong",
+      "unsupportedFileType": "Unsupported file type",
+      "upload": "Upload",
+      "uploadFailed": "Upload failed"
+    },
+    "nav": {
+      "sitePages": "Site pages"
+    },
+    "pageEditor": {
+      "pickASectionAnd": "Pick a section and edit it.",
+      "viewPage": "View page"
+    },
+    "plans": {
+      "editor": {
+        "channels": "Channels",
+        "emptyNoDiscountMonthly": "Empty = no discount (monthly × number of months).",
+        "extraEnglish": "{n}. English",
+        "extraFeatures5Slots": "Extra features (5 slots)",
+        "extraGeorgian": "{n}. Georgian",
+        "featured": "Featured",
+        "featuredPlan": "Featured plan",
+        "limitsMustBeNumbers": "Limits must be numbers (-1 = unlimited)",
+        "messages": "Messages",
+        "nameEn": "Name (EN)",
+        "nameIsRequired": "Name is required",
+        "nameKa": "Name (KA)",
+        "price12Months": "Price — 12 months (₾)",
+        "price3Months": "Price — 3 months (₾)",
+        "priceMo": "Price (₾ / mo)",
+        "priceMustBeA": "Price must be a whole number ≥ 0",
+        "products": "Products",
+        "save": "Save",
+        "saved": "Saved",
+        "somethingWentWrong": "Something went wrong",
+        "users": "Users"
+      }
+    },
+    "profileMenu": {
+      "darkTheme": "Dark theme",
+      "dashboard": "Dashboard",
+      "language": "Language",
+      "lightTheme": "Light theme",
+      "platformAdmin": "Platform admin"
+    },
+    "routes": {
+      "analytics": "Analytics",
+      "appearance": "Appearance",
+      "businessesPlans": "Businesses & plans",
+      "helpContent": "Help content",
+      "overview": "Overview"
+    },
+    "sectionRail": {
+      "sections": "Sections"
+    },
+    "seo": {
+      "editor": {
+        "1200630RecommendedBlank": "1200×630 recommended. Blank = the auto-generated image.",
+        "aBlankFieldMeans": "A blank field means the built-in default is used.",
+        "blankThePageS": "Blank = the page's own address.",
+        "canonicalMustBeA": "Canonical must be a full https:// URL or start with /",
+        "canonicalUrl": "Canonical URL",
+        "default": "default",
+        "description": "Description",
+        "googlePreview": "Google preview",
+        "indexVisibleInSearch": "Index — visible in search",
+        "indexing": "Indexing",
+        "noindexHiddenFromSearch": "Noindex — hidden from search",
+        "ogDescription": "OG Description",
+        "ogImage": "OG Image",
+        "ogTitle": "OG Title",
+        "page": "Page:",
+        "previewOnly": "preview only",
+        "save": "Save",
+        "saved": "Saved",
+        "slugUrl": "Slug (URL)",
+        "socialSharingOpenGraph": "Social sharing (Open Graph)",
+        "somethingWentWrong": "Something went wrong",
+        "theAddressIsDefined": "The address is defined in code — changing it needs a developer.",
+        "theTwitterCardReuses": "The Twitter card reuses the same title, description and image (summary_large_image).",
+        "thisAppearsInGoogle": "This appears in Google results and the browser tab — not on the page itself.",
+        "thisIsWhatGoogle": "This is what Google shows. Edit it with the fields above.",
+        "thisSectionOnlyChanges": "This section only changes what search engines see. The large heading (H1) and the text on the page itself live in the other sections of this same page.",
+        "title": "Title",
+        "unknownPage": "Unknown page"
+      }
+    },
+    "shell": {
+      "admin": "Admin"
+    },
+    "stats": {
+      "editor": {
+        "add": "Add",
+        "addStat": "Add stat",
+        "automatic": "Automatic",
+        "automaticGrowth": "Automatic growth",
+        "byHand": "By hand",
+        "cancel": "Cancel",
+        "close": "Close",
+        "delete": "Delete",
+        "edit": "Edit",
+        "figureEG1": "Figure, e.g. 1,200+",
+        "fillInEveryField": "Fill in every field",
+        "hint": "Whatever you type is what shows. It never changes.",
+        "hint2": "Starts at the start value and climbs by itself within the ranges below. The figure is kept on the server, so every visitor sees the same one and a refresh does not restart it.",
+        "hint3": "A real figure from the database. Marked with a green dot on the site.",
+        "howMuchItGrows": "How much it grows (range)",
+        "howOftenInSeconds": "How often, in seconds (range)",
+        "labelEn": "Label (EN)",
+        "labelKa": "Label (KA)",
+        "live": "Live",
+        "liveCounter": "Live counter",
+        "moveDown": "Move down",
+        "moveUp": "Move up",
+        "noStatsYetThe": "No stats yet. The section is hidden on the site.",
+        "notFound": "Not found",
+        "pickACounter": "Pick a counter",
+        "pickHowTheFigure": "Pick how the figure works",
+        "rightNow": "Right now: {value}. Nothing to keep up to date.",
+        "s": "s",
+        "save": "Save",
+        "savingRestartsTheFigure": "Saving restarts the figure from its start value.",
+        "somethingWentWrong": "Something went wrong",
+        "startValue": "Start value",
+        "stats": "stats",
+        "suffix": "Suffix",
+        "theStripAtThe": "The strip at the bottom of the landing page. Each figure is one of three kinds — typed by hand, growing automatically, or a real counter from the database.",
+        "typeAFigure": "Type a figure"
+      }
+    },
+    "subtitle": "Pick a page, then a section. Changes appear on the site immediately.",
+    "tutorials": {
+      "admin": {
+        "channelSetup": "Channel setup",
+        "helpContent": "Help content",
+        "subtitle": "The videos and text customers see inside their dashboard.",
+        "tutorials": "Tutorials"
+      },
+      "channelGuidesEditor": {
+        "enterAValidYoutube": "Enter a valid YouTube link",
+        "notFound": "Not found",
+        "save": "Save",
+        "saved": "Saved",
+        "somethingWentWrong": "Something went wrong",
+        "stepsEnOnePer": "Steps (EN) — one per line",
+        "stepsKaOnePer": "Steps (KA) — one per line",
+        "theseAppearNextTo": "These appear next to each channel on the tenant's Channels screen.",
+        "togglePublish": "Toggle publish",
+        "youtubeLinkOptional": "YouTube link (optional)"
+      },
+      "editor": {
+        "add": "Add",
+        "addVideo": "Add video",
+        "cancel": "Cancel",
+        "categoryEn": "Category (EN)",
+        "categoryKa": "Category (KA)",
+        "close": "Close",
+        "delete": "Delete",
+        "descriptionEn": "Description (EN)",
+        "descriptionKa": "Description (KA)",
+        "edit": "Edit",
+        "enterAValidYoutube": "Enter a valid YouTube link",
+        "everyBusinessSeesThese": "Every business sees these under Tutorials in their dashboard.",
+        "georgianTitleIsRequired": "Georgian title is required",
+        "moveDown": "Move down",
+        "moveUp": "Move up",
+        "noVideosYet": "No videos yet.",
+        "notFound": "Not found",
+        "save": "Save",
+        "somethingWentWrong": "Something went wrong",
+        "titleEn": "Title (EN)",
+        "titleKa": "Title (KA) *",
+        "togglePublish": "Toggle publish",
+        "videos": "videos"
+      }
+    }
+  },
+  "ai": {
+    "settings": {
+      "consultative": "Consultative",
+      "detailed": "Detailed",
+      "formal": "Formal",
+      "formal2": "Formal",
+      "friendly": "Friendly",
+      "informal": "Informal",
+      "medium": "Medium",
+      "moderately": "Moderately",
+      "never": "Never",
+      "often": "Often",
+      "professional": "Professional",
+      "salesOriented": "Sales-oriented",
+      "short": "Short"
+    }
+  },
+  "auth": {
+    "accountRow": {
+      "logOutOfThis": "Log out of this account",
+      "sessionExpired": "Session expired"
+    },
+    "accountSwitcher": {
+      "addAnotherAccount": "Add another account",
+      "atMostAccounts": "At most {max} accounts at once",
+      "somethingWentWrongTry": "Something went wrong. Try again.",
+      "thatAccountSSession": "That account's session has ended. Log in to it again.",
+      "yourSessionHasEnded": "Your session has ended. Log in again."
+    },
+    "accountsClient": {
+      "logOut": "Log out",
+      "logOutOfAll": "Log out of all accounts"
+    },
+    "forgotForm": {
+      "checkYourEmail": "Check your email",
+      "couldNotSend": "Could not send"
+    },
+    "logoutButtons": {
+      "logOutOfThis": "Log out of this account"
+    },
+    "messages": {
+      "emailIsRequired": "Email is required",
+      "enterAValidEmail": "Enter a valid email address",
+      "enterAValidPhone": "Enter a valid phone number",
+      "firstNameIsRequired": "First name is required",
+      "passwordIsRequired": "Password is required",
+      "passwordMustBeAt": "Password must be at least 8 characters",
+      "passwordMustContainAt": "Password must contain at least one lowercase letter",
+      "passwordMustContainAt2": "Password must contain at least one uppercase letter",
+      "passwordMustContainAt3": "Password must contain at least one number or special character",
+      "passwordsDonTMatch": "Passwords don't match",
+      "pleaseRepeatYourPassword": "Please repeat your password",
+      "someOfTheDetails": "Some of the details are not valid",
+      "theCompanyNameIs": "The company name is too long",
+      "theFieldOfActivity": "The field of activity is too long",
+      "theLinkIsInvalid": "The link is invalid or has expired. Request a new one.",
+      "thisEmailIsAlready": "This email is already registered",
+      "thisEmailIsNot": "This email is not registered",
+      "useOnlyLettersSpaces": "Use only letters, spaces, hyphens, or apostrophes"
+    },
+    "registerForm": {
+      "aNetworkErrorOccurred": "A network error occurred. Please try again.",
+      "continue": "Continue",
+      "registrationCompletedPleaseSign": "Registration completed. Please sign in to your account.",
+      "registrationFailed": "Registration failed"
+    },
+    "registerTrialNotice": {
+      "afterRegistrationYouGet": "After registration, you get a 5-day trial period and 1 month of free service."
+    },
+    "rememberedAccounts": {
+      "accountsOnThisBrowser": "Accounts on this browser:"
+    },
+    "resetForm": {
+      "couldNotChangePassword": "Could not change password"
+    }
+  },
+  "breadcrumbs": {
+    "home": "Home"
+  },
+  "chat": {
+    "bot": {
+      "happyToHelpFor": "Happy to help! For a free demo you only need to sign up — then you can test the bot right on your own products. Shall I open the sign-up page?",
+      "helloHowCanI": "Hello! 😊 How can I help you today?",
+      "iConnectToFacebook": "I connect to Facebook, Instagram and WhatsApp in minutes — no code. Each channel has a video guide. Which one are you interested in?",
+      "thanksForYourQuestion": "Thanks for your question! Sidekick answers customers 24/7, collects leads and places orders automatically. Ask me something more specific and I'll explain in detail.",
+      "thanksIVeGot": "Thanks, I've got the file. Tell me in a line or two what it relates to and I'll help — or our team can get back to you.",
+      "theStandardPlanIs": "The Standard plan is ₾99/month and the first month is completely free (no card required). Would you like help signing up?"
+    }
+  },
+  "common": {
+    "back": "Back",
+    "close": "Close"
+  },
+  "contact": {
+    "contact": "Contact"
+  },
+  "dashboard": {
+    "addBusinessForm": {
+      "add": "Add",
+      "addedAndOpened": "Added and opened \"{name}\"",
+      "businessName": "Business name",
+      "cancel": "Cancel",
+      "couldNotAddIt": "Could not add it. Try again.",
+      "enterTheBusinessName": "Enter the business name",
+      "youAlreadyHaveA": "You already have a business with this name",
+      "yourSessionHasEnded": "Your session has ended. Log in and try again."
+    },
+    "ai": {
+      "businessSection": {
+        "additionalInformation": "Additional information",
+        "branchLocations": "Branch locations",
+        "businessInformation": "Business information",
+        "companyName": "Company name",
+        "detailedDescription": "Detailed description",
+        "email": "Email",
+        "industry": "Industry",
+        "otherContactDetails": "Other contact details",
+        "phoneNumber": "Phone number",
+        "placeholder": "Mon–Fri 10:00–18:00",
+        "placeholder2": "Separate addresses with commas: Tbilisi …, Batumi …",
+        "viberTelegramFax": "Viber, Telegram, fax…",
+        "website": "Website",
+        "workingHours": "Working hours"
+      },
+      "characterSection": {
+        "character": "Character",
+        "communicationStyle": "Communication style",
+        "emoji": "Emoji",
+        "formOfAddress": "Form of address",
+        "responseLength": "Response length"
+      },
+      "languageControls": {
+        "add": "Add",
+        "addLanguage": "Add language",
+        "languageName": "Language name",
+        "suggested": "Suggested"
+      },
+      "languagesSection": {
+        "added": "{name} added",
+        "atMostLanguages": "At most {max} languages",
+        "empty": "At least one language is required",
+        "hint": "Which languages the bot replies in",
+        "languages": "Languages",
+        "remove": "Remove",
+        "removed": "{name} removed"
+      },
+      "promptAiActions": {
+        "eGAnswerMore": "e.g. answer more briefly and always state the price",
+        "generatePrompt": "Generate prompt",
+        "refineWithAi": "Refine with AI",
+        "requiresTheAiModule": "Requires the AI module",
+        "rewrite": "Rewrite",
+        "theAiServiceDid": "The AI service did not answer. Try again.",
+        "working": "Working…"
+      },
+      "promptSection": {
+        "promptInstructions": "Prompt / instructions",
+        "video": "Video",
+        "youAreCompanyS": "You are [company]'s virtual assistant…"
+      },
+      "rulesSection": {
+        "7DeliveryReturnsPolicy": "7. Delivery / returns policy",
+        "appointmentBooking": "Appointment booking",
+        "behaviourRules": "Behaviour rules",
+        "customersOftenSendSeveral": "Customers often send several short messages in a row. Waiting gathers them into one question and one answer — 0 replies immediately.",
+        "eGWhenThe": "e.g. when the customer asks for a human, or it's a complaint…",
+        "frequentlyAskedQuestionsFaq": "Frequently asked questions (FAQ)",
+        "howLongToWait": "How long to wait before replying",
+        "informationAgent": "Information agent",
+        "leadCapture": "Lead capture",
+        "leadCollector": "Lead collector",
+        "mayAmendCancelAn": "May amend / cancel an order",
+        "orderCapture": "Order capture",
+        "orderTaking": "Order taking",
+        "questionAnswer": "question → answer…",
+        "roles": "Roles",
+        "salesSpecialist": "Sales specialist",
+        "seconds": "seconds",
+        "supportAgent": "Support agent",
+        "whatCountsAsA": "What counts as a lead",
+        "whatCountsAsAn": "What counts as an order",
+        "whenToHandOff": "When to hand off to a person"
+      },
+      "saveMessages": {
+        "cancel": "Cancel",
+        "couldnTSaveTry": "Couldn't save — try again",
+        "couldnTSaveYour": "Couldn't save. Your changes stay in this browser — try again.",
+        "everythingIsSaved": "Everything is saved",
+        "save": "Save",
+        "saved": "Saved",
+        "saving": "Saving…",
+        "unsavedChanges": "Unsaved changes",
+        "youDonTHave": "You don't have permission to change this",
+        "youSwitchedToAnother": "You switched to another business. The changes are waiting for you back in this one.",
+        "yourSessionEndedYour": "Your session ended. Your changes stay in this browser — log in and save again.",
+        "yourUnsavedChangesWere": "Your unsaved changes were restored. Press Save to keep them."
+      },
+      "testerSection": {
+        "clearChat": "Clear chat",
+        "send": "Send",
+        "testYourCurrentPrompt": "Test your current prompt",
+        "tester": "Tester",
+        "text": "The tester needs the AI service, which is not connected yet.",
+        "theAiServiceDid": "The AI service did not answer. Try again.",
+        "typeAMessage": "Type a message…"
+      },
+      "testerTranscript": {
+        "asksForAPerson": "asks for a person",
+        "typing": "Typing…",
+        "writeSomethingACustomer": "Write something a customer might, and see how it answers."
+      },
+      "view": {
+        "behaviourRules": "Behaviour rules",
+        "businessInfo": "Business info",
+        "character": "Character",
+        "configuration": "Configuration",
+        "languages": "Languages",
+        "openTheTesterTo": "Open the tester to try your current prompt",
+        "promptInstructions": "Prompt / instructions",
+        "tester": "Tester"
+      }
+    },
+    "analytics": {
+      "12Months": "12 months",
+      "1Month": "1 month",
+      "1Week": "1 week",
+      "3Months": "3 months",
+      "6Months": "6 months",
+      "activityChart": {
+        "activity": "Activity",
+        "noDataForThis": "No data for this period"
+      },
+      "channelBoxes": {
+        "leads": "Leads",
+        "noData": "No data",
+        "orders": "Orders",
+        "revenue": "Revenue"
+      },
+      "channelFilter": {
+        "allChannels": "All channels"
+      },
+      "kpis": {
+        "conversations": "Conversations",
+        "leads": "Leads",
+        "noPreviousPeriod": "No previous period",
+        "revenue": "Revenue",
+        "sales": "Sales"
+      },
+      "topProducts": {
+        "noSalesInThis": "No sales in this period",
+        "topProducts": "Top products"
+      }
+    },
+    "billing": {
+      "checkoutParts": {
+        "bankOfGeorgia": "Bank of Georgia",
+        "cardDetailsAreEntered": "Card details are entered on the bank's page — we never store them.",
+        "couldNotReachThe": "Could not reach the bank. Try again or pick the other one.",
+        "current": "Current",
+        "onlyTheOwnerCan": "Only the owner can change the plan",
+        "payOnTheBank": "Pay on the bank's page:",
+        "paymentsAreOnChange": "Payments are on — change the plan through the bank",
+        "pickABank": "Pick a bank",
+        "pickAPeriod": "Pick a period",
+        "somethingWentWrong": "Something went wrong",
+        "tbcBank": "TBC Bank",
+        "thatBankIsNot": "That bank is not enabled yet",
+        "thatPlanCouldNot": "That plan could not be found",
+        "yourSessionHasEnded": "Your session has ended — sign in again"
+      },
+      "freePlanSwitch": {
+        "switch": "Switch"
+      },
+      "return": {
+        "backToBilling": "Back to billing",
+        "body": "Your plan is active. Thank you!",
+        "body2": "The bank is still processing. This usually takes a few seconds — refresh shortly.",
+        "body3": "You have not been charged. Try again or pick the other bank.",
+        "paymentComplete": "Payment complete",
+        "paymentDidNotGo": "Payment did not go through",
+        "paymentIsProcessing": "Payment is processing"
+      },
+      "view": {
+        "aCardIsSaved": "A card is saved on your first payment so the plan can renew automatically.",
+        "active": "Active",
+        "activeUntil": "Active until",
+        "cancelSubscription": "Cancel subscription",
+        "cancelled": "Cancelled",
+        "changeOrRenewPlan": "Change or renew plan",
+        "chooseAPlan": "Choose a plan",
+        "close": "Close",
+        "currentPlan": "Current plan",
+        "expired": "Expired",
+        "failed": "Failed",
+        "messageLimit": "Message limit",
+        "mo": "mo",
+        "noPaymentsYet": "No payments yet",
+        "paid": "Paid",
+        "pastDue": "Past due",
+        "paymentHistory": "Payment history",
+        "pending": "Pending",
+        "remaining": "Remaining",
+        "renews": "Renews",
+        "resets": "Resets",
+        "savedCard": "Saved card",
+        "subscriptionCancelled": "Subscription cancelled",
+        "text": "—",
+        "theCardIsStored": "The card is stored by the bank. We only hold a reference to it.",
+        "trial": "Trial"
+      }
+    },
+    "bottomNav": {
+      "chats": "Chats",
+      "home": "Home",
+      "orders": "Orders",
+      "products": "Products",
+      "stats": "Stats"
+    },
+    "businessSwitcher": {
+      "addBusiness": "Add business",
+      "businesses": "Businesses",
+      "couldNotSwitchTry": "Could not switch. Try again.",
+      "opened": "Opened \"{name}\""
+    },
+    "businesses": {
+      "admin": "Admin",
+      "operator": "Operator",
+      "ownedLimit": "One person can own at most {max} businesses",
+      "owner": "Owner",
+      "viewer": "Viewer"
+    },
+    "channels": {
+      "connectMeta": {
+        "connect": "Connect",
+        "connected": "Connected.",
+        "connectionCancelled": "Connection cancelled.",
+        "noSignInFlow": "No sign-in flow is set up for this channel yet",
+        "reconnect": "Reconnect",
+        "text": "Facebook connected. This Page has no Instagram account linked — connect Instagram separately.",
+        "text10": "More than one Page was granted. Try again and pick just one.",
+        "text11": "That request could not be verified. Please start again.",
+        "text12": "Your session expired. Sign in again.",
+        "text13": "META_APP_ID is not set.",
+        "text14": "Meta rejected the code. Try again.",
+        "text2": "INSTAGRAM_APP_ID is not set.",
+        "text3": "Instagram would not issue a long-lived token. Try again.",
+        "text4": "Could not read the Instagram account. Check that it is a professional account.",
+        "text5": "The account linked, but Meta refused the messages subscription. Try again.",
+        "text6": "You do not have permission to manage channels. Ask the business owner.",
+        "text7": "Your plan does not allow another channel. Turn one off first, or change the plan.",
+        "text8": "That account is already linked to another business.",
+        "text9": "No Page was granted. Pick the Page you want on Meta's consent screen.",
+        "thatDidNotWork": "That did not work.",
+        "walksThroughMetaS": "Walks through Meta's consent screen again and takes a fresh token"
+      },
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "needsAuthorising": "Needs authorising"
+      },
+      "view": {
+        "connectedToast": "{name} connected",
+        "disconnect": "Disconnect",
+        "disconnectedToast": "{name} disconnected",
+        "lastSync": "Last sync",
+        "planLimit": "The \"{plan}\" plan allows {limit} channel(s) and {used} are already on. Turn one off first, or change the plan.",
+        "turnOn": "Turn on",
+        "websiteApi": "API for websites"
+      }
+    },
+    "conversations": {
+      "chatDetail": {
+        "adminManual": "Admin (manual)",
+        "aiReply": "AI reply",
+        "conversationNotFound": "Conversation not found.",
+        "createALeadFrom": "Create a lead from this conversation",
+        "done": "Done",
+        "giveBackToAi": "Give back to AI",
+        "handingBack": "Handing back…",
+        "lead": "Lead",
+        "new": "New",
+        "noMessages": "No messages",
+        "onceFacebookInstagramWhatsapp": "Once Facebook / Instagram / WhatsApp is connected, customer messages appear here automatically.",
+        "ongoing": "Ongoing",
+        "order": "Order",
+        "ordersAreCreatedFrom": "Orders are created from the orders page",
+        "savedButMessengerWould": "Saved, but Messenger would not take it: the customer has not written for 24 hours. Trying again cannot help — wait until they message you.",
+        "savedButSendingFailed": "Saved, but sending failed. Try again.",
+        "savedNotSentTo": "Saved. Not sent to the customer — this channel is not fully connected yet.",
+        "selectAConversation": "Select a conversation",
+        "send": "Send",
+        "somethingWentWrongTry": "Something went wrong. Try again.",
+        "theAiAskedFor": "The AI asked for a person. Hand it back when you are done.",
+        "thisConversationAlreadyHas": "This conversation already has a lead",
+        "writeAReply": "Write a reply…",
+        "youDoNotHave": "You do not have permission for this."
+      },
+      "chatList": {
+        "aiError": "AI error",
+        "aiOff": "AI off",
+        "all": "All",
+        "days": "{d} d",
+        "hours": "{h} h",
+        "lead": "Lead",
+        "messagesAppearHereAs": "Messages appear here as soon as a channel is connected (Facebook, Instagram, WhatsApp).",
+        "minutes": "{min} min",
+        "noConversationsYet": "No conversations yet",
+        "now": "now",
+        "order": "Order",
+        "planSpentOrLapsed": "Plan spent or lapsed",
+        "waitingForAHuman": "Waiting for a human"
+      }
+    },
+    "deleteBusinessForm": {
+      "cancel": "Cancel",
+      "couldnTDeleteIt": "Couldn't delete it. Try again.",
+      "delete": "Delete",
+      "deleted": "Deleted \"{name}\"",
+      "onlyTheOwnerCan": "Only the owner can delete a business",
+      "removeTheOtherTeam": "Remove the other team members first, on the Team page",
+      "theNameDoesnT": "The name doesn't match",
+      "thisBusinessHasPayments": "This business has payments on record, so it can't be deleted here. Write to us and we'll help.",
+      "typeTheBusinessName": "Type the business name to confirm",
+      "warning": "\"{name}\" will be deleted for good, with its products, orders, chats and AI settings. This can't be undone.",
+      "youCanTDelete": "You can't delete your only business",
+      "yourSessionHasEnded": "Your session has ended. Log in and try again."
+    },
+    "error": {
+      "overview": "Overview"
+    },
+    "home": {
+      "active": "Active",
+      "channelStatusCard": {
+        "channelStatus": "Channel status",
+        "noChannelsYet": "No channels yet"
+      },
+      "issue": "Issue",
+      "kpiGrid": {
+        "noDataForYesterday": "No data for yesterday",
+        "vsYesterday": "vs yesterday"
+      },
+      "left": "left",
+      "newLeads": "New leads",
+      "newOrders": "New orders",
+      "noActivePlan": "No active plan",
+      "offline": "Offline",
+      "remainingMessageLimit": "Remaining message limit",
+      "renews": "Renews",
+      "revenue": "Revenue",
+      "stoppedMessages": {
+        "botStatusStoppedMessages": "Bot status — stopped messages",
+        "days": "{d} d",
+        "hours": "{h} h",
+        "minutes": "{min} min",
+        "noStoppedMessages": "No stopped messages",
+        "unknown": "Unknown",
+        "viewAll": "View all →"
+      },
+      "todaySConversations": "Today's conversations",
+      "unlimited": "Unlimited",
+      "used": "used"
+    },
+    "leads": {
+      "useLeadSaves": {
+        "couldnTSaveTry": "Couldn't save — try again",
+        "enterAName": "Enter a name",
+        "leadAdded": "Lead added",
+        "leadDeleted": "Lead deleted",
+        "statusChanged": "Status changed",
+        "youMayNotChange": "You may not change leads"
+      },
+      "view": {
+        "active": "Active",
+        "addLead": "Add lead",
+        "close": "Close",
+        "closed": "Closed",
+        "comment": "Comment",
+        "delete": "Delete",
+        "goToChat": "Go to chat",
+        "interest": "Interest",
+        "leads": "leads",
+        "name": "Name",
+        "name2": "Name *",
+        "new": "New",
+        "noLeadsYet": "No leads yet",
+        "phone": "Phone",
+        "save": "Save",
+        "source": "Source",
+        "status": "Status"
+      }
+    },
+    "meta": {
+      "aiAssistant": "AI assistant",
+      "analytics": "Analytics",
+      "billing": "Billing",
+      "botConfiguration": "Bot configuration",
+      "channels": "Channels",
+      "conversations": "Conversations",
+      "dashboard": "Dashboard",
+      "detailedStatistics": "Detailed statistics",
+      "everyChatInOne": "Every chat in one place",
+      "guides": "Guides",
+      "integrations": "Integrations",
+      "leads": "Leads",
+      "membersAndRoles": "Members and roles",
+      "orderManagement": "Order management",
+      "orders": "Orders",
+      "overview": "Overview",
+      "personalInformation": "Personal information",
+      "potentialCustomers": "Potential customers",
+      "productsInventory": "Products / inventory",
+      "profile": "Profile",
+      "stockManagement": "Stock management",
+      "subscriptionAndPayments": "Subscription and payments",
+      "team": "Team",
+      "tutorials": "Tutorials"
+    },
+    "nav": {
+      "aiAssistant": "AI assistant",
+      "analytics": "Analytics",
+      "billing": "Billing",
+      "channels": "Channels",
+      "conversations": "Conversations",
+      "leads": "Leads",
+      "orders": "Orders",
+      "overview": "Overview",
+      "products": "Products",
+      "team": "Team",
+      "tutorials": "Tutorials"
+    },
+    "orders": {
+      "cancelled": "Cancelled",
+      "done": "Done",
+      "issues": "Issues",
+      "new": "New",
+      "row": {
+        "accept": "Accept",
+        "address": "Address",
+        "cancel": "Cancel",
+        "complete": "Complete",
+        "name": "Name",
+        "phone": "Phone",
+        "print": "Print",
+        "total": "Total"
+      },
+      "toShip": "To ship",
+      "useOrderStatus": {
+        "couldnTChangeIt": "Couldn't change it — try again",
+        "orderAccepted": "Order accepted",
+        "orderCancelled": "Order cancelled",
+        "orderCompleted": "Order completed",
+        "orderUpdated": "Order updated"
+      },
+      "view": {
+        "noOrdersWithThis": "No orders with this status"
+      }
+    },
+    "products": {
+      "addProductForm": {
+        "add": "Add",
+        "addProduct": "Add product",
+        "adding": "Adding…",
+        "code": "Code",
+        "descriptionUsedByAi": "Description (used by AI for matching)",
+        "discount": "Discount %",
+        "name": "Name",
+        "price": "Price",
+        "productAdded": "Product added.",
+        "quantity": "Quantity",
+        "salePrice": "Sale price",
+        "size": "Size",
+        "uploadPhoto": "Upload photo"
+      },
+      "chosenFileCard": {
+        "andMore": "…and {count} more",
+        "errorS": "error(s)",
+        "fixTheseRowsIn": "Fix these rows in the file and upload it again:",
+        "importCount": "Import {count} products",
+        "importing": "Importing…",
+        "products": "products",
+        "removeFile": "Remove file"
+      },
+      "errors": {
+        "error": "Could not save it. Try again.",
+        "nameAndCodeAre": "Name and code are required.",
+        "photoStorageIsNot": "Photo storage is not set up yet. Save without a photo for now.",
+        "productDeleted": "Product deleted",
+        "productSaved": "Product saved",
+        "thatCodeIsAlready": "That code is already used by another product. Pick a different one.",
+        "thePhotoIsToo": "The photo is too large.",
+        "thePhotoIsToo2": "The photo is too large even after shrinking. Try another one.",
+        "thePhotoMustBe": "The photo must be a JPG, PNG or WebP.",
+        "thisFileCanT": "This file can't be read. Choose a JPG, PNG or WebP photo.",
+        "youMayNotChange": "You may not change products.",
+        "yourPlanDoesNot": "Your plan does not allow more products. Delete one, or change the plan."
+      },
+      "fileUploadTab": {
+        "downloadStock": "Download stock",
+        "downloadTemplate": "Download template",
+        "readingTheFile": "Reading the file…",
+        "uploadExcelCsv": "Upload EXCEL / CSV"
+      },
+      "importText": {
+        "aTextIsToo": "a text is too long",
+        "atMostRows": "At most {max} products per file.",
+        "done": "Done: {created} added, {updated} updated.",
+        "duplicateOfRow": "the same code is already on row {other}",
+        "empty": "The file has no products in it.",
+        "planLimit": "Your plan allows {limit} products: you have {used}, and this file would add {adding} new ones.",
+        "productsAreMatchedBy": "Products are matched by code: new codes are added, existing ones updated. Blank cells keep the current value, and nothing is deleted.",
+        "theCodeIsEmpty": "the code is empty",
+        "theDiscountMustBe": "the discount must be between 0 and 100",
+        "theFileCouldNot": "The file could not be read. Save it again as .xlsx or .csv.",
+        "theFileIsLarger": "The file is larger than 5 MB.",
+        "theFileNeedsThe": "The file needs the columns Code, Name and Price. Download the template and use it.",
+        "theFileSData": "The file's data is not valid. Upload it again.",
+        "theImportFailedTry": "The import failed. Try again.",
+        "theNameIsEmpty": "the name is empty",
+        "thePriceMustBe": "the price must be a number, 0 or more",
+        "theQuantityMustBe": "the quantity must be a whole number, 0 or more",
+        "theSalePriceMust": "the sale price must not be above the price",
+        "uploadAnXlsxOr": "Upload an .xlsx or .csv file.",
+        "youMayNotImport": "You may not import products."
+      },
+      "modal": {
+        "cancel": "Cancel",
+        "changePhoto": "Change photo",
+        "code": "Code",
+        "descriptionUsedByAi": "Description (used by AI for matching)",
+        "discount": "Discount %",
+        "editProduct": "Edit product",
+        "name": "Name",
+        "price": "Price",
+        "quantity": "Quantity",
+        "salePrice": "Sale price",
+        "save": "Save",
+        "size": "Size"
+      },
+      "photoPicker": {
+        "removePhoto": "Remove photo"
+      },
+      "table": {
+        "count": "{count} products",
+        "delete": "Delete",
+        "edit": "Edit",
+        "inStock": "In stock",
+        "noProducts": "No products",
+        "outOfStock": "Out of stock",
+        "price": "Price",
+        "product": "Product",
+        "productList": "Product list",
+        "salePrice": "Sale price"
+      },
+      "view": {
+        "fileUpload": "File upload",
+        "manualEntry": "Manual entry"
+      }
+    },
+    "profile": {
+      "fields": {
+        "couldnTSaveTry": "Couldn't save — try again",
+        "enterTheCompanyName": "Enter the company name",
+        "profileSaved": "Profile saved",
+        "youAlreadyHaveA": "You already have a business with this name",
+        "yourSessionEndedLog": "Your session ended. Log in and try again."
+      },
+      "view": {
+        "businessInfo": "Business info",
+        "company": "Company",
+        "description": "Description",
+        "email": "Email",
+        "field": "Field",
+        "name": "Name",
+        "personalInfo": "Personal info",
+        "phone": "Phone",
+        "save": "Save",
+        "saving": "Saving…"
+      }
+    },
+    "profileMenu": {
+      "adminPanel": "Admin panel",
+      "darkTheme": "Dark theme",
+      "goToTheSite": "Go to the site",
+      "language": "Language",
+      "lightTheme": "Light theme",
+      "noPlan": "No plan",
+      "plan": "plan",
+      "profile": "Profile"
+    },
+    "sidebar": {
+      "admin": "Admin"
+    },
+    "switcherRow": {
+      "delete": "Delete"
+    },
+    "team": {
+      "messages": {
+        "aBusinessNeedsAt": "A business needs at least one owner",
+        "allFeaturesExceptBilling": "All features except billing",
+        "allPagesExceptBilling": "All pages except billing",
+        "chatsOrdersLeads": "Chats, orders, leads",
+        "chatsOrdersLeads2": "Chats, orders, leads",
+        "emailIsRequired": "Email is required",
+        "fullAccess": "Full access",
+        "fullControlBillingTeam": "Full control, billing, team",
+        "memberNotFound": "Member not found",
+        "teamUpdated": "Team updated",
+        "thatIsNotA": "That is not a valid role",
+        "thisPersonIsAlready": "This person is already on the team",
+        "viewOnly": "View only",
+        "viewPermissionOnly": "View permission only",
+        "youCanTRemove": "You can't remove yourself",
+        "youDonTHave": "You don't have permission for this"
+      },
+      "view": {
+        "actions": "Actions",
+        "add": "Add",
+        "addMember": "Add member",
+        "cancel": "Cancel",
+        "changeRole": "Change role",
+        "email": "Email *",
+        "fullName": "Full name",
+        "member": "Member",
+        "permissions": "Permissions",
+        "removeFromTeam": "Remove from team",
+        "role": "Role",
+        "secondStage": "Second stage",
+        "somethingWentWrong": "Something went wrong",
+        "theMemberIsAdded": "The member is added with an account. They set their own password via “forgot password”.",
+        "you": "you",
+        "youCanTRemove": "You can't remove yourself"
+      }
+    },
+    "videos": {
+      "view": {
+        "noTutorialsYet": "No tutorials yet",
+        "videoGuidesForUsing": "Video guides for using the platform.",
+        "watchOnYoutube": "Watch on YouTube"
+      }
+    }
+  },
+  "dataProtection": {
+    "personalDataProtection": "Personal Data Protection"
+  },
+  "home": {
+    "liveFigure": {
+      "liveFigure": "Live figure"
+    },
+    "mocks": {
+      "chatMock": {
+        "aiTaggedAsA": "✦ AI — tagged as a lead",
+        "doYouHaveThe": "Do you have the iPhone 15 Pro in stock? 📱",
+        "greatSendMeYour": "Great! Send me your name and phone number for delivery.",
+        "yesIDLike": "Yes, I'd like to order",
+        "yesItSAvailable": "Yes! It's available — ₾3,500. Would you like to place an order?"
+      },
+      "dashboardMock": {
+        "chats": "Chats",
+        "leads": "Leads",
+        "sales": "Sales",
+        "salesWeek": "Sales / week"
+      },
+      "testerMock": {
+        "aiTestReply": "✦ AI — test reply",
+        "aiTester": "AI tester",
+        "howMuchAreThe": "How much are the AirPods Pro?",
+        "howMuchAreThe2": "How much are the AirPods Pro, and are they in stock?",
+        "testIt": "Test it",
+        "testMode": "test mode",
+        "theAirpodsProCost": "The AirPods Pro cost ₾649 and are currently in stock. Would you like to order?"
+      }
+    },
+    "story": {
+      "aboutUs": "About us"
+    }
+  },
+  "layout": {
+    "breadcrumb": "Breadcrumb",
+    "closeMenu": "Close menu",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "themeToggle": "Toggle colour theme"
+  },
+  "legal": {
+    "view": {
+      "lastUpdated": "Last updated",
+      "thisDocumentStillContains": "This document still contains 【】 placeholders that must be filled in before publishing.",
+      "visibleInDevelopmentOnly": "Visible in development only"
+    }
+  },
+  "pricing": {
+    "periodSwitch": {
+      "billingPeriod": "Billing period"
+    },
+    "pricing": "Pricing"
+  },
+  "privacy": {
+    "privacyPolicy": "Privacy Policy"
+  },
+  "products": {
+    "columns": {
+      "code": "Code",
+      "description": "Description",
+      "discount": "Discount %",
+      "name": "Name",
+      "price": "Price",
+      "quantity": "Quantity",
+      "salePrice": "Sale price",
+      "size": "Size"
+    }
+  },
+  "site": {
+    "theme": {
+      "contrast": {
+        "hints": "Hints",
+        "label": "Text on the sidebar and cards",
+        "linksOnACard": "Links on a card",
+        "secondaryTextInThe": "Secondary text in the dashboard",
+        "secondaryTextOnThe": "Secondary text on the site",
+        "textOnACard": "Text on a card",
+        "textOnTheDashboard": "Text on the dashboard background",
+        "textOnTheSite": "Text on the site background"
+      },
+      "presets": {
+        "default": "Default",
+        "forest": "Forest",
+        "mono": "Mono",
+        "plum": "Plum",
+        "slate": "Slate",
+        "warm": "Warm"
+      },
+      "tokens": {
+        "accents": "Accents",
+        "activeConnectedGrowth": "Active, connected, growth",
+        "ai": "AI",
+        "background": "Background",
+        "behindEveryPublicPage": "Behind every public page",
+        "buttonsLinksStatuses": "Buttons, links, statuses",
+        "cards": "Cards",
+        "dashboardAdmin": "Dashboard & admin",
+        "descriptionsLabelsMenuItems": "Descriptions, labels, menu items",
+        "error": "Error",
+        "errorsDeleteButtons": "Errors, delete buttons",
+        "faintDivider": "Faint divider",
+        "fieldBorders": "Field borders",
+        "hint": "Home, pricing, contact — what a visitor sees",
+        "hint10": "AI replies, the Tester button, AI switches",
+        "hint2": "Shared by the site and the dashboard",
+        "hint3": "After signing in — including this page",
+        "hint4": "Pricing boxes, FAQ and other blocks",
+        "hint5": "Card outlines and the line under the menu",
+        "hint6": "Behind the dashboard and admin pages",
+        "hint7": "The left menu, panels and pop-ups",
+        "hint8": "Headings and body — site and dashboard",
+        "hint9": "Text fields — sign-in, forms, dashboard",
+        "hints": "Hints",
+        "lines": "Lines",
+        "linesBetweenListRows": "Lines between list rows",
+        "links": "Links",
+        "linksFocusRingsSelected": "Links, focus rings, selected fields",
+        "mainText": "Main text",
+        "panelAndCardOutlines": "Panel and card outlines",
+        "pendingNeedsAttention": "Pending, needs attention",
+        "primaryButton": "Primary button",
+        "publicSite": "Public site",
+        "saveSendGetStarted": "Save, Send, Get started",
+        "secondaryText": "Secondary text",
+        "selectedMenuItemHover": "Selected menu item, hover, chips",
+        "sidebarCards": "Sidebar & cards",
+        "smallGreyCaptions": "Small grey captions",
+        "subtleFill": "Subtle fill",
+        "success": "Success",
+        "textFields": "Text & fields",
+        "warning": "Warning"
+      }
+    }
+  },
+  "terms": {
+    "termsAndConditions": "Terms and Conditions"
+  }
+}

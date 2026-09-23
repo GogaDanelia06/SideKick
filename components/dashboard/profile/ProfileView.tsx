@@ -35,19 +35,19 @@ export function ProfileView({ user, business }: { user: ProfileUser | null; busi
   return (
     <form onSubmit={submit} className="grid gap-4 lg:grid-cols-2">
       <Panel className="grid gap-4 p-5">
-        <h3 className="text-sm font-semibold">{t({ ka: "პირადი ინფორმაცია", en: "Personal info" })}</h3>
-        <ProfileField name="name" label={{ ka: "სახელი", en: "Name" }} defaultValue={user?.name ?? ""} />
-        <ProfileField name="email" label={{ ka: "ელფოსტა", en: "Email" }} defaultValue={user?.email ?? ""} disabled />
-        <ProfileField name="phone" label={{ ka: "ტელეფონი", en: "Phone" }} defaultValue={user?.phone ?? ""} />
+        <h3 className="text-sm font-semibold">{t("dashboard.profile.view.personalInfo")}</h3>
+        <ProfileField name="name" label={"dashboard.profile.view.name"} defaultValue={user?.name ?? ""} />
+        <ProfileField name="email" label={"dashboard.profile.view.email"} defaultValue={user?.email ?? ""} disabled />
+        <ProfileField name="phone" label={"dashboard.profile.view.phone"} defaultValue={user?.phone ?? ""} />
       </Panel>
 
       <Panel className="grid gap-4 p-5">
-        <h3 className="text-sm font-semibold">{t({ ka: "ბიზნესის ინფორმაცია", en: "Business info" })}</h3>
-        <ProfileField name="company" label={{ ka: "კომპანია", en: "Company" }} defaultValue={business?.name ?? ""} />
-        <ProfileField name="field" label={{ ka: "საქმიანობის სფერო", en: "Field" }} defaultValue={business?.field ?? ""} />
+        <h3 className="text-sm font-semibold">{t("dashboard.profile.view.businessInfo")}</h3>
+        <ProfileField name="company" label={"dashboard.profile.view.company"} defaultValue={business?.name ?? ""} />
+        <ProfileField name="field" label={"dashboard.profile.view.field"} defaultValue={business?.field ?? ""} />
         <ProfileField
           name="description"
-          label={{ ka: "აღწერა", en: "Description" }}
+          label={"dashboard.profile.view.description"}
           defaultValue={business?.description ?? ""}
           rows={3}
         />
@@ -60,7 +60,7 @@ export function ProfileView({ user, business }: { user: ProfileUser | null; busi
           className="inline-flex items-center gap-2 rounded-[8px] bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-hover disabled:opacity-60"
         >
           {saving ? <IconLoader2 size={16} className="animate-spin" /> : <IconDeviceFloppy size={16} />}
-          {t(saving ? { ka: "ინახება…", en: "Saving…" } : { ka: "შენახვა", en: "Save" })}
+          {t(saving ? "dashboard.profile.view.saving" : "dashboard.profile.view.save")}
         </button>
       </div>
     </form>

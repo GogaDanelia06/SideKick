@@ -1,13 +1,13 @@
 import { BiText } from "@/components/admin/ui/BiText";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 export type Row = {
   key: string;
   /** Either a translated label or a path — both are rendered as given. */
-  label: Bilingual | string;
+  label: Text | string;
   value: number;
   /** A quieter second figure, e.g. the same count over seven days. */
-  aside?: Bilingual;
+  aside?: Text;
   mono?: boolean;
 };
 
@@ -19,9 +19,9 @@ export function RankedList({
   rows,
   note,
 }: {
-  title: Bilingual;
+  title: Text;
   rows: Row[];
-  note?: Bilingual;
+  note?: Text;
 }) {
   const top = Math.max(1, ...rows.map((r) => r.value));
 
@@ -33,7 +33,7 @@ export function RankedList({
         <BiText
           as="p"
           className="py-2 text-[12px] text-faint"
-          value={{ ka: "ჯერ არაფერი", en: "Nothing yet" }}
+          value={"admin.analytics.rankedList.nothingYet"}
         />
       ) : (
         <div className="flex flex-col">

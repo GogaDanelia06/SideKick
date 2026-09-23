@@ -1,28 +1,28 @@
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 /** Registry of editable public-site texts; the admin screens are generated from it. */
 
 export type TextField = {
   key: string;
-  label: Bilingual;
+  label: Text;
   /** Admin input type; `media` stores a URL, with an upload picker. */
   kind: "short" | "long" | "url" | "email" | "tel" | "media";
   /** Only Georgian is edited for this key (e.g. a phone number or a URL). */
   singleLang?: boolean;
-  hint?: Bilingual;
+  hint?: Text;
 };
 
 export type TextGroup = {
   /** Admin route segment, e.g. /admin/content/story */
   slug: string;
-  title: Bilingual;
+  title: Text;
   /** Which public page this group drives — shown to the admin for orientation. */
-  page: Bilingual;
-  description?: Bilingual;
+  page: Text;
+  description?: Text;
   fields: TextField[];
 };
 
-const ka = (ka: string, en: string): Bilingual => ({ ka, en });
+const ka = (ka: string, en: string): Text => ({ ka, en });
 
 const STORY: TextGroup = {
   slug: "story",
@@ -158,7 +158,7 @@ export const TEXT_GROUPS: TextGroup[] = [
 ];
 
 /** Legal documents are edited section by section on their own screens. */
-export type LegalDocMeta = { doc: string; title: Bilingual; route: string };
+export type LegalDocMeta = { doc: string; title: Text; route: string };
 
 /** The SiteSetting key for a legal document's heading. */
 export function legalTitleKey(doc: string): string {

@@ -49,7 +49,7 @@ export function FreePlanSwitch({
                 {current ? <CurrentPlanBadge /> : null}
               </span>
               <span className="font-mono text-muted">
-                {current ? null : t({ ka: "გადართვა", en: "Switch" })}
+                {current ? null : t("dashboard.billing.freePlanSwitch.switch")}
               </span>
             </button>
           );

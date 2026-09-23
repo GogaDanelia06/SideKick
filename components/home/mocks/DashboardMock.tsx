@@ -13,13 +13,15 @@ import {
 } from "@tabler/icons-react";
 import { Card } from "@/components/ui/Card";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { IconType } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 const RAIL = [IconLayoutDashboard, IconMessages, IconChartBar, IconPackage, IconSettings];
 const BARS = [42, 58, 50, 72, 64, 88, 100];
-const STAT_CARDS = [
-  { icon: IconMessage2, label: { ka: "ჩათები", en: "Chats" }, value: "8,540" },
-  { icon: IconUserPlus, label: { ka: "ლიდები", en: "Leads" }, value: "312" },
-  { icon: IconCash, label: { ka: "გაყიდვა", en: "Sales" }, value: "48K", unit: "₾" },
+const STAT_CARDS: { icon: IconType; label: Text; value: string; unit?: string }[] = [
+  { icon: IconMessage2, label: "home.mocks.dashboardMock.chats", value: "8,540" },
+  { icon: IconUserPlus, label: "home.mocks.dashboardMock.leads", value: "312" },
+  { icon: IconCash, label: "home.mocks.dashboardMock.sales", value: "48K", unit: "₾" },
 ];
 
 export function DashboardMock() {
@@ -56,7 +58,7 @@ export function DashboardMock() {
         </div>
         <div className="rounded-md border border-border bg-card2 px-3.5 pb-3 pt-3.5">
           <div className="mb-3 flex items-center justify-between text-[12px] text-muted">
-            <span>{t({ ka: "გაყიდვები / კვირა", en: "Sales / week" })}</span>
+            <span>{t("home.mocks.dashboardMock.salesWeek")}</span>
             <b className="font-mono font-medium text-ink">+18%</b>
           </div>
           <div className="flex h-20 items-end gap-2">

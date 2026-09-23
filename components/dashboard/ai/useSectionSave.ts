@@ -4,7 +4,6 @@ import { useContext, useEffect, useEffectEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/dashboard/ui/Toast";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
-import type { Bilingual } from "@/lib/content/types";
 import { dropDraft, readDraft, writeDraft } from "@/lib/dashboard/sectionSave/drafts";
 import { applyFields, changedFields, readFields, toEntries, type Fields } from "@/lib/dashboard/sectionSave/fields";
 import type { SectionKey } from "@/lib/dashboard/sectionSave/request";
@@ -12,6 +11,7 @@ import { sendSave } from "@/lib/dashboard/sectionSave/send";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { SectionOwnerContext } from "./sectionOwner";
 import { SAVED, SAVE_OUTCOME } from "./saveMessages";
+import type { Text } from "@/lib/i18n/messages";
 
 /**
  * A section of the AI page saves when the user says so — nothing is sent while they type.
@@ -19,7 +19,7 @@ import { SAVED, SAVE_OUTCOME } from "./saveMessages";
  * section, a lost connection or a closed tab never takes it away: the section offers it
  * back the next time it opens, and the browser asks before the page is left behind.
  */
-export function useSectionSave(section: SectionKey, title: Bilingual) {
+export function useSectionSave(section: SectionKey, title: Text) {
   const owner = useContext(SectionOwnerContext);
   const formRef = useRef<HTMLFormElement>(null);
   /** The form as the server has it, as far as this page knows. */

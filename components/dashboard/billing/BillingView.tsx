@@ -8,8 +8,8 @@ import { cancelSubscription } from "@/lib/dashboard/actions";
 import { fmtDate } from "@/lib/dashboard/time";
 import { planLabel } from "@/lib/content/packages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
 import { PlanCheckout } from "./PlanCheckout";
+import type { Text } from "@/lib/i18n/messages";
 
 type Props = {
   subscription: (Subscription & { plan: Plan }) | null;
@@ -20,18 +20,18 @@ type Props = {
   canManage: boolean;
 };
 
-const STATUS: Record<PaymentStatus, { label: Bilingual; tone: string }> = {
-  PAID: { label: { ka: "გადახდილი", en: "Paid" }, tone: "bg-green-surface text-green" },
-  PENDING: { label: { ka: "მიმდინარე", en: "Pending" }, tone: "bg-soft text-muted" },
-  FAILED: { label: { ka: "ვერ შესრულდა", en: "Failed" }, tone: "bg-red-surface text-red" },
-  EXPIRED: { label: { ka: "ვადაგასული", en: "Expired" }, tone: "bg-soft text-muted" },
+const STATUS: Record<PaymentStatus, { label: Text; tone: string }> = {
+  PAID: { label: "dashboard.billing.view.paid", tone: "bg-green-surface text-green" },
+  PENDING: { label: "dashboard.billing.view.pending", tone: "bg-soft text-muted" },
+  FAILED: { label: "dashboard.billing.view.failed", tone: "bg-red-surface text-red" },
+  EXPIRED: { label: "dashboard.billing.view.expired", tone: "bg-soft text-muted" },
 };
 
-const SUB_STATUS: Record<string, Bilingual> = {
-  TRIAL: { ka: "საცდელი პერიოდი", en: "Trial" },
-  ACTIVE: { ka: "აქტიური", en: "Active" },
-  PAST_DUE: { ka: "გადახდის ვადა გავიდა", en: "Past due" },
-  CANCELLED: { ka: "გაუქმებული", en: "Cancelled" },
+const SUB_STATUS: Record<string, Text> = {
+  TRIAL: "dashboard.billing.view.trial",
+  ACTIVE: "dashboard.billing.view.active",
+  PAST_DUE: "dashboard.billing.view.pastDue",
+  CANCELLED: "dashboard.billing.view.cancelled",
 };
 
 export function BillingView({
@@ -59,18 +59,18 @@ export function BillingView({
         <Panel className="p-5">
           <div className="flex items-start justify-between">
             <div>
-              <div className="text-xs text-muted">{t({ ka: "მიმდინარე პაკეტი", en: "Current plan" })}</div>
+              <div className="text-xs text-muted">{t("dashboard.billing.view.currentPlan")}</div>
               <div className="mt-1 text-2xl font-semibold">{plan ? t(planLabel(plan)) : "—"}</div>
               {subscription ? (
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
-                  <span>{t(SUB_STATUS[subscription.status] ?? { ka: "—", en: "—" })}</span>
+                  <span>{t(SUB_STATUS[subscription.status] ?? "dashboard.billing.view.text")}</span>
                   {subscription.renewsAt ? (
                     <>
                       <span>·</span>
                       <span>
                         {cancelled
-                          ? t({ ka: "მოქმედებს", en: "Active until" })
-                          : t({ ka: "განახლდება", en: "Renews" })}{" "}
+                          ? t("dashboard.billing.view.activeUntil")
+                          : t("dashboard.billing.view.renews")}{" "}
                         {fmtDate.format(new Date(subscription.renewsAt))}
                       </span>
                     </>
@@ -80,7 +80,7 @@ export function BillingView({
             </div>
             <div className="text-right">
               <div className="font-mono text-2xl font-semibold">{plan ? `${plan.price}₾` : "—"}</div>
-              <div className="text-xs text-muted">/ {t({ ka: "თვე", en: "mo" })}</div>
+              <div className="text-xs text-muted">/ {t("dashboard.billing.view.mo")}</div>
             </div>
           </div>
 
@@ -91,10 +91,10 @@ export function BillingView({
             className="mt-4 h-10 w-full rounded-[8px] border border-border text-sm font-medium hover:border-blue disabled:opacity-50"
           >
             {picking
-              ? t({ ka: "დახურვა", en: "Close" })
+              ? t("dashboard.billing.view.close")
               : subscription
-                ? t({ ka: "პაკეტის შეცვლა ან გაგრძელება", en: "Change or renew plan" })
-                : t({ ka: "პაკეტის არჩევა", en: "Choose a plan" })}
+                ? t("dashboard.billing.view.changeOrRenewPlan")
+                : t("dashboard.billing.view.chooseAPlan")}
           </button>
 
           {picking ? (
@@ -111,20 +111,20 @@ export function BillingView({
 
         <Panel className="p-5">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium">{t({ ka: "შეტყობინებების ლიმიტი", en: "Message limit" })}</span>
+            <span className="text-sm font-medium">{t("dashboard.billing.view.messageLimit")}</span>
             <span className="font-mono text-sm">{unlimited ? "∞" : `${remaining.toLocaleString()} / ${limit.toLocaleString()}`}</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-soft"><div className="h-full rounded-full bg-primary" style={{ width: `${unlimited ? 15 : pct}%` }} /></div>
           <div className="mt-2 text-xs text-muted">
-            {t({ ka: "დარჩენილი", en: "Remaining" })} {unlimited ? "∞" : remaining.toLocaleString()}
-            {subscription?.renewsAt ? ` · ${t({ ka: "განულდება", en: "Resets" })} ${fmtDate.format(new Date(subscription.renewsAt))}` : ""}
+            {t("dashboard.billing.view.remaining")} {unlimited ? "∞" : remaining.toLocaleString()}
+            {subscription?.renewsAt ? ` · ${t("dashboard.billing.view.resets")} ${fmtDate.format(new Date(subscription.renewsAt))}` : ""}
           </div>
         </Panel>
 
         <Panel className="overflow-hidden">
-          <div className="border-b border-border px-4 py-3 text-sm font-semibold">{t({ ka: "გადახდის ისტორია", en: "Payment history" })}</div>
+          <div className="border-b border-border px-4 py-3 text-sm font-semibold">{t("dashboard.billing.view.paymentHistory")}</div>
           {payments.length === 0 ? (
-            <div className="px-4 py-8 text-center text-sm text-muted">{t({ ka: "გადახდები ჯერ არ არის", en: "No payments yet" })}</div>
+            <div className="px-4 py-8 text-center text-sm text-muted">{t("dashboard.billing.view.noPaymentsYet")}</div>
           ) : (
             payments.map((p) => {
               const s = STATUS[p.status];
@@ -151,7 +151,7 @@ export function BillingView({
 
       <div className="grid content-start gap-4">
         <Panel className="p-5">
-          <div className="mb-3 text-sm font-semibold">{t({ ka: "შენახული ბარათი", en: "Saved card" })}</div>
+          <div className="mb-3 text-sm font-semibold">{t("dashboard.billing.view.savedCard")}</div>
           <div className="rounded-[12px] bg-[#161b22] p-5 text-white">
             <div className="mb-8 font-mono tracking-[0.25em]">
               •••• •••• •••• {subscription?.cardRef ? subscription.cardRef.slice(-4) : "————"}
@@ -164,14 +164,8 @@ export function BillingView({
           <div className="mt-4 flex items-start gap-2 rounded-[8px] border border-border2 bg-soft px-3 py-2.5 text-xs text-muted">
             <IconCreditCardOff size={15} className="mt-px shrink-0" />
             {subscription?.cardRef
-              ? t({
-                  ka: "ბარათი ბანკის მხარეს ინახება. ჩვენ მხოლოდ მიბმის კოდი გვაქვს.",
-                  en: "The card is stored by the bank. We only hold a reference to it.",
-                })
-              : t({
-                  ka: "ბარათი შეინახება პირველი გადახდისას, რომ გამოწერა ავტომატურად განახლდეს.",
-                  en: "A card is saved on your first payment so the plan can renew automatically.",
-                })}
+              ? t("dashboard.billing.view.theCardIsStored")
+              : t("dashboard.billing.view.aCardIsSaved")}
           </div>
         </Panel>
 
@@ -182,8 +176,8 @@ export function BillingView({
           className="h-11 rounded-[10px] border border-red text-sm font-medium text-red hover:bg-red-surface disabled:cursor-not-allowed disabled:opacity-50"
         >
           {cancelled
-            ? t({ ka: "გამოწერა გაუქმებულია", en: "Subscription cancelled" })
-            : t({ ka: "გააუქმე გამოწერა", en: "Cancel subscription" })}
+            ? t("dashboard.billing.view.subscriptionCancelled")
+            : t("dashboard.billing.view.cancelSubscription")}
         </button>
       </div>
     </div>

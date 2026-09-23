@@ -3,18 +3,18 @@
 import { useTransition } from "react";
 import type { OrderStatus } from "@prisma/client";
 import { useToast } from "@/components/dashboard/ui/Toast";
-import type { Bilingual } from "@/lib/content/types";
 import { setOrderStatus } from "@/lib/dashboard/actions/orders";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Text } from "@/lib/i18n/messages";
 
-const DONE: Partial<Record<OrderStatus, Bilingual>> = {
-  TO_SEND: { ka: "შეკვეთა დადასტურდა", en: "Order accepted" },
-  DONE: { ka: "შეკვეთა დასრულდა", en: "Order completed" },
-  CANCELLED: { ka: "შეკვეთა გაუქმდა", en: "Order cancelled" },
+const DONE: Partial<Record<OrderStatus, Text>> = {
+  TO_SEND: "dashboard.orders.useOrderStatus.orderAccepted",
+  DONE: "dashboard.orders.useOrderStatus.orderCompleted",
+  CANCELLED: "dashboard.orders.useOrderStatus.orderCancelled",
 };
 
-const CHANGED: Bilingual = { ka: "შეკვეთა განახლდა", en: "Order updated" };
-const TROUBLE: Bilingual = { ka: "ვერ შეიცვალა — სცადე ხელახლა", en: "Couldn't change it — try again" };
+const CHANGED: Text = "dashboard.orders.useOrderStatus.orderUpdated";
+const TROUBLE: Text = "dashboard.orders.useOrderStatus.couldnTChangeIt";
 
 /** Moves an order along, and says so: the row alone only shows a new state. */
 export function useOrderStatus(orderId: string) {

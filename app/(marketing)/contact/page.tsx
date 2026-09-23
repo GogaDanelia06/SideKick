@@ -6,6 +6,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { seoFor } from "@/lib/seo/metadata";
 import { getSiteFaq, getSiteTexts } from "@/lib/site/content";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { textIn } from "@/lib/i18n/messages";
 
 export const generateMetadata = seoFor({
   title: "კონტაქტი",
@@ -19,7 +21,7 @@ export const revalidate = 3600;
 
 const crumbs: Crumb[] = [
   HOME_CRUMB,
-  { label: { ka: "კონტაქტი", en: "Contact" }, href: "/contact#faq" },
+  { label: "contact.contact", href: "/contact#faq" },
 ];
 
 export default async function ContactPage() {
@@ -30,7 +32,7 @@ export default async function ContactPage() {
 
   return (
     <>
-      <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: c.label.ka, path: c.href })))} />
+      <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: textIn(DEFAULT_LOCALE, c.label), path: c.href })))} />
       {faqs.length > 0 ? (
         <JsonLd
           data={faqSchema(faqs.map((f) => ({ question: f.question.ka, answer: f.answer.ka })))}

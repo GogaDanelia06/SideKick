@@ -3,13 +3,13 @@
 import clsx from "clsx";
 import { Badge } from "./Badge";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 type Props = {
   /** Omit for a section that reads better as a plain heading. */
-  badge?: Bilingual | string;
-  title: Bilingual;
-  sub?: Bilingual;
+  badge?: Text | string;
+  title: Text;
+  sub?: Text;
   align?: "center" | "left";
   size?: "lg" | "xl";
   as?: "h1" | "h2";

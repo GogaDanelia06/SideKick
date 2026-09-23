@@ -11,8 +11,8 @@ import {
 } from "@tabler/icons-react";
 import type { Shade, TokenGroup } from "@/lib/site/theme/tokens";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
 import { PICKER_WIDTH, SHADE_ICON, SHADE_LABEL, SHADES } from "./shades";
+import type { Text } from "@/lib/i18n/messages";
 
 /** Kept out of tokens.ts, which the root layout imports. */
 const ICONS: Record<TokenGroup, Icon> = {
@@ -31,8 +31,8 @@ export function ThemeSection({
   children,
 }: {
   group: TokenGroup;
-  title: Bilingual;
-  hint: Bilingual;
+  title: Text;
+  hint: Text;
   count: number;
   /** The theme on screen; its column heading is emphasised. */
   shade: Shade;
@@ -51,7 +51,7 @@ export function ThemeSection({
           <h3 className="flex flex-wrap items-baseline gap-2 text-[15px] font-semibold">
             {t(title)}
             <span className="text-[12px] font-normal text-muted">
-              {count} {t({ ka: "ფერი", en: count === 1 ? "colour" : "colours" })}
+              {t(count === 1 ? "admin.appearance.themeSection.colour" : "admin.appearance.themeSection.colours", { count })}
             </span>
           </h3>
           <p className="mt-0.5 text-[12px] leading-snug text-muted">{t(hint)}</p>

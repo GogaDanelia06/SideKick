@@ -8,27 +8,28 @@ import type { HomeOverview } from "@/lib/dashboard/queries";
 import { TONE_BADGE } from "@/lib/dashboard/tone";
 import { DASH } from "@/lib/dashboard/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
+import { phrase } from "@/lib/i18n/messages";
 
 export function StoppedMessages({ items }: { items: HomeOverview["stopped"] }) {
   const { t } = useLanguage();
 
-  const ago = (mins: number): Bilingual => {
-    if (mins < 60) return { ka: `${mins} წთ`, en: `${mins} min` };
+  const ago = (mins: number): Text => {
+    if (mins < 60) return phrase("dashboard.home.stoppedMessages.minutes", { min: mins });
     const h = Math.floor(mins / 60);
-    if (h < 24) return { ka: `${h} სთ`, en: `${h} h` };
+    if (h < 24) return phrase("dashboard.home.stoppedMessages.hours", { h });
     const d = Math.floor(h / 24);
-    return { ka: `${d} დღე`, en: `${d} d` };
+    return phrase("dashboard.home.stoppedMessages.days", { d });
   };
 
   return (
     <Panel className="p-5">
       <div className="mb-3.5 flex items-center justify-between gap-3">
         <h3 className="text-[15px] font-semibold">
-          {t({ ka: "ბოტის სტატუსი — გაჩერებული შეტყობინებები", en: "Bot status — stopped messages" })}
+          {t("dashboard.home.stoppedMessages.botStatusStoppedMessages")}
         </h3>
         <Link href={DASH.conversations} className="shrink-0 text-[13px] text-blue">
-          {t({ ka: "ყველას ნახვა →", en: "View all →" })}
+          {t("dashboard.home.stoppedMessages.viewAll")}
         </Link>
       </div>
 
@@ -36,7 +37,7 @@ export function StoppedMessages({ items }: { items: HomeOverview["stopped"] }) {
         <div className="flex flex-col items-center gap-2 py-6 text-center">
           <IconMessageOff size={26} className="text-faint" />
           <p className="text-sm text-muted">
-            {t({ ka: "გაჩერებული შეტყობინება არ არის", en: "No stopped messages" })}
+            {t("dashboard.home.stoppedMessages.noStoppedMessages")}
           </p>
         </div>
       ) : (
@@ -51,7 +52,7 @@ export function StoppedMessages({ items }: { items: HomeOverview["stopped"] }) {
                 <Icon size={18} className="shrink-0 text-muted" />
                 <div className="min-w-0 flex-1">
                   <div className="font-medium">
-                    {m.customer ?? t({ ka: "უცნობი", en: "Unknown" })}
+                    {m.customer ?? t("dashboard.home.stoppedMessages.unknown")}
                   </div>
                   <div className="truncate text-xs text-muted">{m.text}</div>
                 </div>

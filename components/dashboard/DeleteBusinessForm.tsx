@@ -2,23 +2,17 @@
 
 import { useState, type FormEvent } from "react";
 import { deleteBusiness, type DeleteBusinessError, type DeleteBusinessResult } from "@/lib/dashboard/actions/deleteBusiness";
-import type { Bilingual } from "@/lib/i18n/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Text } from "@/lib/i18n/messages";
 
-const ERRORS: Record<DeleteBusinessError, Bilingual> = {
-  unauthorized: { ka: "სესია ამოიწურა. შედი და სცადე თავიდან.", en: "Your session has ended. Log in and try again." },
-  forbidden: { ka: "ბიზნესის წაშლა მხოლოდ მის მფლობელს შეუძლია", en: "Only the owner can delete a business" },
-  confirm: { ka: "სახელი არ ემთხვევა", en: "The name doesn't match" },
-  last: { ka: "ერთადერთ ბიზნესს ვერ წაშლი", en: "You can't delete your only business" },
-  members: {
-    ka: "ჯერ გუნდის სხვა წევრები წაშალე, „გუნდი“ გვერდზე",
-    en: "Remove the other team members first, on the Team page",
-  },
-  paid: {
-    ka: "ამ ბიზნესს გადახდები აქვს, ამიტომ აქედან ვერ წაიშლება. მოგვწერე და დაგეხმარებით.",
-    en: "This business has payments on record, so it can't be deleted here. Write to us and we'll help.",
-  },
-  failed: { ka: "ვერ წაიშალა. სცადე ხელახლა.", en: "Couldn't delete it. Try again." },
+const ERRORS: Record<DeleteBusinessError, Text> = {
+  unauthorized: "dashboard.deleteBusinessForm.yourSessionHasEnded",
+  forbidden: "dashboard.deleteBusinessForm.onlyTheOwnerCan",
+  confirm: "dashboard.deleteBusinessForm.theNameDoesnT",
+  last: "dashboard.deleteBusinessForm.youCanTDelete",
+  members: "dashboard.deleteBusinessForm.removeTheOtherTeam",
+  paid: "dashboard.deleteBusinessForm.thisBusinessHasPayments",
+  failed: "dashboard.deleteBusinessForm.couldnTDeleteIt",
 };
 
 type Props = { business: { id: string; name: string }; onCancel: () => void; onSettled: (message: string) => void };
@@ -38,7 +32,7 @@ export function DeleteBusinessForm({ business, onCancel, onSettled }: Props) {
     setError(null);
     const result = await deleteBusiness(business.id, typed).catch((): DeleteBusinessResult => ({ ok: false, error: "failed" }));
     if (result.ok) {
-      onSettled(t({ ka: `„${business.name}“ წაიშალა`, en: `Deleted "${business.name}"` }));
+      onSettled(t("dashboard.deleteBusinessForm.deleted", { name: business.name }));
       return;
     }
     setError(result.error);
@@ -48,13 +42,10 @@ export function DeleteBusinessForm({ business, onCancel, onSettled }: Props) {
   return (
     <form onSubmit={submit} className="mx-1 my-1 rounded-[8px] border border-red bg-red-surface p-2.5">
       <p className="text-[12px] leading-snug text-ink">
-        {t({
-          ka: `„${business.name}“ სამუდამოდ წაიშლება, მისი პროდუქტებით, შეკვეთებით, მიმოწერებით და AI-ის პარამეტრებით. ამის დაბრუნება შეუძლებელია.`,
-          en: `"${business.name}" will be deleted for good, with its products, orders, chats and AI settings. This can't be undone.`,
-        })}
+        {t("dashboard.deleteBusinessForm.warning", { name: business.name })}
       </p>
       <label className="mt-2 block text-[12px] text-muted">
-        {t({ ka: "დასადასტურებლად ჩაწერე ბიზნესის სახელი", en: "Type the business name to confirm" })}
+        {t("dashboard.deleteBusinessForm.typeTheBusinessName")}
         <input
           autoFocus
           value={typed}
@@ -71,14 +62,14 @@ export function DeleteBusinessForm({ business, onCancel, onSettled }: Props) {
       ) : null}
       <div className="mt-2 flex justify-end gap-2">
         <button type="button" onClick={onCancel} className="h-8 rounded-[8px] px-3 text-[13px] text-muted hover:bg-soft">
-          {t({ ka: "გაუქმება", en: "Cancel" })}
+          {t("dashboard.deleteBusinessForm.cancel")}
         </button>
         <button
           type="submit"
           disabled={busy || !matches}
           className="h-8 rounded-[8px] bg-red px-3.5 text-[13px] font-medium text-white disabled:opacity-50"
         >
-          {t({ ka: "წაშლა", en: "Delete" })}
+          {t("dashboard.deleteBusinessForm.delete")}
         </button>
       </div>
     </form>

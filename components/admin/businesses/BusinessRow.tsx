@@ -6,24 +6,24 @@ import { IconCheck } from "@tabler/icons-react";
 import { setBusinessPlan } from "@/lib/admin/actions/businesses";
 import type { AdminBusiness, AdminPlan } from "@/lib/admin/businesses";
 import { planLabel } from "@/lib/content/packages";
-import type { Bilingual } from "@/lib/content/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Text } from "@/lib/i18n/messages";
 
 const SELECT =
   "h-9 rounded-[7px] border border-input bg-canvas px-2.5 text-[13px] outline-none focus:border-blue";
 
 const STATUSES: SubscriptionStatus[] = ["TRIAL", "ACTIVE", "PAST_DUE", "CANCELLED"];
 
-const STATUS_LABEL: Record<SubscriptionStatus, Bilingual> = {
-  TRIAL: { ka: "საცდელი", en: "Trial" },
-  ACTIVE: { ka: "აქტიური", en: "Active" },
-  PAST_DUE: { ka: "გადაუხდელი", en: "Past due" },
-  CANCELLED: { ka: "გაუქმებული", en: "Cancelled" },
+const STATUS_LABEL: Record<SubscriptionStatus, Text> = {
+  TRIAL: "admin.businesses.businessRow.trial",
+  ACTIVE: "admin.businesses.businessRow.active",
+  PAST_DUE: "admin.businesses.businessRow.pastDue",
+  CANCELLED: "admin.businesses.businessRow.cancelled",
 };
 
-const ERRORS: Record<string, Bilingual> = {
-  unknown_business: { ka: "ბიზნესი ვერ მოიძებნა", en: "Business not found" },
-  unknown_plan: { ka: "პაკეტი ვერ მოიძებნა", en: "Plan not found" },
+const ERRORS: Record<string, Text> = {
+  unknown_business: "admin.businesses.businessRow.businessNotFound",
+  unknown_plan: "admin.businesses.businessRow.planNotFound",
 };
 
 export function BusinessRow({ business, plans }: { business: AdminBusiness; plans: AdminPlan[] }) {
@@ -46,21 +46,21 @@ export function BusinessRow({ business, plans }: { business: AdminBusiness; plan
       <div className="min-w-0 flex-1">
         <div className="truncate text-sm font-medium">{business.name}</div>
         <div className="text-xs text-muted">
-          {business._count.memberships} {t({ ka: "წევრი", en: "members" })} ·{" "}
-          {business.channelsOn} {t({ ka: "არხი", en: "channels" })} ·{" "}
-          {business._count.products} {t({ ka: "პროდუქტი", en: "products" })} ·{" "}
-          {business._count.conversations} {t({ ka: "მიმოწერა", en: "chats" })}
+          {business._count.memberships} {t("admin.businesses.businessRow.members")} ·{" "}
+          {business.channelsOn} {t("admin.businesses.businessRow.channels")} ·{" "}
+          {business._count.products} {t("admin.businesses.businessRow.products")} ·{" "}
+          {business._count.conversations} {t("admin.businesses.businessRow.chats")}
         </div>
       </div>
 
       <div className="w-[120px] shrink-0 text-xs">
-        <div className="text-muted">{t({ ka: "მესიჯები", en: "Messages" })}</div>
+        <div className="text-muted">{t("admin.businesses.businessRow.messages")}</div>
         <div className={`font-mono ${limit > 0 && used >= limit ? "text-red" : "text-ink"}`}>
           {used} / {limit || "—"}
         </div>
       </div>
 
-      <select value={planId} onChange={(e) => setPlanId(e.target.value)} className={SELECT} aria-label={t({ ka: "გეგმა", en: "Plan" })}>
+      <select value={planId} onChange={(e) => setPlanId(e.target.value)} className={SELECT} aria-label={t("admin.businesses.businessRow.plan")}>
         {plans.map((p) => (
           <option key={p.id} value={p.id}>
             {t(planLabel(p))} — {p.price}₾
@@ -72,7 +72,7 @@ export function BusinessRow({ business, plans }: { business: AdminBusiness; plan
         value={status}
         onChange={(e) => setStatus(e.target.value as SubscriptionStatus)}
         className={SELECT}
-        aria-label={t({ ka: "სტატუსი", en: "Status" })}
+        aria-label={t("admin.businesses.businessRow.status")}
       >
         {STATUSES.map((s) => (
           <option key={s} value={s}>
@@ -83,7 +83,7 @@ export function BusinessRow({ business, plans }: { business: AdminBusiness; plan
 
       <label className="flex shrink-0 items-center gap-1.5 text-[12px] text-muted">
         <input type="checkbox" checked={resetUsage} onChange={(e) => setResetUsage(e.target.checked)} />
-        {t({ ka: "მრიცხველის განულება", en: "Reset counter" })}
+        {t("admin.businesses.businessRow.resetCounter")}
       </label>
 
       <button
@@ -100,12 +100,12 @@ export function BusinessRow({ business, plans }: { business: AdminBusiness; plan
         }
         className="h-9 shrink-0 rounded-[7px] bg-primary px-3.5 text-[13px] font-medium text-white disabled:opacity-50"
       >
-        {pending ? t({ ka: "ინახება…", en: "Saving…" }) : t({ ka: "შენახვა", en: "Save" })}
+        {pending ? t("admin.businesses.businessRow.saving") : t("admin.businesses.businessRow.save")}
       </button>
 
       {saved ? (
         <span className="inline-flex shrink-0 items-center gap-1 text-[12px] text-green">
-          <IconCheck size={14} /> {t({ ka: "შენახულია", en: "Saved" })}
+          <IconCheck size={14} /> {t("admin.businesses.businessRow.saved")}
         </span>
       ) : null}
       {error ? (

@@ -31,7 +31,7 @@ export function BusinessSwitcher({ account, onDone }: { account: Account; onDone
     // Unsaved AI settings belong to the business being left.
     const { ok } = await switchBusiness(businessId).catch(() => ({ ok: false }));
     if (ok) {
-      settled(t({ ka: `„${name}“ გაიხსნა`, en: `Opened "${name}"` }));
+      settled(t("dashboard.businessSwitcher.opened", { name }));
       return;
     }
     setOpening(null);
@@ -48,7 +48,7 @@ export function BusinessSwitcher({ account, onDone }: { account: Account; onDone
   return (
     <div className="mb-1 border-b border-border2 pb-1">
       <div className="px-2.5 pb-1 pt-1.5 text-[11px] uppercase tracking-wide text-faint">
-        {t({ ka: "ბიზნესები", en: "Businesses" })}
+        {t("dashboard.businessSwitcher.businesses")}
       </div>
       <ul className="max-h-[208px] overflow-y-auto">
         {businesses.map((b) => (
@@ -74,7 +74,7 @@ export function BusinessSwitcher({ account, onDone }: { account: Account; onDone
       </ul>
       {failed ? (
         <p role="alert" className="px-2.5 py-1 text-[12px] text-red">
-          {t({ ka: "გადართვა ვერ მოხერხდა. სცადე ხელახლა.", en: "Could not switch. Try again." })}
+          {t("dashboard.businessSwitcher.couldNotSwitchTry")}
         </p>
       ) : null}
       {deleting ? (
@@ -96,7 +96,7 @@ export function BusinessSwitcher({ account, onDone }: { account: Account; onDone
           }}
           className="flex w-full items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-blue hover:bg-soft"
         >
-          <IconPlus size={17} /> {t({ ka: "ბიზნესის დამატება", en: "Add business" })}
+          <IconPlus size={17} /> {t("dashboard.businessSwitcher.addBusiness")}
         </button>
       )}
     </div>

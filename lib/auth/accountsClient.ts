@@ -32,4 +32,4 @@ export const loginUrl = (back: string, email?: string) =>
 
 /** Logging out ends every account on this browser, so the button says so when there are several. */
 export const logOutLabel = (others: number) =>
-  others > 0 ? { ka: "ყველა ანგარიშიდან გასვლა", en: "Log out of all accounts" } : { ka: "გასვლა", en: "Log out" };
+  others > 0 ? "auth.accountsClient.logOutOfAll" : "auth.accountsClient.logOut";

@@ -34,7 +34,7 @@ export function AccountRow({ account, busy, disabled, onOpen, onRemove, large = 
             <span className={clsx("truncate font-medium", large ? "text-sm" : "text-[13px]")}>{account.name}</span>
             {account.expired ? (
               <span className="shrink-0 rounded-full bg-soft px-1.5 py-px text-[10px] font-medium text-muted ring-1 ring-border">
-                {t({ ka: "სესია დასრულდა", en: "Session expired" })}
+                {t("auth.accountRow.sessionExpired")}
               </span>
             ) : null}
           </span>
@@ -46,8 +46,8 @@ export function AccountRow({ account, busy, disabled, onOpen, onRemove, large = 
         type="button"
         onClick={onRemove}
         disabled={disabled}
-        aria-label={`${t({ ka: "ამ ანგარიშიდან გასვლა", en: "Log out of this account" })}: ${account.email}`}
-        title={t({ ka: "ამ ანგარიშიდან გასვლა", en: "Log out of this account" })}
+        aria-label={`${t("auth.accountRow.logOutOfThis")}: ${account.email}`}
+        title={t("auth.accountRow.logOutOfThis")}
         className="mr-1 grid size-7 shrink-0 place-items-center rounded-[6px] text-faint hover:bg-red-surface hover:text-red"
       >
         <IconX size={14} />

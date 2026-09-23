@@ -69,14 +69,14 @@ export function ColorPicker({
             style={{ background: fallback }}
             className="size-3 rounded-sm shadow-[inset_0_0_0_1px_rgba(128,128,128,0.5)]"
           />
-          {t({ ka: "სტანდარტული", en: "Default" })}
+          {t("admin.appearance.colorPicker.default")}
         </button>
         <button
           type="button"
           onClick={onDone}
           className="ml-auto h-7 rounded-md bg-ink px-3 text-[12px] font-medium text-canvas"
         >
-          {t({ ka: "მზაა", en: "Done" })}
+          {t("admin.appearance.colorPicker.done")}
         </button>
       </div>
     </div>

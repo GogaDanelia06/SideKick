@@ -29,7 +29,7 @@ export function LogoutButtons({ others }: { others: number }) {
       {others > 0 ? (
         <button type="button" onClick={leaveThisOne} disabled={leaving} className={ROW}>
           {leaving ? <IconLoader2 size={17} className="animate-spin" /> : <IconLogout size={17} />}
-          {t({ ka: "ამ ანგარიშიდან გასვლა", en: "Log out of this account" })}
+          {t("auth.logoutButtons.logOutOfThis")}
         </button>
       ) : null}
       <button type="button" onClick={logOut} disabled={leaving} className={ROW}>

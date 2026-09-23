@@ -4,7 +4,9 @@ import type { ReactNode } from "react";
 import clsx from "clsx";
 import { IconCheck, IconSparkles } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual, IconType } from "@/lib/content/types";
+import type { IconType } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
+import type { Bilingual } from "@/lib/i18n/types";
 
 export const INPUT =
   "h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue";
@@ -18,8 +20,8 @@ export function SectionHead({
   right,
 }: {
   icon: IconType;
-  title: Bilingual;
-  hint?: Bilingual;
+  title: Text;
+  hint?: Text;
   right?: ReactNode;
 }) {
   const { t } = useLanguage();
@@ -40,8 +42,8 @@ export function SectionHead({
 export function TextField({
   name, label, defaultValue, placeholder, required, type = "text",
 }: {
-  name: string; label: Bilingual; defaultValue?: string | null;
-  placeholder?: string | Bilingual; required?: boolean; type?: string;
+  name: string; label: Text; defaultValue?: string | null;
+  placeholder?: string | Text; required?: boolean; type?: string;
 }) {
   const { t } = useLanguage();
   return (
@@ -62,7 +64,7 @@ export function TextField({
 export function AreaField({
   name, label, defaultValue, placeholder, rows = 4,
 }: {
-  name: string; label?: Bilingual; defaultValue?: string | null; placeholder?: string; rows?: number;
+  name: string; label?: Text; defaultValue?: string | null; placeholder?: string; rows?: number;
 }) {
   const { t } = useLanguage();
   return (
@@ -82,7 +84,7 @@ export function AreaField({
 export function ChipChoice({
   name, label, options, value,
 }: {
-  name: string; label: Bilingual; options: Bilingual[]; value: string | null;
+  name: string; label: Text; options: Bilingual[]; value: string | null;
 }) {
   const { t } = useLanguage();
   const current = options.find((o) => o.ka === value)?.ka ?? options[0].ka;
@@ -106,7 +108,7 @@ export function ChipChoice({
   );
 }
 
-export function AiModuleNotice({ text }: { text: Bilingual }) {
+export function AiModuleNotice({ text }: { text: Text }) {
   const { t } = useLanguage();
   return (
     <div className="flex items-start gap-2.5 rounded-[10px] border border-ai bg-ai-surface px-3.5 py-3 text-[13px] text-ai">

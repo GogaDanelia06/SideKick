@@ -3,19 +3,19 @@
 import { useTransition } from "react";
 import type { Lead } from "@prisma/client";
 import { useToast } from "@/components/dashboard/ui/Toast";
-import type { Bilingual } from "@/lib/content/types";
 import { createLead, deleteLead, setLeadStatus } from "@/lib/dashboard/actions/leads";
 import type { ActionResult } from "@/lib/dashboard/actions/result";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Text } from "@/lib/i18n/messages";
 
-const ADDED: Bilingual = { ka: "ლიდი დაემატა", en: "Lead added" };
-const CHANGED: Bilingual = { ka: "სტატუსი შეიცვალა", en: "Status changed" };
-const DELETED: Bilingual = { ka: "ლიდი წაიშალა", en: "Lead deleted" };
+const ADDED: Text = "dashboard.leads.useLeadSaves.leadAdded";
+const CHANGED: Text = "dashboard.leads.useLeadSaves.statusChanged";
+const DELETED: Text = "dashboard.leads.useLeadSaves.leadDeleted";
 
-const TROUBLE: Record<string, Bilingual> = {
-  forbidden: { ka: "ლიდების შეცვლის უფლება არ გაქვს", en: "You may not change leads" },
-  name: { ka: "ჩაწერე სახელი", en: "Enter a name" },
-  failed: { ka: "ვერ შეინახა — სცადე ხელახლა", en: "Couldn't save — try again" },
+const TROUBLE: Record<string, Text> = {
+  forbidden: "dashboard.leads.useLeadSaves.youMayNotChange",
+  name: "dashboard.leads.useLeadSaves.enterAName",
+  failed: "dashboard.leads.useLeadSaves.couldnTSaveTry",
 };
 
 /** Every change to a lead, each one saying out loud how it went. */
@@ -24,7 +24,7 @@ export function useLeadSaves() {
   const notify = useToast();
   const [pending, start] = useTransition();
 
-  const run = (done: Bilingual, act: () => Promise<ActionResult>, after?: () => void) =>
+  const run = (done: Text, act: () => Promise<ActionResult>, after?: () => void) =>
     start(async () => {
       const result = await act().catch((): ActionResult => ({ ok: false, error: "failed" }));
       if (!result.ok) return notify(t(TROUBLE[result.error] ?? TROUBLE.failed), "error");

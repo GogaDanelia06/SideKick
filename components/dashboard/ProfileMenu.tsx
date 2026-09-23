@@ -46,17 +46,17 @@ export function ProfileMenu({ account, onNavigate }: { account: Account; onNavig
             }}
           />
           <Link href={DASH.profile} onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2.5 text-[13px] hover:bg-soft">
-            <IconUserCircle size={17} /> {t({ ka: "პროფილი", en: "Profile" })}
+            <IconUserCircle size={17} /> {t("dashboard.profileMenu.profile")}
           </Link>
           <div className="flex items-center gap-2.5 px-2.5 py-2.5 text-[13px]">
             <IconLanguage size={17} />
-            <span className="flex-1">{t({ ka: "ენა", en: "Language" })}</span>
+            <span className="flex-1">{t("dashboard.profileMenu.language")}</span>
             <button type="button" onClick={toggleLang} className="rounded-full border border-border bg-soft px-2.5 py-1 text-[12px] font-semibold">
               {locale === "ka" ? "ქართული" : "English"}
             </button>
           </div>
           <div className="flex items-center gap-2.5 px-2.5 py-2.5 text-[13px]">
-            <span className="flex-1">{theme === "dark" ? t({ ka: "მუქი თემა", en: "Dark theme" }) : t({ ka: "ღია თემა", en: "Light theme" })}</span>
+            <span className="flex-1">{theme === "dark" ? t("dashboard.profileMenu.darkTheme") : t("dashboard.profileMenu.lightTheme")}</span>
             <Switch on={theme === "dark"} onToggle={toggleTheme} ariaLabel="Theme" />
           </div>
           <Link
@@ -65,7 +65,7 @@ export function ProfileMenu({ account, onNavigate }: { account: Account; onNavig
             className="mt-1 flex items-center gap-2.5 border-t border-border2 px-2.5 pb-2.5 pt-3 text-[13px] hover:bg-soft"
           >
             <IconHome size={17} />
-            <span className="flex-1">{t({ ka: "საიტზე გადასვლა", en: "Go to the site" })}</span>
+            <span className="flex-1">{t("dashboard.profileMenu.goToTheSite")}</span>
             <IconExternalLink size={14} className="text-faint" />
           </Link>
 
@@ -76,7 +76,7 @@ export function ProfileMenu({ account, onNavigate }: { account: Account; onNavig
               className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2.5 text-[13px] hover:bg-soft"
             >
               <IconShieldLock size={17} />
-              <span className="flex-1">{t({ ka: "ადმინ პანელი", en: "Admin panel" })}</span>
+              <span className="flex-1">{t("dashboard.profileMenu.adminPanel")}</span>
               <IconExternalLink size={14} className="text-faint" />
             </Link>
           ) : null}
@@ -96,8 +96,8 @@ export function ProfileMenu({ account, onNavigate }: { account: Account; onNavig
             {account.businesses.length > 1 && business
               ? business.name
               : account.planName
-                ? `${t(account.planName)} ${t({ ka: "პაკეტი", en: "plan" })}`
-                : t({ ka: "პაკეტი არ არის", en: "No plan" })}
+                ? `${t(account.planName)} ${t("dashboard.profileMenu.plan")}`
+                : t("dashboard.profileMenu.noPlan")}
           </span>
         </span>
         <IconSelector size={18} className="text-muted" />

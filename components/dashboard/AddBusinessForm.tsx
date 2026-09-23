@@ -3,15 +3,15 @@
 import { useState, type FormEvent } from "react";
 import { addBusiness, type AddBusinessError, type AddBusinessResult } from "@/lib/dashboard/actions/businesses";
 import { BUSINESS_NAME_MAX, OWNED_LIMIT_TEXT, sameBusinessName } from "@/lib/dashboard/businesses";
-import type { Bilingual } from "@/lib/i18n/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Text } from "@/lib/i18n/messages";
 
-const ERRORS: Record<AddBusinessError, Bilingual> = {
-  unauthorized: { ka: "სესია ამოიწურა. შედი და სცადე თავიდან.", en: "Your session has ended. Log in and try again." },
-  name: { ka: "ჩაწერე ბიზნესის სახელი", en: "Enter the business name" },
-  taken: { ka: "ამ სახელით ბიზნესი უკვე გაქვს", en: "You already have a business with this name" },
+const ERRORS: Record<AddBusinessError, Text> = {
+  unauthorized: "dashboard.addBusinessForm.yourSessionHasEnded",
+  name: "dashboard.addBusinessForm.enterTheBusinessName",
+  taken: "dashboard.addBusinessForm.youAlreadyHaveA",
   limit: OWNED_LIMIT_TEXT,
-  failed: { ka: "ვერ დაემატა. სცადე ხელახლა.", en: "Could not add it. Try again." },
+  failed: "dashboard.addBusinessForm.couldNotAddIt",
 };
 
 /** Names a new business; it gets the same defaults as at registration and opens straight away. */
@@ -34,7 +34,7 @@ export function AddBusinessForm({ taken, onCancel, onSettled }: Props) {
     const result = await addBusiness(name).catch((): AddBusinessResult => ({ ok: false, error: "failed" }));
     if (result.ok) {
       const added = name.trim();
-      onSettled(t({ ka: `„${added}“ დაემატა და გაიხსნა`, en: `Added and opened "${added}"` }));
+      onSettled(t("dashboard.addBusinessForm.addedAndOpened", { name: added }));
       return;
     }
     setError(result.error);
@@ -44,7 +44,7 @@ export function AddBusinessForm({ taken, onCancel, onSettled }: Props) {
   return (
     <form onSubmit={submit} className="px-2.5 pb-2 pt-1">
       <label className="block text-[12px] text-muted">
-        {t({ ka: "ბიზნესის სახელი", en: "Business name" })}
+        {t("dashboard.addBusinessForm.businessName")}
         <input
           autoFocus
           value={name}
@@ -61,14 +61,14 @@ export function AddBusinessForm({ taken, onCancel, onSettled }: Props) {
       ) : null}
       <div className="mt-2 flex justify-end gap-2">
         <button type="button" onClick={onCancel} className="h-8 rounded-[8px] px-3 text-[13px] text-muted hover:bg-soft">
-          {t({ ka: "გაუქმება", en: "Cancel" })}
+          {t("dashboard.addBusinessForm.cancel")}
         </button>
         <button
           type="submit"
           disabled={busy || !name.trim() || repeated}
           className="h-8 rounded-[8px] bg-primary px-3.5 text-[13px] font-medium text-white disabled:opacity-60"
         >
-          {t({ ka: "დამატება", en: "Add" })}
+          {t("dashboard.addBusinessForm.add")}
         </button>
       </div>
     </form>

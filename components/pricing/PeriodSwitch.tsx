@@ -16,7 +16,7 @@ export function PeriodSwitch({
   return (
     <div
       role="radiogroup"
-      aria-label={t({ ka: "გამოწერის პერიოდი", en: "Billing period" })}
+      aria-label={t("pricing.periodSwitch.billingPeriod")}
       className="inline-flex rounded-lg border border-border bg-card p-1"
     >
       {BILLING_PERIODS.map((p) => {

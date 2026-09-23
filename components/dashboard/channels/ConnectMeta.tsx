@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import type { ChannelType } from "@prisma/client";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 /** Per-channel connect links: Facebook Login and Instagram Login are separate full-page OAuth flows. */
 const START: Partial<Record<ChannelType, string>> = {
@@ -11,96 +11,66 @@ const START: Partial<Record<ChannelType, string>> = {
   INSTAGRAM: "/api/channels/instagram/start",
 };
 
-const RESULTS: Record<string, { tone: "ok" | "bad"; text: Bilingual }> = {
-  connected: { tone: "ok", text: { ka: "დაკავშირდა.", en: "Connected." } },
+const RESULTS: Record<string, { tone: "ok" | "bad"; text: Text }> = {
+  connected: { tone: "ok", text: "dashboard.channels.connectMeta.connected" },
   connected_no_ig: {
     tone: "ok",
-    text: {
-      ka: "Facebook დაკავშირდა. ამ გვერდს Instagram მიბმული არ აქვს — Instagram ცალკე დააკავშირე.",
-      en: "Facebook connected. This Page has no Instagram account linked — connect Instagram separately.",
-    },
+    text: "dashboard.channels.connectMeta.text",
   },
   unconfigured_ig: {
     tone: "bad",
-    text: { ka: "INSTAGRAM_APP_ID არ არის მითითებული.", en: "INSTAGRAM_APP_ID is not set." },
+    text: "dashboard.channels.connectMeta.text2",
   },
   long_lived: {
     tone: "bad",
-    text: {
-      ka: "Instagram-მა გრძელვადიანი ტოკენი არ გასცა. სცადე თავიდან.",
-      en: "Instagram would not issue a long-lived token. Try again.",
-    },
+    text: "dashboard.channels.connectMeta.text3",
   },
   no_account: {
     tone: "bad",
-    text: {
-      ka: "Instagram-ის ანგარიში ვერ წავიკითხეთ. დარწმუნდი, რომ ანგარიში პროფესიულია.",
-      en: "Could not read the Instagram account. Check that it is a professional account.",
-    },
+    text: "dashboard.channels.connectMeta.text4",
   },
   not_subscribed: {
     tone: "bad",
-    text: {
-      ka: "ანგარიში დაუკავშირდა, მაგრამ Meta-მ მესიჯებზე გამოწერა არ დაუშვა. სცადე თავიდან.",
-      en: "The account linked, but Meta refused the messages subscription. Try again.",
-    },
+    text: "dashboard.channels.connectMeta.text5",
   },
-  cancelled: { tone: "bad", text: { ka: "დაკავშირება შეწყდა.", en: "Connection cancelled." } },
+  cancelled: { tone: "bad", text: "dashboard.channels.connectMeta.connectionCancelled" },
   forbidden: {
     tone: "bad",
-    text: {
-      ka: "არხების მართვის უფლება არ გაქვს. მიმართე ბიზნესის მფლობელს.",
-      en: "You do not have permission to manage channels. Ask the business owner.",
-    },
+    text: "dashboard.channels.connectMeta.text6",
   },
   limit: {
     tone: "bad",
-    text: {
-      ka: "შენი გეგმა მეტ არხს არ უშვებს. ჯერ სხვა გამორთე ან გეგმა შეცვალე.",
-      en: "Your plan does not allow another channel. Turn one off first, or change the plan.",
-    },
+    text: "dashboard.channels.connectMeta.text7",
   },
   already_linked: {
     tone: "bad",
-    text: {
-      ka: "ეს ანგარიში სხვა ბიზნესზეა უკვე მიბმული.",
-      en: "That account is already linked to another business.",
-    },
+    text: "dashboard.channels.connectMeta.text8",
   },
   no_page: {
     tone: "bad",
-    text: {
-      ka: "გვერდი არ მოგვცემია. თანხმობის ეკრანზე აირჩიე ის გვერდი, რომელიც გინდა.",
-      en: "No Page was granted. Pick the Page you want on Meta's consent screen.",
-    },
+    text: "dashboard.channels.connectMeta.text9",
   },
   many_pages: {
     tone: "bad",
-    text: {
-      ka: "ერთზე მეტი გვერდი მოგვეცი. თავიდან სცადე და მხოლოდ ერთი აირჩიე.",
-      en: "More than one Page was granted. Try again and pick just one.",
-    },
+    text: "dashboard.channels.connectMeta.text10",
   },
   bad_state: {
     tone: "bad",
-    text: {
-      ka: "მოთხოვნა ვერ დადასტურდა. დაიწყე თავიდან.",
-      en: "That request could not be verified. Please start again.",
-    },
+    text: "dashboard.channels.connectMeta.text11",
   },
   signed_out: {
     tone: "bad",
-    text: { ka: "სესია ამოიწურა. შედი და სცადე თავიდან.", en: "Your session expired. Sign in again." },
+    text: "dashboard.channels.connectMeta.text12",
   },
   unconfigured: {
     tone: "bad",
-    text: { ka: "META_APP_ID არ არის მითითებული.", en: "META_APP_ID is not set." },
+    text: "dashboard.channels.connectMeta.text13",
   },
   exchange: {
     tone: "bad",
-    text: { ka: "Meta-მ კოდი არ მიიღო. სცადე თავიდან.", en: "Meta rejected the code. Try again." },
+    text: "dashboard.channels.connectMeta.text14",
   },
-  failed: { tone: "bad", text: { ka: "ვერ მოხერხდა.", en: "That did not work." } },
+  failed: { tone: "bad", text: "dashboard.channels.connectMeta.thatDidNotWork" },
 };
 
 /** Shown once, under the row whose connection was last attempted. */
@@ -129,13 +99,10 @@ export function ConnectButton({ type, relink = false }: { type: ChannelType; rel
       <button
         type="button"
         disabled
-        title={t({
-          ka: "ავტორიზაცია ჯერ არ არის გამართული ამ არხისთვის",
-          en: "No sign-in flow is set up for this channel yet",
-        })}
+        title={t("dashboard.channels.connectMeta.noSignInFlow")}
         className="h-9 cursor-not-allowed rounded-[8px] border border-border px-4 text-sm font-medium text-muted opacity-60"
       >
-        {t({ ka: "დაკავშირება", en: "Connect" })}
+        {t("dashboard.channels.connectMeta.connect")}
       </button>
     );
   }
@@ -144,13 +111,10 @@ export function ConnectButton({ type, relink = false }: { type: ChannelType; rel
     return (
       <a
         href={href}
-        title={t({
-          ka: "ხელახლა გაატარებს Meta-ს თანხმობის ეკრანზე და ახალ ტოკენს აიღებს",
-          en: "Walks through Meta's consent screen again and takes a fresh token",
-        })}
+        title={t("dashboard.channels.connectMeta.walksThroughMetaS")}
         className="inline-flex h-9 items-center rounded-[8px] border border-border px-3 text-[13px] font-medium text-muted hover:text-ink"
       >
-        {t({ ka: "ხელახლა დაკავშირება", en: "Reconnect" })}
+        {t("dashboard.channels.connectMeta.reconnect")}
       </a>
     );
   }
@@ -160,7 +124,7 @@ export function ConnectButton({ type, relink = false }: { type: ChannelType; rel
       href={href}
       className="inline-flex h-9 items-center rounded-[8px] bg-primary px-4 text-sm font-medium text-white"
     >
-      {t({ ka: "დაკავშირება", en: "Connect" })}
+      {t("dashboard.channels.connectMeta.connect")}
     </a>
   );
 }

@@ -2,17 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { IconLoader2, IconPhoto, IconX } from "@tabler/icons-react";
-import type { Bilingual } from "@/lib/content/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { resizePhoto, type ResizeError } from "@/lib/products/resizePhoto";
 import { PHOTO_ERRORS } from "./productErrors";
+import type { Text } from "@/lib/i18n/messages";
 
 /**
  * The product form's photo box: click or drop a photo. It is shrunk here and put back
  * into the form's own `<input name="photo">`, so the form sends it with the other
  * fields. `current` is the saved photo; removing it sends `removePhoto`.
  */
-export function PhotoPicker({ current, label }: { current?: string; label: Bilingual }) {
+export function PhotoPicker({ current, label }: { current?: string; label: Text }) {
   const { t } = useLanguage();
   const input = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(current ?? null);
@@ -79,7 +79,7 @@ export function PhotoPicker({ current, label }: { current?: string; label: Bilin
       </label>
       {preview ? (
         <button type="button" onClick={clear} className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-muted hover:text-red">
-          <IconX size={13} /> {t({ ka: "ფოტოს წაშლა", en: "Remove photo" })}
+          <IconX size={13} /> {t("dashboard.products.photoPicker.removePhoto")}
         </button>
       ) : null}
       {removed ? <input type="hidden" name="removePhoto" value="on" /> : null}

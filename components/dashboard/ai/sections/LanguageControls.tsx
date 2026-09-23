@@ -45,7 +45,7 @@ export function LanguagePicker({
         className={`${CHIP} py-2`}
       >
         <IconPlus size={15} />
-        {t({ ka: "ენის დამატება", en: "Add language" })}
+        {t("dashboard.ai.languageControls.addLanguage")}
       </button>
     );
   }
@@ -63,7 +63,7 @@ export function LanguagePicker({
           }
           if (e.key === "Escape") close();
         }}
-        placeholder={t({ ka: "ენის სახელი", en: "Language name" })}
+        placeholder={t("dashboard.ai.languageControls.languageName")}
         className={`${INPUT} h-9 max-w-[180px]`}
       />
       <button
@@ -72,7 +72,7 @@ export function LanguagePicker({
         onClick={submit}
         className="inline-flex h-9 items-center rounded-[8px] bg-primary px-3 text-[13px] font-medium text-white disabled:opacity-60"
       >
-        {t({ ka: "დამატება", en: "Add" })}
+        {t("dashboard.ai.languageControls.add")}
       </button>
     </span>
   );
@@ -84,7 +84,7 @@ export function SuggestedLanguages({ items, onAdd }: { items: string[]; onAdd: A
 
   return (
     <div className="border-t border-border2 pt-4">
-      <div className="mb-2 text-xs text-muted">{t({ ka: "შემოთავაზებული", en: "Suggested" })}</div>
+      <div className="mb-2 text-xs text-muted">{t("dashboard.ai.languageControls.suggested")}</div>
       <div className="flex flex-wrap gap-2">
         {items.map((name) => (
           <button key={name} type="button" onClick={() => onAdd(name)} className={`${CHIP} py-1.5`}>

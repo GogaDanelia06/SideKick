@@ -20,28 +20,19 @@ import {
 import { handBackToAi } from "@/lib/dashboard/actions/conversations";
 import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { ConversationDetail } from "@/lib/dashboard/queries";
-import type { Bilingual } from "@/lib/content/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Text } from "@/lib/i18n/messages";
 
 const MARK = "inline-flex h-8 items-center gap-1.5 rounded-[6px] border px-3 text-xs font-medium";
 
 /** Shown when a reply is saved but not delivered. */
-const REPLY_NOTICE: Record<string, Bilingual> = {
-  window_closed: {
-    ka: "პასუხი შენახულია, მაგრამ Messenger-მა არ მიიღო: კლიენტს 24 საათია არ მოუწერია. ხელახლა ცდა ვერ უშველის — დაელოდე, სანამ თვითონ დაგიკავშირდება.",
-    en: "Saved, but Messenger would not take it: the customer has not written for 24 hours. Trying again cannot help — wait until they message you.",
-  },
-  failed: {
-    ka: "პასუხი შენახულია, მაგრამ გაგზავნა ვერ მოხერხდა. სცადე ხელახლა.",
-    en: "Saved, but sending failed. Try again.",
-  },
-  not_delivered: {
-    ka: "პასუხი შენახულია. კლიენტთან არ გაგზავნილა — ეს არხი ჯერ არ არის ბოლომდე მიერთებული.",
-    en: "Saved. Not sent to the customer — this channel is not fully connected yet.",
-  },
-  forbidden: { ka: "ამის უფლება არ გაქვს.", en: "You do not have permission for this." },
-  not_found: { ka: "მიმოწერა ვერ მოიძებნა.", en: "Conversation not found." },
-  error: { ka: "ვერ შესრულდა. სცადე ხელახლა.", en: "Something went wrong. Try again." },
+const REPLY_NOTICE: Record<string, Text> = {
+  window_closed: "dashboard.conversations.chatDetail.savedButMessengerWould",
+  failed: "dashboard.conversations.chatDetail.savedButSendingFailed",
+  not_delivered: "dashboard.conversations.chatDetail.savedNotSentTo",
+  forbidden: "dashboard.conversations.chatDetail.youDoNotHave",
+  not_found: "dashboard.conversations.chatDetail.conversationNotFound",
+  error: "dashboard.conversations.chatDetail.somethingWentWrongTry",
 };
 
 export function ChatDetail({
@@ -131,13 +122,10 @@ export function ChatDetail({
       <div className="flex h-full min-h-0 flex-col items-center justify-center gap-2 rounded-[14px] border border-border bg-surface p-8 text-center">
         <IconMessage2 size={28} className="text-faint" />
         <p className="text-sm font-medium">
-          {t({ ka: "აირჩიე მიმოწერა", en: "Select a conversation" })}
+          {t("dashboard.conversations.chatDetail.selectAConversation")}
         </p>
         <p className="max-w-[320px] text-xs text-muted">
-          {t({
-            ka: "როგორც კი Facebook / Instagram / WhatsApp დაუკავშირდება, კლიენტების შეტყობინებები აქ ავტომატურად გამოჩნდება.",
-            en: "Once Facebook / Instagram / WhatsApp is connected, customer messages appear here automatically.",
-          })}
+          {t("dashboard.conversations.chatDetail.onceFacebookInstagramWhatsapp")}
         </p>
       </div>
     );
@@ -148,7 +136,7 @@ export function ChatDetail({
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[14px] border border-border bg-surface">
       <div className="flex flex-wrap items-center gap-2.5 border-b border-border2 p-3">
-        <button type="button" onClick={onBack} aria-label="Back" className="text-muted lg:hidden">
+        <button type="button" onClick={onBack} aria-label={t("common.back")} className="text-muted lg:hidden">
           <IconArrowLeft size={20} />
         </button>
         <span className="grid size-9 place-items-center rounded-full border border-border bg-soft font-semibold text-muted">
@@ -159,10 +147,10 @@ export function ChatDetail({
           <div className="flex items-center gap-1 text-xs text-muted">
             {m ? <m.icon size={13} style={{ color: m.color }} /> : null}
             {chat.status === "NEW"
-              ? t({ ka: "ახალი", en: "New" })
+              ? t("dashboard.conversations.chatDetail.new")
               : chat.status === "DONE"
-                ? t({ ka: "დასრულებული", en: "Done" })
-                : t({ ka: "მიმდინარე", en: "Ongoing" })}
+                ? t("dashboard.conversations.chatDetail.done")
+                : t("dashboard.conversations.chatDetail.ongoing")}
           </div>
         </div>
 
@@ -178,16 +166,13 @@ export function ChatDetail({
                 setReleasing(false);
               });
             }}
-            title={t({
-              ka: "AI-მ ადამიანი მოითხოვა. დააბრუნე ბოტთან, როცა დაასრულებ.",
-              en: "The AI asked for a person. Hand it back when you are done.",
-            })}
+            title={t("dashboard.conversations.chatDetail.theAiAskedFor")}
             className={clsx(MARK, "border-red bg-red-surface text-red disabled:opacity-60")}
           >
             <IconRotateClockwise size={15} />
             {releasing
-              ? t({ ka: "ბრუნდება…", en: "Handing back…" })
-              : t({ ka: "დაუბრუნე AI-ს", en: "Give back to AI" })}
+              ? t("dashboard.conversations.chatDetail.handingBack")
+              : t("dashboard.conversations.chatDetail.giveBackToAi")}
           </button>
         ) : null}
 
@@ -197,8 +182,8 @@ export function ChatDetail({
           onClick={() => void makeLead()}
           title={t(
             chat.hasLead
-              ? { ka: "ამ მიმოწერას უკვე აქვს ლიდი", en: "This conversation already has a lead" }
-              : { ka: "შექმენი ლიდი ამ მიმოწერიდან", en: "Create a lead from this conversation" },
+              ? "dashboard.conversations.chatDetail.thisConversationAlreadyHas"
+              : "dashboard.conversations.chatDetail.createALeadFrom",
           )}
           className={clsx(
             MARK,
@@ -207,16 +192,13 @@ export function ChatDetail({
               : "border-border text-muted hover:border-green hover:text-green disabled:opacity-60",
           )}
         >
-          <IconUserPlus size={15} /> {t({ ka: "ლიდი", en: "Lead" })}
+          <IconUserPlus size={15} /> {t("dashboard.conversations.chatDetail.lead")}
         </button>
         <span
-          title={t({
-            ka: "შეკვეთა იქმნება შეკვეთების გვერდიდან",
-            en: "Orders are created from the orders page",
-          })}
+          title={t("dashboard.conversations.chatDetail.ordersAreCreatedFrom")}
           className={clsx(MARK, chat.hasOrder ? "border-blue bg-blue-surface text-blue" : "border-border text-muted")}
         >
-          <IconShoppingCart size={15} /> {t({ ka: "შეკვეთა", en: "Order" })}
+          <IconShoppingCart size={15} /> {t("dashboard.conversations.chatDetail.order")}
         </span>
 
         <span className={clsx("flex items-center gap-2 rounded-[6px] border border-border px-2.5 py-1.5 text-xs font-medium", chat.aiEnabled ? "bg-ai-surface" : "bg-soft")}>
@@ -244,7 +226,7 @@ export function ChatDetail({
           </div>
         ) : chat.messages.length === 0 ? (
           <p className="m-auto text-sm text-muted">
-            {t({ ka: "შეტყობინებები არ არის", en: "No messages" })}
+            {t("dashboard.conversations.chatDetail.noMessages")}
           </p>
         ) : (
           chat.messages.map((msg) => (
@@ -259,12 +241,12 @@ export function ChatDetail({
             >
               {msg.sender === "AI" ? (
                 <span className="mb-1 block text-[10px] font-semibold text-ai">
-                  ✦ {t({ ka: "AI პასუხი", en: "AI reply" })}
+                  ✦ {t("dashboard.conversations.chatDetail.aiReply")}
                 </span>
               ) : null}
               {msg.sender === "OPERATOR" ? (
                 <span className="mb-1 block text-[10px] font-semibold opacity-80">
-                  {t({ ka: "ადმინი (ხელით)", en: "Admin (manual)" })}
+                  {t("dashboard.conversations.chatDetail.adminManual")}
                 </span>
               ) : null}
               {msg.text}
@@ -308,7 +290,7 @@ export function ChatDetail({
             setNotice(null);
           }}
           disabled={sending}
-          placeholder={t({ ka: "დაწერე პასუხი…", en: "Write a reply…" })}
+          placeholder={t("dashboard.conversations.chatDetail.writeAReply")}
           className="min-w-0 flex-1 rounded-[6px] border border-border bg-canvas px-3 py-2.5 text-[13px] text-ink outline-none focus:border-blue disabled:opacity-60 placeholder:text-faint"
         />
         <button
@@ -316,7 +298,7 @@ export function ChatDetail({
           disabled={sending || !draft.trim()}
           className="inline-flex h-[38px] items-center gap-1.5 rounded-[6px] bg-primary px-4 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <IconSend size={16} /> {t({ ka: "გაგზავნა", en: "Send" })}
+          <IconSend size={16} /> {t("dashboard.conversations.chatDetail.send")}
         </button>
       </form>
     </div>

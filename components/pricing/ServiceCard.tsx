@@ -4,7 +4,8 @@ import { createElement } from "react";
 import { Card } from "@/components/ui/Card";
 import { resolveIcon } from "@/lib/content/icons";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual, IconType } from "@/lib/content/types";
+import type { IconType } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 export function ServiceCard({
   title,
@@ -12,8 +13,8 @@ export function ServiceCard({
   icon,
   iconName,
 }: {
-  title: Bilingual;
-  body: Bilingual;
+  title: Text;
+  body: Text;
   /** Component from the shipped copy (fallback path). */
   icon?: IconType;
   /** Icon name stored in the database (admin-editable path). */

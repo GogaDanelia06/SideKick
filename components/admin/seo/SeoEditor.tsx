@@ -6,7 +6,7 @@ import { IconAlertTriangle, IconCheck, IconEye, IconEyeOff } from "@tabler/icons
 import { updateSeo } from "@/lib/admin/actions/seo";
 import { MediaField } from "@/components/admin/ui/MediaField";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 const INPUT =
   "w-full rounded-[8px] border border-input bg-canvas px-3 py-2.5 text-sm outline-none placeholder:text-faint focus:border-blue";
@@ -14,12 +14,9 @@ const INPUT =
 /** Google truncates around these lengths; longer is a warning, not an error. */
 const LIMITS = { title: 60, description: 160 };
 
-const ERRORS: Record<string, Bilingual> = {
-  bad_canonical: {
-    ka: "Canonical უნდა იყოს სრული მისამართი (https://…) ან დაიწყოს „/“-ით",
-    en: "Canonical must be a full https:// URL or start with /",
-  },
-  unknown_page: { ka: "უცნობი გვერდი", en: "Unknown page" },
+const ERRORS: Record<string, Text> = {
+  bad_canonical: "admin.seo.editor.canonicalMustBeA",
+  unknown_page: "admin.seo.editor.unknownPage",
 };
 
 export type SeoValues = Pick<
@@ -61,7 +58,7 @@ export function SeoEditor({
 
   const counter = (len: number, max: number) =>
     len === 0 ? (
-      <span className="text-faint">{t({ ka: "სტანდარტული", en: "default" })}</span>
+      <span className="text-faint">{t("admin.seo.editor.default")}</span>
     ) : (
       <span className={len > max ? "text-amber" : "text-faint"}>
         {len} / {max}
@@ -75,33 +72,27 @@ export function SeoEditor({
     <form action={save} className="flex flex-col gap-5 rounded-lg border border-border bg-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="text-[12px] text-muted">
-          {t({ ka: "გვერდი:", en: "Page:" })} <span className="font-mono text-ink">{path}</span>
+          {t("admin.seo.editor.page")} <span className="font-mono text-ink">{path}</span>
         </div>
         <p className="text-[11px] text-faint">
-          {t({
-            ka: "ცარიელი ველი ნიშნავს, რომ სტანდარტული მნიშვნელობა გამოიყენება.",
-            en: "A blank field means the built-in default is used.",
-          })}
+          {t("admin.seo.editor.aBlankFieldMeans")}
         </p>
       </div>
 
       <p className="rounded-[8px] border border-border2 bg-soft px-3.5 py-2.5 text-[12px] text-muted">
-        {t({
-          ka: "აქ მხოლოდ ის იცვლება, რასაც საძიებო სისტემა ხედავს. გვერდზე დაწერილი დიდი სათაური (H1) და ტექსტები ამავე გვერდის სხვა სექციებშია.",
-          en: "This section only changes what search engines see. The large heading (H1) and the text on the page itself live in the other sections of this same page.",
-        })}
+        {t("admin.seo.editor.thisSectionOnlyChanges")}
       </p>
 
       {error ? (
         <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
           <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? { ka: "ვერ შესრულდა", en: "Something went wrong" })}
+          {t(ERRORS[error] ?? "admin.seo.editor.somethingWentWrong")}
         </div>
       ) : null}
 
       <label className="block">
         <span className="mb-1 flex items-center justify-between text-[12px] font-medium text-muted">
-          {t({ ka: "სათაური (title)", en: "Title" })}
+          {t("admin.seo.editor.title")}
           {counter(title.length, LIMITS.title)}
         </span>
         <input
@@ -112,16 +103,13 @@ export function SeoEditor({
           className={INPUT}
         />
         <span className="mt-1 block text-[11px] text-faint">
-          {t({
-            ka: "ეს ჩანს Google-ის შედეგებში და ბრაუზერის ჩანართზე — არა თვით გვერდზე.",
-            en: "This appears in Google results and the browser tab — not on the page itself.",
-          })}
+          {t("admin.seo.editor.thisAppearsInGoogle")}
         </span>
       </label>
 
       <label className="block">
         <span className="mb-1 flex items-center justify-between text-[12px] font-medium text-muted">
-          {t({ ka: "აღწერა (description)", en: "Description" })}
+          {t("admin.seo.editor.description")}
           {counter(description.length, LIMITS.description)}
         </span>
         <textarea
@@ -135,9 +123,9 @@ export function SeoEditor({
 
       <div className="select-none rounded-[8px] border border-dashed border-border2 bg-soft p-4 opacity-90">
         <div className="mb-1 flex items-center justify-between text-[11px] uppercase tracking-wide text-faint">
-          <span>{t({ ka: "გადახედვა Google-ში", en: "Google preview" })}</span>
+          <span>{t("admin.seo.editor.googlePreview")}</span>
           <span className="normal-case tracking-normal">
-            {t({ ka: "მხოლოდ საჩვენებლად", en: "preview only" })}
+            {t("admin.seo.editor.previewOnly")}
           </span>
         </div>
         <div className="truncate text-[15px] text-blue">{shownTitle}</div>
@@ -147,16 +135,13 @@ export function SeoEditor({
         </div>
         <div className="mt-0.5 line-clamp-2 text-[13px] text-muted">{shownDesc}</div>
         <p className="mt-2.5 border-t border-border2 pt-2 text-[11px] text-faint">
-          {t({
-            ka: "ეს არის ის, რასაც Google აჩვენებს. შესაცვლელად გამოიყენე ზემოთ მოცემული ველები.",
-            en: "This is what Google shows. Edit it with the fields above.",
-          })}
+          {t("admin.seo.editor.thisIsWhatGoogle")}
         </p>
       </div>
 
       <div className="grid gap-4 border-t border-border2 pt-5 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-[12px] font-medium text-muted">Canonical URL</span>
+          <span className="mb-1 block text-[12px] font-medium text-muted">{t("admin.seo.editor.canonicalUrl")}</span>
           <input
             name="canonical"
             defaultValue={values.canonical}
@@ -164,30 +149,24 @@ export function SeoEditor({
             className={INPUT}
           />
           <span className="mt-1 block text-[11px] text-faint">
-            {t({
-              ka: "ცარიელი = გვერდის საკუთარი მისამართი.",
-              en: "Blank = the page's own address.",
-            })}
+            {t("admin.seo.editor.blankThePageS")}
           </span>
         </label>
 
         <label className="block">
           <span className="mb-1 block text-[12px] font-medium text-muted">
-            {t({ ka: "Slug (მისამართი)", en: "Slug (URL)" })}
+            {t("admin.seo.editor.slugUrl")}
           </span>
           <input value={path} readOnly disabled className={`${INPUT} opacity-60`} />
           <span className="mt-1 block text-[11px] text-faint">
-            {t({
-              ka: "მისამართი კოდშია განსაზღვრული — შეცვლა დეველოპერს სჭირდება.",
-              en: "The address is defined in code — changing it needs a developer.",
-            })}
+            {t("admin.seo.editor.theAddressIsDefined")}
           </span>
         </label>
       </div>
 
       <div>
         <span className="mb-1.5 block text-[12px] font-medium text-muted">
-          {t({ ka: "ინდექსაცია", en: "Indexing" })}
+          {t("admin.seo.editor.indexing")}
         </span>
         <input type="hidden" name="indexable" value={indexable ? "1" : "0"} />
         <button
@@ -201,18 +180,18 @@ export function SeoEditor({
         >
           {indexable ? <IconEye size={16} /> : <IconEyeOff size={16} />}
           {indexable
-            ? t({ ka: "Index — ჩანს ძებნაში", en: "Index — visible in search" })
-            : t({ ka: "Noindex — დამალულია ძებნისგან", en: "Noindex — hidden from search" })}
+            ? t("admin.seo.editor.indexVisibleInSearch")
+            : t("admin.seo.editor.noindexHiddenFromSearch")}
         </button>
       </div>
 
       <div className="grid gap-4 border-t border-border2 pt-5">
         <div className="text-[11px] uppercase tracking-wide text-faint">
-          {t({ ka: "სოციალური ქსელები (Open Graph)", en: "Social sharing (Open Graph)" })}
+          {t("admin.seo.editor.socialSharingOpenGraph")}
         </div>
 
         <label className="block">
-          <span className="mb-1 block text-[12px] font-medium text-muted">OG Title</span>
+          <span className="mb-1 block text-[12px] font-medium text-muted">{t("admin.seo.editor.ogTitle")}</span>
           <input
             name="ogTitle"
             defaultValue={values.ogTitle}
@@ -222,7 +201,7 @@ export function SeoEditor({
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-[12px] font-medium text-muted">OG Description</span>
+          <span className="mb-1 block text-[12px] font-medium text-muted">{t("admin.seo.editor.ogDescription")}</span>
           <textarea
             name="ogDescription"
             defaultValue={values.ogDescription}
@@ -232,28 +211,22 @@ export function SeoEditor({
         </label>
 
         <div>
-          <span className="mb-1 block text-[12px] font-medium text-muted">OG Image</span>
+          <span className="mb-1 block text-[12px] font-medium text-muted">{t("admin.seo.editor.ogImage")}</span>
           <MediaField name="ogImageUrl" typeName="ogImageType" initialUrl={values.ogImageUrl} />
           <span className="mt-1 block text-[11px] text-faint">
-            {t({
-              ka: "რეკომენდებულია 1200×630. ცარიელი = ავტომატურად გენერირებული სურათი.",
-              en: "1200×630 recommended. Blank = the auto-generated image.",
-            })}
+            {t("admin.seo.editor.1200630RecommendedBlank")}
           </span>
         </div>
 
         <p className="text-[11px] text-faint">
-          {t({
-            ka: "Twitter Card ავტომატურად იმავე სათაურს, აღწერასა და სურათს იყენებს (summary_large_image).",
-            en: "The Twitter card reuses the same title, description and image (summary_large_image).",
-          })}
+          {t("admin.seo.editor.theTwitterCardReuses")}
         </p>
       </div>
 
       <div className="flex items-center justify-end gap-3 border-t border-border2 pt-4">
         {saved ? (
           <span className="inline-flex items-center gap-1 text-[13px] text-green">
-            <IconCheck size={15} /> {t({ ka: "შენახულია", en: "Saved" })}
+            <IconCheck size={15} /> {t("admin.seo.editor.saved")}
           </span>
         ) : null}
         <button
@@ -261,7 +234,7 @@ export function SeoEditor({
           disabled={pending}
           className="h-9 rounded-[8px] bg-ink px-5 text-[13px] font-medium text-canvas disabled:opacity-60"
         >
-          {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+          {pending ? "…" : t("admin.seo.editor.save")}
         </button>
       </div>
     </form>

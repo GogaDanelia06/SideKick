@@ -155,7 +155,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
 
-        setError(t(refusalMessage(data, { ka: "რეგისტრაცია ვერ მოხერხდა", en: "Registration failed" })));
+        setError(t(refusalMessage(data, "auth.registerForm.registrationFailed")));
         return;
       }
 
@@ -175,10 +175,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
 
       if (!signInResult?.ok || signInResult.error) {
         setError(
-          t({
-            ka: "რეგისტრაცია დასრულდა. გთხოვთ, შეხვიდეთ ანგარიშზე.",
-            en: "Registration completed. Please sign in to your account.",
-          }),
+          t("auth.registerForm.registrationCompletedPleaseSign"),
         );
         return;
       }
@@ -186,10 +183,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
       setSent(true);
     } catch {
       setError(
-        t({
-          ka: "დაფიქსირდა ქსელის შეცდომა. სცადეთ თავიდან.",
-          en: "A network error occurred. Please try again.",
-        }),
+        t("auth.registerForm.aNetworkErrorOccurred"),
       );
     } finally {
       setPending(false);
@@ -257,7 +251,7 @@ export function RegisterForm({ google }: RegisterFormProps) {
             }}
             className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white"
           >
-            {t({ ka: "გაგრძელება", en: "Continue" })}
+            {t("auth.registerForm.continue")}
             <IconArrowRight size={18} />
           </button>
         </div>

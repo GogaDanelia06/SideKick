@@ -15,7 +15,7 @@ export function ContrastNotes({ theme }: { theme: Theme }) {
     return (
       <p className="flex items-center gap-2 text-[12px] text-green">
         <IconCircleCheck size={15} className="shrink-0" />
-        {t({ ka: "ორივე თემაში ყველა ტექსტი იკითხება", en: "Every text colour is readable in both themes" })}
+        {t("admin.appearance.contrastNotes.everyTextColourIs")}
       </p>
     );
   }
@@ -24,7 +24,7 @@ export function ContrastNotes({ theme }: { theme: Theme }) {
     <details className="group text-[12px]">
       <summary className="flex w-fit cursor-pointer list-none items-center gap-2 font-semibold text-amber">
         <IconAlertTriangle size={15} className="shrink-0" />
-        {t({ ka: `${bad.length} ძნელად იკითხება`, en: `${bad.length} hard to read` })}
+        {t("admin.appearance.contrastNotes.hardToRead", { count: bad.length })}
         <IconChevronDown size={14} className="transition-transform group-open:rotate-180" />
       </summary>
       <ul className="mt-2 flex flex-col gap-1 rounded-lg border border-amber/40 bg-amber-surface p-2.5">
@@ -35,15 +35,12 @@ export function ContrastNotes({ theme }: { theme: Theme }) {
               {t(f.label)}
             </span>
             <span className="font-mono text-[11px] text-muted">
-              {f.ratio.toFixed(1)} : 1 · {t({ ka: "საჭიროა", en: "needs" })} {f.min}
+              {f.ratio.toFixed(1)} : 1 · {t("admin.appearance.contrastNotes.needs")} {f.min}
             </span>
           </li>
         ))}
         <li className="pt-1 text-[11px] text-muted">
-          {t({
-            ka: "შენახვა მაინც შესაძლებელია — ეს გაფრთხილებაა, არა შეზღუდვა.",
-            en: "You can still save — this is a warning, not a limit.",
-          })}
+          {t("admin.appearance.contrastNotes.youCanStillSave")}
         </li>
       </ul>
     </details>

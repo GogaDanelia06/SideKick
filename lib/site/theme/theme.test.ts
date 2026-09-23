@@ -4,6 +4,7 @@ import { derived, rgba } from "./derive";
 import { failures, ratio } from "./contrast";
 import { PRESETS, presetColors } from "./presets";
 import { TOKENS, defaultColors } from "./tokens";
+import { textIn } from "@/lib/i18n/messages";
 
 describe("sanitize()", () => {
   it("keeps a valid hex and lowercases it", () => {
@@ -94,7 +95,7 @@ describe("presets", () => {
     // one the client chose.
     for (const preset of PRESETS) {
       for (const shade of ["dark", "light"] as const) {
-        const bad = failures(presetColors(preset, shade)).map((f) => f.label.en);
+        const bad = failures(presetColors(preset, shade)).map((f) => textIn("en", f.label));
         expect(bad, `${preset.id} / ${shade}`).toEqual([]);
       }
     }

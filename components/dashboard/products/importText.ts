@@ -1,71 +1,55 @@
-import type { Bilingual } from "@/lib/content/types";
 import type { ImportResult } from "@/lib/dashboard/actions/productImport";
 import type { RowProblem } from "@/lib/products/importRow";
 import { MAX_IMPORT_ROWS, type RowError } from "@/lib/products/importRows";
 import type { FileProblem } from "@/lib/products/readFile";
+import type { Text } from "@/lib/i18n/messages";
+import { phrase, textIn } from "@/lib/i18n/messages";
 
-export const FILE_PROBLEMS: Record<FileProblem, Bilingual> = {
-  size: { ka: "ფაილი 5 MB-ზე დიდია.", en: "The file is larger than 5 MB." },
-  type: { ka: "ატვირთე .xlsx ან .csv ფაილი.", en: "Upload an .xlsx or .csv file." },
-  unreadable: {
-    ka: "ფაილი ვერ წაიკითხა. შეინახე ხელახლა .xlsx ან .csv ფორმატში.",
-    en: "The file could not be read. Save it again as .xlsx or .csv.",
-  },
-  columns: {
-    ka: "ფაილში არ მოიძებნა სვეტები „კოდი“, „დასახელება“ და „ფასი“. ჩამოტვირთე შაბლონი და გამოიყენე ის.",
-    en: "The file needs the columns Code, Name and Price. Download the template and use it.",
-  },
-  empty: { ka: "ფაილში პროდუქტები არ არის.", en: "The file has no products in it." },
-  too_many: {
-    ka: `ერთ ფაილში მაქსიმუმ ${MAX_IMPORT_ROWS} პროდუქტი.`,
-    en: `At most ${MAX_IMPORT_ROWS} products per file.`,
-  },
+export const FILE_PROBLEMS: Record<FileProblem, Text> = {
+  size: "dashboard.products.importText.theFileIsLarger",
+  type: "dashboard.products.importText.uploadAnXlsxOr",
+  unreadable: "dashboard.products.importText.theFileCouldNot",
+  columns: "dashboard.products.importText.theFileNeedsThe",
+  empty: "dashboard.products.importText.empty",
+  too_many: phrase("dashboard.products.importText.atMostRows", { max: MAX_IMPORT_ROWS }),
 };
 
-const ROW_PROBLEMS: Record<Exclude<RowProblem, "duplicate">, Bilingual> = {
-  code: { ka: "კოდი ცარიელია", en: "the code is empty" },
-  name: { ka: "დასახელება ცარიელია", en: "the name is empty" },
-  price: { ka: "ფასი უნდა იყოს რიცხვი, 0 ან მეტი", en: "the price must be a number, 0 or more" },
-  discount: { ka: "ფასდაკლება უნდა იყოს 0-დან 100-მდე", en: "the discount must be between 0 and 100" },
-  sale: { ka: "ფასდაკლებული ფასი ფასზე მეტი არ უნდა იყოს", en: "the sale price must not be above the price" },
-  quantity: {
-    ka: "რაოდენობა უნდა იყოს მთელი რიცხვი, 0 ან მეტი",
-    en: "the quantity must be a whole number, 0 or more",
-  },
-  too_long: { ka: "ტექსტი ძალიან გრძელია", en: "a text is too long" },
+const ROW_PROBLEMS: Record<Exclude<RowProblem, "duplicate">, Text> = {
+  code: "dashboard.products.importText.theCodeIsEmpty",
+  name: "dashboard.products.importText.theNameIsEmpty",
+  price: "dashboard.products.importText.thePriceMustBe",
+  discount: "dashboard.products.importText.theDiscountMustBe",
+  sale: "dashboard.products.importText.theSalePriceMust",
+  quantity: "dashboard.products.importText.theQuantityMustBe",
+  too_long: "dashboard.products.importText.aTextIsToo",
 };
 
-export function rowErrorText({ line, problem, other }: RowError): Bilingual {
-  const what =
+export function rowErrorText({ line, problem, other }: RowError): Text {
+  const what: Text =
     problem === "duplicate"
-      ? { ka: `იგივე კოდი უკვე არის ${other} ხაზზე`, en: `the same code is already on row ${other}` }
+      ? phrase("dashboard.products.importText.duplicateOfRow", { other: other ?? "" })
       : ROW_PROBLEMS[problem];
-  return { ka: `ხაზი ${line}: ${what.ka}`, en: `Row ${line}: ${what.en}` };
+  return { ka: `ხაზი ${line}: ${textIn("ka", what)}`, en: `Row ${line}: ${textIn("en", what)}` };
 }
 
-export function importResultText(result: ImportResult): Bilingual {
+export function importResultText(result: ImportResult): Text {
   if (result.ok) {
-    return {
-      ka: `მზაა: ${result.created} დაემატა, ${result.updated} განახლდა.`,
-      en: `Done: ${result.created} added, ${result.updated} updated.`,
-    };
+    return phrase("dashboard.products.importText.done", { created: result.created, updated: result.updated });
   }
   switch (result.error) {
     case "limit":
-      return {
-        ka: `შენი გეგმა ${result.limit} პროდუქტს უშვებს: უკვე გაქვს ${result.used}, ფაილი ${result.adding} ახალს დაამატებდა.`,
-        en: `Your plan allows ${result.limit} products: you have ${result.used}, and this file would add ${result.adding} new ones.`,
-      };
+      return phrase("dashboard.products.importText.planLimit", {
+        limit: result.limit,
+        used: result.used,
+        adding: result.adding,
+      });
     case "forbidden":
-      return { ka: "პროდუქტების შემოტანის უფლება არ გაქვს.", en: "You may not import products." };
+      return "dashboard.products.importText.youMayNotImport";
     case "invalid":
-      return { ka: "ფაილის მონაცემები არასწორია. ატვირთე ხელახლა.", en: "The file's data is not valid. Upload it again." };
+      return "dashboard.products.importText.theFileSData";
     case "failed":
-      return { ka: "შემოტანა ვერ მოხერხდა. სცადე ხელახლა.", en: "The import failed. Try again." };
+      return "dashboard.products.importText.theImportFailedTry";
   }
 }
 
-export const IMPORT_NOTE: Bilingual = {
-  ka: "პროდუქტები კოდით მოიძებნება: ახალი კოდი დაემატება, არსებული განახლდება. ცარიელი უჯრა მნიშვნელობას არ ცვლის, არაფერი წაიშლება.",
-  en: "Products are matched by code: new codes are added, existing ones updated. Blank cells keep the current value, and nothing is deleted.",
-};
+export const IMPORT_NOTE: Text = "dashboard.products.importText.productsAreMatchedBy";

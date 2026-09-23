@@ -11,7 +11,7 @@ export function VideosView({ tutorials }: { tutorials: TutorialView[] }) {
   if (tutorials.length === 0) {
     return (
       <Panel className="px-6 py-12 text-center text-sm text-muted">
-        {t({ ka: "ვიდეო ინსტრუქციები ჯერ არ არის", en: "No tutorials yet" })}
+        {t("dashboard.videos.view.noTutorialsYet")}
       </Panel>
     );
   }
@@ -19,10 +19,7 @@ export function VideosView({ tutorials }: { tutorials: TutorialView[] }) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted">
-        {t({
-          ka: "ხელსაწყოს გამოყენების ვიდეო სახელმძღვანელოები.",
-          en: "Video guides for using the platform.",
-        })}
+        {t("dashboard.videos.view.videoGuidesForUsing")}
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -60,7 +57,7 @@ export function VideosView({ tutorials }: { tutorials: TutorialView[] }) {
                     {t(v.category)}
                   </span>
                 ) : null}
-                <span>{t({ ka: "ნახე YouTube-ზე", en: "Watch on YouTube" })}</span>
+                <span>{t("dashboard.videos.view.watchOnYoutube")}</span>
               </div>
             </div>
           </a>

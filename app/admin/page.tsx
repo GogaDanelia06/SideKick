@@ -9,11 +9,8 @@ export default function AdminHome() {
   return (
     <>
       <AdminHeading
-        title={{ ka: "მართვის პანელი", en: "Control panel" }}
-        subtitle={{
-          ka: "აირჩიე გვერდი, შემდეგ სექცია. ცვლილება მაშინვე აისახება საიტზე.",
-          en: "Pick a page, then a section. Changes appear on the site immediately.",
-        }}
+        title={"admin.controlPanel"}
+        subtitle={"admin.subtitle"}
       />
 
       <div className="grid max-w-[1100px] gap-4 sm:grid-cols-2">

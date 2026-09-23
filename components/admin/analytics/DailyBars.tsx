@@ -20,7 +20,7 @@ export function DailyBars({ days }: { days: Day[] }) {
     <figure className="m-0">
       <div className="mb-1.5 flex items-baseline justify-between text-[11px] text-faint">
         <span className="font-mono tabular-nums">{fmt(peak)}</span>
-        <BiText value={{ ka: "დღიური მაქსიმუმი", en: "busiest day" }} />
+        <BiText value={"admin.analytics.dailyBars.busiestDay"} />
       </div>
 
       <div className="relative h-[128px]">

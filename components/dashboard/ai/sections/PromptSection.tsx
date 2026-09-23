@@ -16,7 +16,7 @@ export function PromptSection({ config, aiReady }: { config: AiConfig | null; ai
     <SectionForm
       section="prompt"
       icon={IconFileText}
-      title={{ ka: "პრომპტი / ინსტრუქციები", en: "Prompt / instructions" }}
+      title={"dashboard.ai.promptSection.promptInstructions"}
       right={
         <div className="flex shrink-0 gap-2">
 
@@ -25,7 +25,7 @@ export function PromptSection({ config, aiReady }: { config: AiConfig | null; ai
             className="inline-flex h-8 items-center gap-1.5 rounded-[7px] border border-red px-3 text-xs text-red hover:brightness-110"
           >
             <IconBrandYoutube size={14} />
-            {t({ ka: "ვიდეო", en: "Video" })}
+            {t("dashboard.ai.promptSection.video")}
           </button>
         </div>
       }
@@ -36,10 +36,7 @@ export function PromptSection({ config, aiReady }: { config: AiConfig | null; ai
         rows={10}
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
-        placeholder={t({
-          ka: "შენ ხარ [კომპანიის] ვირტუალური ასისტენტი…",
-          en: "You are [company]'s virtual assistant…",
-        })}
+        placeholder={t("dashboard.ai.promptSection.youAreCompanyS")}
         className={AREA}
       />
     </SectionForm>

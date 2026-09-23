@@ -37,13 +37,13 @@ export function TextGroupEditor({ group, values }: { group: TextGroup; values: V
     <form action={save} className="flex flex-col gap-5">
       <div className="flex items-center gap-2 rounded-[8px] border border-border2 bg-soft px-3.5 py-2.5 text-[13px] text-muted">
         <IconExternalLink size={15} className="shrink-0" />
-        {t({ ka: "ჩანს აქ:", en: "Appears on:" })} <strong className="text-ink">{t(group.page)}</strong>
+        {t("admin.content.textGroupEditor.appearsOn")} <strong className="text-ink">{t(group.page)}</strong>
       </div>
 
       {error ? (
         <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
           <IconAlertTriangle size={16} className="shrink-0" />
-          {t({ ka: "ვერ შესრულდა", en: "Something went wrong" })}
+          {t("admin.content.textGroupEditor.somethingWentWrong")}
         </div>
       ) : null}
 
@@ -75,7 +75,7 @@ export function TextGroupEditor({ group, values }: { group: TextGroup; values: V
                 <div className="grid gap-2.5 sm:grid-cols-2">
                   <label className="block">
                     <span className="mb-1 block text-[11px] uppercase tracking-wide text-faint">
-                      {t({ ka: "ქართული", en: "Georgian" })}
+                      {t("admin.content.textGroupEditor.georgian")}
                     </span>
                     <Field
                       name={f.key}
@@ -86,7 +86,7 @@ export function TextGroupEditor({ group, values }: { group: TextGroup; values: V
                   </label>
                   <label className="block">
                     <span className="mb-1 block text-[11px] uppercase tracking-wide text-faint">
-                      {t({ ka: "ინგლისური", en: "English" })}
+                      {t("admin.content.textGroupEditor.english")}
                     </span>
                     <Field
                       name={`${f.key}__en`}
@@ -105,7 +105,7 @@ export function TextGroupEditor({ group, values }: { group: TextGroup; values: V
       <div className="flex items-center justify-end gap-3">
         {saved ? (
           <span className="inline-flex items-center gap-1 text-[13px] text-green">
-            <IconCheck size={15} /> {t({ ka: "შენახულია", en: "Saved" })}
+            <IconCheck size={15} /> {t("admin.content.textGroupEditor.saved")}
           </span>
         ) : null}
         <button
@@ -113,7 +113,7 @@ export function TextGroupEditor({ group, values }: { group: TextGroup; values: V
           disabled={pending}
           className="h-9 rounded-[8px] bg-ink px-5 text-[13px] font-medium text-canvas disabled:opacity-60"
         >
-          {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+          {pending ? "…" : t("admin.content.textGroupEditor.save")}
         </button>
       </div>
     </form>

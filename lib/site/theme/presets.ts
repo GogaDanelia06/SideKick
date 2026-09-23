@@ -1,5 +1,5 @@
-import type { Bilingual } from "@/lib/content/types";
 import { defaultColors, type Shade, type ThemeColors } from "./tokens";
+import type { Text } from "@/lib/i18n/messages";
 
 /**
  * One-click palettes, stored as patches over the default palette. Their `bg` and
@@ -8,7 +8,7 @@ import { defaultColors, type Shade, type ThemeColors } from "./tokens";
 
 export type Preset = {
   id: string;
-  label: Bilingual;
+  label: Text;
   dark: Partial<ThemeColors>;
   light: Partial<ThemeColors>;
 };
@@ -18,13 +18,13 @@ export const DEFAULT_PRESET = "default";
 export const PRESETS: Preset[] = [
   {
     id: DEFAULT_PRESET,
-    label: { ka: "სტანდარტული", en: "Default" },
+    label: "site.theme.presets.default",
     dark: {},
     light: {},
   },
   {
     id: "slate",
-    label: { ka: "ლურჯი", en: "Slate" },
+    label: "site.theme.presets.slate",
     dark: { bg: "#0b1220", canvas: "#0b1220", card: "#121a2a", surface: "#121a2a", soft: "#18233a",
       siteBorder: "#1c2740", dashBorder: "#263353", border2: "#1a2437", muted: "#8593ad", faint: "#6b7a95" },
     light: { bg: "#f7f9fc", canvas: "#eef2f8", card: "#eef2f8", surface: "#ffffff", soft: "#f1f5fa",
@@ -32,7 +32,7 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "warm",
-    label: { ka: "თბილი", en: "Warm" },
+    label: "site.theme.presets.warm",
     dark: { bg: "#15110e", canvas: "#15110e", card: "#1e1813", surface: "#1e1813", soft: "#261e17",
       siteBorder: "#2a211a", dashBorder: "#3a2e23", border2: "#241c15", muted: "#a08f7c", faint: "#8a7a68" },
     light: { bg: "#fdfaf6", canvas: "#faf5ef", card: "#f7f1e8", surface: "#fffdfa", soft: "#f4ece1",
@@ -40,7 +40,7 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "forest",
-    label: { ka: "მწვანე", en: "Forest" },
+    label: "site.theme.presets.forest",
     dark: { bg: "#0a1410", canvas: "#0a1410", card: "#101d17", surface: "#101d17", soft: "#16281f",
       siteBorder: "#17281f", dashBorder: "#234133", border2: "#142720" },
     light: { bg: "#f4faf6", canvas: "#eff7f1", card: "#e9f3ec", surface: "#ffffff", soft: "#eaf4ed",
@@ -48,7 +48,7 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "plum",
-    label: { ka: "იასამნისფერი", en: "Plum" },
+    label: "site.theme.presets.plum",
     dark: { bg: "#110e1a", canvas: "#110e1a", card: "#1a1526", surface: "#1a1526", soft: "#221b31",
       siteBorder: "#241d33", dashBorder: "#33284a", border2: "#1f1930", blue: "#a78bfa" },
     light: { bg: "#f9f7fd", canvas: "#f5f1fb", card: "#f1ecfa", surface: "#ffffff", soft: "#f2edfb",
@@ -56,7 +56,7 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "mono",
-    label: { ka: "ნაცრისფერი", en: "Mono" },
+    label: "site.theme.presets.mono",
     dark: { bg: "#0a0a0a", canvas: "#0a0a0a", card: "#141414", surface: "#141414", soft: "#1c1c1c",
       siteBorder: "#262626", dashBorder: "#303030", border2: "#1e1e1e", ink: "#f5f5f5",
       muted: "#a1a1a1", faint: "#8a8a8a" },

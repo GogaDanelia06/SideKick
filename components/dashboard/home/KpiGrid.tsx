@@ -37,13 +37,13 @@ export function KpiGrid({ kpis }: { kpis: HomeOverview["kpis"] }) {
               </div>
               {deltaPct === null ? (
                 <div className="mt-1 text-xs text-faint">
-                  {t({ ka: "გუშინდელი მონაცემი არ არის", en: "No data for yesterday" })}
+                  {t("dashboard.home.kpiGrid.noDataForYesterday")}
                 </div>
               ) : (
                 <div className={clsx("mt-1 flex items-center gap-1 text-xs", up ? "text-green" : "text-red")}>
                   <Trend size={14} />
                   {up ? "+" : ""}
-                  {deltaPct}% {t({ ka: "გუშინდელთან", en: "vs yesterday" })}
+                  {deltaPct}% {t("dashboard.home.kpiGrid.vsYesterday")}
                 </div>
               )}
             </Panel>

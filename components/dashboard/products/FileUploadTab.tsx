@@ -27,7 +27,7 @@ export function FileUploadTab({ products }: { products: Product[] }) {
           disabled={importing}
           className="inline-flex h-10 items-center gap-2 rounded-[6px] bg-primary px-4 text-[13px] font-medium text-white disabled:opacity-60"
         >
-          <IconUpload size={16} /> {t({ ka: "ატვირთე EXCEL / CSV", en: "Upload EXCEL / CSV" })}
+          <IconUpload size={16} /> {t("dashboard.products.fileUploadTab.uploadExcelCsv")}
         </button>
         <input
           ref={input}
@@ -41,7 +41,7 @@ export function FileUploadTab({ products }: { products: Product[] }) {
           onClick={() => void downloadXlsx("sidekick-products-template.xlsx", templateRows(locale))}
           className={SECONDARY}
         >
-          <IconDownload size={16} /> {t({ ka: "ჩამოტვირთე შაბლონი", en: "Download template" })}
+          <IconDownload size={16} /> {t("dashboard.products.fileUploadTab.downloadTemplate")}
         </button>
         <button
           type="button"
@@ -49,12 +49,12 @@ export function FileUploadTab({ products }: { products: Product[] }) {
           disabled={products.length === 0}
           className={SECONDARY}
         >
-          <IconDownload size={16} /> {t({ ka: "ჩამოტვირთე მარაგი", en: "Download stock" })}
+          <IconDownload size={16} /> {t("dashboard.products.fileUploadTab.downloadStock")}
         </button>
       </div>
 
       {reading ? (
-        <p className="mt-4 text-[13px] text-muted">{t({ ka: "ფაილი იკითხება…", en: "Reading the file…" })}</p>
+        <p className="mt-4 text-[13px] text-muted">{t("dashboard.products.fileUploadTab.readingTheFile")}</p>
       ) : null}
       {problem ? (
         <p className="mt-4 flex items-start gap-2 text-[13px] text-red">

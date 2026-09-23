@@ -56,7 +56,7 @@ export function TeamView({
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span className="rounded-full border border-amber px-3 py-1 text-xs font-medium text-amber">
-          {t({ ka: "მეორე ეტაპი", en: "Second stage" })}
+          {t("dashboard.team.view.secondStage")}
         </span>
         {canManage ? (
           <button
@@ -65,7 +65,7 @@ export function TeamView({
             className="inline-flex items-center gap-1.5 rounded-[8px] bg-primary px-4 py-2 text-sm font-medium text-white"
           >
             <IconPlus size={16} />
-            {t({ ka: "წევრის დამატება", en: "Add member" })}
+            {t("dashboard.team.view.addMember")}
           </button>
         ) : null}
       </div>
@@ -73,7 +73,7 @@ export function TeamView({
       {error ? (
         <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
           <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? { ka: "ვერ შესრულდა", en: "Something went wrong" })}
+          {t(ERRORS[error] ?? "dashboard.team.view.somethingWentWrong")}
         </div>
       ) : null}
 
@@ -88,20 +88,20 @@ export function TeamView({
           >
             <input
               name="name"
-              placeholder={t({ ka: "სახელი გვარი", en: "Full name" })}
+              placeholder={t("dashboard.team.view.fullName")}
               className="h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue"
             />
             <input
               name="email"
               type="email"
               required
-              placeholder={t({ ka: "ელფოსტა *", en: "Email *" })}
+              placeholder={t("dashboard.team.view.email")}
               className="h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue"
             />
             <select
               name="role"
               defaultValue="OPERATOR"
-              aria-label={t({ ka: "როლი", en: "Role" })}
+              aria-label={t("dashboard.team.view.role")}
               className="h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none focus:border-blue"
             >
               {grantable.map((r) => <option key={r} value={r}>{t(ROLE_LABEL[r])}</option>)}
@@ -112,12 +112,12 @@ export function TeamView({
                 disabled={pending}
                 className="h-10 rounded-[8px] bg-primary px-4 text-[13px] font-medium text-white disabled:opacity-60"
               >
-                {pending ? "…" : t({ ka: "დამატება", en: "Add" })}
+                {pending ? "…" : t("dashboard.team.view.add")}
               </button>
               <button
                 type="button"
                 onClick={() => { setAdding(false); setError(null); }}
-                aria-label={t({ ka: "გაუქმება", en: "Cancel" })}
+                aria-label={t("dashboard.team.view.cancel")}
                 className="grid size-10 place-items-center rounded-[8px] border border-border text-muted"
               >
                 <IconX size={16} />
@@ -125,10 +125,7 @@ export function TeamView({
             </div>
           </form>
           <p className="mt-2.5 text-xs text-muted">
-            {t({
-              ka: "წევრი დაემატება ანგარიშით. პაროლს თავად დააყენებს „პაროლის აღდგენით“.",
-              en: "The member is added with an account. They set their own password via “forgot password”.",
-            })}
+            {t("dashboard.team.view.theMemberIsAdded")}
           </p>
         </Panel>
       ) : null}
@@ -137,9 +134,9 @@ export function TeamView({
         <table className="w-full min-w-[720px] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-faint">
-              <th className="px-4 py-3 font-semibold">{t({ ka: "წევრი", en: "Member" })}</th>
-              <th className="px-4 py-3 font-semibold">{t({ ka: "როლი", en: "Role" })}</th>
-              <th className="px-4 py-3 font-semibold">{t({ ka: "უფლებები", en: "Permissions" })}</th>
+              <th className="px-4 py-3 font-semibold">{t("dashboard.team.view.member")}</th>
+              <th className="px-4 py-3 font-semibold">{t("dashboard.team.view.role")}</th>
+              <th className="px-4 py-3 font-semibold">{t("dashboard.team.view.permissions")}</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -158,7 +155,7 @@ export function TeamView({
                       <div className="min-w-0">
                         <div className="truncate font-medium">
                           {m.user.name ?? "—"}
-                          {isSelf ? <span className="ml-1.5 text-xs text-muted">({t({ ka: "თქვენ", en: "you" })})</span> : null}
+                          {isSelf ? <span className="ml-1.5 text-xs text-muted">({t("dashboard.team.view.you")})</span> : null}
                         </div>
                         <div className="truncate text-xs text-muted">{m.user.email}</div>
                       </div>
@@ -173,7 +170,7 @@ export function TeamView({
                       <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"
-                          aria-label={t({ ka: "მოქმედებები", en: "Actions" })}
+                          aria-label={t("dashboard.team.view.actions")}
                           aria-expanded={open}
                           onClick={() => setMenuFor(open ? null : m.id)}
                           className="inline-grid size-8 place-items-center rounded-[6px] border border-border text-muted hover:border-blue hover:text-ink"
@@ -184,7 +181,7 @@ export function TeamView({
                         {open ? (
                           <div className="absolute right-0 z-30 mt-1 w-56 rounded-[10px] border border-border bg-surface p-1.5 text-left shadow-[0_12px_32px_rgba(0,0,0,0.25)]">
                             <div className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] uppercase tracking-wide text-faint">
-                              <IconUserCog size={13} /> {t({ ka: "როლის შეცვლა", en: "Change role" })}
+                              <IconUserCog size={13} /> {t("dashboard.team.view.changeRole")}
                             </div>
                             {grantable.map((role) => (
                               <button
@@ -202,12 +199,12 @@ export function TeamView({
                             <button
                               type="button"
                               disabled={pending || isSelf}
-                              title={isSelf ? t({ ka: "საკუთარ თავს ვერ წაშლი", en: "You can't remove yourself" }) : undefined}
+                              title={isSelf ? t("dashboard.team.view.youCanTRemove") : undefined}
                               onClick={() => run(() => removeTeamMember(m.id), () => setMenuFor(null))}
                               className="flex w-full items-center gap-2 rounded-[6px] px-2.5 py-2 text-[13px] text-red hover:bg-soft disabled:opacity-40"
                             >
                               <IconTrash size={15} />
-                              {t({ ka: "გუნდიდან წაშლა", en: "Remove from team" })}
+                              {t("dashboard.team.view.removeFromTeam")}
                             </button>
                           </div>
                         ) : null}

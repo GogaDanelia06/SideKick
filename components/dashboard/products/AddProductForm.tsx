@@ -33,7 +33,7 @@ export function AddProductForm({ onAdded }: { onAdded: (product: Product) => voi
   return (
     <Panel className="p-5">
       <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold">
-        <IconPlus size={16} className="text-primary" /> {t({ ka: "პროდუქტის დამატება", en: "Add product" })}
+        <IconPlus size={16} className="text-primary" /> {t("dashboard.products.addProductForm.addProduct")}
       </h3>
       <form
         ref={form}
@@ -54,39 +54,39 @@ export function AddProductForm({ onAdded }: { onAdded: (product: Product) => voi
         }
         className="grid gap-4 sm:grid-cols-[120px_1fr]"
       >
-        <PhotoPicker key={photoKey} label={{ ka: "ფოტოს ატვირთვა", en: "Upload photo" }} />
+        <PhotoPicker key={photoKey} label={"dashboard.products.addProductForm.uploadPhoto"} />
         <div className="grid gap-3">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Field name="name" label={t({ ka: "დასახელება", en: "Name" })} required />
-            <Field name="code" label={t({ ka: "კოდი", en: "Code" })} required />
+            <Field name="name" label={t("dashboard.products.addProductForm.name")} required />
+            <Field name="code" label={t("dashboard.products.addProductForm.code")} required />
             <Field
               name="price"
-              label={t({ ka: "ფასი", en: "Price" })}
+              label={t("dashboard.products.addProductForm.price")}
               type="number"
               value={money.price}
               onChange={(e) => money.onPrice(e.target.value)}
             />
-            <Field name="size" label={t({ ka: "ზომა", en: "Size" })} />
+            <Field name="size" label={t("dashboard.products.addProductForm.size")} />
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <Field
               name="discountPct"
-              label={t({ ka: "ფასდაკლება %", en: "Discount %" })}
+              label={t("dashboard.products.addProductForm.discount")}
               type="number"
               value={money.discountPct}
               onChange={(e) => money.onDiscount(e.target.value)}
             />
             <Field
               name="salePrice"
-              label={t({ ka: "ფასდაკლ. ფასი", en: "Sale price" })}
+              label={t("dashboard.products.addProductForm.salePrice")}
               type="number"
               value={money.salePrice}
               onChange={(e) => money.onSale(e.target.value)}
             />
-            <Field name="quantity" label={t({ ka: "რაოდენობა", en: "Quantity" })} type="number" />
+            <Field name="quantity" label={t("dashboard.products.addProductForm.quantity")} type="number" />
           </div>
           <label className="block">
-            <span className="text-[11px] text-muted">{t({ ka: "აღწერა (AI იყენებს იდენტიფიკაციისთვის)", en: "Description (used by AI for matching)" })}</span>
+            <span className="text-[11px] text-muted">{t("dashboard.products.addProductForm.descriptionUsedByAi")}</span>
             <textarea name="description" rows={2} className={FIELD} />
           </label>
           <div className="flex flex-wrap items-center justify-end gap-3">
@@ -96,7 +96,7 @@ export function AddProductForm({ onAdded }: { onAdded: (product: Product) => voi
               >
                 {notice.tone === "ok" ? <IconCheck size={15} /> : null}
                 {notice.tone === "ok"
-                  ? t({ ka: "პროდუქტი დაემატა.", en: "Product added." })
+                  ? t("dashboard.products.addProductForm.productAdded")
                   : t(PRODUCT_ERRORS[notice.key ?? "error"] ?? PRODUCT_ERRORS.error)}
               </p>
             ) : null}
@@ -106,7 +106,7 @@ export function AddProductForm({ onAdded }: { onAdded: (product: Product) => voi
               className="inline-flex h-10 items-center gap-2 rounded-[6px] bg-primary px-4 text-[13px] font-medium text-white disabled:opacity-60"
             >
               <IconPlus size={16} />
-              {pending ? t({ ka: "ემატება…", en: "Adding…" }) : t({ ka: "დამატება", en: "Add" })}
+              {pending ? t("dashboard.products.addProductForm.adding") : t("dashboard.products.addProductForm.add")}
             </button>
           </div>
         </div>

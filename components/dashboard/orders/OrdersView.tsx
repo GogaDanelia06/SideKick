@@ -44,7 +44,7 @@ export function OrdersView({ orders, counts }: OrdersData) {
         <Panel className="flex flex-col items-center gap-2 p-10 text-center">
           <IconShoppingCartOff size={28} className="text-faint" />
           <p className="text-sm text-muted">
-            {t({ ka: "ამ სტატუსით შეკვეთა არ არის", en: "No orders with this status" })}
+            {t("dashboard.orders.view.noOrdersWithThis")}
           </p>
         </Panel>
       ) : (

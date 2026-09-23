@@ -15,7 +15,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
     <header className="sticky top-0 z-20 flex h-[60px] shrink-0 items-center gap-3 border-b border-border bg-[var(--topbar-bg)] px-4 backdrop-blur-[8px] sm:px-6">
       <button
         type="button"
-        aria-label="Open menu"
+        aria-label={t("layout.openMenu")}
         onClick={onOpenMenu}
         className="grid size-9 shrink-0 place-items-center rounded-[6px] border border-border text-muted lg:hidden"
       >

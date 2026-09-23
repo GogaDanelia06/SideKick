@@ -5,7 +5,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactInfo } from "./ContactInfo";
 import { ContactChat } from "./ContactChat";
 import { CONTACT_HEADING } from "@/lib/content/contact";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 /** The heading is the page's H1 and is admin-editable; each part falls back to
  *  the shipped copy when it hasn't been set. */
@@ -14,9 +14,9 @@ export function ContactView({
   title,
   sub,
 }: {
-  badge?: Bilingual;
-  title?: Bilingual;
-  sub?: Bilingual;
+  badge?: Text;
+  title?: Text;
+  sub?: Text;
 }) {
   return (
     <section className="pb-16 pt-[60px]">

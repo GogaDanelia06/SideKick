@@ -8,10 +8,7 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AiModuleNotice, INPUT } from "../parts";
 import { TesterTranscript } from "./TesterTranscript";
 
-const NO_ANSWER = {
-  ka: "AI სერვისმა ვერ უპასუხა. სცადე ხელახლა.",
-  en: "The AI service did not answer. Try again.",
-};
+const NO_ANSWER = "dashboard.ai.testerSection.theAiServiceDid";
 
 /** Tries the current prompt against the real AI service. The chat stays until logout. */
 export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId: string }) {
@@ -45,10 +42,10 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
           <IconFlask size={18} />
         </span>
         <div className="flex-1">
-          <h2 className="text-[15px] font-semibold">{t({ ka: "ტესტერი", en: "Tester" })}</h2>
+          <h2 className="text-[15px] font-semibold">{t("dashboard.ai.testerSection.tester")}</h2>
           <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted">
             <span className={`size-1.5 rounded-full ${aiReady ? "bg-green" : "bg-faint"}`} />
-            {t({ ka: "გატესტე მიმდინარე პრომპტი", en: "Test your current prompt" })}
+            {t("dashboard.ai.testerSection.testYourCurrentPrompt")}
           </p>
         </div>
         {turns.length > 0 ? (
@@ -58,17 +55,14 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
             className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] border border-border px-3 text-[12px] text-muted transition-colors hover:text-ink"
           >
             <IconTrash size={14} />
-            {t({ ka: "ჩატის გასუფთავება", en: "Clear chat" })}
+            {t("dashboard.ai.testerSection.clearChat")}
           </button>
         ) : null}
       </div>
 
       {!aiReady ? (
         <AiModuleNotice
-          text={{
-            ka: "ტესტერს AI სერვისი სჭირდება, რომელიც ჯერ არ არის დაკავშირებული.",
-            en: "The tester needs the AI service, which is not connected yet.",
-          }}
+          text={"dashboard.ai.testerSection.text"}
         />
       ) : null}
 
@@ -85,7 +79,7 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
               if (e.key === "Enter") void send();
             }}
             disabled={!aiReady}
-            placeholder={t({ ka: "დაწერე შეტყობინება…", en: "Type a message…" })}
+            placeholder={t("dashboard.ai.testerSection.typeAMessage")}
             className={INPUT}
           />
           <button
@@ -95,7 +89,7 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
             className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-[8px] bg-primary px-4 text-[13px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             <IconSend size={16} />
-            {t({ ka: "გაგზავნა", en: "Send" })}
+            {t("dashboard.ai.testerSection.send")}
           </button>
         </div>
       </div>

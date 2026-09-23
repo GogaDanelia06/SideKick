@@ -10,12 +10,12 @@ export function TopProducts({ rows }: { rows: AnalyticsData["topProducts"] }) {
   return (
     <Panel className="p-5">
       <h3 className="mb-3.5 text-[15px] font-semibold">
-        {t({ ka: "ტოპ პროდუქტები", en: "Top products" })}
+        {t("dashboard.analytics.topProducts.topProducts")}
       </h3>
 
       {rows.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted">
-          {t({ ka: "ამ პერიოდში გაყიდვა არ ყოფილა", en: "No sales in this period" })}
+          {t("dashboard.analytics.topProducts.noSalesInThis")}
         </p>
       ) : (
         <div className="grid gap-1">

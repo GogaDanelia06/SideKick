@@ -1,9 +1,9 @@
 import { IconAlertTriangle, IconArrowDown, IconCheck } from "@tabler/icons-react";
 import { BiText } from "@/components/admin/ui/BiText";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 export type Step = {
-  event: { name: string; label: Bilingual };
+  event: { name: string; label: Text };
   count: number;
   /** Share of the step above, or null on the first one. */
   ofPrevious: number | null;
@@ -25,7 +25,7 @@ export function Funnel({ steps }: { steps: Step[] }) {
       <BiText
         as="h3"
         className="mb-3 text-[13px] font-semibold"
-        value={{ ka: "რეგისტრაციის გზა", en: "Sign-up funnel" }}
+        value={"admin.analytics.funnel.signUpFunnel"}
       />
 
       <div className="flex flex-col gap-3">
@@ -45,7 +45,7 @@ export function Funnel({ steps }: { steps: Step[] }) {
                 {step.ofPrevious === null ? (
                   <BiText
                     className="text-[11px] text-faint"
-                    value={{ ka: "საწყისი", en: "starting point" }}
+                    value={"admin.analytics.funnel.startingPoint"}
                   />
                 ) : (
                   <span
@@ -62,7 +62,7 @@ export function Funnel({ steps }: { steps: Step[] }) {
                         <span className="font-mono tabular-nums text-faint">{ofTop}%</span>
                         <BiText
                           className="text-faint"
-                          value={{ ka: "საწყისიდან", en: "of start" }}
+                          value={"admin.analytics.funnel.ofStart"}
                         />
                       </>
                     ) : null}

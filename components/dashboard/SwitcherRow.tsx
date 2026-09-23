@@ -46,7 +46,7 @@ export function SwitcherRow({ business, current, opening, busy, onOpen, onDelete
         <button
           type="button"
           onClick={onDelete}
-          aria-label={`${t({ ka: "წაშლა", en: "Delete" })}: ${business.name}`}
+          aria-label={`${t("dashboard.switcherRow.delete")}: ${business.name}`}
           className="grid size-8 shrink-0 place-items-center rounded-[6px] text-faint hover:bg-red-surface hover:text-red"
         >
           <IconTrash size={15} />

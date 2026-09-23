@@ -19,7 +19,7 @@ import {
   IconUserPlus,
   type Icon,
 } from "@tabler/icons-react";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 /** Admin navigation mirrors the site: pages, then sections. Section data loads in app/admin/page/[slug]. */
 
@@ -35,7 +35,7 @@ export type SectionKind =
 
 export type AdminSection = {
   key: string;
-  label: Bilingual;
+  label: Text;
   icon: Icon;
   kind: SectionKind;
   /** kind: "text" — which group in lib/site/textKeys.ts */
@@ -51,14 +51,14 @@ export type AdminSection = {
 
 export type AdminPage = {
   slug: string;
-  label: Bilingual;
+  label: Text;
   icon: Icon;
   /** The public page this drives — shown to the admin for orientation. */
   route: string;
   sections: AdminSection[];
 };
 
-const ka = (ka: string, en: string): Bilingual => ({ ka, en });
+const ka = (ka: string, en: string): Text => ({ ka, en });
 
 export const ADMIN_PAGES: AdminPage[] = [
   {

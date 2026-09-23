@@ -6,7 +6,7 @@ import {
   IconPalette,
   type Icon,
 } from "@tabler/icons-react";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 /** Platform-level admin routes. Page-specific editing lives under
  *  /admin/page/[slug] and is driven by ADMIN_PAGES in lib/admin/pages.ts. */
@@ -20,12 +20,12 @@ export const ADMIN = {
 
 export type AdminPath = (typeof ADMIN)[keyof typeof ADMIN];
 
-export type AdminNavItem = { href: AdminPath; label: Bilingual; icon: Icon };
+export type AdminNavItem = { href: AdminPath; label: Text; icon: Icon };
 
 export const ADMIN_NAV: AdminNavItem[] = [
-  { href: ADMIN.home, label: { ka: "მთავარი", en: "Overview" }, icon: IconLayoutDashboard },
-  { href: ADMIN.businesses, label: { ka: "ბიზნესები და გეგმები", en: "Businesses & plans" }, icon: IconBuildingStore },
-  { href: ADMIN.analytics, label: { ka: "ანალიტიკა", en: "Analytics" }, icon: IconChartHistogram },
-  { href: ADMIN.tutorials, label: { ka: "ინსტრუქციები", en: "Help content" }, icon: IconHelpCircle },
-  { href: ADMIN.appearance, label: { ka: "იერსახე", en: "Appearance" }, icon: IconPalette },
+  { href: ADMIN.home, label: "admin.routes.overview", icon: IconLayoutDashboard },
+  { href: ADMIN.businesses, label: "admin.routes.businessesPlans", icon: IconBuildingStore },
+  { href: ADMIN.analytics, label: "admin.routes.analytics", icon: IconChartHistogram },
+  { href: ADMIN.tutorials, label: "admin.routes.helpContent", icon: IconHelpCircle },
+  { href: ADMIN.appearance, label: "admin.routes.appearance", icon: IconPalette },
 ];

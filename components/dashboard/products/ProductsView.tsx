@@ -43,10 +43,10 @@ export function ProductsView({ products }: { products: Product[] }) {
     <div className="flex flex-col gap-4">
       <div className="flex gap-5 border-b border-border">
         <TabButton active={tab === "manual"} onClick={() => setTab("manual")} icon={IconPencil}>
-          {t({ ka: "ხელით შევსება", en: "Manual entry" })}
+          {t("dashboard.products.view.manualEntry")}
         </TabButton>
         <TabButton active={tab === "file"} onClick={() => setTab("file")} icon={IconFileSpreadsheet}>
-          {t({ ka: "ფაილით ატვირთვა", en: "File upload" })}
+          {t("dashboard.products.view.fileUpload")}
         </TabButton>
       </div>
       {tab === "manual" ? (

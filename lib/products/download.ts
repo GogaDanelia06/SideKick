@@ -2,8 +2,9 @@ import type { Product } from "@prisma/client";
 import type { Locale } from "@/lib/i18n/types";
 import { PRODUCT_COLUMNS } from "./columns";
 import { writeXlsx, type Cell } from "./xlsxWrite";
+import { textIn } from "@/lib/i18n/messages";
 
-const header = (locale: Locale) => PRODUCT_COLUMNS.map((c) => c.label[locale]);
+const header = (locale: Locale) => PRODUCT_COLUMNS.map((c) => textIn(locale, c.label));
 
 /** The header and one filled-in example, in the page's language. */
 export function templateRows(locale: Locale): Cell[][] {

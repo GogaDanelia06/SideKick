@@ -11,30 +11,30 @@ export function CharacterSection({ config }: { config: AiConfig | null }) {
     <SectionForm
       section="character"
       icon={IconSquareRoundedLetterA}
-      title={{ ka: "ხასიათი", en: "Character" }}
+      title={"dashboard.ai.characterSection.character"}
     >
       <div className="grid gap-5">
         <ChipChoice
           name="style"
-          label={{ ka: "კომუნიკაციის სტილი", en: "Communication style" }}
+          label={"dashboard.ai.characterSection.communicationStyle"}
           options={AI_STYLES}
           value={config?.style ?? AI_DEFAULTS.style}
         />
         <ChipChoice
           name="length"
-          label={{ ka: "პასუხის სიგრძე", en: "Response length" }}
+          label={"dashboard.ai.characterSection.responseLength"}
           options={AI_LENGTHS}
           value={config?.length ?? AI_DEFAULTS.length}
         />
         <ChipChoice
           name="emoji"
-          label={{ ka: "ემოჯები", en: "Emoji" }}
+          label={"dashboard.ai.characterSection.emoji"}
           options={AI_EMOJI_LEVELS}
           value={config?.emoji ?? AI_DEFAULTS.emoji}
         />
         <ChipChoice
           name="addressForm"
-          label={{ ka: "მიმართვის ფორმა", en: "Form of address" }}
+          label={"dashboard.ai.characterSection.formOfAddress"}
           options={AI_ADDRESS_FORMS}
           value={config?.addressForm ?? AI_DEFAULTS.addressForm}
         />

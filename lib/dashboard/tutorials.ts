@@ -1,24 +1,25 @@
 import type { ChannelType } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import type { Bilingual } from "@/lib/content/types";
 import { youtubeThumbnail } from "./youtube";
+import type { Text } from "@/lib/i18n/messages";
+import type { Bilingual } from "@/lib/i18n/types";
 
 export type TutorialView = {
   id: string;
-  title: Bilingual;
-  description: Bilingual;
-  category: Bilingual | null;
+  title: Text;
+  description: Text;
+  category: Text | null;
   youtubeUrl: string;
   thumbnailUrl: string | null;
 };
 
 export type ChannelGuideView = {
-  body: Bilingual;
+  body: Text;
   youtubeUrl: string;
 };
 
 /** English falls back to Georgian, so a half-translated row still reads. */
-function bi(ka: string, en: string): Bilingual {
+function bi(ka: string, en: string): Text {
   return { ka, en: en || ka };
 }
 

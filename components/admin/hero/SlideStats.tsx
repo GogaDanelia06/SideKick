@@ -28,24 +28,24 @@ function StatFields({
     <div className="flex flex-col gap-2">
       <div className="grid gap-2 sm:grid-cols-2">
         <label className="block">
-          <span className={LABEL}>{t({ ka: "დასახელება — ქართ.", en: "Label — Georgian" })}</span>
+          <span className={LABEL}>{t("admin.hero.slideStats.labelGeorgian")}</span>
           <input name="labelKa" required defaultValue={initial?.labelKa} className={INPUT} />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "დასახელება — English", en: "Label — English" })}</span>
+          <span className={LABEL}>{t("admin.hero.slideStats.labelEnglish")}</span>
           <input name="labelEn" required defaultValue={initial?.labelEn} className={INPUT} />
         </label>
       </div>
 
       <label className="block">
-        <span className={LABEL}>{t({ ka: "საიდან მოდის ციფრი", en: "Where the figure comes from" })}</span>
+        <span className={LABEL}>{t("admin.hero.slideStats.whereTheFigureComes")}</span>
         <select
           name="source"
           value={source}
           onChange={(e) => setSource(e.target.value)}
           className={INPUT}
         >
-          <option value="">{t({ ka: "ხელით — მოძრავი ციფრი", en: "By hand — a drifting figure" })}</option>
+          <option value="">{t("admin.hero.slideStats.byHandADrifting")}</option>
           {sources.map((s) => (
             <option key={s.key} value={s.key}>
               {t(s.label)} — {s.value}
@@ -57,23 +57,17 @@ function StatFields({
       {auto ? (
         <p className="flex items-start gap-1.5 rounded-[6px] bg-green-surface/40 px-2.5 py-2 text-[12px] text-green">
           <IconBolt size={14} className="mt-[1px] shrink-0" />
-          {t({
-            ka: `ახლა: ${picked?.value ?? "—"}. ციფრი ბაზიდან იკითხება და საიტზე თვითონ იზრდება, როცა ახალი მომხმარებელი დარეგისტრირდება.`,
-            en: `Right now: ${picked?.value ?? "—"}. Read from the database and it climbs on the site by itself when a real customer signs up.`,
-          })}
+          {t("admin.hero.slideStats.rightNow", { value: picked?.value ?? "—" })}
         </p>
       ) : (
         <p className="rounded-[6px] bg-soft px-2.5 py-2 text-[12px] text-muted">
-          {t({
-            ka: "ხელით ჩაწერილი ციფრი მხოლოდ ვიზუალურად მოძრაობს — ის არაფერს ითვლის.",
-            en: "A hand-made figure only moves for looks — it is not counting anything.",
-          })}
+          {t("admin.hero.slideStats.aHandMadeFigure")}
         </p>
       )}
 
       <div className="grid gap-2 sm:grid-cols-4">
         <label className="block">
-          <span className={LABEL}>{t({ ka: "საწყისი", en: "Start value" })}</span>
+          <span className={LABEL}>{t("admin.hero.slideStats.startValue")}</span>
           <input
             name="baseValue"
             type="number"
@@ -84,7 +78,7 @@ function StatFields({
           />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ცვლილება min", en: "Change min" })}</span>
+          <span className={LABEL}>{t("admin.hero.slideStats.changeMin")}</span>
           <input
             name="changeMin"
             type="number"
@@ -95,7 +89,7 @@ function StatFields({
           />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ცვლილება max", en: "Change max" })}</span>
+          <span className={LABEL}>{t("admin.hero.slideStats.changeMax")}</span>
           <input
             name="changeMax"
             type="number"
@@ -106,13 +100,13 @@ function StatFields({
           />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "სუფიქსი", en: "Suffix" })}</span>
+          <span className={LABEL}>{t("admin.hero.slideStats.suffix")}</span>
           <input name="suffix" defaultValue={initial?.suffix} placeholder="₾ / %" className={INPUT} />
         </label>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ინტერვალი min (მწმ)", en: "Interval min (ms)" })}</span>
+          <span className={LABEL}>{t("admin.hero.slideStats.intervalMinMs")}</span>
           <input
             name="intervalMinMs"
             type="number"
@@ -122,7 +116,7 @@ function StatFields({
           />
         </label>
         <label className="block">
-          <span className={LABEL}>{t({ ka: "ინტერვალი max (მწმ)", en: "Interval max (ms)" })}</span>
+          <span className={LABEL}>{t("admin.hero.slideStats.intervalMaxMs")}</span>
           <input
             name="intervalMaxMs"
             type="number"
@@ -175,7 +169,7 @@ export function SlideStats({
     <div className="mt-3 rounded-[8px] border border-border2 bg-soft p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[12px] font-semibold text-muted">
-          {t({ ka: "ციფრები სლაიდზე", en: "Figures on the slide" })} · {visible.length}
+          {t("admin.hero.slideStats.figuresOnTheSlide")} · {visible.length}
         </span>
         <button
           type="button"
@@ -183,7 +177,7 @@ export function SlideStats({
           className="inline-flex h-7 items-center gap-1 rounded-[6px] border border-border px-2 text-[12px]"
         >
           {adding ? <IconX size={13} /> : <IconPlus size={13} />}
-          {adding ? t({ ka: "დახურვა", en: "Close" }) : t({ ka: "დამატება", en: "Add" })}
+          {adding ? t("admin.hero.slideStats.close") : t("admin.hero.slideStats.add")}
         </button>
       </div>
 
@@ -196,7 +190,7 @@ export function SlideStats({
           <StatFields sources={sources} />
           <div className="mt-2 flex justify-end">
             <button type="submit" disabled={pending} className="h-7 rounded-[6px] bg-ink px-3 text-[12px] font-medium text-canvas disabled:opacity-60">
-              {pending ? "…" : t({ ka: "დამატება", en: "Add" })}
+              {pending ? "…" : t("admin.hero.slideStats.add")}
             </button>
           </div>
         </form>
@@ -212,10 +206,10 @@ export function SlideStats({
                   <StatFields initial={s} sources={sources} />
                   <div className="mt-2 flex justify-end gap-2">
                     <button type="button" onClick={() => setEditing(null)} className="h-7 rounded-[6px] border border-border px-3 text-[12px]">
-                      {t({ ka: "გაუქმება", en: "Cancel" })}
+                      {t("admin.hero.slideStats.cancel")}
                     </button>
                     <button type="submit" disabled={pending} className="h-7 rounded-[6px] bg-ink px-3 text-[12px] font-medium text-canvas disabled:opacity-60">
-                      {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+                      {pending ? "…" : t("admin.hero.slideStats.save")}
                     </button>
                   </div>
                 </form>
@@ -229,7 +223,7 @@ export function SlideStats({
                   {picked ? (
                     <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-green-surface px-2 py-0.5 text-[11px] text-green">
                       <IconBolt size={11} />
-                      {t({ ka: "ლაივ", en: "Live" })}
+                      {t("admin.hero.slideStats.live")}
                     </span>
                   ) : (
                     <span className="shrink-0 text-[11px] text-faint">
@@ -237,13 +231,13 @@ export function SlideStats({
                     </span>
                   )}
                   <button type="button" onClick={() => setEditing(s.id)} className="text-[12px] text-blue">
-                    {t({ ka: "შეცვლა", en: "Edit" })}
+                    {t("admin.hero.slideStats.edit")}
                   </button>
                   <button
                     type="button"
                     disabled={pending}
                     onClick={() => remove(s.id)}
-                    aria-label={t({ ka: "წაშლა", en: "Delete" })}
+                    aria-label={t("admin.hero.slideStats.delete")}
                     className="grid size-7 shrink-0 place-items-center rounded-[6px] border border-border text-red hover:border-red disabled:opacity-40"
                   >
                     <IconTrash size={13} />

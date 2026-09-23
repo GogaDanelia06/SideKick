@@ -7,12 +7,12 @@ import { BRAND } from "@/lib/content/common";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const COPY = {
-  q1: { ka: "iPhone 15 Pro გაქვთ მარაგში? 📱", en: "Do you have the iPhone 15 Pro in stock? 📱" },
-  a1: { ka: "დიახ! ხელმისაწვდომია — 3,500₾. გსურთ შეკვეთის გაფორმება?", en: "Yes! It's available — ₾3,500. Would you like to place an order?" },
-  q2: { ka: "კი, მინდა შევუკვეთო", en: "Yes, I'd like to order" },
-  leadTag: { ka: "✦ AI — ლიდად მონიშნა", en: "✦ AI — tagged as a lead" },
-  a2: { ka: "შესანიშნავი! მომწერეთ სახელი და ტელეფონი მიწოდებისთვის.", en: "Great! Send me your name and phone number for delivery." },
-};
+  q1: "home.mocks.chatMock.doYouHaveThe",
+  a1: "home.mocks.chatMock.yesItSAvailable",
+  q2: "home.mocks.chatMock.yesIDLike",
+  leadTag: "home.mocks.chatMock.aiTaggedAsA",
+  a2: "home.mocks.chatMock.greatSendMeYour",
+} as const;
 
 const INCOMING = "max-w-[80%] self-start rounded-[13px] rounded-tl-[4px] border border-border bg-card2 px-[13px] py-2.5 text-sm leading-[1.5]";
 const OUTGOING = "max-w-[80%] self-end rounded-[13px] rounded-tr-[4px] bg-primary px-[13px] py-2.5 text-sm leading-[1.5] text-white";

@@ -60,7 +60,7 @@ export function ResetForm() {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      return setError(t(refusalMessage(data, { ka: "ვერ შეიცვალა", en: "Could not change password" })));
+      return setError(t(refusalMessage(data, "auth.resetForm.couldNotChangePassword")));
     }
 
     setDone(true);

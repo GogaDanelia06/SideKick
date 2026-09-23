@@ -15,11 +15,11 @@ export function ChannelStatusCard({ channels }: { channels: HomeOverview["channe
   return (
     <Panel className="p-5">
       <h3 className="mb-3.5 text-[15px] font-semibold">
-        {t({ ka: "არხების სტატუსი", en: "Channel status" })}
+        {t("dashboard.home.channelStatusCard.channelStatus")}
       </h3>
       {channels.length === 0 ? (
         <p className="text-sm text-muted">
-          {t({ ka: "არხები ჯერ არ არის დამატებული", en: "No channels yet" })}
+          {t("dashboard.home.channelStatusCard.noChannelsYet")}
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">

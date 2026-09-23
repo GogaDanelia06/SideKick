@@ -5,13 +5,14 @@ import { Panel } from "@/components/dashboard/ui/Panel";
 import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { AnalyticsData } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual, IconType } from "@/lib/content/types";
+import type { IconType } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 type Row = AnalyticsData["channels"][number];
-const BOXES: { key: "revenue" | "orders" | "leads"; label: Bilingual; icon: IconType; money?: boolean }[] = [
-  { key: "revenue", label: { ka: "შემოსავალი", en: "Revenue" }, icon: IconCash, money: true },
-  { key: "orders", label: { ka: "შეკვეთები", en: "Orders" }, icon: IconShoppingCart },
-  { key: "leads", label: { ka: "ლიდები", en: "Leads" }, icon: IconUserPlus },
+const BOXES: { key: "revenue" | "orders" | "leads"; label: Text; icon: IconType; money?: boolean }[] = [
+  { key: "revenue", label: "dashboard.analytics.channelBoxes.revenue", icon: IconCash, money: true },
+  { key: "orders", label: "dashboard.analytics.channelBoxes.orders", icon: IconShoppingCart },
+  { key: "leads", label: "dashboard.analytics.channelBoxes.leads", icon: IconUserPlus },
 ];
 
 export function ChannelBoxes({ channels }: { channels: Row[] }) {
@@ -33,7 +34,7 @@ export function ChannelBoxes({ channels }: { channels: Row[] }) {
 
             {total === 0 ? (
               <p className="py-6 text-center text-sm text-muted">
-                {t({ ka: "მონაცემი არ არის", en: "No data" })}
+                {t("dashboard.analytics.channelBoxes.noData")}
               </p>
             ) : (
               <div className="grid gap-3">

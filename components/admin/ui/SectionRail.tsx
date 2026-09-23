@@ -3,9 +3,9 @@
 import clsx from "clsx";
 import { IconChevronRight, type Icon } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
-export type RailItem = { key: string; label: Bilingual; icon: Icon };
+export type RailItem = { key: string; label: Text; icon: Icon };
 
 /** Section list for multi-section admin screens: vertical on desktop, a scrolling row on mobile. */
 export function SectionRail({
@@ -23,7 +23,7 @@ export function SectionRail({
     // min-w-0 lets the grid child shrink, so the row scrolls instead of widening the page.
     <div className="min-w-0 rounded-lg border border-border bg-card p-3 lg:sticky lg:top-4">
       <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
-        {t({ ka: "სექციები", en: "Sections" })}
+        {t("admin.sectionRail.sections")}
       </div>
       <nav className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
         {items.map((s) => {

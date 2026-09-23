@@ -1,16 +1,16 @@
 "use client";
 
-import type { Bilingual } from "@/lib/content/types";
 import type { ProfileError } from "@/lib/dashboard/actions/profile";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Text } from "@/lib/i18n/messages";
 
-export const PROFILE_SAVED: Bilingual = { ka: "პროფილი შენახულია", en: "Profile saved" };
+export const PROFILE_SAVED: Text = "dashboard.profile.fields.profileSaved";
 
-export const PROFILE_ERRORS: Record<ProfileError, Bilingual> = {
-  signed_out: { ka: "სესია დასრულდა. შედი და სცადე ხელახლა.", en: "Your session ended. Log in and try again." },
-  name: { ka: "ჩაწერე კომპანიის სახელი", en: "Enter the company name" },
-  taken: { ka: "ამ სახელით ბიზნესი უკვე გაქვს", en: "You already have a business with this name" },
-  failed: { ka: "ვერ შეინახა — სცადე ხელახლა", en: "Couldn't save — try again" },
+export const PROFILE_ERRORS: Record<ProfileError, Text> = {
+  signed_out: "dashboard.profile.fields.yourSessionEndedLog",
+  name: "dashboard.profile.fields.enterTheCompanyName",
+  taken: "dashboard.profile.fields.youAlreadyHaveA",
+  failed: "dashboard.profile.fields.couldnTSaveTry",
 };
 
 const BOX = "w-full rounded-[8px] border border-input bg-canvas text-sm outline-none focus:border-blue disabled:opacity-60";
@@ -24,7 +24,7 @@ export function ProfileField({
   rows,
 }: {
   name: string;
-  label: Bilingual;
+  label: Text;
   defaultValue: string;
   disabled?: boolean;
   rows?: number;

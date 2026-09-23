@@ -7,6 +7,8 @@ import { DASH } from "@/lib/dashboard/routes";
 import { log } from "@/lib/logger";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { BiText } from "@/components/admin/ui/BiText";
+import type { ReactNode } from "react";
+import type { Text } from "@/lib/i18n/messages";
 
 export const dynamic = "force-dynamic";
 
@@ -37,32 +39,23 @@ export default async function PaymentReturnPage({
     }
   }
 
-  const view =
+  const view: { icon: ReactNode; title: Text; body: Text } =
     status === "PAID"
       ? {
           icon: <IconCircleCheck size={40} className="text-green" />,
-          title: { ka: "გადახდა შესრულდა", en: "Payment complete" },
-          body: {
-            ka: "პაკეტი გააქტიურდა. მადლობა!",
-            en: "Your plan is active. Thank you!",
-          },
+          title: "dashboard.billing.return.paymentComplete",
+          body: "dashboard.billing.return.body",
         }
       : status === "PENDING"
         ? {
             icon: <IconClock size={40} className="text-amber" />,
-            title: { ka: "გადახდა მუშავდება", en: "Payment is processing" },
-            body: {
-              ka: "ბანკი ჯერ ამუშავებს გადახდას. ეს ჩვეულებრივ რამდენიმე წამია — განაახლეთ გვერდი ცოტა ხანში.",
-              en: "The bank is still processing. This usually takes a few seconds — refresh shortly.",
-            },
+            title: "dashboard.billing.return.paymentIsProcessing",
+            body: "dashboard.billing.return.body2",
           }
         : {
             icon: <IconAlertTriangle size={40} className="text-red" />,
-            title: { ka: "გადახდა ვერ შესრულდა", en: "Payment did not go through" },
-            body: {
-              ka: "თანხა არ ჩამოგეჭრათ. სცადეთ ხელახლა ან აირჩიეთ სხვა ბანკი.",
-              en: "You have not been charged. Try again or pick the other bank.",
-            },
+            title: "dashboard.billing.return.paymentDidNotGo",
+            body: "dashboard.billing.return.body3",
           };
 
   return (
@@ -84,7 +77,7 @@ export default async function PaymentReturnPage({
             href={DASH.billing}
             className="inline-flex h-10 items-center rounded-[8px] bg-primary px-5 text-[13px] font-medium text-white"
           >
-            <BiText value={{ ka: "ბილინგზე დაბრუნება", en: "Back to billing" }} />
+            <BiText value={"dashboard.billing.return.backToBilling"} />
           </Link>
         </div>
       </Panel>

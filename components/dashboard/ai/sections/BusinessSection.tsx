@@ -10,72 +10,69 @@ export function BusinessSection({ business }: { business: Business | null }) {
     <SectionForm
       section="business"
       icon={IconBuildingStore}
-      title={{ ka: "ბიზნესის ინფორმაცია", en: "Business information" }}
+      title={"dashboard.ai.businessSection.businessInformation"}
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
           name="name"
           required
-          label={{ ka: "კომპანიის დასახელება", en: "Company name" }}
+          label={"dashboard.ai.businessSection.companyName"}
           defaultValue={business?.name}
         />
         <TextField
           name="field"
-          label={{ ka: "საქმიანობის სფერო", en: "Industry" }}
+          label={"dashboard.ai.businessSection.industry"}
           defaultValue={business?.field}
         />
         <TextField
           name="email"
           type="email"
-          label={{ ka: "იმეილი", en: "Email" }}
+          label={"dashboard.ai.businessSection.email"}
           defaultValue={business?.email}
           placeholder="info@company.ge"
         />
         <TextField
           name="phone"
-          label={{ ka: "ტელეფონის ნომერი", en: "Phone number" }}
+          label={"dashboard.ai.businessSection.phoneNumber"}
           defaultValue={business?.phone}
           placeholder="+995 5XX XX XX XX"
         />
         <TextField
           name="contactInfo"
-          label={{ ka: "სხვა საკონტაქტო ინფორმაცია", en: "Other contact details" }}
+          label={"dashboard.ai.businessSection.otherContactDetails"}
           defaultValue={business?.contactInfo}
-          placeholder={{ ka: "Viber, Telegram, ფაქსი…", en: "Viber, Telegram, fax…" }}
+          placeholder={"dashboard.ai.businessSection.viberTelegramFax"}
         />
         <TextField
           name="workingHours"
-          label={{ ka: "სამუშაო საათები", en: "Working hours" }}
+          label={"dashboard.ai.businessSection.workingHours"}
           defaultValue={business?.workingHours}
-          placeholder={{ ka: "ორშ–პარ 10:00–18:00", en: "Mon–Fri 10:00–18:00" }}
+          placeholder={"dashboard.ai.businessSection.placeholder"}
         />
         <TextField
           name="site"
-          label={{ ka: "საიტი", en: "Website" }}
+          label={"dashboard.ai.businessSection.website"}
           defaultValue={business?.site}
           placeholder="www.company.ge"
         />
         <TextField
           name="branches"
-          label={{ ka: "ფილიალების მდებარეობა", en: "Branch locations" }}
+          label={"dashboard.ai.businessSection.branchLocations"}
           defaultValue={business?.branches}
-          placeholder={{
-            ka: "მისამართები გამოყავით მძიმით: თბილისი …, ბათუმი …",
-            en: "Separate addresses with commas: Tbilisi …, Batumi …",
-          }}
+          placeholder={"dashboard.ai.businessSection.placeholder2"}
         />
       </div>
 
       <AreaField
         name="description"
-        label={{ ka: "საქმიანობის დეტალური აღწერა", en: "Detailed description" }}
+        label={"dashboard.ai.businessSection.detailedDescription"}
         defaultValue={business?.description}
         rows={4}
       />
 
       <AreaField
         name="extra"
-        label={{ ka: "დამატებითი ინფორმაცია", en: "Additional information" }}
+        label={"dashboard.ai.businessSection.additionalInformation"}
         defaultValue={business?.extra}
         rows={3}
       />

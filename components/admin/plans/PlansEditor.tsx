@@ -5,19 +5,19 @@ import type { Plan } from "@prisma/client";
 import { IconAlertTriangle, IconCheck, IconStarFilled } from "@tabler/icons-react";
 import { updatePlan } from "@/lib/admin/actions/plans";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 const INPUT =
   "h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue";
 const LABEL = "mb-1 block text-[12px] font-medium text-muted";
 
-const ERRORS: Record<string, Bilingual> = {
-  name_required: { ka: "სახელი სავალდებულოა", en: "Name is required" },
-  bad_price: { ka: "ფასი უნდა იყოს დადებითი მთელი რიცხვი", en: "Price must be a whole number ≥ 0" },
-  bad_cap: { ka: "ლიმიტი უნდა იყოს რიცხვი (-1 = შეუზღუდავი)", en: "Limits must be numbers (-1 = unlimited)" },
+const ERRORS: Record<string, Text> = {
+  name_required: "admin.plans.editor.nameIsRequired",
+  bad_price: "admin.plans.editor.priceMustBeA",
+  bad_cap: "admin.plans.editor.limitsMustBeNumbers",
 };
 
-function Num({ name, label, value }: { name: string; label: Bilingual; value: number }) {
+function Num({ name, label, value }: { name: string; label: Text; value: number }) {
   const { t } = useLanguage();
   return (
     <label className="block">
@@ -51,7 +51,7 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
       {error ? (
         <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
           <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? { ka: "ვერ შესრულდა", en: "Something went wrong" })}
+          {t(ERRORS[error] ?? "admin.plans.editor.somethingWentWrong")}
         </div>
       ) : null}
 
@@ -67,26 +67,26 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
             </span>
             {p.featured ? (
               <span className="inline-flex items-center gap-1 text-[12px] font-medium text-green">
-                <IconStarFilled size={12} /> {t({ ka: "გამორჩეული", en: "Featured" })}
+                <IconStarFilled size={12} /> {t("admin.plans.editor.featured")}
               </span>
             ) : null}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
             <label className="block">
-              <span className={LABEL}>{t({ ka: "სახელი (ქართ.)", en: "Name (KA)" })}</span>
+              <span className={LABEL}>{t("admin.plans.editor.nameKa")}</span>
               <input name="name" required defaultValue={p.name} className={INPUT} />
             </label>
             <label className="block">
-              <span className={LABEL}>{t({ ka: "სახელი (ინგ.)", en: "Name (EN)" })}</span>
+              <span className={LABEL}>{t("admin.plans.editor.nameEn")}</span>
               <input name="nameEn" defaultValue={p.nameEn} className={INPUT} />
             </label>
-            <Num name="price" label={{ ka: "ფასი (₾ / თვე)", en: "Price (₾ / mo)" }} value={p.price} />
+            <Num name="price" label={"admin.plans.editor.priceMo"} value={p.price} />
           </div>
 
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className={LABEL}>{t({ ka: "ფასი — 3 თვე (₾)", en: "Price — 3 months (₾)" })}</span>
+              <span className={LABEL}>{t("admin.plans.editor.price3Months")}</span>
               <input
                 name="price3m"
                 type="number"
@@ -96,7 +96,7 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
               />
             </label>
             <label className="block">
-              <span className={LABEL}>{t({ ka: "ფასი — 1 წელი (₾)", en: "Price — 12 months (₾)" })}</span>
+              <span className={LABEL}>{t("admin.plans.editor.price12Months")}</span>
               <input
                 name="price12m"
                 type="number"
@@ -107,23 +107,20 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
             </label>
           </div>
           <p className="mt-1.5 text-[12px] text-faint">
-            {t({
-              ka: "ცარიელი = ფასდაკლების გარეშე (თვიური × თვეების რაოდენობა).",
-              en: "Empty = no discount (monthly × number of months).",
-            })}
+            {t("admin.plans.editor.emptyNoDiscountMonthly")}
           </p>
 
           <div className="mt-3 grid gap-3 sm:grid-cols-4">
-            <Num name="msgLimit" label={{ ka: "შეტყობინება", en: "Messages" }} value={p.msgLimit} />
-            <Num name="channelCap" label={{ ka: "არხები", en: "Channels" }} value={p.channelCap} />
-            <Num name="userCap" label={{ ka: "მომხმარებელი", en: "Users" }} value={p.userCap} />
-            <Num name="productCap" label={{ ka: "პროდუქტი", en: "Products" }} value={p.productCap} />
+            <Num name="msgLimit" label={"admin.plans.editor.messages"} value={p.msgLimit} />
+            <Num name="channelCap" label={"admin.plans.editor.channels"} value={p.channelCap} />
+            <Num name="userCap" label={"admin.plans.editor.users"} value={p.userCap} />
+            <Num name="productCap" label={"admin.plans.editor.products"} value={p.productCap} />
           </div>
 
           {/* Five free-form bullets, appended after the ones derived from caps. */}
           <div className="mt-4">
             <span className={LABEL}>
-              {t({ ka: "დამატებითი პარამეტრები (5 ველი)", en: "Extra features (5 slots)" })}
+              {t("admin.plans.editor.extraFeatures5Slots")}
             </span>
             <div className="flex flex-col gap-2">
               {[0, 1, 2, 3, 4].map((i) => (
@@ -131,13 +128,13 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
                   <input
                     name={`extraKa${i}`}
                     defaultValue={p.extrasKa[i] ?? ""}
-                    placeholder={t({ ka: `${i + 1}. ქართულად`, en: `${i + 1}. Georgian` })}
+                    placeholder={t("admin.plans.editor.extraGeorgian", { n: i + 1 })}
                     className={INPUT}
                   />
                   <input
                     name={`extraEn${i}`}
                     defaultValue={p.extrasEn[i] ?? ""}
-                    placeholder={t({ ka: `${i + 1}. ინგლისურად`, en: `${i + 1}. English` })}
+                    placeholder={t("admin.plans.editor.extraEnglish", { n: i + 1 })}
                     className={INPUT}
                   />
                 </div>
@@ -148,12 +145,12 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
           <div className="mt-4 flex items-center justify-between">
             <label className="flex items-center gap-2 text-[13px] text-muted">
               <input type="checkbox" name="featured" defaultChecked={p.featured} className="accent-[var(--primary)]" />
-              {t({ ka: "გამორჩეული პაკეტი", en: "Featured plan" })}
+              {t("admin.plans.editor.featuredPlan")}
             </label>
             <div className="flex items-center gap-3">
               {savedId === p.id ? (
                 <span className="inline-flex items-center gap-1 text-[13px] text-green">
-                  <IconCheck size={15} /> {t({ ka: "შენახულია", en: "Saved" })}
+                  <IconCheck size={15} /> {t("admin.plans.editor.saved")}
                 </span>
               ) : null}
               <button
@@ -161,7 +158,7 @@ export function PlansEditor({ plans }: { plans: Plan[] }) {
                 disabled={pending}
                 className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60"
               >
-                {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+                {pending ? "…" : t("admin.plans.editor.save")}
               </button>
             </div>
           </div>

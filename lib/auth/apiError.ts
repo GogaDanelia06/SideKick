@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import type { Bilingual } from "@/lib/content/types";
 import { authMessage, tooManyAttempts } from "./messages";
+import { textIn, type Text } from "@/lib/i18n/messages";
 
 type Init = { status: number; code?: string; headers?: HeadersInit };
 
@@ -8,8 +8,9 @@ type Init = { status: number; code?: string; headers?: HeadersInit };
  * An auth API refusal. `message` holds both languages for the form; `error` keeps
  * the Georgian text for a page that was loaded before this shape existed.
  */
-export function authError(message: Bilingual, { status, code, headers }: Init) {
-  return NextResponse.json({ error: message.ka, message, ...(code ? { code } : {}) }, { status, headers });
+export function authError(message: Text, { status, code, headers }: Init) {
+  const both = { ka: textIn("ka", message), en: textIn("en", message) };
+  return NextResponse.json({ error: both.ka, message: both, ...(code ? { code } : {}) }, { status, headers });
 }
 
 /** The first validation problem; the schemas use AUTH_MESSAGES keys as their messages. */

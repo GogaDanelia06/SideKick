@@ -1,9 +1,9 @@
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
-export const RANGES: Bilingual[] = [
-  { ka: "1 კვირა", en: "1 week" },
-  { ka: "1 თვე", en: "1 month" },
-  { ka: "3 თვე", en: "3 months" },
-  { ka: "6 თვე", en: "6 months" },
-  { ka: "12 თვე", en: "12 months" },
+export const RANGES: Text[] = [
+  "dashboard.analytics.1Week",
+  "dashboard.analytics.1Month",
+  "dashboard.analytics.3Months",
+  "dashboard.analytics.6Months",
+  "dashboard.analytics.12Months",
 ];

@@ -54,7 +54,7 @@ export function SaturationArea({ hsv, onChange }: { hsv: Hsv; onChange: (next: H
     <div
       role="slider"
       tabIndex={0}
-      aria-label={t({ ka: "გაჯერებულობა და სიკაშკაშე", en: "Saturation and brightness" })}
+      aria-label={t("admin.appearance.pickerParts.saturationAndBrightness")}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(hsv.s * 100)}
@@ -85,7 +85,7 @@ export function HueSlider({ hsv, onChange }: { hsv: Hsv; onChange: (next: Hsv) =
     <div
       role="slider"
       tabIndex={0}
-      aria-label={t({ ka: "ელფერი", en: "Hue" })}
+      aria-label={t("admin.appearance.pickerParts.hue")}
       aria-valuemin={0}
       aria-valuemax={360}
       aria-valuenow={Math.round(hsv.h)}

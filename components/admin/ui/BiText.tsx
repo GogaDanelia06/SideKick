@@ -2,14 +2,14 @@
 
 import type { ElementType } from "react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 export function BiText({
   value,
   as: As = "span",
   className,
 }: {
-  value: Bilingual;
+  value: Text;
   as?: ElementType;
   className?: string;
 }) {

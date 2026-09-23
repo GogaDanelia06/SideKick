@@ -6,22 +6,19 @@ import { IconPhoto } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/Badge";
 import { Container } from "@/components/ui/Container";
 import { ABOUT } from "@/lib/content/about";
-import type { Bilingual } from "@/lib/content/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { ROUTES } from "@/lib/routes";
+import type { Text } from "@/lib/i18n/messages";
 
-const TRY_FREE = {
-  ka: "სცადე უფასოდ",
-  en: "Try for free",
-} as const;
+const TRY_FREE = "about.view.tryForFree" as const;
 
 export function AboutView({
   title,
   body,
   imageUrl,
 }: {
-  title?: Bilingual;
-  body?: Bilingual;
+  title?: Text;
+  body?: Text;
   imageUrl?: string | null;
 }) {
   const { t } = useLanguage();

@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 import type { LegalDoc } from "@/lib/content/legal";
 import { LEGAL_REVIEW_NOTICE } from "@/lib/content/legal";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 const PLACEHOLDER = /【[^】]*】/;
 
@@ -18,7 +18,7 @@ export function LegalView({
 }: {
   doc: LegalDoc;
   sections?: LegalDoc["sections"];
-  title?: Bilingual;
+  title?: Text;
 }) {
   const { t, locale } = useLanguage();
 
@@ -41,7 +41,7 @@ export function LegalView({
             {t(title ?? doc.title)}
           </h1>
           <p className="mt-2 text-sm text-muted">
-            {t({ ka: "ბოლო განახლება", en: "Last updated" })}:{" "}
+            {t("legal.view.lastUpdated")}:{" "}
             {new Date(doc.updated).toLocaleDateString(locale === "ka" ? "ka-GE" : "en-GB", {
               day: "numeric",
               month: "long",
@@ -54,15 +54,12 @@ export function LegalView({
               <IconAlertTriangle size={18} className="mt-px shrink-0" />
               <div>
                 <div className="font-semibold">
-                  {t({ ka: "მხოლოდ დეველოპმენტში ჩანს", en: "Visible in development only" })}
+                  {t("legal.view.visibleInDevelopmentOnly")}
                 </div>
                 <p className="mt-0.5">{t(LEGAL_REVIEW_NOTICE)}</p>
                 {unfilled ? (
                   <p className="mt-1">
-                    {t({
-                      ka: "დოკუმენტში დარჩა 【】-ში ჩასმული ადგილები, რომლებიც უნდა შეივსოს გამოქვეყნებამდე.",
-                      en: "This document still contains 【】 placeholders that must be filled in before publishing.",
-                    })}
+                    {t("legal.view.thisDocumentStillContains")}
                   </p>
                 ) : null}
               </div>

@@ -14,17 +14,17 @@ import {
 import { createStat, updateStat, deleteStat, moveStat } from "@/lib/admin/actions/stats";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { StatSourceOption } from "@/lib/site/statFormat";
-import type { Bilingual } from "@/lib/content/types";
+import type { Text } from "@/lib/i18n/messages";
 
 const INPUT =
   "h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue";
 
-const ERRORS: Record<string, Bilingual> = {
-  all_fields_required: { ka: "შეავსეთ ყველა ველი", en: "Fill in every field" },
-  not_found: { ka: "ვერ მოიძებნა", en: "Not found" },
-  unknown_source: { ka: "აირჩიე მთვლელი", en: "Pick a counter" },
-  bad_mode: { ka: "აირჩიე ციფრის ტიპი", en: "Pick how the figure works" },
-  value_required: { ka: "ჩაწერე ციფრი", en: "Type a figure" },
+const ERRORS: Record<string, Text> = {
+  all_fields_required: "admin.stats.editor.fillInEveryField",
+  not_found: "admin.stats.editor.notFound",
+  unknown_source: "admin.stats.editor.pickACounter",
+  bad_mode: "admin.stats.editor.pickHowTheFigure",
+  value_required: "admin.stats.editor.typeAFigure",
 };
 
 const SMALL = "h-9 w-full rounded-[8px] border border-input bg-canvas px-2.5 text-[13px] outline-none focus:border-blue";
@@ -46,30 +46,21 @@ type Fields = {
   intervalMaxMs: number;
 };
 
-const MODES: { key: Mode; label: Bilingual; hint: Bilingual }[] = [
+const MODES: { key: Mode; label: Text; hint: Text }[] = [
   {
     key: "MANUAL",
-    label: { ka: "ხელით", en: "By hand" },
-    hint: {
-      ka: "რასაც ჩაწერ, ის ჩანს. არ იცვლება.",
-      en: "Whatever you type is what shows. It never changes.",
-    },
+    label: "admin.stats.editor.byHand",
+    hint: "admin.stats.editor.hint",
   },
   {
     key: "AUTO",
-    label: { ka: "ავტომატური ზრდა", en: "Automatic growth" },
-    hint: {
-      ka: "იწყება საწყისი ციფრიდან და თვითონ იზრდება მითითებულ დიაპაზონებში. ციფრი სერვერზე ინახება, ამიტომ ყველა ვიზიტორი ერთსა და იმავეს ხედავს და გვერდის განახლება მას თავიდან არ იწყებს.",
-      en: "Starts at the start value and climbs by itself within the ranges below. The figure is kept on the server, so every visitor sees the same one and a refresh does not restart it.",
-    },
+    label: "admin.stats.editor.automaticGrowth",
+    hint: "admin.stats.editor.hint2",
   },
   {
     key: "LIVE",
-    label: { ka: "ლაივ მთვლელი", en: "Live counter" },
-    hint: {
-      ka: "ნამდვილი ციფრი ბაზიდან. საიტზე მწვანე წერტილით აღინიშნება.",
-      en: "A real figure from the database. Marked with a green dot on the site.",
-    },
+    label: "admin.stats.editor.liveCounter",
+    hint: "admin.stats.editor.hint3",
   },
 ];
 
@@ -88,14 +79,14 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
           name="labelKa"
           required
           defaultValue={initial?.labelKa}
-          placeholder={t({ ka: "წარწერა (ქართ.)", en: "Label (KA)" })}
+          placeholder={t("admin.stats.editor.labelKa")}
           className={INPUT}
         />
         <input
           name="labelEn"
           required
           defaultValue={initial?.labelEn}
-          placeholder={t({ ka: "წარწერა (ინგ.)", en: "Label (EN)" })}
+          placeholder={t("admin.stats.editor.labelEn")}
           className={INPUT}
         />
       </div>
@@ -125,13 +116,13 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
             name="value"
             required
             defaultValue={initial?.value}
-            placeholder={t({ ka: "ციფრი, მაგ. 1,200+", en: "Figure, e.g. 1,200+" })}
+            placeholder={t("admin.stats.editor.figureEG1")}
             className={INPUT}
           />
           <input
             name="suffix"
             defaultValue={initial?.suffix}
-            placeholder={t({ ka: "სუფიქსი", en: "Suffix" })}
+            placeholder={t("admin.stats.editor.suffix")}
             className={INPUT}
           />
         </div>
@@ -152,10 +143,7 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
             ))}
           </select>
           <p className="text-[12px] text-green">
-            {t({
-              ka: `ახლა: ${picked?.value ?? "—"}. ხელით შეცვლა აღარ სჭირდება.`,
-              en: `Right now: ${picked?.value ?? "—"}. Nothing to keep up to date.`,
-            })}
+            {t("admin.stats.editor.rightNow", { value: picked?.value ?? "—" })}
           </p>
         </>
       ) : null}
@@ -164,7 +152,7 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
         <div className="grid gap-2.5 rounded-[8px] border border-border2 bg-soft p-3">
           <div className="grid gap-2.5 sm:grid-cols-2">
             <label className="block">
-              <span className={FIELD_LABEL}>{t({ ka: "საწყისი ციფრი", en: "Start value" })}</span>
+              <span className={FIELD_LABEL}>{t("admin.stats.editor.startValue")}</span>
               <input
                 name="baseValue"
                 type="number"
@@ -174,14 +162,14 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
               />
             </label>
             <label className="block">
-              <span className={FIELD_LABEL}>{t({ ka: "სუფიქსი", en: "Suffix" })}</span>
+              <span className={FIELD_LABEL}>{t("admin.stats.editor.suffix")}</span>
               <input name="suffix" defaultValue={initial?.suffix} placeholder="₾ / % / +" className={SMALL} />
             </label>
           </div>
 
           <div>
             <span className={FIELD_LABEL}>
-              {t({ ka: "რამდენით გაიზარდოს (დიაპაზონი)", en: "How much it grows (range)" })}
+              {t("admin.stats.editor.howMuchItGrows")}
             </span>
             <div className="grid grid-cols-2 gap-2.5">
               <input
@@ -203,7 +191,7 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
 
           <div>
             <span className={FIELD_LABEL}>
-              {t({ ka: "რა სიხშირით, წამებში (დიაპაზონი)", en: "How often, in seconds (range)" })}
+              {t("admin.stats.editor.howOftenInSeconds")}
             </span>
             <div className="grid grid-cols-2 gap-2.5">
               <input
@@ -224,10 +212,7 @@ function StatFields({ initial, sources }: { initial?: Fields; sources: StatSourc
           </div>
 
           <p className="text-[12px] text-amber">
-            {t({
-              ka: "შენახვისას ციფრი თავიდან იწყებს ზრდას საწყისი ციფრიდან.",
-              en: "Saving restarts the figure from its start value.",
-            })}
+            {t("admin.stats.editor.savingRestartsTheFigure")}
           </p>
         </div>
       ) : null}
@@ -275,15 +260,12 @@ export function StatsEditor({
   return (
     <div className="flex flex-col gap-4">
       <p className="rounded-[8px] border border-border2 bg-soft px-3.5 py-2.5 text-[12px] text-muted">
-        {t({
-          ka: "მთავარი გვერდის ქვედა ზოლი. თითოეული ციფრი სამი ტიპიდან ერთია — ხელით ჩაწერილი, ავტომატურად მზარდი, ან ნამდვილი მთვლელი ბაზიდან.",
-          en: "The strip at the bottom of the landing page. Each figure is one of three kinds — typed by hand, growing automatically, or a real counter from the database.",
-        })}
+        {t("admin.stats.editor.theStripAtThe")}
       </p>
 
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted">
-          {visible.length} {t({ ka: "მაჩვენებელი", en: "stats" })}
+          {visible.length} {t("admin.stats.editor.stats")}
         </span>
         <button
           type="button"
@@ -291,14 +273,14 @@ export function StatsEditor({
           className="inline-flex h-9 items-center gap-1.5 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas"
         >
           {adding ? <IconX size={16} /> : <IconPlus size={16} />}
-          {adding ? t({ ka: "დახურვა", en: "Close" }) : t({ ka: "დამატება", en: "Add stat" })}
+          {adding ? t("admin.stats.editor.close") : t("admin.stats.editor.addStat")}
         </button>
       </div>
 
       {error ? (
         <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
           <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? { ka: "ვერ შესრულდა", en: "Something went wrong" })}
+          {t(ERRORS[error] ?? "admin.stats.editor.somethingWentWrong")}
         </div>
       ) : null}
 
@@ -315,7 +297,7 @@ export function StatsEditor({
               disabled={pending}
               className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60"
             >
-              {pending ? "…" : t({ ka: "დამატება", en: "Add" })}
+              {pending ? "…" : t("admin.stats.editor.add")}
             </button>
           </div>
         </form>
@@ -323,7 +305,7 @@ export function StatsEditor({
 
       {visible.length === 0 && !adding ? (
         <div className="rounded-lg border border-border bg-card px-6 py-10 text-center text-sm text-muted">
-          {t({ ka: "ჯერ არცერთი მაჩვენებელი. საიტზე სექცია არ ჩანს.", en: "No stats yet. The section is hidden on the site." })}
+          {t("admin.stats.editor.noStatsYetThe")}
         </div>
       ) : null}
 
@@ -356,14 +338,14 @@ export function StatsEditor({
                     onClick={() => { setEditing(null); setError(null); }}
                     className="h-9 rounded-[8px] border border-border px-4 text-[13px] font-medium"
                   >
-                    {t({ ka: "გაუქმება", en: "Cancel" })}
+                    {t("admin.stats.editor.cancel")}
                   </button>
                   <button
                     type="submit"
                     disabled={pending}
                     className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60"
                   >
-                    {pending ? "…" : t({ ka: "შენახვა", en: "Save" })}
+                    {pending ? "…" : t("admin.stats.editor.save")}
                   </button>
                 </div>
               </form>
@@ -383,18 +365,18 @@ export function StatsEditor({
                     {s.mode === "LIVE"
                       ? t(sources.find((o) => o.key === s.source)?.label ?? { ka: s.source, en: s.source })
                       : s.mode === "AUTO"
-                        ? `+${s.changeMin}…${s.changeMax} / ${Math.round(s.intervalMinMs / 1000)}–${Math.round(s.intervalMaxMs / 1000)}${t({ ka: "წმ", en: "s" })}`
+                        ? `+${s.changeMin}…${s.changeMax} / ${Math.round(s.intervalMinMs / 1000)}–${Math.round(s.intervalMaxMs / 1000)}${t("admin.stats.editor.s")}`
                         : s.labelEn}
                   </div>
                 </div>
                 {s.mode === "LIVE" ? (
                   <span className="shrink-0 rounded-full bg-green-surface px-2 py-0.5 text-[11px] text-green">
-                    {t({ ka: "ლაივ", en: "Live" })}
+                    {t("admin.stats.editor.live")}
                   </span>
                 ) : null}
                 {s.mode === "AUTO" ? (
                   <span className="shrink-0 rounded-full bg-soft px-2 py-0.5 text-[11px] text-muted">
-                    {t({ ka: "ავტომატური", en: "Automatic" })}
+                    {t("admin.stats.editor.automatic")}
                   </span>
                 ) : null}
                 <div className="flex items-center gap-1">
@@ -402,7 +384,7 @@ export function StatsEditor({
                     type="button"
                     disabled={pending || i === 0}
                     onClick={() => run(() => moveStat(s.id, "up"))}
-                    aria-label={t({ ka: "აწევა", en: "Move up" })}
+                    aria-label={t("admin.stats.editor.moveUp")}
                     className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30"
                   >
                     <IconChevronUp size={16} />
@@ -411,7 +393,7 @@ export function StatsEditor({
                     type="button"
                     disabled={pending || i === stats.length - 1}
                     onClick={() => run(() => moveStat(s.id, "down"))}
-                    aria-label={t({ ka: "ჩამოწევა", en: "Move down" })}
+                    aria-label={t("admin.stats.editor.moveDown")}
                     className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30"
                   >
                     <IconChevronDown size={16} />
@@ -420,7 +402,7 @@ export function StatsEditor({
                     type="button"
                     disabled={pending}
                     onClick={() => { setEditing(s.id); setError(null); }}
-                    aria-label={t({ ka: "რედაქტირება", en: "Edit" })}
+                    aria-label={t("admin.stats.editor.edit")}
                     className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40"
                   >
                     <IconPencil size={15} />
@@ -429,7 +411,7 @@ export function StatsEditor({
                     type="button"
                     disabled={pending}
                     onClick={() => remove(s.id)}
-                    aria-label={t({ ka: "წაშლა", en: "Delete" })}
+                    aria-label={t("admin.stats.editor.delete")}
                     className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40"
                   >
                     <IconTrash size={15} />

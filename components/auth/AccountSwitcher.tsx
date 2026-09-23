@@ -3,16 +3,17 @@
 import { IconLoader2, IconPlus } from "@tabler/icons-react";
 import type { OtherAccount } from "@/lib/auth/accountVault";
 import { MAX_OTHER_ACCOUNTS } from "@/lib/auth/sessionCookie";
-import type { Bilingual } from "@/lib/i18n/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AccountRow } from "./AccountRow";
 import { useAccountList } from "./useAccountList";
+import type { Text } from "@/lib/i18n/messages";
+import { phrase } from "@/lib/i18n/messages";
 
-export const ACCOUNT_ERRORS: Record<string, Bilingual> = {
-  gone: { ka: "ამ ანგარიშის სესია დასრულდა. შედი მასში ხელახლა.", en: "That account's session has ended. Log in to it again." },
-  full: { ka: `ერთდროულად მაქსიმუმ ${MAX_OTHER_ACCOUNTS + 1} ანგარიში`, en: `At most ${MAX_OTHER_ACCOUNTS + 1} accounts at once` },
-  signed_out: { ka: "სესია დასრულდა. შედი ხელახლა.", en: "Your session has ended. Log in again." },
-  failed: { ka: "ვერ მოხერხდა. სცადე ხელახლა.", en: "Something went wrong. Try again." },
+export const ACCOUNT_ERRORS: Record<string, Text> = {
+  gone: "auth.accountSwitcher.thatAccountSSession",
+  full: phrase("auth.accountSwitcher.atMostAccounts", { max: MAX_OTHER_ACCOUNTS + 1 }),
+  signed_out: "auth.accountSwitcher.yourSessionHasEnded",
+  failed: "auth.accountSwitcher.somethingWentWrongTry",
 };
 
 /**
@@ -46,7 +47,7 @@ export function AccountSwitcher({ others }: { others: OtherAccount[] }) {
           <span className="grid size-7 shrink-0 place-items-center rounded-full bg-blue-surface text-blue">
             {list.busy === "add" ? <IconLoader2 size={15} className="animate-spin" /> : <IconPlus size={15} />}
           </span>
-          {t({ ka: "სხვა ანგარიშის დამატება", en: "Add another account" })}
+          {t("auth.accountSwitcher.addAnotherAccount")}
         </button>
       ) : null}
       {list.error ? (

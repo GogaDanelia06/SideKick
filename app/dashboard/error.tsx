@@ -43,7 +43,7 @@ export default function DashboardError({
           href={DASH.home}
           className="inline-flex h-9 items-center rounded-[8px] border border-border px-4 text-[13px] font-medium"
         >
-          {t({ ka: "მთავარზე", en: "Overview" })}
+          {t("dashboard.error.overview")}
         </Link>
       </div>
 

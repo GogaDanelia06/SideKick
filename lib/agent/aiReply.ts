@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { applyReplyStyle } from "@/lib/ai/replyStyle";
 import { checkLimit } from "@/lib/billing/limits";
 import { badRequest, type AgentDenial } from "./auth";
+import { textIn } from "@/lib/i18n/messages";
 
 /**
  * The text an AI message is recorded and sent with: styled the way the business chose,
@@ -17,7 +18,7 @@ export async function acceptAiReply(businessId: string, text: string): Promise<s
   const expired = verdict.reason === "expired";
   const message = expired
     ? "This business's subscription has lapsed and its grace period is over. This reply was not recorded. Customer messages are still accepted — stop generating answers until it is renewed."
-    : `The ${verdict.planName.en} plan allows ${verdict.limit} AI messages and ${verdict.used} have been used. This reply was not recorded. Customer messages are still accepted — stop generating answers for this business until the plan is upgraded.`;
+    : `The ${textIn("en", verdict.planName)} plan allows ${verdict.limit} AI messages and ${verdict.used} have been used. This reply was not recorded. Customer messages are still accepted — stop generating answers for this business until the plan is upgraded.`;
 
   return {
     response: NextResponse.json(

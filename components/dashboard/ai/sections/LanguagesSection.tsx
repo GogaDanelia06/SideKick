@@ -4,7 +4,6 @@ import { useOptimistic, useTransition } from "react";
 import type { AiConfig } from "@prisma/client";
 import { IconLanguage, IconX } from "@tabler/icons-react";
 import { useToast } from "@/components/dashboard/ui/Toast";
-import type { Bilingual } from "@/lib/content/types";
 import { setAiLanguages, type LanguagesError } from "@/lib/dashboard/actions/aiConfig";
 import {
   DEFAULT_AI_LANGUAGE,
@@ -16,11 +15,13 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { SectionHead } from "../parts";
 import { FORBIDDEN, SAVE_ERROR } from "../saveMessages";
 import { LanguagePicker, SuggestedLanguages } from "./LanguageControls";
+import type { Text } from "@/lib/i18n/messages";
+import { phrase } from "@/lib/i18n/messages";
 
-const ERRORS: Record<LanguagesError, Bilingual> = {
+const ERRORS: Record<LanguagesError, Text> = {
   forbidden: FORBIDDEN,
-  empty: { ka: "ერთი ენა მაინც საჭიროა", en: "At least one language is required" },
-  too_many: { ka: `მაქსიმუმ ${MAX_AI_LANGUAGES} ენა`, en: `At most ${MAX_AI_LANGUAGES} languages` },
+  empty: "dashboard.ai.languagesSection.empty",
+  too_many: phrase("dashboard.ai.languagesSection.atMostLanguages", { max: MAX_AI_LANGUAGES }),
 };
 
 export function LanguagesSection({ config }: { config: AiConfig | null }) {
@@ -31,7 +32,7 @@ export function LanguagesSection({ config }: { config: AiConfig | null }) {
   const full = languages.length >= MAX_AI_LANGUAGES;
 
   // Shown at once; the list falls back to the saved one if the server refuses.
-  function save(next: string[], done: Bilingual) {
+  function save(next: string[], done: Text) {
     startTransition(async () => {
       showLanguages(next);
       try {
@@ -47,20 +48,20 @@ export function LanguagesSection({ config }: { config: AiConfig | null }) {
   function add(value: string): boolean {
     const name = value.trim();
     if (!name || full || languages.includes(name)) return false;
-    save([...languages, name], { ka: `${name} დაემატა`, en: `${name} added` });
+    save([...languages, name], phrase("dashboard.ai.languagesSection.added", { name }));
     return true;
   }
 
   function remove(name: string) {
-    save(languages.filter((l) => l !== name), { ka: `${name} წაიშალა`, en: `${name} removed` });
+    save(languages.filter((l) => l !== name), phrase("dashboard.ai.languagesSection.removed", { name }));
   }
 
   return (
     <div className="flex flex-col gap-5">
       <SectionHead
         icon={IconLanguage}
-        title={{ ka: "ენები", en: "Languages" }}
-        hint={{ ka: "რომელ ენებზე უპასუხოს ბოტმა", en: "Which languages the bot replies in" }}
+        title={"dashboard.ai.languagesSection.languages"}
+        hint={"dashboard.ai.languagesSection.hint"}
       />
 
       <div className="flex flex-wrap items-center gap-2">
@@ -75,7 +76,7 @@ export function LanguagesSection({ config }: { config: AiConfig | null }) {
               type="button"
               disabled={languages.length === 1}
               onClick={() => remove(l)}
-              aria-label={t({ ka: "წაშლა", en: "Remove" })}
+              aria-label={t("dashboard.ai.languagesSection.remove")}
               title={languages.length === 1 ? t(ERRORS.empty) : undefined}
               className="text-green/70 hover:text-green disabled:opacity-40"
             >

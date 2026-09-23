@@ -9,8 +9,8 @@ import { TutorialsEditor } from "./TutorialsEditor";
 import { ChannelGuidesEditor } from "./ChannelGuidesEditor";
 
 const SECTIONS: RailItem[] = [
-  { key: "tutorials", label: { ka: "ვიდეო ინსტრუქციები", en: "Tutorials" }, icon: IconVideo },
-  { key: "channels", label: { ka: "არხების დაკავშირება", en: "Channel setup" }, icon: IconPlugConnected },
+  { key: "tutorials", label: "admin.tutorials.admin.tutorials", icon: IconVideo },
+  { key: "channels", label: "admin.tutorials.admin.channelSetup", icon: IconPlugConnected },
 ];
 
 const SECTION_KEYS = SECTIONS.map((s) => s.key);
@@ -27,11 +27,8 @@ export function TutorialsAdmin({
   return (
     <>
       <AdminHeading
-        title={{ ka: "ინსტრუქციები", en: "Help content" }}
-        subtitle={{
-          ka: "ვიდეოები და ტექსტი, რომელსაც მომხმარებელი დაშბორდში ხედავს.",
-          en: "The videos and text customers see inside their dashboard.",
-        }}
+        title={"admin.tutorials.admin.helpContent"}
+        subtitle={"admin.tutorials.admin.subtitle"}
       />
 
       <SectionLayout rail={<SectionRail items={SECTIONS} active={active} onSelect={setActive} />}>

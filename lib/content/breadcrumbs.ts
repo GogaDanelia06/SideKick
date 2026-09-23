@@ -1,5 +1,5 @@
-import type { Bilingual } from "@/lib/i18n/types";
+import type { Text } from "@/lib/i18n/messages";
 
-export type Crumb = { label: Bilingual; href: string };
+export type Crumb = { label: Text; href: string };
 
-export const HOME_CRUMB: Crumb = { label: { ka: "მთავარი", en: "Home" }, href: "/" };
+export const HOME_CRUMB: Crumb = { label: "breadcrumbs.home", href: "/" };

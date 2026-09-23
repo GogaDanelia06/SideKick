@@ -5,15 +5,15 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { DASH } from "@/lib/dashboard/routes";
 import { DASH_NAV } from "@/lib/dashboard/nav";
-import type { Bilingual } from "@/lib/content/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Text } from "@/lib/i18n/messages";
 
-const TABS: { href: string; label: Bilingual }[] = [
-  { href: DASH.home, label: { ka: "მთავარი", en: "Home" } },
-  { href: DASH.conversations, label: { ka: "ჩათი", en: "Chats" } },
-  { href: DASH.orders, label: { ka: "შეკვეთა", en: "Orders" } },
-  { href: DASH.products, label: { ka: "პროდ.", en: "Products" } },
-  { href: DASH.analytics, label: { ka: "სტატ.", en: "Stats" } },
+const TABS: { href: string; label: Text }[] = [
+  { href: DASH.home, label: "dashboard.bottomNav.home" },
+  { href: DASH.conversations, label: "dashboard.bottomNav.chats" },
+  { href: DASH.orders, label: "dashboard.bottomNav.orders" },
+  { href: DASH.products, label: "dashboard.bottomNav.products" },
+  { href: DASH.analytics, label: "dashboard.bottomNav.stats" },
 ];
 
 const iconFor = (href: string) => DASH_NAV.find((n) => n.href === href)!.icon;

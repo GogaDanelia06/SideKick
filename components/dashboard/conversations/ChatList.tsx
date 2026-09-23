@@ -5,8 +5,10 @@ import type { ChannelType } from "@prisma/client";
 import { IconCreditCard, IconExclamationMark, IconInbox, IconRobotOff } from "@tabler/icons-react";
 import { CHANNEL_META, CHANNEL_ORDER } from "@/lib/dashboard/channelMeta";
 import type { ConversationRow } from "@/lib/dashboard/queries";
-import type { Bilingual, IconType } from "@/lib/content/types";
+import type { IconType } from "@/lib/content/types";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { Text } from "@/lib/i18n/messages";
+import { phrase } from "@/lib/i18n/messages";
 
 const RING: Record<ConversationRow["ring"], string> = {
   lead: "border-amber",
@@ -22,21 +24,21 @@ const ALERT: Record<"wait" | "aierr" | "aioff" | "billing", { icon: IconType; cl
 };
 
 /** Built from RING and ALERT, so the legend always matches the rows. */
-const LEGEND: { cls: string; icon?: IconType; label: Bilingual }[] = [
-  { cls: RING.lead, label: { ka: "ლიდი", en: "Lead" } },
-  { cls: RING.order, label: { ka: "შეკვეთა", en: "Order" } },
-  { cls: ALERT.wait.cls, icon: ALERT.wait.icon, label: { ka: "ელოდება ადამიანს", en: "Waiting for a human" } },
-  { cls: ALERT.aierr.cls, icon: ALERT.aierr.icon, label: { ka: "AI შეცდომა", en: "AI error" } },
-  { cls: ALERT.aioff.cls, icon: ALERT.aioff.icon, label: { ka: "AI გათიშული", en: "AI off" } },
-  { cls: ALERT.billing.cls, icon: ALERT.billing.icon, label: { ka: "გეგმა ამოიწურა", en: "Plan spent or lapsed" } },
+const LEGEND: { cls: string; icon?: IconType; label: Text }[] = [
+  { cls: RING.lead, label: "dashboard.conversations.chatList.lead" },
+  { cls: RING.order, label: "dashboard.conversations.chatList.order" },
+  { cls: ALERT.wait.cls, icon: ALERT.wait.icon, label: "dashboard.conversations.chatList.waitingForAHuman" },
+  { cls: ALERT.aierr.cls, icon: ALERT.aierr.icon, label: "dashboard.conversations.chatList.aiError" },
+  { cls: ALERT.aioff.cls, icon: ALERT.aioff.icon, label: "dashboard.conversations.chatList.aiOff" },
+  { cls: ALERT.billing.cls, icon: ALERT.billing.icon, label: "dashboard.conversations.chatList.planSpentOrLapsed" },
 ];
 
-function ago(mins: number): Bilingual {
-  if (mins < 1) return { ka: "ახლა", en: "now" };
-  if (mins < 60) return { ka: `${mins} წთ`, en: `${mins} min` };
+function ago(mins: number): Text {
+  if (mins < 1) return "dashboard.conversations.chatList.now";
+  if (mins < 60) return phrase("dashboard.conversations.chatList.minutes", { min: mins });
   const h = Math.floor(mins / 60);
-  if (h < 24) return { ka: `${h} სთ`, en: `${h} h` };
-  return { ka: `${Math.floor(h / 24)} დღე`, en: `${Math.floor(h / 24)} d` };
+  if (h < 24) return phrase("dashboard.conversations.chatList.hours", { h });
+  return phrase("dashboard.conversations.chatList.days", { d: Math.floor(h / 24) });
 }
 
 export function ChatList({
@@ -65,7 +67,7 @@ export function ChatList({
             channel === null ? "border-ink bg-ink text-surface" : "border-border bg-soft text-muted",
           )}
         >
-          <IconInbox size={13} /> {t({ ka: "ყველა", en: "All" })}
+          <IconInbox size={13} /> {t("dashboard.conversations.chatList.all")}
         </button>
         {CHANNEL_ORDER.map((c) => {
           const m = CHANNEL_META[c];
@@ -106,13 +108,10 @@ export function ChatList({
           <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
             <IconInbox size={26} className="text-faint" />
             <p className="text-sm font-medium">
-              {t({ ka: "მიმოწერა ჯერ არ არის", en: "No conversations yet" })}
+              {t("dashboard.conversations.chatList.noConversationsYet")}
             </p>
             <p className="max-w-[240px] text-xs text-muted">
-              {t({
-                ka: "შეტყობინებები აქ გამოჩნდება, როგორც კი არხი დაუკავშირდება (Facebook, Instagram, WhatsApp).",
-                en: "Messages appear here as soon as a channel is connected (Facebook, Instagram, WhatsApp).",
-              })}
+              {t("dashboard.conversations.chatList.messagesAppearHereAs")}
             </p>
           </div>
         ) : (

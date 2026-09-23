@@ -1,15 +1,15 @@
+import type { Text } from "@/lib/i18n/messages";
 /**
  * The closed list of trackable events (/api/track is public). Only an event name,
  * page, day and count are stored — nothing that identifies a visitor.
  */
 
-import type { Bilingual } from "@/lib/content/types";
 
-const ka = (ka: string, en: string): Bilingual => ({ ka, en });
+const ka = (ka: string, en: string): Text => ({ ka, en });
 
 export type TrackedEvent = {
   name: string;
-  label: Bilingual;
+  label: Text;
   /** Groups the event in the admin panel. */
   group: "traffic" | "funnel" | "engagement";
 };

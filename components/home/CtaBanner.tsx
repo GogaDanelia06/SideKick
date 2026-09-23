@@ -8,14 +8,14 @@ import { ACTIONS } from "@/lib/content/common";
 import { CTA_BANNER } from "@/lib/content/home";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import type { Bilingual } from "@/lib/content/types";
 import { track } from "@/lib/analytics/track";
+import type { Text } from "@/lib/i18n/messages";
 
 export type CtaContent = {
-  badge?: Bilingual;
-  title?: Bilingual;
-  text?: Bilingual;
-  button?: Bilingual;
+  badge?: Text;
+  title?: Text;
+  text?: Text;
+  button?: Text;
   url?: string;
 };
 
