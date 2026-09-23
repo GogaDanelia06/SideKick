@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireContext } from "@/lib/session";
 import { getAccount } from "@/lib/dashboard/queries/account";
+import { listOtherAccounts } from "@/lib/auth/otherAccounts";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 
 export const metadata: Metadata = { title: "Dashboard", robots: { index: false, follow: false } };
@@ -13,7 +14,10 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const ctx = await requireContext();
-  const account = await getAccount(ctx.userId, ctx.businessId);
+  const [account, otherAccounts] = await Promise.all([
+    getAccount(ctx.userId, ctx.businessId),
+    listOtherAccounts(ctx.userId),
+  ]);
 
-  return <DashboardShell account={account}>{children}</DashboardShell>;
+  return <DashboardShell account={{ ...account, otherAccounts }}>{children}</DashboardShell>;
 }

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { Bilingual } from "@/lib/content/types";
 import { signIn } from "next-auth/react";
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
@@ -11,6 +10,7 @@ import { ResendVerification } from "./ResendVerification";
 import { OrDivider } from "./OrDivider";
 import { Field } from "@/components/ui/Field";
 import { LOGIN } from "@/lib/content/auth";
+import { oauthErrorMessage } from "@/lib/content/oauthErrors";
 import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -26,21 +26,6 @@ type LoginFormProps = {
 };
 
 /** Messages for the `?error=` NextAuth adds after a failed Google sign-in. */
-const OAUTH_ERRORS: Record<string, Bilingual> = {
-  OAuthAccountNotLinked: {
-    ka: "ეს ელფოსტა უკვე რეგისტრირებულია პაროლით. შედი პაროლით.",
-    en: "That address is already registered with a password. Sign in with your password.",
-  },
-  AccessDenied: {
-    ka: "Google-ით შესვლა არ დაასრულე.",
-    en: "The Google sign-in was not completed.",
-  },
-  Configuration: {
-    ka: "Google-ით შესვლა ჯერ არ არის გამართული.",
-    en: "Google sign-in is not configured yet.",
-  },
-};
-
 export function LoginForm({ google }: LoginFormProps) {
   const { t } = useLanguage();
   const router = useRouter();
@@ -52,13 +37,7 @@ export function LoginForm({ google }: LoginFormProps) {
 
   const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
 
-  const oauthErrorKey = searchParams.get("error");
-  const oauthError = oauthErrorKey
-    ? (OAUTH_ERRORS[oauthErrorKey] ?? {
-        ka: "Google-ით შესვლა ვერ მოხერხდა. სცადე პაროლით.",
-        en: "Google sign-in failed. Try your password instead.",
-      })
-    : null;
+  const oauthError = oauthErrorMessage(searchParams.get("error"));
 
   function clearFieldError(field: LoginField) {
     setFieldErrors((current) => {
@@ -161,6 +140,8 @@ export function LoginForm({ google }: LoginFormProps) {
           type="email"
           placeholder="you@company.com"
           autoComplete="email"
+          // Filled in when an account whose session ended is picked below the form.
+          defaultValue={searchParams.get("email") ?? undefined}
           error={fieldErrors.email ? t(AUTH_MESSAGES[fieldErrors.email]) : undefined}
           onChange={() => clearFieldError("email")}
           required

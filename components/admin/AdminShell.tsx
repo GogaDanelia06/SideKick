@@ -6,14 +6,17 @@ import { Wordmark } from "@/components/ui/Wordmark";
 import { AdminNav } from "./AdminNav";
 import { AdminProfileMenu } from "./AdminProfileMenu";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import type { OtherAccount } from "@/lib/auth/accountVault";
 
 export function AdminShell({
   name,
   email,
+  otherAccounts,
   children,
 }: {
   name: string;
   email: string;
+  otherAccounts: OtherAccount[];
   children: React.ReactNode;
 }) {
   const { t } = useLanguage();
@@ -28,7 +31,7 @@ export function AdminShell({
     </div>
   );
 
-  const footer = <AdminProfileMenu name={name} email={email} />;
+  const footer = <AdminProfileMenu name={name} email={email} otherAccounts={otherAccounts} />;
 
   return (
     <div className="dash-scope flex min-h-screen bg-canvas text-ink">

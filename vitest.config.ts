@@ -10,5 +10,8 @@ export default defineConfig({
     environment: "node",
     include: ["{lib,app,hooks,components}/**/*.test.{ts,tsx}"],
     globals: true,
+    // next-auth imports "next/server" without its ".js", which Node's own loader refuses;
+    // run through Vite instead, it resolves like the Next build does (lib/auth/idleSignOut.test.ts).
+    server: { deps: { inline: ["next-auth"] } },
   },
 });

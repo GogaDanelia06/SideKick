@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { useDismiss } from "@/hooks/useDismiss";
 import Link from "next/link";
-import { logOut } from "@/lib/auth/logOut";
+import type { OtherAccount } from "@/lib/auth/accountVault";
+import { AccountSwitcher } from "@/components/auth/AccountSwitcher";
+import { CurrentAccount } from "@/components/auth/CurrentAccount";
+import { LogoutButtons } from "@/components/auth/LogoutButtons";
 import clsx from "clsx";
 import {
   IconExternalLink,
   IconLanguage,
   IconLayoutDashboard,
-  IconLogout,
   IconSelector,
 } from "@tabler/icons-react";
 import { Switch } from "@/components/dashboard/ui/Switch";
@@ -18,7 +20,9 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { useTheme } from "@/lib/theme/useTheme";
 
 /** The same account menu as the tenant dashboard; opens upward from the bottom of the sidebar. */
-export function AdminProfileMenu({ name, email }: { name: string; email: string }) {
+type Props = { name: string; email: string; otherAccounts: OtherAccount[] };
+
+export function AdminProfileMenu({ name, email, otherAccounts }: Props) {
   const { t, locale, toggle: toggleLang } = useLanguage();
   const { theme, toggle: toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
@@ -29,10 +33,8 @@ export function AdminProfileMenu({ name, email }: { name: string; email: string 
       {open ? (
         <>
           <div className="absolute inset-x-3 bottom-[calc(100%-4px)] z-40 rounded-[10px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
-            <div className="mb-1 border-b border-border2 px-2.5 pb-2 pt-1">
-              <div className="truncate text-[13px] font-semibold">{name}</div>
-              <div className="truncate text-[11px] text-muted">{email}</div>
-            </div>
+            <CurrentAccount name={name} email={email} />
+            <AccountSwitcher others={otherAccounts} />
 
             <div className="flex items-center gap-2.5 px-2.5 py-2.5 text-[13px]">
               <IconLanguage size={17} />
@@ -65,13 +67,7 @@ export function AdminProfileMenu({ name, email }: { name: string; email: string 
               <IconExternalLink size={14} className="text-faint" />
             </Link>
 
-            <button
-              type="button"
-              onClick={logOut}
-              className="flex w-full items-center gap-2.5 rounded-[6px] px-2.5 py-2.5 text-left text-[13px] text-red hover:bg-red-surface"
-            >
-              <IconLogout size={17} /> {t({ ka: "გასვლა", en: "Log out" })}
-            </button>
+            <LogoutButtons others={otherAccounts.length} />
           </div>
         </>
       ) : null}

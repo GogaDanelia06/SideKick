@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import type { OtherAccount } from "@/lib/auth/accountVault";
 import { planLabel } from "@/lib/content/packages";
 import { initialOf } from "@/lib/i18n/initial";
 
@@ -33,7 +34,8 @@ export async function getAccount(userId: string, businessId: string) {
   };
 }
 
-export type Account = Awaited<ReturnType<typeof getAccount>>;
+/** `otherAccounts`: the other people signed in on this browser (lib/auth/otherAccounts.ts). */
+export type Account = Awaited<ReturnType<typeof getAccount>> & { otherAccounts: OtherAccount[] };
 
 export async function getProfile(userId: string, businessId: string) {
   const [user, business] = await Promise.all([

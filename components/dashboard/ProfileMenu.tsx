@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { useDismiss } from "@/hooks/useDismiss";
 import Link from "next/link";
-import { logOut } from "@/lib/auth/logOut";
+import { AccountSwitcher } from "@/components/auth/AccountSwitcher";
+import { CurrentAccount } from "@/components/auth/CurrentAccount";
+import { LogoutButtons } from "@/components/auth/LogoutButtons";
 import clsx from "clsx";
 import {
   IconExternalLink,
   IconHome,
   IconLanguage,
-  IconLogout,
   IconSelector,
   IconShieldLock,
   IconUserCircle,
@@ -35,10 +36,8 @@ export function ProfileMenu({ account, onNavigate }: { account: Account; onNavig
     <div ref={ref} className="relative border-t border-border2 p-3">
       {open ? (
         <div className="absolute inset-x-3 bottom-[calc(100%-4px)] z-40 max-h-[calc(100dvh-80px)] overflow-y-auto rounded-[10px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
-          <div className="mb-1 border-b border-border2 px-2.5 pb-2 pt-1">
-            <div className="text-[13px] font-semibold">{account.name}</div>
-            <div className="text-[11px] text-muted">{account.email}</div>
-          </div>
+          <CurrentAccount name={account.name} email={account.email} />
+          <AccountSwitcher others={account.otherAccounts} />
           <BusinessSwitcher
             account={account}
             onDone={() => {
@@ -81,13 +80,7 @@ export function ProfileMenu({ account, onNavigate }: { account: Account; onNavig
               <IconExternalLink size={14} className="text-faint" />
             </Link>
           ) : null}
-          <button
-            type="button"
-            onClick={logOut}
-            className="flex w-full items-center gap-2.5 rounded-[6px] px-2.5 py-2.5 text-left text-[13px] text-red hover:bg-red-surface"
-          >
-            <IconLogout size={17} /> {t({ ka: "გასვლა", en: "Log out" })}
-          </button>
+          <LogoutButtons others={account.otherAccounts.length} />
         </div>
       ) : null}
       <button

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { authConfig } from "@/auth.config";
 import { gateAllows } from "@/lib/auth/gate";
 import { IDLE_COOKIE, isIdle, needsRefresh, readMarker, stampMarker } from "@/lib/auth/idle";
+import { expiredCookie, isSignInCookie } from "@/lib/auth/sessionCookie";
 
 const { auth } = NextAuth(authConfig);
 
@@ -22,6 +23,12 @@ export default auth(async (request) => {
     url.searchParams.set("callbackUrl", `${pathname}${request.nextUrl.search}`);
     const res = NextResponse.redirect(url);
     res.cookies.delete(IDLE_COOKIE);
+    // Signed out for real: the session and every account parked beside it. Deleting only
+    // the marker made the next visit look fresh, and the old session walked straight back in.
+    const secure = request.nextUrl.protocol === "https:";
+    for (const { name } of request.cookies.getAll()) {
+      if (isSignInCookie(name)) res.cookies.set(expiredCookie(name, secure));
+    }
     return res;
   };
 
