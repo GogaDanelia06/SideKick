@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { bilingual } from "@/lib/content/bilingual";
-import { pairBlocks, pairItems, type LegalSectionView } from "@/lib/content/legalBlocks";
+import type { LegalSectionView } from "@/lib/content/legalBlocks";
+import { pairSection } from "@/lib/content/legalSections";
 import type { Bilingual } from "@/lib/content/types";
 import { legalTitleKey } from "@/lib/site/textKeys";
 
@@ -12,12 +13,7 @@ export async function getLegalSections(doc: string): Promise<LegalSectionView[]>
     where: { doc, published: true },
     orderBy: { order: "asc" },
   });
-
-  return rows.map((r) => ({
-    heading: bilingual(r.headingKa, r.headingEn),
-    // The bullets box, where a section still uses it, is a list after the text.
-    blocks: [...pairBlocks(r.bodyKa, r.bodyEn), ...pairItems(r.bulletsKa, r.bulletsEn)],
-  }));
+  return rows.map(pairSection);
 }
 
 /** A legal document's admin-set heading, or null to use the drafted title. */

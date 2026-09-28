@@ -2,17 +2,7 @@
 
 import { useOptimistic, useRef, useState, useTransition } from "react";
 import type { LegalSection } from "@prisma/client";
-import {
-  IconAlertTriangle,
-  IconChevronDown,
-  IconChevronUp,
-  IconEye,
-  IconEyeOff,
-  IconPencil,
-  IconPlus,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
+import { IconAlertTriangle, IconPlus, IconX } from "@tabler/icons-react";
 import {
   createLegalSection,
   updateLegalSection,
@@ -22,6 +12,7 @@ import {
   saveLegalTitle,
 } from "@/lib/admin/actions/legal";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { SectionRow } from "./SectionRow";
 import type { Text } from "@/lib/i18n/messages";
 
 const INPUT =
@@ -215,6 +206,12 @@ export function LegalEditor({
         </form>
       ) : null}
 
+      {visible.length === 0 ? (
+        <p className="rounded-lg border border-border bg-card px-4 py-3 text-[13px] text-muted">
+          {t("admin.legal.editor.noSectionsYet")}
+        </p>
+      ) : null}
+
       <div className="flex flex-col gap-2.5">
         {visible.map((s, i) => (
           <div key={s.id} className="rounded-lg border border-border bg-card p-4">
@@ -231,40 +228,17 @@ export function LegalEditor({
                 </div>
               </form>
             ) : (
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 w-6 shrink-0 text-center font-mono text-[12px] text-faint">
-                  {i + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className={s.published ? "text-sm font-medium" : "text-sm font-medium text-muted line-through"}>
-                    {s.headingKa}
-                  </div>
-                  <div className="mt-0.5 line-clamp-2 text-[13px] text-muted">{s.bodyKa}</div>
-                  {s.bulletsKa ? (
-                    <div className="mt-1 text-[12px] text-faint">
-                      • {s.bulletsKa.split("\n").filter(Boolean).length}{" "}
-                      {t("admin.legal.editor.bullets")}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  <button type="button" disabled={pending || i === 0} onClick={() => run(() => moveLegalSection(s.id, "up"))} aria-label={t("admin.legal.editor.moveUp")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
-                    <IconChevronUp size={16} />
-                  </button>
-                  <button type="button" disabled={pending || i === sections.length - 1} onClick={() => run(() => moveLegalSection(s.id, "down"))} aria-label={t("admin.legal.editor.moveDown")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
-                    <IconChevronDown size={16} />
-                  </button>
-                  <button type="button" disabled={pending} onClick={() => run(() => toggleLegalPublished(s.id, !s.published))} aria-label={t("admin.legal.editor.togglePublish")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
-                    {s.published ? <IconEye size={15} /> : <IconEyeOff size={15} />}
-                  </button>
-                  <button type="button" disabled={pending} onClick={() => { setEditing(s.id); setError(null); }} aria-label={t("admin.legal.editor.edit")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
-                    <IconPencil size={15} />
-                  </button>
-                  <button type="button" disabled={pending} onClick={() => remove(s.id)} aria-label={t("admin.legal.editor.delete")} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
-                    <IconTrash size={15} />
-                  </button>
-                </div>
-              </div>
+              <SectionRow
+                section={s}
+                index={i}
+                first={i === 0}
+                last={i === sections.length - 1}
+                busy={pending}
+                onMove={(where) => run(() => moveLegalSection(s.id, where))}
+                onPublish={() => run(() => toggleLegalPublished(s.id, !s.published))}
+                onEdit={() => { setEditing(s.id); setError(null); }}
+                onRemove={() => remove(s.id)}
+              />
             )}
           </div>
         ))}

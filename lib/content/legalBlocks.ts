@@ -15,7 +15,7 @@ export type LegalBlock =
 /** A section of a legal document as the page renders it. */
 export type LegalSectionView = { heading: Bilingual; blocks: LegalBlock[] };
 
-type RawBlock = { kind: "text"; text: string } | { kind: "list"; items: string[] };
+export type RawBlock = { kind: "text"; text: string } | { kind: "list"; items: string[] };
 
 /** Characters that carry no meaning but travel with text pasted from chat apps and Word. */
 const INVISIBLE = /[­​-‏⁠﻿]/g;
@@ -68,35 +68,3 @@ export const toItems = (text: string) =>
     // A bullet typed into a box that draws its own would show twice.
     .map((line) => line.replace(BULLET, ""))
     .filter(Boolean);
-
-const pairUp = (ka: string[], en: string[]): Bilingual[] =>
-  ka.map((text, i) => ({ ka: text, en: en[i] ?? text }));
-
-/**
- * The same section in both languages. They are matched block by block, and any block the
- * English is missing falls back to the Georgian — a half-translated page still reads.
- */
-export function pairBlocks(ka: string, en: string): LegalBlock[] {
-  const english = toBlocks(en);
-
-  return toBlocks(ka).map((block, i): LegalBlock => {
-    const other = english[i];
-    if (block.kind === "list") {
-      return { kind: "list", items: pairUp(block.items, other?.kind === "list" ? other.items : []) };
-    }
-    return { kind: "text", text: { ka: block.text, en: other?.kind === "text" ? other.text : block.text } };
-  });
-}
-
-/** A list from the panel's own bullets box, kept for sections written before the boxes merged. */
-export function pairItems(ka: string, en: string): LegalBlock[] {
-  const items = pairUp(toItems(ka), toItems(en));
-  return items.length > 0 ? [{ kind: "list", items }] : [];
-}
-
-/** The drafted copy (lib/content/legal.ts) already knows its shape; this is it as blocks. */
-export function draftedBlocks(section: { paragraphs?: Bilingual[]; bullets?: Bilingual[] }): LegalBlock[] {
-  const paragraphs = (section.paragraphs ?? []).map((text): LegalBlock => ({ kind: "text", text }));
-  const bullets = section.bullets ?? [];
-  return bullets.length > 0 ? [...paragraphs, { kind: "list", items: bullets }] : paragraphs;
-}

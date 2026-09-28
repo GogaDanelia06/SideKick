@@ -3,7 +3,7 @@
 import { useUrlTab } from "@/hooks/useUrlTab";
 import type { HeroSlide, HeroSlideStat, LegalSection, Plan, SiteFaq, SiteStat } from "@prisma/client";
 import { IconExternalLink } from "@tabler/icons-react";
-import { findAdminPage } from "@/lib/admin/pages";
+import { findAdminPage, sectionRoute } from "@/lib/admin/pages";
 import { SectionLayout, SectionRail } from "./ui/SectionRail";
 import type { TextGroup } from "@/lib/site/textKeys";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -105,7 +105,7 @@ export function PageEditor({
           </p>
         </div>
         <a
-          href={page.route}
+          href={sectionRoute(page, page.sections.find((s) => s.key === active))}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex h-9 items-center gap-1.5 rounded-[8px] border border-border px-3 text-[13px] font-medium text-muted hover:text-ink"

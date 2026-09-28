@@ -58,6 +58,12 @@ export type AdminPage = {
   sections: AdminSection[];
 };
 
+/** The public page a section edits: the legal screen drives three, and SEO rows name theirs. */
+export function sectionRoute(page: AdminPage, section: AdminSection | undefined): string {
+  if (section?.kind === "legal" && section.legalDoc) return `/${section.legalDoc}`;
+  return section?.seoPath ?? page.route;
+}
+
 const ka = (ka: string, en: string): Text => ({ ka, en });
 
 export const ADMIN_PAGES: AdminPage[] = [
