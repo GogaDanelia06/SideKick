@@ -52,7 +52,7 @@ export function SectionForm({
         </p>
       ) : null}
 
-      <SectionSaveContext.Provider value={{ dirty, adopt }}>
+      <SectionSaveContext.Provider value={{ dirty, saving, save, adopt }}>
         {children}
         {extraActions}
       </SectionSaveContext.Provider>

@@ -1,48 +1,63 @@
 "use client";
 
 import { useContext, useState, useTransition } from "react";
-import { IconSparkles, IconWand } from "@tabler/icons-react";
+import { IconArrowBackUp, IconSparkles, IconWand } from "@tabler/icons-react";
 import { generateAiPrompt, refineAiPrompt } from "@/lib/dashboard/actions/assistant";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { SectionSaveContext } from "../sectionSaveContext";
 
 type Props = {
   ready: boolean;
+  /** What the box holds now, kept so an AI rewrite can be taken back. */
+  current: string;
   onPrompt: (prompt: string) => void;
 };
 
 const BTN = "inline-flex h-10 items-center gap-2 rounded-[8px] px-4 text-[13px] font-medium";
 
 /**
- * Generate and refine buttons. The AI service works on the saved prompt and the server saves
- * what it returns, so the box takes that text as saved — what it shows is what the bot uses.
+ * Generate and refine buttons. The AI service reads the saved prompt, so whatever the
+ * merchant has written is saved first: otherwise the AI works from the old text and the new
+ * one is lost under its answer. What comes back is saved on the server and shown as saved,
+ * and the text it replaced stays one click away.
  */
-export function PromptAiActions({ ready, onPrompt }: Props) {
+export function PromptAiActions({ ready, current, onPrompt }: Props) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();
   const [refining, setRefining] = useState(false);
   const [instructions, setInstructions] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const { dirty, adopt } = useContext(SectionSaveContext);
-  // Unsaved edits would be lost under the AI's answer, so it waits for them to be saved.
-  const blocked = !ready || pending || dirty;
+  const [previous, setPrevious] = useState<string | null>(null);
+  const { dirty, saving, save, adopt } = useContext(SectionSaveContext);
+  const blocked = !ready || pending || saving;
 
   const offline = t("dashboard.ai.promptAiActions.requiresTheAiModule");
   const failed = t("dashboard.ai.promptAiActions.theAiServiceDid");
 
   function run(work: () => Promise<{ ok: boolean; prompt?: string }>) {
     setError(null);
+    const before = current;
     start(async () => {
+      // A save that fails says why itself; the AI does not start on an unsaved text.
+      if (dirty && !(await save())) return;
       const res = await work();
       if (res.ok && res.prompt) {
         adopt();
         onPrompt(res.prompt);
+        setPrevious(before);
         setRefining(false);
         setInstructions("");
       } else {
         setError(failed);
       }
     });
+  }
+
+  /** The replaced text goes back in the box as an edit: Save keeps it, Cancel drops it again. */
+  function undo() {
+    if (previous === null) return;
+    onPrompt(previous);
+    setPrevious(null);
   }
 
   return (
@@ -82,21 +97,22 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
           />
           <button
             type="button"
-            disabled={pending || !instructions.trim()}
+            disabled={blocked || !instructions.trim()}
             onClick={() => run(() => refineAiPrompt(instructions))}
             className={`${BTN} self-start bg-primary text-white disabled:opacity-60`}
           >
-            {pending
-              ? t("dashboard.ai.promptAiActions.working")
-              : t("dashboard.ai.promptAiActions.rewrite")}
+            {pending ? t("dashboard.ai.promptAiActions.working") : t("dashboard.ai.promptAiActions.rewrite")}
           </button>
         </div>
       ) : null}
 
-      {pending && !refining ? (
-        <p className="text-[13px] text-muted">{t("dashboard.ai.promptAiActions.working")}</p>
+      {pending && !refining ? <p className="text-[13px] text-muted">{t("dashboard.ai.promptAiActions.working")}</p> : null}
+      {previous !== null && !pending ? (
+        <button type="button" onClick={undo} className="inline-flex items-center gap-1.5 self-start text-[13px] text-muted hover:text-ink">
+          <IconArrowBackUp size={15} />
+          {t("dashboard.ai.promptAiActions.undo")}
+        </button>
       ) : null}
-      {ready && dirty ? <p className="text-[13px] text-muted">{t("dashboard.ai.promptAiActions.saveFirst")}</p> : null}
       {error ? <p className="text-[13px] text-red">{error}</p> : null}
     </div>
   );

@@ -1,4 +1,4 @@
-import type { Fields } from "./fields";
+import { applyFields, changedFields, type Fields } from "./fields";
 import type { SectionOwner, SectionKey } from "./request";
 
 /**
@@ -57,4 +57,18 @@ export function clearAiDrafts() {
   } catch {
     // As above.
   }
+}
+
+/**
+ * Puts changes kept from last time back into the form, when they still differ from what the
+ * server has; a draft that no longer does is dropped. Says whether anything came back.
+ */
+export function restoreDraft(form: HTMLFormElement, place: DraftPlace, saved: Fields): boolean {
+  const draft = readDraft(place);
+  if (draft && changedFields(saved, { ...saved, ...draft.fields })) {
+    applyFields(form, draft.fields);
+    return true;
+  }
+  if (draft) dropDraft(place);
+  return false;
 }

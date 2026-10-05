@@ -4,7 +4,7 @@ import { useCallback, useContext, useEffect, useEffectEvent, useRef, useState } 
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/dashboard/ui/Toast";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
-import { dropDraft, readDraft, writeDraft } from "@/lib/dashboard/sectionSave/drafts";
+import { dropDraft, restoreDraft, writeDraft } from "@/lib/dashboard/sectionSave/drafts";
 import { applyFields, changedFields, readFields, toEntries, type Fields } from "@/lib/dashboard/sectionSave/fields";
 import type { SectionKey } from "@/lib/dashboard/sectionSave/request";
 import { sendSave } from "@/lib/dashboard/sectionSave/send";
@@ -58,18 +58,11 @@ export function useSectionSave(section: SectionKey, title: Text) {
   useEffect(() => {
     const form = formRef.current;
     if (!form || !owner) return;
-    const place = { ...owner, section };
 
     // Once per mount; a section hidden for another one keeps what was typed in it.
     if (saved.current === null) {
       saved.current = readFields(form);
-      const draft = readDraft(place);
-      if (draft && changedFields(saved.current, { ...saved.current, ...draft.fields })) {
-        applyFields(form, draft.fields);
-        setRestored(true);
-      } else if (draft) {
-        dropDraft(place);
-      }
+      if (restoreDraft(form, { ...owner, section }, saved.current)) setRestored(true);
     }
 
     const onEdit = () => sync();
@@ -85,24 +78,31 @@ export function useSectionSave(section: SectionKey, title: Text) {
   // a restored draft — and neither of those is an edit the browser reports.
   useEffect(sync);
 
-  async function save() {
+  /** Sends the form; true once the server holds what it shows. */
+  async function save(): Promise<boolean> {
     const form = formRef.current;
-    if (!form || !owner || saving) return;
-    const place = { ...owner, section };
+    if (!form || !owner || saving) return false;
     const now = readFields(form);
     const changed = saved.current ? changedFields(saved.current, now) : null;
-    if (!changed) return setDirty(false);
+    if (!changed) {
+      setDirty(false);
+      return true;
+    }
 
     setSaving(true);
-    const outcome = await sendSave({ ...place, entries: toEntries(now) });
+    const outcome = await sendSave({ ...owner, section, entries: toEntries(now) });
     setSaving(false);
-    if (!outcome.ok) return notify(t(SAVE_OUTCOME[outcome.error]), "error");
+    if (!outcome.ok) {
+      notify(t(SAVE_OUTCOME[outcome.error]), "error");
+      return false;
+    }
 
     saved.current = now;
     setRestored(false);
     notify(`${t(SAVED)}: ${t(title)}`);
     // Fresh server data everywhere, so the rest of the dashboard shows the new values too.
     router.refresh();
+    return true;
   }
 
   /** The text about to fill the form is what the server already holds: not an edit to save. */

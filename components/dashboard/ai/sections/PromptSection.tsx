@@ -29,7 +29,7 @@ export function PromptSection({ config, aiReady }: { config: AiConfig | null; ai
           </button>
         </div>
       }
-      extraActions={<PromptAiActions ready={aiReady} onPrompt={setPrompt} />}
+      extraActions={<PromptAiActions ready={aiReady} current={prompt} onPrompt={setPrompt} />}
     >
       <textarea
         name="prompt"

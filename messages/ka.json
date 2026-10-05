@@ -623,8 +623,8 @@
         "refineWithAi": "დაარედაქტირე AI-ით",
         "requiresTheAiModule": "საჭიროებს AI მოდულს",
         "rewrite": "გადააკეთე",
-        "saveFirst": "ჯერ შეინახე ცვლილებები — AI შენახულ პრომპტზე მუშაობს.",
         "theAiServiceDid": "AI სერვისმა ვერ უპასუხა. სცადე ხელახლა.",
+        "undo": "დააბრუნე წინა ტექსტი",
         "working": "მუშავდება…"
       },
       "promptSection": {
