@@ -24,8 +24,8 @@ export const FOOTER = {
   },
 
   aboutHeading: {
-    ka: "..... .....",
-    en: ".... ....",
+    ka: "ნავიგაცია",
+    en: "Navigation",
   },
 
   infoHeading: {
