@@ -23,7 +23,7 @@ const deleted = (res: Response, name: string) =>
 describe("proxy idle sign-out", () => {
   it("ends the session and every parked account, not just the idle marker", async () => {
     const token = await encode({
-      token: { uid: "u1", remember: false, startedAt: Date.now() - 60_000 },
+      token: { uid: "u1", remember: false, startedAt: Date.now() - 2 * 60 * 60_000 },
       secret: SECRET,
       salt: SESSION,
       maxAge: 3600,
@@ -49,5 +49,27 @@ describe("proxy idle sign-out", () => {
     const res = await visit({ [SESSION]: token, [IDLE_COOKIE]: await stampMarker(SECRET) });
     expect(res.headers.get("location")).toBeNull();
     expect(deleted(res, SESSION)).toBe(false);
+  });
+
+  /**
+   * The bug this closes: logging out leaves the marker behind. Signing in again half an
+   * hour later, the new session was judged idle by its predecessor's marker and ended on
+   * its first page — the login form simply came back, with no error, again and again.
+   */
+  it("does not end a new sign-in over a marker an earlier session left behind", async () => {
+    const token = await encode({
+      token: { uid: "u1", remember: false, startedAt: Date.now() - 5_000 },
+      secret: SECRET,
+      salt: SESSION,
+      maxAge: 3600,
+    });
+    const leftBehind = await stampMarker(SECRET, Date.now() - 2 * 60 * 60_000);
+
+    const res = await visit({ [SESSION]: token, [IDLE_COOKIE]: leftBehind });
+
+    expect(res.headers.get("location")).toBeNull();
+    expect(deleted(res, SESSION)).toBe(false);
+    // And it starts its own idle clock from now.
+    expect(res.headers.getSetCookie().some((c) => c.startsWith(`${IDLE_COOKIE}=`) && !/Expires=Thu, 01 Jan 1970/.test(c))).toBe(true);
   });
 });

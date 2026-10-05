@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn, signInWithGoogle } from "@/lib/auth/browserSignIn";
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
@@ -28,7 +28,6 @@ type LoginFormProps = {
 /** Messages for the `?error=` NextAuth adds after a failed Google sign-in. */
 export function LoginForm({ google }: LoginFormProps) {
   const { t } = useLanguage();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<LoginErrors>({});
@@ -92,6 +91,7 @@ export function LoginForm({ google }: LoginFormProps) {
             : LOGIN.invalid;
 
         setUnverifiedEmail(unverified ? email : null);
+        setPending(false);
         return setError(t(message));
       }
 
@@ -100,12 +100,12 @@ export function LoginForm({ google }: LoginFormProps) {
         await fetch("/api/session/remember", { method: "POST" }).catch(() => {});
       }
 
-      router.push(callbackUrl);
-      router.refresh();
+      // The cookies just changed, so the next page is loaded for real: a client-side push
+      // could replay a redirect the router cached while signed out, and bring the form back.
+      window.location.assign(callbackUrl);
     } catch {
-      setError(t(LOGIN.invalid));
-    } finally {
       setPending(false);
+      setError(t(LOGIN.invalid));
     }
   }
 

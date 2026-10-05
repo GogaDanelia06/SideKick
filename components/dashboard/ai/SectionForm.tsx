@@ -8,6 +8,7 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { SectionHead } from "./parts";
 import { RESTORED } from "./saveMessages";
 import { SaveBar } from "./SaveBar";
+import { SectionSaveContext } from "./sectionSaveContext";
 import { useSectionSave } from "./useSectionSave";
 import type { Text } from "@/lib/i18n/messages";
 
@@ -30,7 +31,7 @@ export function SectionForm({
   children: ReactNode;
 }) {
   const { t } = useLanguage();
-  const { formRef, restored, dirty, saving, save, cancel } = useSectionSave(section, title);
+  const { formRef, restored, dirty, saving, save, cancel, adopt } = useSectionSave(section, title);
 
   return (
     <form
@@ -51,9 +52,10 @@ export function SectionForm({
         </p>
       ) : null}
 
-      {children}
-
-      {extraActions}
+      <SectionSaveContext.Provider value={{ dirty, adopt }}>
+        {children}
+        {extraActions}
+      </SectionSaveContext.Provider>
       <SaveBar dirty={dirty} saving={saving} onCancel={cancel} />
     </form>
   );

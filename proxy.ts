@@ -41,7 +41,10 @@ export default auth(async (request) => {
   const secret = process.env.AUTH_SECRET;
   if (!secret) return NextResponse.next();
 
-  const seenAt = await readMarker(request.cookies.get(IDLE_COOKIE)?.value, secret);
+  const marker = await readMarker(request.cookies.get(IDLE_COOKIE)?.value, secret);
+  // A marker from before this sign-in belongs to an earlier session (logging out never
+  // clears it). Counted, it ended every new sign-in on its first page, half an hour on.
+  const seenAt = marker !== null && marker >= (user.startedAt ?? 0) ? marker : null;
 
   if (seenAt !== null && isIdle(seenAt)) return signOut();
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn, signInWithGoogle } from "@/lib/auth/browserSignIn";
 import {
   IconArrowRight,
@@ -46,7 +46,6 @@ type RegisterFormProps = {
 
 export function RegisterForm({ google }: RegisterFormProps) {
   const { t } = useLanguage();
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   // Honour ?callbackUrl (e.g. /start sends people to billing after choosing a plan).
@@ -245,10 +244,8 @@ export function RegisterForm({ google }: RegisterFormProps) {
 
           <button
             type="button"
-            onClick={() => {
-              router.push(callbackUrl);
-              router.refresh();
-            }}
+            // A real page load: the session is new, and the router may hold a signed-out redirect.
+            onClick={() => window.location.assign(callbackUrl)}
             className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white"
           >
             {t("auth.registerForm.continue")}

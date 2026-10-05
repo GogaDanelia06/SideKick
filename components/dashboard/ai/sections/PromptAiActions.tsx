@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useContext, useState, useTransition } from "react";
 import { IconSparkles, IconWand } from "@tabler/icons-react";
 import { generateAiPrompt, refineAiPrompt } from "@/lib/dashboard/actions/assistant";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { SectionSaveContext } from "../sectionSaveContext";
 
 type Props = {
   ready: boolean;
@@ -12,13 +13,19 @@ type Props = {
 
 const BTN = "inline-flex h-10 items-center gap-2 rounded-[8px] px-4 text-[13px] font-medium";
 
-/** Generate and refine buttons; the server saves the result, and it replaces the textarea's text. */
+/**
+ * Generate and refine buttons. The AI service works on the saved prompt and the server saves
+ * what it returns, so the box takes that text as saved — what it shows is what the bot uses.
+ */
 export function PromptAiActions({ ready, onPrompt }: Props) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();
   const [refining, setRefining] = useState(false);
   const [instructions, setInstructions] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const { dirty, adopt } = useContext(SectionSaveContext);
+  // Unsaved edits would be lost under the AI's answer, so it waits for them to be saved.
+  const blocked = !ready || pending || dirty;
 
   const offline = t("dashboard.ai.promptAiActions.requiresTheAiModule");
   const failed = t("dashboard.ai.promptAiActions.theAiServiceDid");
@@ -28,6 +35,7 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
     start(async () => {
       const res = await work();
       if (res.ok && res.prompt) {
+        adopt();
         onPrompt(res.prompt);
         setRefining(false);
         setInstructions("");
@@ -42,7 +50,7 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          disabled={!ready || pending}
+          disabled={blocked}
           title={ready ? undefined : offline}
           onClick={() => run(generateAiPrompt)}
           className={`${BTN} border border-ai text-ai disabled:cursor-not-allowed disabled:opacity-60`}
@@ -53,7 +61,7 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
 
         <button
           type="button"
-          disabled={!ready || pending}
+          disabled={blocked}
           title={ready ? undefined : offline}
           onClick={() => setRefining((v) => !v)}
           className={`${BTN} border border-border text-muted disabled:cursor-not-allowed disabled:opacity-60`}
@@ -88,6 +96,7 @@ export function PromptAiActions({ ready, onPrompt }: Props) {
       {pending && !refining ? (
         <p className="text-[13px] text-muted">{t("dashboard.ai.promptAiActions.working")}</p>
       ) : null}
+      {ready && dirty ? <p className="text-[13px] text-muted">{t("dashboard.ai.promptAiActions.saveFirst")}</p> : null}
       {error ? <p className="text-[13px] text-red">{error}</p> : null}
     </div>
   );
