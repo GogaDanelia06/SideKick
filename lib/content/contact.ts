@@ -1,5 +1,4 @@
-import { IconMail, IconPhone } from "@tabler/icons-react";
-import type { Bilingual, IconType } from "./types";
+import type { Bilingual } from "./types";
 
 export const CONTACT_HEADING = {
   badge: { ka: "კონტაქტი", en: "Contact" },
@@ -10,17 +9,11 @@ export const CONTACT_HEADING = {
   },
 };
 
-export type ContactInfoItem = {
-  icon: IconType;
-  label: Bilingual;
-  value: string;
-  href: string;
-};
-
-export const CONTACT_INFO: ContactInfoItem[] = [
-  { icon: IconMail, label: { ka: "ელფოსტა", en: "Email" }, value: "hello@sidekick.ai", href: "mailto:hello@sidekick.ai" },
-  { icon: IconPhone, label: { ka: "ტელეფონი", en: "Phone" }, value: "+995 32 2 000 000", href: "tel:+99532200000" },
-];
+/** The contact cards' labels; the email and phone themselves are set in the admin panel. */
+export const CONTACT_LABELS = {
+  email: { ka: "ელფოსტა", en: "Email" },
+  phone: { ka: "ტელეფონი", en: "Phone" },
+} satisfies Record<string, Bilingual>;
 
 export const CONTACT_SEED: Bilingual = {
   ka: "გამარჯობა! 👋 მე Sidekick-ის AI აგენტი ვარ. დამისვით ნებისმიერი კითხვა — ფასებზე, ინტეგრაციაზე ან დემოზე — და მყისვე გიპასუხებთ.",

@@ -6,12 +6,6 @@ type FooterLink = {
   href: string;
 };
 
-type ContactLine = {
-  label: Bilingual;
-  value: string;
-  href: string;
-};
-
 export const FOOTER = {
   tagline: {
     ka: "AI ასისტენტი, რომელიც პასუხობს, ყიდის და ზოგავს დროს — 24/7.",
@@ -61,28 +55,11 @@ export const FOOTER = {
 
   ] satisfies FooterLink[],
 
-  contact: [
-    {
-      label: { ka: "მეილი", en: "Email" },
-      value: "sidekick@gmail.com",
-      href: "mailto:sidekick@gmail.com",
-    },
-    {
-      label: { ka: "ტელეფონი", en: "Phone" },
-      value: "599 99 99 99",
-      href: "tel:+995599999999",
-    },
-    {
-      label: { ka: "Facebook", en: "Facebook" },
-      value: "Sidekick.ge",
-      href: "https://www.facebook.com/Sidekick.ge",
-    },
-    {
-      label: { ka: "Instagram", en: "Instagram" },
-      value: "@sidekickge",
-      href: "https://www.instagram.com/sidekickge/",
-    },
-  ] satisfies ContactLine[],
+  /** Labels for the contact column; the details themselves are set in the admin panel. */
+  contactLabels: {
+    email: { ka: "მეილი", en: "Email" },
+    phone: { ka: "ტელეფონი", en: "Phone" },
+  },
 
   copyright: {
     ka: "© 2026 Sidekick. ყველა უფლება დაცულია.",

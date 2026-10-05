@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqSchema, webPageSchema } from "@/lib/seo/jsonld";
 import { seoFor } from "@/lib/seo/metadata";
 import { getSiteFaq, getSiteTexts } from "@/lib/site/content";
+import { getContactDetails } from "@/lib/site/content/contactDetails";
 import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { textIn } from "@/lib/i18n/messages";
 
@@ -25,9 +26,10 @@ const crumbs: Crumb[] = [
 ];
 
 export default async function ContactPage() {
-  const [faqs, texts] = await Promise.all([
+  const [faqs, texts, contact] = await Promise.all([
     getSiteFaq(),
     getSiteTexts(["contact_badge", "contact_h1", "contact_sub"]),
+    getContactDetails(),
   ]);
 
   return (
@@ -52,6 +54,7 @@ export default async function ContactPage() {
         badge={texts.contact_badge}
         title={texts.contact_h1}
         sub={texts.contact_sub}
+        contact={contact}
       />
       <Faq faqs={faqs} />
     </>

@@ -1,9 +1,16 @@
  import type { JsonLdData } from "@/components/seo/JsonLd";
+import type { ContactDetails } from "@/lib/content/contactDetails";
 import { ORGANIZATION, SITE, absoluteUrl } from "./site";
 
-/** Organization schema; blank optional fields are omitted rather than emitted empty. */
-export function organizationSchema(): JsonLdData {
-  const { name, legalName, logo, email, phone, address, socialLinks } = ORGANIZATION;
+/**
+ * Organization schema; blank optional fields are omitted rather than emitted empty. The
+ * contact details from the admin panel fill whatever seo.config.json leaves blank.
+ */
+export function organizationSchema(contact?: ContactDetails): JsonLdData {
+  const { name, legalName, logo, address } = ORGANIZATION;
+  const email = ORGANIZATION.email || contact?.email?.value;
+  const phone = ORGANIZATION.phone || contact?.phone?.href.replace(/^tel:/, "");
+  const socialLinks = ORGANIZATION.socialLinks.length > 0 ? ORGANIZATION.socialLinks : (contact?.socials ?? []).map((s) => s.href);
 
   const postalAddress =
     address.street || address.city

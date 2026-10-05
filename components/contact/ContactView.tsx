@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactInfo } from "./ContactInfo";
 import { ContactChat } from "./ContactChat";
 import { CONTACT_HEADING } from "@/lib/content/contact";
+import type { ContactDetails } from "@/lib/content/contactDetails";
 import type { Text } from "@/lib/i18n/messages";
 
 /** The heading is the page's H1 and is admin-editable; each part falls back to
@@ -13,10 +14,12 @@ export function ContactView({
   badge,
   title,
   sub,
+  contact,
 }: {
   badge?: Text;
   title?: Text;
   sub?: Text;
+  contact: ContactDetails;
 }) {
   return (
     <section className="pb-16 pt-[60px]">
@@ -31,7 +34,7 @@ export function ContactView({
           />
         </div>
         <div className="grid gap-5 md:grid-cols-[0.85fr_1.15fr] md:items-start">
-          <ContactInfo />
+          <ContactInfo contact={contact} />
           <ContactChat />
         </div>
       </Container>

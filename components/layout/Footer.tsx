@@ -4,7 +4,9 @@ import Link from "next/link";
 
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
+import type { ContactDetails } from "@/lib/content/contactDetails";
 import { FOOTER } from "@/lib/content/footer";
+import { SOCIAL_NETWORKS } from "@/lib/content/social";
 import { track } from "@/lib/analytics/track";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
@@ -18,8 +20,14 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Footer() {
+/** `contact` is what the admin panel holds (lib/site/content/contactDetails.ts). */
+export function Footer({ contact }: { contact: ContactDetails }) {
   const { t } = useLanguage();
+  const lines = [
+    ...(contact.email ? [{ label: t(FOOTER.contactLabels.email), ...contact.email }] : []),
+    ...(contact.phone ? [{ label: t(FOOTER.contactLabels.phone), ...contact.phone }] : []),
+    ...contact.socials.map((s) => ({ label: SOCIAL_NETWORKS[s.network].label, value: s.value, href: s.href })),
+  ];
 
   const trackLink = (label: string, href: string) =>
     track("footer_link_click", {
@@ -71,9 +79,9 @@ export function Footer() {
           <div>
             <FooterHeading>{t(FOOTER.contactHeading)}</FooterHeading>
             <div className="flex flex-col gap-3 text-sm text-muted">
-              {FOOTER.contact.map((item) => (
+              {lines.map((item) => (
                 <a
-                  key={item.value}
+                  key={item.href}
                   href={item.href}
                   target={item.href.startsWith("http") ? "_blank" : undefined}
                   rel={
@@ -83,7 +91,7 @@ export function Footer() {
                   }
                   className="transition hover:text-ink"
                 >
-                  {t(item.label)} : {item.value}
+                  {item.label} : {item.value}
                 </a>
               ))}
             </div>

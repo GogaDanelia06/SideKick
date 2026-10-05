@@ -3,19 +3,22 @@ import { Footer } from "@/components/layout/Footer";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/seo/jsonld";
+import { getContactDetails } from "@/lib/site/content/contactDetails";
 
-export default function MarketingLayout({
+export default async function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // The footer is on every page, so every page reads the contact details the admin panel holds.
+  const contact = await getContactDetails();
   return (
     <>
-      <JsonLd data={organizationSchema()} />
+      <JsonLd data={organizationSchema(contact)} />
       <JsonLd data={websiteSchema()} />
       <Header />
       <main>{children}</main>
-      <Footer />
+      <Footer contact={contact} />
       <ChatWidget />
     </>
   );
