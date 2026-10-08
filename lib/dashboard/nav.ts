@@ -34,5 +34,3 @@ export const DASH_NAV: DashNavItem[] = [
   { href: DASH.billing, icon: IconCreditCard, label: "dashboard.nav.billing" },
   { href: DASH.videos, icon: IconBrandYoutube, label: "dashboard.nav.tutorials" },
 ];
-
-export const DASH_TABS = [DASH.home, DASH.conversations, DASH.orders, DASH.products, DASH.analytics];

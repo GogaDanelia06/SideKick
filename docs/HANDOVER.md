@@ -311,7 +311,7 @@ registration and billing reference them by fixed key.
 | Security advisories | monthly | `pnpm audit` |
 | Neon backups | verify quarterly | Neon takes them automatically; test a restore |
 | `RateLimitHit` table size | never, normally | swept automatically on ~2% of writes |
-| Expired reset tokens | optional | `purgeExpiredResetTokens()` exists for a cron job |
+| Expired reset / verification tokens | optional | Never deleted today (a few bytes each, one per request). A small cron job that deletes rows whose `expiresAt` is past would tidy them |
 | Instagram tokens | automatic, daily | `/api/cron/instagram-refresh` renews inside 15 days of expiry. Needs `CRON_SECRET`; without it the route answers 401 to everything, **including Vercel**, and the job silently never runs |
 | Instagram refresh failures | watch monthly | grep the logs for `Instagram token could not be renewed`. Once a token lapses there is no repair but the **Reconnect** button on the channels page |
 | Next.js major upgrades | as released | `next-auth` is on a **beta**; check its changelog first |

@@ -19,6 +19,3 @@ export function parseProvider(value: string): PaymentProvider | null {
 export function availableProviders(): PaymentProvider[] {
   return (Object.keys(ADAPTERS) as PaymentProvider[]).filter((k) => ADAPTERS[k].isConfigured());
 }
-
-export type { CheckoutRequest, CheckoutSession, PaymentAdapter, ProviderStatus } from "./types";
-export { PaymentError } from "./types";

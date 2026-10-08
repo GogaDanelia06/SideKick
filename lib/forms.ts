@@ -15,12 +15,6 @@ export function numberField(fd: FormData, name: string): number | null {
   return value ? Number(value) : null;
 }
 
-/** A number field, or `fallback` when it is not a finite number. */
-export function num(fd: FormData, name: string, fallback: number): number {
-  const n = Number(field(fd, name));
-  return Number.isFinite(n) ? n : fallback;
-}
-
 export function checkbox(fd: FormData, name: string): boolean {
   return fd.get(name) === "on";
 }

@@ -8,8 +8,3 @@ export const ACTIONS = {
   getStarted: { ka: "დაიწყე", en: "Get started" },
   profile: { ka: "პროფილი", en: "Profile" },
 } satisfies Record<string, Bilingual>;
-
-export const ONLINE_STATUS: Bilingual = {
-  ka: "ონლაინ · პასუხობს წამებში",
-  en: "online · replies in seconds",
-};

@@ -48,9 +48,3 @@ export async function consumeVerificationToken(id: string, userId: string) {
   ]);
 }
 
-export async function purgeExpiredVerificationTokens() {
-  const { count } = await prisma.emailVerificationToken.deleteMany({
-    where: { expiresAt: { lt: new Date() } },
-  });
-  return count;
-}

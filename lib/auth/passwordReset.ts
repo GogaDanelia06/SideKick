@@ -43,16 +43,3 @@ export async function verifyResetToken(token: string) {
   return record;
 }
 
-export async function consumeResetToken(id: string) {
-  await prisma.passwordResetToken.update({
-    where: { id },
-    data: { usedAt: new Date() },
-  });
-}
-
-export async function purgeExpiredResetTokens() {
-  const { count } = await prisma.passwordResetToken.deleteMany({
-    where: { expiresAt: { lt: new Date() } },
-  });
-  return count;
-}

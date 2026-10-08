@@ -18,8 +18,3 @@ export function isExpired(renewsAt: Date | null | undefined, now = new Date()): 
   return graceEndsAt(renewsAt).getTime() < now.getTime();
 }
 
-/** True while the paid period is over but the grace period is not. */
-export function inGrace(renewsAt: Date | null | undefined, now = new Date()): boolean {
-  if (!renewsAt) return false;
-  return renewsAt.getTime() < now.getTime() && !isExpired(renewsAt, now);
-}

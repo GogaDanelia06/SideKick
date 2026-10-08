@@ -8,11 +8,6 @@ import { del, put } from "@vercel/blob";
 export type StoredMedia = { url: string };
 export type StorageResult = StoredMedia | { error: "not_configured" };
 
-/** Whether an upload can succeed at all right now. */
-export function storageConfigured(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN) || process.env.NODE_ENV !== "production";
-}
-
 const LOCAL_DIR = path.join(process.cwd(), "public", "uploads");
 
 /** Random rather than derived from the filename, so URLs are not guessable. */

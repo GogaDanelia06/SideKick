@@ -471,23 +471,6 @@
       }
     }
   },
-  "ai": {
-    "settings": {
-      "consultative": "კონსულტანტის სტილი",
-      "detailed": "დეტალური",
-      "formal": "ოფიციალური",
-      "formal2": "ფორმალური",
-      "friendly": "მეგობრული",
-      "informal": "ფამილიარული",
-      "medium": "საშუალო",
-      "moderately": "ზომიერად",
-      "never": "არასოდეს",
-      "often": "ხშირად",
-      "professional": "პროფესიონალური",
-      "salesOriented": "გაყიდვებზე ორიენტირებული",
-      "short": "მოკლე"
-    }
-  },
   "auth": {
     "accountRow": {
       "logOutOfThis": "ამ ანგარიშიდან გასვლა",

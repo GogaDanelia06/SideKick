@@ -55,10 +55,6 @@ export const TRACKED_EVENTS: TrackedEvent[] = [
 
 export const EVENT_NAMES: string[] = TRACKED_EVENTS.map((e) => e.name);
 
-export function findEvent(name: string): TrackedEvent | undefined {
-  return TRACKED_EVENTS.find((e) => e.name === name);
-}
-
 /** Extra fields a client may send. Anything else is ignored. */
 export type EventProps = {
   /** For footer_link_click. */

@@ -183,5 +183,3 @@ export function findGroup(slug: string): TextGroup | undefined {
   return TEXT_GROUPS.find((g) => g.slug === slug);
 }
 
-/** Every key the registry owns — used to validate what an action may write. */
-export const ALL_TEXT_KEYS: string[] = TEXT_GROUPS.flatMap((g) => g.fields.map((f) => f.key));

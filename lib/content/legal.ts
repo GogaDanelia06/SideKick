@@ -5,14 +5,6 @@ export const LEGAL_REVIEW_NOTICE: Bilingual = {
   en: "This document was prepared as part of the project and requires review by a lawyer before publication.",
 };
 
-export const LEGAL_ENTITY = {
-  name: { ka: 'შპს „საიდქიქ“', en: "Sidekick LLC" } as Bilingual,
-  regNumber: "【საიდენტიფიკაციო კოდი】",
-  address: "【იურიდიული მისამართი】",
-  email: "【legal@sidekick.ge】",
-  phone: "【+995 XXX XX XX XX】",
-};
-
 export type LegalSection = {
   heading: Bilingual;
   paragraphs?: Bilingual[];
@@ -429,5 +421,3 @@ export const DATA_PROTECTION: LegalDoc = {
     },
   ],
 };
-
-export const LEGAL_DOCS = [TERMS, PRIVACY, DATA_PROTECTION];

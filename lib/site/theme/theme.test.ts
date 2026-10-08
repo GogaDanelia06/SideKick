@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sanitize, sanitizeTheme, themeCss, defaultTheme, isDefault } from "./css";
+import { sanitize, sanitizeTheme, themeCss } from "./css";
 import { derived, rgba } from "./derive";
 import { failures, ratio } from "./contrast";
 import { PRESETS, presetColors } from "./presets";
@@ -103,14 +103,5 @@ describe("presets", () => {
 
   it("leave the default preset as the shipped palette", () => {
     expect(presetColors(PRESETS[0], "dark")).toEqual(defaultColors("dark"));
-  });
-});
-
-describe("isDefault()", () => {
-  it("is true for the shipped palette and false once anything moves", () => {
-    const theme = defaultTheme();
-    expect(isDefault(theme)).toBe(true);
-    theme.light.bg = "#111111";
-    expect(isDefault(theme)).toBe(false);
   });
 });

@@ -28,14 +28,6 @@ export function defaultTheme(): Theme {
   return { dark: defaultColors("dark"), light: defaultColors("light") };
 }
 
-/** True when nothing has been changed from the shipped palette. */
-export function isDefault(theme: Theme): boolean {
-  const base = defaultTheme();
-  return (["dark", "light"] as const).every((s) =>
-    TOKENS.every((t) => theme[s][t.id] === base[s][t.id]),
-  );
-}
-
 function block(selector: string, vars: ThemeColors): string {
   const body = Object.entries(vars)
     .map(([k, v]) => `${k}:${v}`)

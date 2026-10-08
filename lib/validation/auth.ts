@@ -36,11 +36,6 @@ export const registerSchema = z.object({
   field: z.string().trim().max(120, code("fieldTooLong")).optional().default(""),
 });
 
-export const loginSchema = z.object({
-  email: z.string().trim().min(1, code("emailRequired")).email(code("emailInvalid")),
-  password: z.string().min(1, code("passwordRequired")),
-});
-
 export const forgotSchema = z.object({
   email: z.string().trim().email(code("emailInvalid")),
 });
@@ -55,5 +50,3 @@ export const resetSchema = z
     message: code("passwordsMismatch"),
     path: ["repeatPassword"],
   });
-
-export type RegisterInput = z.infer<typeof registerSchema>;

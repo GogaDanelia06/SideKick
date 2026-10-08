@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { GRACE_DAYS, graceEndsAt, inGrace, isExpired } from "./subscriptionState";
+import { GRACE_DAYS, graceEndsAt, isExpired } from "./subscriptionState";
 
 const DAY = 24 * 60 * 60 * 1000;
 const NOW = new Date("2026-09-09T12:00:00Z");
@@ -33,27 +33,6 @@ describe("isExpired()", () => {
 
   it("expires one abandoned months ago", () => {
     expect(isExpired(ago(120), NOW)).toBe(true);
-  });
-});
-
-describe("inGrace()", () => {
-  it("is false while the period is still running", () => {
-    expect(inGrace(ahead(3), NOW)).toBe(false);
-  });
-
-  it("is true between the renewal date and the end of grace", () => {
-    expect(inGrace(ago(1), NOW)).toBe(true);
-    expect(inGrace(ago(GRACE_DAYS), NOW)).toBe(true);
-  });
-
-  it("is false once expired — the two states never overlap", () => {
-    const lapsed = ago(GRACE_DAYS + 1);
-    expect(inGrace(lapsed, NOW)).toBe(false);
-    expect(isExpired(lapsed, NOW)).toBe(true);
-  });
-
-  it("is false with no renewal date", () => {
-    expect(inGrace(null, NOW)).toBe(false);
   });
 });
 

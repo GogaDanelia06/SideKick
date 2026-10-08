@@ -18,8 +18,6 @@ export const num = (v: string) => {
 export const saleFromPct = (price: number, pct: number) => round(price * (1 - pct / 100));
 export const pctFromSale = (price: number, sale: number) => round((1 - sale / price) * 100);
 
-export type Pricing = ReturnType<typeof usePricing>;
-
 export function usePricing(initial?: {
   price?: number | null;
   discountPct?: number | null;

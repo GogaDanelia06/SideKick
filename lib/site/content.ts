@@ -273,7 +273,7 @@ export async function getServiceBoxes(): Promise<BoxView[]> {
   }));
 }
 
-export { getLegalSections, getLegalTitle, type LegalSectionView } from "./content/legal";
+export { getLegalSections, getLegalTitle } from "./content/legal";
 
 export type PageSeoOverrides = {
   title: string;

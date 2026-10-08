@@ -103,14 +103,3 @@ export function SkeletonCards({
   );
 }
 
-export function SkeletonHeading() {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <Skeleton className="h-4 w-36" />
-        <Skeleton className="mt-2 h-3 w-52" />
-      </div>
-      <Skeleton className="h-9 w-32 rounded-[8px]" />
-    </div>
-  );
-}

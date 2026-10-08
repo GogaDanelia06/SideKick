@@ -114,11 +114,6 @@ export function requireStr(
   return str(body, key) ?? badRequest(`${key} is required`);
 }
 
-export function int(body: Record<string, unknown>, key: string): number | undefined {
-  const v = body[key];
-  return typeof v === "number" && Number.isInteger(v) ? v : undefined;
-}
-
 /** Narrows a string to an allowed value, or a 400 listing the options. */
 export function oneOf<T extends string>(
   body: Record<string, unknown>,

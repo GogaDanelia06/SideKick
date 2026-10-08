@@ -8,7 +8,7 @@ import { getContext } from "@/lib/session";
 import { can, requirePermission } from "@/lib/auth/permissions";
 import { availableProviders, parseProvider } from "@/lib/payments";
 import { isAllowedMonths, startCheckout } from "@/lib/billing/checkout";
-import { checkLimit, type LimitRefusal } from "@/lib/billing/limits";
+import { checkLimit } from "@/lib/billing/limits";
 import { deliverOutbound, type DeliveryStatus } from "@/lib/channels/send";
 import { log } from "@/lib/logger";
 import { DASH } from "./routes";
@@ -16,45 +16,6 @@ import { DASH } from "./routes";
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
 export type TeamResult = ActionResult;
-
-export type ChannelToggleResult =
-  | { ok: true }
-  | { ok: false; error: "forbidden" }
-  | ({ ok: false; error: "limit" } & Pick<LimitRefusal, "limit" | "used" | "planName">);
-
-/** Toggles a channel; says why when the plan's channel cap refuses. */
-export async function setChannelConnected(
-  channelId: string,
-  connected: boolean,
-): Promise<ChannelToggleResult> {
-  const ctx = await requirePermission("channels:write");
-  if (!ctx) return { ok: false, error: "forbidden" };
-
-  // Only connecting is capped, so a business can always get back under its limit.
-  if (connected) {
-    const verdict = await checkLimit(ctx.businessId, "channels");
-    if (!verdict.allowed) {
-      return {
-        ok: false,
-        error: "limit",
-        limit: verdict.limit,
-        used: verdict.used,
-        planName: verdict.planName,
-      };
-    }
-  }
-
-  await prisma.channel.updateMany({
-    where: { id: channelId, businessId: ctx.businessId },
-    data: {
-      connected,
-      status: connected ? "ACTIVE" : "OFF",
-      lastSyncAt: connected ? new Date() : null,
-    },
-  });
-  revalidatePath(DASH.channels);
-  return { ok: true };
-}
 
 
 export async function setConversationAi(conversationId: string, aiEnabled: boolean) {

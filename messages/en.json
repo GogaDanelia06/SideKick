@@ -471,23 +471,6 @@
       }
     }
   },
-  "ai": {
-    "settings": {
-      "consultative": "Consultative",
-      "detailed": "Detailed",
-      "formal": "Formal",
-      "formal2": "Formal",
-      "friendly": "Friendly",
-      "informal": "Informal",
-      "medium": "Medium",
-      "moderately": "Moderately",
-      "never": "Never",
-      "often": "Often",
-      "professional": "Professional",
-      "salesOriented": "Sales-oriented",
-      "short": "Short"
-    }
-  },
   "auth": {
     "accountRow": {
       "logOutOfThis": "Log out of this account",
