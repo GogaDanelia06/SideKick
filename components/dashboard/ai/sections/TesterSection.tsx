@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { IconFlask, IconSend, IconTrash } from "@tabler/icons-react";
+import { useToast } from "@/components/dashboard/ui/Toast";
 import { testAiReply } from "@/lib/dashboard/actions/assistant";
 import { answerTester, askTester, clearTesterChat, useTesterChat } from "@/lib/dashboard/testerChat";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -12,6 +13,7 @@ import { testerFailure } from "./testerFailure";
 /** Tries the current prompt against the real AI service. The chat stays until logout. */
 export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId: string }) {
   const { t } = useLanguage();
+  const notify = useToast();
   const { turns, waiting, loaded } = useTesterChat(loginId);
   const [draft, setDraft] = useState("");
   const [failure, setFailure] = useState<ReturnType<typeof testerFailure> | null>(null);
@@ -24,6 +26,7 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
     setFailure(null);
     setDraft("");
     const res = await testAiReply(text, thread).catch(() => null);
+    if (res?.ok && res.promptDrafted) notify(t("dashboard.ai.testerSection.promptDrafted"));
     const answer = res?.ok ? { from: "ai" as const, text: res.reply, handoff: res.handoff } : null;
     // Recorded even if this screen was left meanwhile; a failure is only shown if the chat is still this one.
     if (answerTester(thread, answer) && !answer) setFailure(testerFailure(res));

@@ -50,7 +50,7 @@ export function AiSections({ tab, config, business, aiReady, loginId, owner }: P
         <RulesSection config={config} />
       </Kept>
       <Kept show={tab === "prompt"}>
-        <PromptSection config={config} aiReady={aiReady} />
+        <PromptSection key={config?.prompt ? "saved" : "empty"} config={config} aiReady={aiReady} />
       </Kept>
       {tab === "languages" && <LanguagesSection config={config} />}
       {tab === "tester" && <TesterSection aiReady={aiReady} loginId={loginId} />}

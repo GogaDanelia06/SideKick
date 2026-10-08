@@ -683,6 +683,7 @@
           "unexpected": "Something went wrong on our side. Try again.",
           "unreachable": "Couldn't reach the AI service."
         },
+        "promptDrafted": "Your assistant had no prompt, so one was drafted. See Prompt / instructions.",
         "send": "Send",
         "testYourCurrentPrompt": "Test your current prompt",
         "tester": "Tester",

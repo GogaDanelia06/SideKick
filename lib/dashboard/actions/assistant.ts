@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { aiConfigured, askAiDetailed, buildPrompt, editPrompt, type AiFailureKind } from "@/lib/ai/client";
+import { ensurePrompt } from "@/lib/ai/ensurePrompt";
 import { applyReplyStyle } from "@/lib/ai/replyStyle";
 import { requirePermission } from "@/lib/auth/permissions";
 import { DASH } from "@/lib/dashboard/routes";
@@ -16,7 +17,7 @@ export type PromptResult =
 export type TestFailure = AiFailureKind | "emoji_only" | "unexpected";
 
 export type TestReply =
-  | { ok: true; reply: string; handoff: boolean }
+  | { ok: true; reply: string; handoff: boolean; promptDrafted?: boolean }
   | { ok: false; error: "forbidden" | "unconfigured" | "empty" }
   | { ok: false; error: "failed"; why: TestFailure; status?: number; waitedMs?: number };
 
@@ -71,6 +72,8 @@ export async function testAiReply(message: string, thread: string): Promise<Test
   if (!TESTER_THREAD.test(thread)) return { ok: false, error: "failed", why: "unexpected" };
 
   try {
+    // The AI service refuses a business that has no saved prompt, which is every new business.
+    const drafted = await ensurePrompt(access.businessId);
     const answer = await askAiDetailed(access.businessId, `tester-${access.businessId}-${thread}`, text);
     if (!answer.ok) {
       const { kind, status, waitedMs } = answer.failure;
@@ -80,7 +83,9 @@ export async function testAiReply(message: string, thread: string): Promise<Test
     const reply = await applyReplyStyle(access.businessId, answer.reply.reply);
     // This business chose no emoji, and the whole answer was emoji.
     if (!reply) return { ok: false, error: "failed", why: "emoji_only" };
-    return { ok: true, reply, handoff: answer.reply.handoffRequested };
+    // The prompt box on the AI page must show what was just saved for it.
+    if (drafted) revalidatePath(DASH.ai);
+    return { ok: true, reply, handoff: answer.reply.handoffRequested, ...(drafted ? { promptDrafted: true } : {}) };
   } catch (err) {
     log.error("the AI tester failed on our side", err, { businessId: access.businessId });
     return { ok: false, error: "failed", why: "unexpected" };

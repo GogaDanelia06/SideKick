@@ -207,6 +207,14 @@ own prompt, and their catalogue with prices already resolved.
 `config: null` means the merchant has not set their assistant up yet — use your
 own defaults, it is not an error.
 
+**A business with no prompt.** A new business is created with a config but no `prompt`
+(`null`) — its owner writes or generates one later. Your `/messages` answered
+`404 "No prompt found for business …"` for those, and a customer who wrote to a new
+business got no reply. Sidekick now gives a business a prompt before it asks you
+(`lib/ai/ensurePrompt.ts`): drafted through your `build-prompt`, or a short starter text if
+that fails. So `prompt` should not be `null` by the time `/messages` is called — but if it
+ever is, answering with your own default is kinder than a 404.
+
 The merchant sets these in the dashboard. The values are the Georgian labels shown there:
 
 | Field | How to reply |

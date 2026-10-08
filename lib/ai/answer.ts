@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
 import { askAi, aiConfigured } from "./client";
+import { ensurePrompt } from "./ensurePrompt";
 import { applyReplyStyle } from "./replyStyle";
 import { deliverOutbound } from "@/lib/channels/send";
 import { checkLimit, countMessage } from "@/lib/billing/limits";
@@ -42,6 +43,11 @@ export async function answerCustomer(
     await markLastMessage(conversationId, expired ? "subscription_expired" : "limit_reached");
     return;
   }
+
+  // The AI service will not answer for a business that has no prompt, which is every new business.
+  await ensurePrompt(businessId).catch((err) =>
+    log.error("could not give the business a prompt to start from", err, { businessId }),
+  );
 
   const answer = await askAi(businessId, conversationId, text);
   const reply = answer && (await applyReplyStyle(businessId, answer.reply));

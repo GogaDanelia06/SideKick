@@ -7,15 +7,14 @@ vi.mock("@/lib/db", () => ({
     message: { create: vi.fn(), update: vi.fn(), findFirst: vi.fn() },
   },
 }));
+vi.mock("./ensurePrompt", () => ({ ensurePrompt: vi.fn().mockResolvedValue(false) }));
 vi.mock("./client", () => ({ askAi: vi.fn(), aiConfigured: vi.fn(() => true) }));
 vi.mock("@/lib/channels/send", () => ({ deliverOutbound: vi.fn().mockResolvedValue(null) }));
 vi.mock("@/lib/billing/limits", () => ({
   checkLimit: vi.fn(),
   countMessage: vi.fn().mockResolvedValue(undefined),
 }));
-vi.mock("@/lib/logger", () => ({
-  log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
-}));
+vi.mock("@/lib/logger", () => ({ log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() } }));
 
 import { answerCustomer } from "./answer";
 import { prisma } from "@/lib/db";

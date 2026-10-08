@@ -4,6 +4,7 @@ vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { aiConfig: { findUnique: vi.fn(), upsert: vi.fn() } } }));
 vi.mock("@/lib/auth/permissions", () => ({ requirePermission: vi.fn() }));
 vi.mock("@/lib/logger", () => ({ log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() } }));
+vi.mock("@/lib/ai/ensurePrompt", () => ({ ensurePrompt: vi.fn() }));
 vi.mock("@/lib/ai/client", () => ({
   aiConfigured: () => true,
   askAiDetailed: vi.fn(),
@@ -14,6 +15,7 @@ vi.mock("@/lib/ai/client", () => ({
 import { testAiReply } from "./assistant";
 import { prisma } from "@/lib/db";
 import { askAiDetailed } from "@/lib/ai/client";
+import { ensurePrompt } from "@/lib/ai/ensurePrompt";
 import { log } from "@/lib/logger";
 import { requirePermission } from "@/lib/auth/permissions";
 
@@ -26,6 +28,7 @@ function modelSays(reply: string) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.mocked(ensurePrompt).mockResolvedValue(false);
   vi.mocked(requirePermission).mockResolvedValue({ userId: "u1", businessId: "b1", role: "OWNER" } as never);
   vi.mocked(prisma.aiConfig.findUnique).mockResolvedValue({ emoji: "არასოდეს" } as never);
 });
@@ -84,6 +87,28 @@ describe("testAiReply()", () => {
     vi.mocked(requirePermission).mockResolvedValue(null as never);
 
     expect(await testAiReply("hi", THREAD)).toEqual({ ok: false, error: "forbidden" });
+    expect(ask).not.toHaveBeenCalled();
+  });
+
+  it("gives a business without a prompt one before asking, and says so", async () => {
+    vi.mocked(ensurePrompt).mockResolvedValue(true);
+    modelSays("hello");
+    const order: string[] = [];
+    vi.mocked(ensurePrompt).mockImplementation(async () => (order.push("prompt"), true));
+    ask.mockImplementation(async () => (order.push("ask"), { ok: true, reply: { reply: "hello", handoffRequested: false, handoffReason: null } }));
+
+    expect(await testAiReply("hi", THREAD)).toMatchObject({ ok: true, promptDrafted: true });
+    expect(order).toEqual(["prompt", "ask"]);
+  });
+
+  it("does not claim a draft when the business already had a prompt", async () => {
+    modelSays("hello");
+    expect(await testAiReply("hi", THREAD)).not.toHaveProperty("promptDrafted");
+  });
+
+  it("reports a failure to give a prompt as a failure on our side", async () => {
+    vi.mocked(ensurePrompt).mockRejectedValue(new Error("db down"));
+    expect(await testAiReply("hi", THREAD)).toEqual({ ok: false, error: "failed", why: "unexpected" });
     expect(ask).not.toHaveBeenCalled();
   });
 });

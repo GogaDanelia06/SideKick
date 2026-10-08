@@ -7,6 +7,7 @@ vi.mock("@/lib/db", () => ({
     message: { create: vi.fn(), update: vi.fn(), findFirst: vi.fn() },
   },
 }));
+vi.mock("./ensurePrompt", () => ({ ensurePrompt: vi.fn().mockResolvedValue(false) }));
 vi.mock("./client", () => ({ askAi: vi.fn(), aiConfigured: () => true }));
 vi.mock("@/lib/channels/send", () => ({ deliverOutbound: vi.fn() }));
 vi.mock("@/lib/billing/limits", () => ({
