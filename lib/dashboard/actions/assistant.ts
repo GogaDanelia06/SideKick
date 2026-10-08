@@ -2,18 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { aiConfigured, askAi, buildPrompt, editPrompt } from "@/lib/ai/client";
+import { aiConfigured, askAiDetailed, buildPrompt, editPrompt, type AiFailureKind } from "@/lib/ai/client";
 import { applyReplyStyle } from "@/lib/ai/replyStyle";
 import { requirePermission } from "@/lib/auth/permissions";
 import { DASH } from "@/lib/dashboard/routes";
+import { log } from "@/lib/logger";
 
 export type PromptResult =
   | { ok: true; prompt: string }
   | { ok: false; error: "forbidden" | "unconfigured" | "failed" | "empty" };
 
+/** Why the tester has no answer: what the AI service did, or one of the two ways this side can fail. */
+export type TestFailure = AiFailureKind | "emoji_only" | "unexpected";
+
 export type TestReply =
   | { ok: true; reply: string; handoff: boolean }
-  | { ok: false; error: "forbidden" | "unconfigured" | "empty" | "failed" };
+  | { ok: false; error: "forbidden" | "unconfigured" | "empty" }
+  | { ok: false; error: "failed"; why: TestFailure; status?: number; waitedMs?: number };
 
 /** The business the assistant works for, or why it cannot be used. */
 async function assistantAccess(): Promise<{ businessId: string } | { error: "forbidden" | "unconfigured" }> {
@@ -63,10 +68,21 @@ export async function testAiReply(message: string, thread: string): Promise<Test
 
   const text = message.trim();
   if (!text) return { ok: false, error: "empty" };
-  if (!TESTER_THREAD.test(thread)) return { ok: false, error: "failed" };
+  if (!TESTER_THREAD.test(thread)) return { ok: false, error: "failed", why: "unexpected" };
 
-  const answer = await askAi(access.businessId, `tester-${access.businessId}-${thread}`, text);
-  const reply = answer && (await applyReplyStyle(access.businessId, answer.reply));
-  if (!answer || !reply) return { ok: false, error: "failed" };
-  return { ok: true, reply, handoff: answer.handoffRequested };
+  try {
+    const answer = await askAiDetailed(access.businessId, `tester-${access.businessId}-${thread}`, text);
+    if (!answer.ok) {
+      const { kind, status, waitedMs } = answer.failure;
+      return { ok: false, error: "failed", why: kind, status, waitedMs };
+    }
+
+    const reply = await applyReplyStyle(access.businessId, answer.reply.reply);
+    // This business chose no emoji, and the whole answer was emoji.
+    if (!reply) return { ok: false, error: "failed", why: "emoji_only" };
+    return { ok: true, reply, handoff: answer.reply.handoffRequested };
+  } catch (err) {
+    log.error("the AI tester failed on our side", err, { businessId: access.businessId });
+    return { ok: false, error: "failed", why: "unexpected" };
+  }
 }

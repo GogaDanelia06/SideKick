@@ -671,11 +671,22 @@
       },
       "testerSection": {
         "clearChat": "ჩატის გასუფთავება",
+        "failure": {
+          "badReply": "AI სერვისმა ცარიელი ან წაუკითხავი პასუხი დააბრუნა.",
+          "emojiOnly": "პასუხი მხოლოდ ემოჯებისგან შედგებოდა, შენს პარამეტრებში კი ემოჯები გამორთულია.",
+          "forbidden": "ამ ბიზნესზე AI-ის გატესტვის უფლება არ გაქვს.",
+          "noResponse": "სერვერმა პასუხი ვერ დააბრუნა — შესაძლოა დრო ამოიწურა. სცადე ხელახლა.",
+          "refused": "AI სერვისმა მოთხოვნა უარყო (HTTP {status}).",
+          "serverError": "AI სერვისმა შეცდომა დააბრუნა (HTTP {status}).",
+          "timeout": "AI სერვისმა დროულად ვერ უპასუხა. სცადე ხელახლა.",
+          "unconfigured": "AI სერვისი ამ გარემოში მიერთებული არ არის.",
+          "unexpected": "ჩვენ მხარეს მოულოდნელი შეცდომა მოხდა. სცადე ხელახლა.",
+          "unreachable": "AI სერვისთან დაკავშირება ვერ მოხერხდა."
+        },
         "send": "გაგზავნა",
         "testYourCurrentPrompt": "გატესტე მიმდინარე პრომპტი",
         "tester": "ტესტერი",
         "text": "ტესტერს AI სერვისი სჭირდება, რომელიც ჯერ არ არის დაკავშირებული.",
-        "theAiServiceDid": "AI სერვისმა ვერ უპასუხა. სცადე ხელახლა.",
         "typeAMessage": "დაწერე შეტყობინება…"
       },
       "testerTranscript": {
@@ -836,10 +847,13 @@
         "connectedToast": "{name} ჩაირთო",
         "disconnect": "გათიშვა",
         "disconnectedToast": "{name} გამოირთო",
+        "facebook": "Facebook",
+        "instagram": "Instagram",
         "lastSync": "ბოლო სინქრონიზაცია",
         "planLimit": "„{plan}“ გეგმა {limit} არხს უშვებს და {used} უკვე ჩართულია. ჯერ სხვა გამორთე ან გეგმა შეცვალე.",
         "turnOn": "ჩართვა",
-        "websiteApi": "API ვებსაიტებისთვის"
+        "websiteApi": "API ვებსაიტებისთვის",
+        "whatsapp": "WhatsApp"
       }
     },
     "conversations": {

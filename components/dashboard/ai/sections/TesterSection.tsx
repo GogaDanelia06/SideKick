@@ -7,32 +7,31 @@ import { answerTester, askTester, clearTesterChat, useTesterChat } from "@/lib/d
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AiModuleNotice, INPUT } from "../parts";
 import { TesterTranscript } from "./TesterTranscript";
-
-const NO_ANSWER = "dashboard.ai.testerSection.theAiServiceDid";
+import { testerFailure } from "./testerFailure";
 
 /** Tries the current prompt against the real AI service. The chat stays until logout. */
 export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId: string }) {
   const { t } = useLanguage();
   const { turns, waiting, loaded } = useTesterChat(loginId);
   const [draft, setDraft] = useState("");
-  const [failed, setFailed] = useState(false);
+  const [failure, setFailure] = useState<ReturnType<typeof testerFailure> | null>(null);
 
   async function send() {
     const text = draft.trim();
     const thread = text ? askTester(loginId, text) : null;
     if (!thread) return;
 
-    setFailed(false);
+    setFailure(null);
     setDraft("");
     const res = await testAiReply(text, thread).catch(() => null);
     const answer = res?.ok ? { from: "ai" as const, text: res.reply, handoff: res.handoff } : null;
     // Recorded even if this screen was left meanwhile; a failure is only shown if the chat is still this one.
-    if (answerTester(thread, answer) && !answer) setFailed(true);
+    if (answerTester(thread, answer) && !answer) setFailure(testerFailure(res));
   }
 
   function clear() {
     clearTesterChat();
-    setFailed(false);
+    setFailure(null);
   }
 
   return (
@@ -69,7 +68,13 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
       <div className="flex h-[60vh] min-h-[340px] flex-col overflow-hidden rounded-[10px] border border-border bg-canvas lg:h-auto lg:min-h-0 lg:flex-1">
         <TesterTranscript turns={turns} waiting={waiting} loaded={loaded} />
 
-        {failed ? <p className="px-4 pb-2 text-[13px] text-red">{t(NO_ANSWER)}</p> : null}
+        {failure ? (
+          <div role="alert" className="px-4 pb-2">
+            <p className="text-[13px] text-red">{t(failure.message)}</p>
+            {/* What to quote when asking for help: it tells the causes apart. */}
+            <p className="mt-0.5 font-mono text-[11px] text-faint">{failure.code}</p>
+          </div>
+        ) : null}
 
         <div className="flex items-center gap-2 border-t border-border p-3">
           <input

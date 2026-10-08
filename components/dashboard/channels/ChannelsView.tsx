@@ -17,9 +17,9 @@ import { setChannelConnected } from "@/lib/dashboard/actions/channels";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const META = {
-  FACEBOOK: { name: "Facebook", Icon: IconBrandFacebook, color: "#1877f2" },
-  INSTAGRAM: { name: "Instagram", Icon: IconBrandInstagram, color: "#c13584" },
-  WHATSAPP: { name: "WhatsApp", Icon: IconBrandWhatsapp, color: "#25d366" },
+  FACEBOOK: { name: "dashboard.channels.view.facebook", Icon: IconBrandFacebook, color: "#1877f2" },
+  INSTAGRAM: { name: "dashboard.channels.view.instagram", Icon: IconBrandInstagram, color: "#c13584" },
+  WHATSAPP: { name: "dashboard.channels.view.whatsapp", Icon: IconBrandWhatsapp, color: "#25d366" },
   WEBSITE: { name: "dashboard.channels.view.websiteApi", Icon: IconWorld, color: "var(--blue)" },
 } as const;
 
@@ -42,7 +42,7 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
               <m.Icon size={24} />
             </span>
             <div className="min-w-0 flex-1">
-              <div className="font-semibold">{m.name}</div>
+              <div className="font-semibold">{t(m.name)}</div>
               <div className="text-xs text-muted">
                 {t("dashboard.channels.view.lastSync")}: {c.lastSyncAt ? new Date(c.lastSyncAt).toISOString().slice(0, 10) : "—"}
               </div>
@@ -62,7 +62,7 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
                   setRefusal(null);
                   const res = await setChannelConnected(c.id, !c.connected);
                   if (res.ok) {
-                    notify(t(c.connected ? "dashboard.channels.view.disconnectedToast" : "dashboard.channels.view.connectedToast", { name: m.name }));
+                    notify(t(c.connected ? "dashboard.channels.view.disconnectedToast" : "dashboard.channels.view.connectedToast", { name: t(m.name) }));
                   }
                   if (!res.ok && res.error === "limit") {
                     setRefusal(

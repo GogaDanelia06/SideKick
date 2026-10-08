@@ -40,21 +40,19 @@ export function SectionHead({
 }
 
 export function TextField({
-  name, label, defaultValue, placeholder, required, type = "text",
+  name, label, defaultValue, placeholder, example, required, type = "text",
 }: {
-  name: string; label: Text; defaultValue?: string | null;
-  placeholder?: string | Text; required?: boolean; type?: string;
+  name: string; label: Text; defaultValue?: string | null; required?: boolean; type?: string;
+  /** A hint in words, translated — or an `example` value, shown as it is in every language. */
+  placeholder?: Text; example?: string;
 }) {
   const { t } = useLanguage();
   return (
     <label className="block text-sm">
       <span className="mb-1.5 block text-xs text-muted">{t(label)}</span>
       <input
-        name={name}
-        type={type}
-        required={required}
-        defaultValue={defaultValue ?? ""}
-        placeholder={typeof placeholder === "object" ? t(placeholder) : placeholder}
+        name={name} type={type} required={required} defaultValue={defaultValue ?? ""}
+        placeholder={example ?? (placeholder === undefined ? undefined : t(placeholder))}
         className={INPUT}
       />
     </label>

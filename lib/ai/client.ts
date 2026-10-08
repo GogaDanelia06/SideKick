@@ -1,53 +1,10 @@
 import { log } from "@/lib/logger";
+import { call, type AiFailure } from "./call";
+
+export { aiConfigured } from "./call";
+export type { AiFailure, AiFailureKind } from "./call";
 
 /** Client for the AI service: synchronous request/response, snake_case translated here. */
-
-const base = () => process.env.AI_SERVICE_URL?.replace(/\/+$/, "");
-
-const key = () => process.env.AI_SERVICE_KEY;
-
-/** Generous for a language model; these calls never run inside the webhook deadline. */
-const TIMEOUT_MS = Number(process.env.AI_SERVICE_TIMEOUT_MS ?? 45_000);
-
-export function aiConfigured() {
-  return Boolean(base() && key());
-}
-
-type Result<T> = { ok: true; data: T } | { ok: false; detail: string };
-
-async function call<T>(path: string, body?: unknown): Promise<Result<T>> {
-  const url = base();
-  const token = key();
-  if (!url || !token) {
-    return { ok: false, detail: "AI_SERVICE_URL/AI_SERVICE_KEY not set" };
-  }
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-  try {
-    const res = await fetch(`${url}${path}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body ?? {}),
-      signal: controller.signal,
-    });
-
-    if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      return { ok: false, detail: `HTTP ${res.status}: ${detail.slice(0, 300)}` };
-    }
-
-    return { ok: true, data: (await res.json()) as T };
-  } catch (err) {
-    return { ok: false, detail: err instanceof Error ? err.message : String(err) };
-  } finally {
-    clearTimeout(timer);
-  }
-}
 
 export type AiReply = {
   reply: string;
@@ -56,12 +13,12 @@ export type AiReply = {
   handoffReason: string | null;
 };
 
-/** Asks for a reply to one message; the service keeps history per `conversationId`. */
-export async function askAi(
+/** Asks for a reply to one message and says why when there is none; the service keeps history per `conversationId`. */
+export async function askAiDetailed(
   businessId: string,
   conversationId: string,
   message: string,
-): Promise<AiReply | null> {
+): Promise<{ ok: true; reply: AiReply } | { ok: false; failure: AiFailure }> {
   const res = await call<{
     reply?: string;
     handoff_requested?: boolean;
@@ -72,21 +29,35 @@ export async function askAi(
   });
 
   if (!res.ok) {
-    log.error("AI service could not answer", undefined, { conversationId, detail: res.detail });
-    return null;
+    const { kind, status, waitedMs, detail } = res;
+    log.error("AI service could not answer", undefined, { conversationId, kind, status, waitedMs, detail });
+    return { ok: false, failure: res };
   }
 
   const reply = res.data.reply?.trim();
   if (!reply) {
     log.warn("AI service returned an empty reply", { conversationId });
-    return null;
+    return { ok: false, failure: { kind: "empty_reply", waitedMs: 0, detail: "the reply was blank" } };
   }
 
   return {
-    reply,
-    handoffRequested: res.data.handoff_requested === true,
-    handoffReason: res.data.handoff_reason?.trim() || null,
+    ok: true,
+    reply: {
+      reply,
+      handoffRequested: res.data.handoff_requested === true,
+      handoffReason: res.data.handoff_reason?.trim() || null,
+    },
   };
+}
+
+/** The same, for callers that only need to know whether there is an answer. */
+export async function askAi(
+  businessId: string,
+  conversationId: string,
+  message: string,
+): Promise<AiReply | null> {
+  const answer = await askAiDetailed(businessId, conversationId, message);
+  return answer.ok ? answer.reply : null;
 }
 
 /** Generates a system prompt from what the business has already told us. */

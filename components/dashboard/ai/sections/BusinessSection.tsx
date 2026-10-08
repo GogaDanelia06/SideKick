@@ -29,13 +29,13 @@ export function BusinessSection({ business }: { business: Business | null }) {
           type="email"
           label={"dashboard.ai.businessSection.email"}
           defaultValue={business?.email}
-          placeholder="info@company.ge"
+          example="info@company.ge"
         />
         <TextField
           name="phone"
           label={"dashboard.ai.businessSection.phoneNumber"}
           defaultValue={business?.phone}
-          placeholder="+995 5XX XX XX XX"
+          example="+995 5XX XX XX XX"
         />
         <TextField
           name="contactInfo"
@@ -53,7 +53,7 @@ export function BusinessSection({ business }: { business: Business | null }) {
           name="site"
           label={"dashboard.ai.businessSection.website"}
           defaultValue={business?.site}
-          placeholder="www.company.ge"
+          example="www.company.ge"
         />
         <TextField
           name="branches"

@@ -56,6 +56,20 @@ the name of the slot it fills instead: `title`, `subtitle`, `hint`, `empty`.
 Those are `Bilingual` values — `{ ka, en }` pairs. `t()` renders them exactly as it
 renders a key, so a screen can mix the two without knowing which it has.
 
+## Keys and plain text never share a prop
+
+A key is just a string, so a component that takes "a string or a message" cannot tell a key
+from plain text — and prints the key. That is how raw `dashboard.…` text once reached the
+screen (a placeholder, a channel name). Keep them apart:
+
+- A prop that holds words takes `Text`, and the component calls `t()` on it.
+- Something that is *not* words — a sample address, a brand name, a path from the database — gets
+  its own prop (`example`, `path`) or is rendered as it is; it never goes through a `Text` prop.
+- A key stored in a plain object field must be read back through `t(field)`, never `{field}`.
+
+To check a change, load the pages and look for anything that looks like `area.screen.thing`: in
+the server-rendered HTML it is as easy to spot as a missing translation.
+
 ## Adding a language
 
 Copy `messages/en.json` to `messages/<code>.json`, translate the values, and add the
