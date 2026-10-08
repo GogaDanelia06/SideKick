@@ -672,16 +672,9 @@
       "testerSection": {
         "clearChat": "Clear chat",
         "failure": {
-          "badReply": "The AI service sent an empty or unreadable answer.",
           "emojiOnly": "The answer was only emoji, and emoji are switched off in your settings.",
           "forbidden": "You don't have permission to test the AI for this business.",
-          "noResponse": "The server didn't respond — it may have run out of time. Try again.",
-          "refused": "The AI service refused the request (HTTP {status}).",
-          "serverError": "The AI service returned an error (HTTP {status}).",
-          "timeout": "The AI service didn't answer in time. Try again.",
-          "unconfigured": "The AI service isn't connected in this environment.",
-          "unexpected": "Something went wrong on our side. Try again.",
-          "unreachable": "Couldn't reach the AI service."
+          "noAnswer": "The AI service did not answer. Try again."
         },
         "promptDrafted": "Your assistant had no prompt, so one was drafted. See Prompt / instructions.",
         "send": "Send",

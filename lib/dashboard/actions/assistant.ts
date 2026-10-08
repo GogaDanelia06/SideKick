@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
-import { aiConfigured, askAiDetailed, buildPrompt, editPrompt, type AiFailureKind } from "@/lib/ai/client";
+import { aiConfigured, askAi, buildPrompt, editPrompt } from "@/lib/ai/client";
 import { ensurePrompt } from "@/lib/ai/ensurePrompt";
 import { applyReplyStyle } from "@/lib/ai/replyStyle";
 import { requirePermission } from "@/lib/auth/permissions";
@@ -13,13 +13,9 @@ export type PromptResult =
   | { ok: true; prompt: string }
   | { ok: false; error: "forbidden" | "unconfigured" | "failed" | "empty" };
 
-/** Why the tester has no answer: what the AI service did, or one of the two ways this side can fail. */
-export type TestFailure = AiFailureKind | "emoji_only" | "unexpected";
-
 export type TestReply =
   | { ok: true; reply: string; handoff: boolean; promptDrafted?: boolean }
-  | { ok: false; error: "forbidden" | "unconfigured" | "empty" }
-  | { ok: false; error: "failed"; why: TestFailure; status?: number; waitedMs?: number };
+  | { ok: false; error: "forbidden" | "unconfigured" | "empty" | "failed" | "emoji_only" };
 
 /** The business the assistant works for, or why it cannot be used. */
 async function assistantAccess(): Promise<{ businessId: string } | { error: "forbidden" | "unconfigured" }> {
@@ -69,25 +65,23 @@ export async function testAiReply(message: string, thread: string): Promise<Test
 
   const text = message.trim();
   if (!text) return { ok: false, error: "empty" };
-  if (!TESTER_THREAD.test(thread)) return { ok: false, error: "failed", why: "unexpected" };
+  if (!TESTER_THREAD.test(thread)) return { ok: false, error: "failed" };
 
   try {
     // The AI service refuses a business that has no saved prompt, which is every new business.
     const drafted = await ensurePrompt(access.businessId);
-    const answer = await askAiDetailed(access.businessId, `tester-${access.businessId}-${thread}`, text);
-    if (!answer.ok) {
-      const { kind, status, waitedMs } = answer.failure;
-      return { ok: false, error: "failed", why: kind, status, waitedMs };
-    }
+    // Why it failed — the status, the wait — is in the server log (lib/ai/client.ts), not for the screen.
+    const answer = await askAi(access.businessId, `tester-${access.businessId}-${thread}`, text);
+    if (!answer) return { ok: false, error: "failed" };
 
-    const reply = await applyReplyStyle(access.businessId, answer.reply.reply);
+    const reply = await applyReplyStyle(access.businessId, answer.reply);
     // This business chose no emoji, and the whole answer was emoji.
-    if (!reply) return { ok: false, error: "failed", why: "emoji_only" };
+    if (!reply) return { ok: false, error: "emoji_only" };
     // The prompt box on the AI page must show what was just saved for it.
     if (drafted) revalidatePath(DASH.ai);
-    return { ok: true, reply, handoff: answer.reply.handoffRequested, ...(drafted ? { promptDrafted: true } : {}) };
+    return { ok: true, reply, handoff: answer.handoffRequested, ...(drafted ? { promptDrafted: true } : {}) };
   } catch (err) {
     log.error("the AI tester failed on our side", err, { businessId: access.businessId });
-    return { ok: false, error: "failed", why: "unexpected" };
+    return { ok: false, error: "failed" };
   }
 }

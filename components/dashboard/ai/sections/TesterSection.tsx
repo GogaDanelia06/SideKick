@@ -5,6 +5,7 @@ import { IconFlask, IconSend, IconTrash } from "@tabler/icons-react";
 import { useToast } from "@/components/dashboard/ui/Toast";
 import { testAiReply } from "@/lib/dashboard/actions/assistant";
 import { answerTester, askTester, clearTesterChat, useTesterChat } from "@/lib/dashboard/testerChat";
+import type { Text } from "@/lib/i18n/messages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AiModuleNotice, INPUT } from "../parts";
 import { TesterTranscript } from "./TesterTranscript";
@@ -16,7 +17,7 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
   const notify = useToast();
   const { turns, waiting, loaded } = useTesterChat(loginId);
   const [draft, setDraft] = useState("");
-  const [failure, setFailure] = useState<ReturnType<typeof testerFailure> | null>(null);
+  const [failure, setFailure] = useState<Text | null>(null);
 
   async function send() {
     const text = draft.trim();
@@ -71,13 +72,7 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
       <div className="flex h-[60vh] min-h-[340px] flex-col overflow-hidden rounded-[10px] border border-border bg-canvas lg:h-auto lg:min-h-0 lg:flex-1">
         <TesterTranscript turns={turns} waiting={waiting} loaded={loaded} />
 
-        {failure ? (
-          <div role="alert" className="px-4 pb-2">
-            <p className="text-[13px] text-red">{t(failure.message)}</p>
-            {/* What to quote when asking for help: it tells the causes apart. */}
-            <p className="mt-0.5 font-mono text-[11px] text-faint">{failure.code}</p>
-          </div>
-        ) : null}
+        {failure ? <p role="alert" className="px-4 pb-2 text-[13px] text-red">{t(failure)}</p> : null}
 
         <div className="flex items-center gap-2 border-t border-border p-3">
           <input

@@ -2,7 +2,6 @@ import { log } from "@/lib/logger";
 import { call, type AiFailure } from "./call";
 
 export { aiConfigured } from "./call";
-export type { AiFailure, AiFailureKind } from "./call";
 
 /** Client for the AI service: synchronous request/response, snake_case translated here. */
 
