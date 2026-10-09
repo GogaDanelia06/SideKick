@@ -42,7 +42,7 @@ export function AiView({ config, business, aiReady, loginId, owner }: Props) {
   const testing = tab === "tester";
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[260px_1fr] lg:items-start">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[260px_1fr] lg:items-start">
       <Panel className={clsx("flex flex-col p-3 lg:sticky lg:top-4", FULL_HEIGHT)}>
         <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
           {t("dashboard.ai.view.configuration")}

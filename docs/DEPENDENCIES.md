@@ -3,11 +3,12 @@
 Every third-party library the project depends on directly: its version, its
 licence, what it is for, and the risk notes that matter at handover.
 
-- **Generated:** 2026-09-22, against `pnpm-lock.yaml` at that date.
+- **Generated:** 2026-09-22, against `pnpm-lock.yaml` at that date; `marked` added 2026-10-09.
 - **Runtime:** Node.js 24 LTS (`engines` in `package.json`, which Vercel follows), pnpm 10.34.5.
-- **Security audit:** `pnpm audit` → **no known vulnerabilities** (with the one override below).
-  Reproduce with `pnpm audit`, `pnpm licenses list` and `pnpm outdated`.
-- **Direct dependencies:** 12 runtime + 12 tooling. **Full resolved tree:** 426 packages.
+- **Security audit:** on 2026-10-09 `pnpm audit` lists 10 advisories, none in `marked`: seven in
+  `next` (one critical; all fixed in 16.3.8 or later) and three in `sharp`, `braces` and
+  `source-map-js`. On 2026-09-22 it listed none. Reproduce with `pnpm audit`, `pnpm licenses list` and `pnpm outdated`.
+- **Direct dependencies:** 13 runtime + 12 tooling. **Full resolved tree:** 427 packages.
 
 **Licences.** There is no strong-copyleft (GPL/AGPL) package; nearly everything is MIT,
 ISC, Apache-2.0 or BSD. Four libraries carry a weak-copyleft licence, all used
@@ -33,6 +34,7 @@ licence opinion, have a lawyer confirm.
 | `@tabler/icons-react` | 3.47.0 | MIT | Icon set | Tree-shaken; only imported icons ship. |
 | `fflate` | 0.8.3 | MIT | Zip for the product Excel import/export | Pure JS. |
 | `clsx` | 2.1.1 | MIT | Conditional className joining | |
+| `marked` | 18.1.0 | MIT | Reads the AI prompt's Markdown, to show it as headings, lists and bold | No dependencies. Only its lexer is used; our own code (`lib/markdown/`) draws React elements, never HTML. |
 
 ## Tooling dependencies — build, type-check, lint and tests only; not shipped
 
@@ -114,4 +116,4 @@ config this project relies on — but two consequences follow:
    three critical and several lower advisories. Watch `npm view next-auth dist-tags`.
 
 When stable v5 ships, migrate deliberately on its own branch and re-run the full
-auth test pass. Everything else in the tree is a stable release with no current advisory.
+auth test pass. Everything else in the tree is a stable release.

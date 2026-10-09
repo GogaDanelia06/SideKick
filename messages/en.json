@@ -610,6 +610,13 @@
         "undo": "Bring back the previous text",
         "working": "Working…"
       },
+      "promptBox": {
+        "edit": "Edit",
+        "empty": "Nothing is written yet. Switch to Edit and write the prompt.",
+        "hint": "Formatting (Markdown): # Heading · ## Subheading · - list · **bold text**",
+        "preview": "Preview",
+        "view": "How the prompt is shown"
+      },
       "promptSection": {
         "promptInstructions": "Prompt / instructions",
         "video": "Video",

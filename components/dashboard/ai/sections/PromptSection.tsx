@@ -5,12 +5,14 @@ import type { AiConfig } from "@prisma/client";
 import { IconBrandYoutube, IconFileText } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { PromptAiActions } from "./PromptAiActions";
-import { AREA } from "../parts";
+import { PromptBox, type PromptView } from "./PromptBox";
 import { SectionForm } from "../SectionForm";
 
 export function PromptSection({ config, aiReady }: { config: AiConfig | null; aiReady: boolean }) {
   const { t } = useLanguage();
   const [prompt, setPrompt] = useState(config?.prompt ?? "");
+  // A prompt that exists is read formatted; an empty one is there to be written.
+  const [view, setView] = useState<PromptView>(prompt.trim() ? "preview" : "edit");
 
   return (
     <SectionForm
@@ -29,15 +31,17 @@ export function PromptSection({ config, aiReady }: { config: AiConfig | null; ai
           </button>
         </div>
       }
-      extraActions={<PromptAiActions ready={aiReady} current={prompt} onPrompt={setPrompt} />}
+      extraActions={
+        // What the AI writes, and what an undo brings back, is shown formatted.
+        <PromptAiActions ready={aiReady} current={prompt} onPrompt={(text) => { setPrompt(text); setView("preview"); }} />
+      }
     >
-      <textarea
-        name="prompt"
-        rows={10}
+      <PromptBox
         value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
+        onChange={setPrompt}
+        view={view}
+        onView={setView}
         placeholder={t("dashboard.ai.promptSection.youAreCompanyS")}
-        className={AREA}
       />
     </SectionForm>
   );

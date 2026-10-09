@@ -182,7 +182,8 @@ a person makes in the dashboard, with the history that implies.
 ### `GET /context?businessId=…`
 
 Everything needed to answer this merchant's customer: their tone settings, their
-own prompt, and their catalogue with prices already resolved.
+own prompt, and their catalogue with prices already resolved. The `prompt` is plain
+text that may use Markdown (`## headings`, `- lists`, `**bold**`); the dashboard shows it formatted.
 
 ```json
 {
