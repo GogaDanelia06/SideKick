@@ -611,6 +611,19 @@
         "undo": "Bring back the previous text",
         "working": "Working…"
       },
+      "promptChanges": {
+        "added": "Added:",
+        "edited": "Edited:",
+        "emptyLine": "empty line",
+        "hint": "Compared with the text before the AI rewrote it.",
+        "removed": "Removed:",
+        "same": "No differences from the text before the AI rewrote it.",
+        "title": "What changed",
+        "toggle": "Show or hide the changes",
+        "unchanged": "{count} unchanged lines",
+        "wordsAdded": "Words added: {count}",
+        "wordsRemoved": "Words removed: {count}"
+      },
       "promptSection": {
         "promptInstructions": "Prompt / instructions",
         "video": "Video",
