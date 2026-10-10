@@ -53,7 +53,6 @@ describe("answerCustomer() when the business turned emoji off", () => {
   });
 
   it("sends nothing and flags the chat when the reply was only emoji", async () => {
-    // No channel accepts an empty message, so the inbox shows the chat as unanswered instead.
     modelSays("👍");
     await answerCustomer("b1", "c1", "მადლობა");
 

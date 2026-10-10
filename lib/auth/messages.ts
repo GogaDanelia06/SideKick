@@ -1,11 +1,6 @@
 import type { Text } from "@/lib/i18n/messages";
 import type { Bilingual } from "@/lib/i18n/types";
 
-/**
- * What the sign-up, sign-in and password screens can be told, in both languages.
- * The keys double as the validation messages of lib/validation/auth.ts, so a
- * refusal from the server reads the same as the form's own check.
- */
 export const AUTH_MESSAGES = {
   firstNameRequired: "auth.messages.firstNameIsRequired",
   nameInvalid: "auth.messages.useOnlyLettersSpaces",
@@ -29,7 +24,6 @@ export const AUTH_MESSAGES = {
 
 export type AuthMessageKey = keyof typeof AUTH_MESSAGES;
 
-/** The message for a validation code; anything unknown reads as generally invalid input. */
 export function authMessage(code: string | undefined): Text {
   return code && Object.hasOwn(AUTH_MESSAGES, code)
     ? AUTH_MESSAGES[code as AuthMessageKey]
@@ -44,7 +38,6 @@ export function tooManyAttempts(retryAfterSec: number): Bilingual {
   };
 }
 
-/** The translated message an auth API refusal carries, or `fallback` when it has none. */
 export function refusalMessage(body: unknown, fallback: Text): Text {
   const message = (body as { message?: Partial<Bilingual> } | null)?.message;
   return typeof message?.ka === "string" && typeof message.en === "string"

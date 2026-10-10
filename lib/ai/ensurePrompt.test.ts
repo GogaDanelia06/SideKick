@@ -25,11 +25,6 @@ beforeEach(() => {
   vi.mocked(prisma.business.findUnique).mockResolvedValue({ name: "Cool Cat", field: "pets" } as never);
 });
 
-/**
- * The bug this closes: the AI service answers 404 "No prompt found" for a business with no
- * saved prompt, and every new business starts with none — so its first test, and every
- * customer who wrote to it, got no reply.
- */
 describe("ensurePrompt()", () => {
   it("leaves a business that has a prompt alone, without calling the AI", async () => {
     find.mockResolvedValue({ prompt: "Be kind." } as never);

@@ -1,0 +1,51 @@
+{
+  "actions": "ქმედებები",
+  "active": "აქტიური",
+  "businesses": "ბიზნესი",
+  "businessesNewThisMonth": "+{count} ამ თვეში",
+  "cancelled": "გაუქმებული",
+  "collectedInTotal": "სულ მიღებული",
+  "collectedThisMonth": "ამ თვეში მიღებული",
+  "connectedChannels": "მიერთებული არხი",
+  "conversations": "მიმოწერა",
+  "conversationsActive": "{count} აქტიური",
+  "dailyBars": {
+    "busiestDay": "დღიური მაქსიმუმი"
+  },
+  "everySubscriptionTrialsIncluded": "ყველა გამოწერა, საცდელის ჩათვლით.",
+  "funnel": {
+    "ofStart": "საწყისიდან",
+    "signUpFunnel": "რეგისტრაციის გზა",
+    "startingPoint": "საწყისი"
+  },
+  "insideTheApp": "აპლიკაციაში",
+  "last30Days": "ბოლო 30 დღე.",
+  "leads": "ლიდი",
+  "leadsClosed": "{count} დახურული",
+  "messages": "შეტყობინება",
+  "messagesFromAi": "{share}% AI-სგან",
+  "monthlyRecurringMrr": "თვიური შემოსავალი (MRR)",
+  "newBusinesses6Months": "ახალი ბიზნესები (6 თვე)",
+  "note": "ავტორიზებული მომხმარებლების ეკრანები — მარკეტინგულ ციფრს არ ერევა.",
+  "nothingRecordedYetFigures": "ჯერ არაფერი დაფიქსირებულა — ციფრები პირველი ვიზიტებიდან გაჩნდება.",
+  "ourIncome": "ჩვენი შემოსავალი",
+  "overSevenDays": "{value} / 7 დღე",
+  "pageViews": "გვერდის ნახვა",
+  "pastDue": "ვადაგადაცილებული",
+  "paymentProblems": "პრობლემური გადახდები",
+  "paymentsFailedPending": "{failed} ჩავარდნილი · {pending} მიმდინარე",
+  "planDistribution": "პაკეტების განაწილება",
+  "platformAnalytics": "პლატფორმის ანალიტიკა",
+  "products": "პროდუქტი",
+  "publicPages": "საიტის გვერდები",
+  "rankedList": {
+    "nothingYet": "ჯერ არაფერი"
+  },
+  "subscriptionsActive": "{count} აქტიური გამოწერა",
+  "subtitle": "ჯამური მაჩვენებლები ყველა კლიენტზე. მიმოწერების შიგთავსი აქ არ ჩანს — მხოლოდ რიცხვები.",
+  "tenantsSales": "კლიენტების გაყიდვები",
+  "tenantsTurnover": "{total}₾ — მათი ბრუნვა, არა ჩვენი",
+  "trial": "საცდელი",
+  "users": "მომხმარებელი",
+  "visitsAndActions": "ვიზიტები და ქმედებები"
+}

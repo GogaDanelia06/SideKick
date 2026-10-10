@@ -6,7 +6,6 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 
 type Props = { email: string };
 
-/** Resends the confirmation link; shown only after a correct password for an unverified account. */
 export function ResendVerification({ email }: Props) {
   const { t } = useLanguage();
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
@@ -19,10 +18,7 @@ export function ResendVerification({ email }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-    } catch {
-      // Errors are ignored: the endpoint answers the same for every address.
-    }
-    // Stays "done" so the button cannot send repeated emails.
+    } catch {}
     setState("done");
   }
 

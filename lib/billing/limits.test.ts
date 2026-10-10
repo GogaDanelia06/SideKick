@@ -22,7 +22,6 @@ const { checkLimit, countMessage } = await import("./limits");
 
 const BASIC = { ka: "ბეისიქი", en: "Basic" };
 
-/** A Basic-shaped plan: every cap small enough to hit in a test. */
 function plan(over: Partial<Record<string, number>> = {}, msgUsed = 0) {
   return {
     msgUsed,
@@ -47,7 +46,6 @@ beforeEach(() => {
 
 describe("checkLimit", () => {
   it("allows a business with no subscription rather than locking it out", async () => {
-    // A missing billing row is our data problem, not the customer's.
     findUnique.mockResolvedValue(null);
     expect(await checkLimit("b1", "products")).toEqual({ allowed: true });
   });
@@ -108,7 +106,6 @@ describe("checkLimit", () => {
 
 describe("countMessage", () => {
   it("increments rather than writing an absolute value", async () => {
-    // Two concurrent replies must both land; a read-then-write would lose one.
     await countMessage("b1");
     expect(updateMany).toHaveBeenCalledWith({
       where: { businessId: "b1" },

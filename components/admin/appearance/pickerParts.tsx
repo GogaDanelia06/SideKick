@@ -13,7 +13,6 @@ const HANDLE =
 
 const AREA = "relative w-full touch-none outline-none focus-visible:ring-2 focus-visible:ring-blue-ring";
 
-/** Reports where the pointer is inside the element (0–1 on both axes) while it is held down. */
 function drag(onMove: (p: Point) => void) {
   const at = (e: PointerEvent<HTMLElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -30,7 +29,6 @@ function drag(onMove: (p: Point) => void) {
   };
 }
 
-/** Arrow keys move 1%, or 10% with Shift. */
 function arrows(e: KeyboardEvent, onStep: (dx: number, dy: number) => void) {
   const step = e.shiftKey ? 0.1 : 0.01;
   const moves: Record<string, [number, number]> = {
@@ -45,7 +43,6 @@ function arrows(e: KeyboardEvent, onStep: (dx: number, dy: number) => void) {
   onStep(...move);
 }
 
-/** Saturation left to right, brightness bottom to top, for the current hue. */
 export function SaturationArea({ hsv, onChange }: { hsv: Hsv; onChange: (next: Hsv) => void }) {
   const { t } = useLanguage();
   const set = ({ x, y }: Point) => onChange({ ...hsv, s: x, v: 1 - y });
@@ -76,7 +73,6 @@ export function SaturationArea({ hsv, onChange }: { hsv: Hsv; onChange: (next: H
 
 const RAINBOW = "linear-gradient(to right, #f00, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00)";
 
-/** The hue, around the colour wheel from red back to red. */
 export function HueSlider({ hsv, onChange }: { hsv: Hsv; onChange: (next: Hsv) => void }) {
   const { t } = useLanguage();
   const set = (x: number) => onChange({ ...hsv, h: x * 360 });

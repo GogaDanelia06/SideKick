@@ -21,7 +21,6 @@ export function Button({
   children,
   ...rest
 }: CommonProps &
-  // Links accept onClick too, e.g. to track a click before navigating.
   (({ href: string; onClick?: () => void }) | (ComponentProps<"button"> & { href?: undefined }))) {
   const cls = clsx(BASE, VARIANTS[variant], className);
   if ("href" in rest && rest.href) {

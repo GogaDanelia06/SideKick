@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { commonRun } from "./lcs";
 import { countChanges, diffText, foldUnchanged, hasChanges, type DiffRow } from ".";
 
-/** A comparison as text: − removed line, + added line, ± edited line with [−old] and [+new] words. */
 function show(rows: DiffRow[]): string[] {
   return rows.map((row) => {
     if (row.kind === "same") return `  ${row.text}`;

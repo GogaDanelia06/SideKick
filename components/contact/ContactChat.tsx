@@ -7,7 +7,6 @@ import { BRAND } from "@/lib/content/common";
 import { CONTACT_PREVIEW, CONTACT_SEED } from "@/lib/content/contact";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** A static illustration of the assistant (the floating widget is the real chat); nothing is interactive. */
 export function ContactChat() {
   const { t } = useLanguage();
 
@@ -44,7 +43,6 @@ export function ContactChat() {
         ))}
       </div>
 
-      {/* A drawn composer, hidden from assistive tech because it cannot be typed into. */}
       <div aria-hidden className="flex gap-2 border-t border-border p-3">
         <span className="grid w-10 shrink-0 place-items-center rounded-sm border border-input text-muted">
           <IconPaperclip size={18} />

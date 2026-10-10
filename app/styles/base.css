@@ -1,0 +1,38 @@
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  button:not(:disabled),
+  select:not(:disabled),
+  summary,
+  [role="button"]:not([aria-disabled="true"]),
+  label:has(> input[type="checkbox"]:not(:disabled)),
+  label:has(> input[type="radio"]:not(:disabled)) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled,
+  textarea:disabled,
+  input:disabled,
+  [role="button"][aria-disabled="true"],
+  label:has(> input:disabled) {
+    cursor: not-allowed;
+  }
+}

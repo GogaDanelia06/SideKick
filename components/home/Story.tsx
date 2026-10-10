@@ -9,7 +9,6 @@ import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Text } from "@/lib/i18n/messages";
 
-/** Landing story block: the whole card links to /about; title and body fall back to built-in copy. */
 export function Story({ title, body }: { title?: Text; body?: Text }) {
   const { t } = useLanguage();
 

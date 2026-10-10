@@ -3,10 +3,6 @@
 import type { LegalBlock } from "@/lib/content/legalBlocks";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * A section's paragraphs and lists, in the order they were written. Line breaks inside a
- * paragraph are kept, so text pasted into the admin panel reads on the page as it did there.
- */
 export function LegalBlocks({ blocks }: { blocks: LegalBlock[] }) {
   const { t } = useLanguage();
 

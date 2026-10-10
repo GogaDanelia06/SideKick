@@ -14,7 +14,6 @@ import {
 
 export const dynamic = "force-dynamic";
 
-/** Gets or creates the conversation for a customer; idempotent by `customerRef`. */
 export async function POST(request: Request) {
   const body = await readJson(request);
   if (isDenial(body)) return body.response;
@@ -29,7 +28,6 @@ export async function POST(request: Request) {
   const channelType = oneOf(body, "channelType", CHANNEL_TYPES);
   if (isDenial(channelType)) return channelType.response;
 
-  // An optional channel must belong to this business.
   let channelId: string | undefined;
   if (channelType) {
     const channel = await prisma.channel.findUnique({
@@ -48,7 +46,6 @@ export async function POST(request: Request) {
       customerName,
       channelId,
     },
-    // Only fills gaps: a name typed in the dashboard is never overwritten.
     update: {
       ...(customerName ? { customerName: customerName } : {}),
       ...(channelId ? { channelId } : {}),

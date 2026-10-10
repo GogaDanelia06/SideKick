@@ -28,5 +28,4 @@ export function getBotReply(input: string): Text {
   return RULES.find((rule) => rule.keywords.some((k) => q.includes(k)))?.reply ?? FALLBACK;
 }
 
-/** Reply to an attachment; the keyword bot cannot see images, so it never claims to. */
 export const ATTACHMENT_REPLY: Text = "chat.bot.thanksIVeGot";

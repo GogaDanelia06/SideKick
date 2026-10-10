@@ -1,0 +1,42 @@
+{
+  "appearance": "Appearance",
+  "colorInput": {
+    "undoThisChange": "Undo this change"
+  },
+  "colorPicker": {
+    "default": "Default",
+    "done": "Done"
+  },
+  "contrastNotes": {
+    "everyTextColourIs": "Every text colour is readable in both themes",
+    "hardToRead": "{count} hard to read",
+    "needs": "needs",
+    "youCanStillSave": "You can still save — this is a warning, not a limit."
+  },
+  "pickerParts": {
+    "hue": "Hue",
+    "saturationAndBrightness": "Saturation and brightness"
+  },
+  "shades": {
+    "darkTheme": "Dark theme",
+    "lightTheme": "Light theme"
+  },
+  "subtitle": "The colours of the site and the dashboard, in one place.",
+  "themeActions": {
+    "couldNotSaveTry": "Could not save. Try again.",
+    "discard": "Discard",
+    "matchesWhatIsSaved": "Matches what is saved.",
+    "save": "Save",
+    "savedTheSiteAlready": "Saved — the site already shows it.",
+    "unsavedChangeS": "unsaved change(s)"
+  },
+  "themeSection": {
+    "colour": "{count} colour",
+    "colours": "{count} colours"
+  },
+  "themeToolbar": {
+    "editingAColourSwitches": "Editing a colour switches the screen to its theme.",
+    "onScreen": "On screen",
+    "readyMadePalettesSet": "Ready-made palettes — set both themes at once"
+  }
+}

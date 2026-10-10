@@ -1,0 +1,7 @@
+{
+  "admin": "Admin",
+  "operator": "Operator",
+  "ownedLimit": "One person can own at most {max} businesses",
+  "owner": "Owner",
+  "viewer": "Viewer"
+}

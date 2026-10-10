@@ -1,10 +1,5 @@
 import { prisma } from "@/lib/db";
 
-/**
- * Decorative figures that climb over time. The random steps are drawn on the
- * server and stored, so every visitor sees the same number.
- */
-
 export type AutoConfig = {
   baseValue: number;
   changeMin: number;
@@ -15,10 +10,8 @@ export type AutoConfig = {
 
 export type AutoState = { value: number; nextAt: Date };
 
-/** Caps the catch-up steps applied in one read after a long idle period. */
 const MAX_CATCHUP = 500;
 
-/** Smallest interval we will honour, so a zero range cannot spin forever. */
 const MIN_INTERVAL_MS = 1_000;
 
 export type Random = () => number;
@@ -32,7 +25,6 @@ function nextInterval(config: AutoConfig, random: Random): number {
   return Math.max(MIN_INTERVAL_MS, between(config.intervalMinMs, config.intervalMaxMs, random));
 }
 
-/** Pure: the value now and the next change time. `random` is injectable for tests. */
 export function advance(
   config: AutoConfig,
   state: AutoState | null,
@@ -54,7 +46,6 @@ export function advance(
     nextAt = new Date(nextAt.getTime() + nextInterval(config, random));
   }
 
-  // Hitting the cap can leave the schedule in the past; restart it from now.
   if (nextAt.getTime() <= now.getTime()) {
     nextAt = new Date(now.getTime() + nextInterval(config, random));
   }
@@ -68,10 +59,6 @@ export type AutoRow = AutoConfig & {
   autoNextAt: Date | null;
 };
 
-/**
- * Advances and saves a figure when a step is due. The write is guarded on the
- * schedule that was read, so concurrent readers cannot both apply a step.
- */
 export async function readAutoStat(row: AutoRow, now = new Date()): Promise<number> {
   const state =
     row.autoValue !== null && row.autoNextAt !== null
@@ -95,7 +82,6 @@ export async function readAutoStat(row: AutoRow, now = new Date()): Promise<numb
   return next.value;
 }
 
-/** Prefixed so drifting keys never collide with counter keys in the live payload. */
 export function autoKey(statKey: string): string {
   return `auto:${statKey}`;
 }

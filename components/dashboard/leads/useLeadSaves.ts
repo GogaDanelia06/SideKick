@@ -18,7 +18,6 @@ const TROUBLE: Record<string, Text> = {
   failed: "dashboard.leads.useLeadSaves.couldnTSaveTry",
 };
 
-/** Every change to a lead, each one saying out loud how it went. */
 export function useLeadSaves() {
   const { t } = useLanguage();
   const notify = useToast();

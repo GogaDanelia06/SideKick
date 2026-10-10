@@ -21,7 +21,6 @@ const membership = vi.mocked(prisma.membership.findUnique);
 
 beforeEach(() => {
   vi.clearAllMocks();
-  // Signed in to b1; deleting b2, a spare business they own alone, with no payments.
   vi.mocked(getContext).mockResolvedValue({ userId: "u1", businessId: "b1", role: "OWNER" });
   membership.mockResolvedValue({ role: "OWNER", business: { name: "Second shop" } } as never);
   vi.mocked(prisma.membership.findFirst).mockResolvedValue({ businessId: "b1" } as never);

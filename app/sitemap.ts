@@ -3,7 +3,6 @@ import { SITE_URL, absoluteUrl } from "@/lib/seo/site";
 import { resolveSitemap } from "@/lib/seo/sitemap";
 import { log } from "@/lib/logger";
 
-// Rebuilt hourly; lastmod comes from the content tables.
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -18,7 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: p.priority,
     }));
   } catch (err) {
-    // Never serve an empty sitemap: fall back to the static page list.
     log.error("sitemap could not read content dates", err);
     return [
       { url: SITE_URL, lastModified: fallback, changeFrequency: "weekly", priority: 1 },

@@ -6,7 +6,6 @@ import { ownedConversation } from "@/lib/agent/conversation";
 
 export const dynamic = "force-dynamic";
 
-/** Creates or updates the conversation's lead; only the supplied fields are written. */
 export async function POST(request: Request) {
   const body = await readJson(request);
   if (isDenial(body)) return body.response;

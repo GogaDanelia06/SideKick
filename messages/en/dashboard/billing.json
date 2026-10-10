@@ -1,0 +1,58 @@
+{
+  "checkoutParts": {
+    "bankOfGeorgia": "Bank of Georgia",
+    "cardDetailsAreEntered": "Card details are entered on the bank's page — we never store them.",
+    "couldNotReachThe": "Could not reach the bank. Try again or pick the other one.",
+    "current": "Current",
+    "onlyTheOwnerCan": "Only the owner can change the plan",
+    "payOnTheBank": "Pay on the bank's page:",
+    "paymentsAreOnChange": "Payments are on — change the plan through the bank",
+    "pickABank": "Pick a bank",
+    "pickAPeriod": "Pick a period",
+    "somethingWentWrong": "Something went wrong",
+    "tbcBank": "TBC Bank",
+    "thatBankIsNot": "That bank is not enabled yet",
+    "thatPlanCouldNot": "That plan could not be found",
+    "yourSessionHasEnded": "Your session has ended — sign in again"
+  },
+  "freePlanSwitch": {
+    "switch": "Switch"
+  },
+  "return": {
+    "backToBilling": "Back to billing",
+    "body": "Your plan is active. Thank you!",
+    "body2": "The bank is still processing. This usually takes a few seconds — refresh shortly.",
+    "body3": "You have not been charged. Try again or pick the other bank.",
+    "paymentComplete": "Payment complete",
+    "paymentDidNotGo": "Payment did not go through",
+    "paymentIsProcessing": "Payment is processing"
+  },
+  "view": {
+    "aCardIsSaved": "A card is saved on your first payment so the plan can renew automatically.",
+    "active": "Active",
+    "activeUntil": "Active until",
+    "cancelSubscription": "Cancel subscription",
+    "cancelled": "Cancelled",
+    "changeOrRenewPlan": "Change or renew plan",
+    "chooseAPlan": "Choose a plan",
+    "close": "Close",
+    "currentPlan": "Current plan",
+    "expired": "Expired",
+    "failed": "Failed",
+    "messageLimit": "Message limit",
+    "mo": "mo",
+    "noPaymentsYet": "No payments yet",
+    "paid": "Paid",
+    "pastDue": "Past due",
+    "paymentHistory": "Payment history",
+    "pending": "Pending",
+    "remaining": "Remaining",
+    "renews": "Renews",
+    "resets": "Resets",
+    "savedCard": "Saved card",
+    "subscriptionCancelled": "Subscription cancelled",
+    "text": "—",
+    "theCardIsStored": "The card is stored by the bank. We only hold a reference to it.",
+    "trial": "Trial"
+  }
+}

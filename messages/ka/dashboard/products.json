@@ -1,0 +1,101 @@
+{
+  "addProductForm": {
+    "add": "დამატება",
+    "addProduct": "პროდუქტის დამატება",
+    "adding": "ემატება…",
+    "code": "კოდი",
+    "descriptionUsedByAi": "აღწერა (AI იყენებს იდენტიფიკაციისთვის)",
+    "discount": "ფასდაკლება %",
+    "name": "დასახელება",
+    "price": "ფასი",
+    "productAdded": "პროდუქტი დაემატა.",
+    "quantity": "რაოდენობა",
+    "salePrice": "ფასდაკლ. ფასი",
+    "size": "ზომა",
+    "uploadPhoto": "ფოტოს ატვირთვა"
+  },
+  "chosenFileCard": {
+    "andMore": "…და კიდევ {count}",
+    "errorS": "შეცდომა",
+    "fixTheseRowsIn": "გაასწორე ეს ხაზები ფაილში და ატვირთე ხელახლა:",
+    "importCount": "შემოიტანე {count} პროდუქტი",
+    "importing": "შემოდის…",
+    "products": "პროდუქტი",
+    "removeFile": "ფაილის მოშორება"
+  },
+  "errors": {
+    "error": "ვერ შეინახა. სცადე ხელახლა.",
+    "nameAndCodeAre": "დასახელება და კოდი სავალდებულოა.",
+    "photoStorageIsNot": "ფოტოების საცავი ჯერ არ არის მოწყობილი. შეინახე ფოტოს გარეშე.",
+    "productDeleted": "პროდუქტი წაიშალა",
+    "productSaved": "პროდუქტი შენახულია",
+    "thatCodeIsAlready": "ეს კოდი უკვე გაქვს სხვა პროდუქტზე. მიუთითე სხვა.",
+    "thePhotoIsToo": "ფოტო ძალიან დიდია.",
+    "thePhotoIsToo2": "ფოტო შემცირების შემდეგაც ძალიან დიდია. სცადე სხვა.",
+    "thePhotoMustBe": "ფოტო უნდა იყოს JPG, PNG ან WebP.",
+    "thisFileCanT": "ამ ფაილს ვერ ვკითხულობ. აირჩიე JPG, PNG ან WebP ფოტო.",
+    "youMayNotChange": "პროდუქტის შეცვლის უფლება არ გაქვს.",
+    "yourPlanDoesNot": "შენი გეგმა მეტ პროდუქტს არ უშვებს. წაშალე რამე ან გეგმა შეცვალე."
+  },
+  "fileUploadTab": {
+    "downloadStock": "ჩამოტვირთე მარაგი",
+    "downloadTemplate": "ჩამოტვირთე შაბლონი",
+    "readingTheFile": "ფაილი იკითხება…",
+    "uploadExcelCsv": "ატვირთე EXCEL / CSV"
+  },
+  "importText": {
+    "aTextIsToo": "ტექსტი ძალიან გრძელია",
+    "atMostRows": "ერთ ფაილში მაქსიმუმ {max} პროდუქტი.",
+    "done": "მზაა: {created} დაემატა, {updated} განახლდა.",
+    "duplicateOfRow": "იგივე კოდი უკვე არის {other} ხაზზე",
+    "empty": "ფაილში პროდუქტები არ არის.",
+    "planLimit": "შენი გეგმა {limit} პროდუქტს უშვებს: უკვე გაქვს {used}, ფაილი {adding} ახალს დაამატებდა.",
+    "productsAreMatchedBy": "პროდუქტები კოდით მოიძებნება: ახალი კოდი დაემატება, არსებული განახლდება. ცარიელი უჯრა მნიშვნელობას არ ცვლის, არაფერი წაიშლება.",
+    "theCodeIsEmpty": "კოდი ცარიელია",
+    "theDiscountMustBe": "ფასდაკლება უნდა იყოს 0-დან 100-მდე",
+    "theFileCouldNot": "ფაილი ვერ წაიკითხა. შეინახე ხელახლა .xlsx ან .csv ფორმატში.",
+    "theFileIsLarger": "ფაილი 5 MB-ზე დიდია.",
+    "theFileNeedsThe": "ფაილში არ მოიძებნა სვეტები „კოდი“, „დასახელება“ და „ფასი“. ჩამოტვირთე შაბლონი და გამოიყენე ის.",
+    "theFileSData": "ფაილის მონაცემები არასწორია. ატვირთე ხელახლა.",
+    "theImportFailedTry": "შემოტანა ვერ მოხერხდა. სცადე ხელახლა.",
+    "theNameIsEmpty": "დასახელება ცარიელია",
+    "thePriceMustBe": "ფასი უნდა იყოს რიცხვი, 0 ან მეტი",
+    "theQuantityMustBe": "რაოდენობა უნდა იყოს მთელი რიცხვი, 0 ან მეტი",
+    "theSalePriceMust": "ფასდაკლებული ფასი ფასზე მეტი არ უნდა იყოს",
+    "uploadAnXlsxOr": "ატვირთე .xlsx ან .csv ფაილი.",
+    "youMayNotImport": "პროდუქტების შემოტანის უფლება არ გაქვს."
+  },
+  "modal": {
+    "cancel": "გაუქმება",
+    "changePhoto": "ფოტოს შეცვლა",
+    "code": "კოდი",
+    "descriptionUsedByAi": "აღწერა (AI იყენებს იდენტიფიკაციისთვის)",
+    "discount": "ფასდაკლება %",
+    "editProduct": "პროდუქტის რედაქტირება",
+    "name": "დასახელება",
+    "price": "ფასი",
+    "quantity": "რაოდენობა",
+    "salePrice": "ფასდაკლ. ფასი",
+    "save": "შენახვა",
+    "size": "ზომა"
+  },
+  "photoPicker": {
+    "removePhoto": "ფოტოს წაშლა"
+  },
+  "table": {
+    "count": "სულ {count} პროდუქტი",
+    "delete": "წაშლა",
+    "edit": "რედაქტირება",
+    "inStock": "მარაგში",
+    "noProducts": "პროდუქტები არ არის",
+    "outOfStock": "ამოიწურა",
+    "price": "ფასი",
+    "product": "პროდუქტი",
+    "productList": "პროდუქტების ჩამონათვალი",
+    "salePrice": "ფასდაკლებით"
+  },
+  "view": {
+    "fileUpload": "ფაილით ატვირთვა",
+    "manualEntry": "ხელით შევსება"
+  }
+}

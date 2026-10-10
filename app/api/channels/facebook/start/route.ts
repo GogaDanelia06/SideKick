@@ -7,13 +7,8 @@ import { DASH } from "@/lib/dashboard/routes";
 
 export const dynamic = "force-dynamic";
 
-/** Kept outside /api/auth, where the NextAuth catch-all would swallow it. */
 export const CALLBACK_PATH = "/api/channels/facebook/callback";
 
-/**
- * Page access plus Instagram messaging: Instagram messages routed through the Page
- * (Messenger Platform) are delivered even while the app is unpublished.
- */
 const SCOPES = [
   "pages_show_list",
   "pages_messaging",

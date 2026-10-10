@@ -27,11 +27,6 @@ function Count({ sign, count, label, tone }: { sign: string; count: number; labe
   );
 }
 
-/**
- * What the merchant is about to save: the prompt box against the saved prompt, removed words
- * in red and added words in green, with the lines around them for context. It shows for any
- * unsaved change, typed or written by the AI, and goes away once the change is saved or dropped.
- */
 export function PromptChanges({ saved, current }: { saved: string; current: string }) {
   const { t } = useLanguage();
   const { dirty } = useContext(SectionSaveContext);
@@ -41,7 +36,6 @@ export function PromptChanges({ saved, current }: { saved: string; current: stri
   const counts = useMemo(() => countChanges(rows), [rows]);
   const shown = useMemo(() => foldUnchanged(rows), [rows]);
 
-  // Nothing is unsaved, or there is nothing to compare with: a first prompt is all new, and it is right there.
   if (!dirty || !saved.trim()) return null;
   if (!hasChanges(rows)) return <p className="text-[13px] text-muted">{t("dashboard.ai.promptChanges.same")}</p>;
 

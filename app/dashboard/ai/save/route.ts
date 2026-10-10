@@ -6,7 +6,6 @@ import { isSaveRequest, type SectionKey, type SaveError } from "@/lib/dashboard/
 import { log } from "@/lib/logger";
 import { getContext } from "@/lib/session";
 
-/** The actions the section forms used to submit, so validation and permissions stay in one place. */
 const SAVERS: Record<SectionKey, (fd: FormData) => Promise<ActionResult>> = {
   business: saveBusinessInfo,
   character: saveAiCharacter,
@@ -14,7 +13,6 @@ const SAVERS: Record<SectionKey, (fd: FormData) => Promise<ActionResult>> = {
   prompt: saveAiPrompt,
 };
 
-/** The same limit server actions have. */
 const MAX_BYTES = 1024 * 1024;
 
 const refuse = (error: SaveError, status: number) => NextResponse.json({ ok: false, error }, { status });
@@ -27,13 +25,7 @@ function readBody(bytes: ArrayBuffer): unknown {
   }
 }
 
-/**
- * Saving a section of the AI page: it sends its whole form when the user presses Save
- * (lib/dashboard/sectionSave). A fetch rather than a server action, so the page can say
- * how it went and put the section back the way it was when it did not.
- */
 export async function POST(request: Request) {
-  // The session cookie is SameSite=Lax already; this also turns away other sites outright.
   const site = request.headers.get("sec-fetch-site");
   const json = request.headers.get("content-type")?.startsWith("application/json");
   if ((site && site !== "same-origin") || !json) return refuse("invalid", 400);
@@ -47,7 +39,6 @@ export async function POST(request: Request) {
 
   const ctx = await getContext();
   if (!ctx) return refuse("signed_out", 401);
-  // The page was opened for another login or business (switched in another tab): not here.
   if (ctx.userId !== body.userId || ctx.businessId !== body.businessId) return refuse("moved", 409);
 
   const fd = new FormData();

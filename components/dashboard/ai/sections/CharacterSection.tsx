@@ -3,7 +3,7 @@
 import type { AiConfig } from "@prisma/client";
 import { IconSquareRoundedLetterA } from "@tabler/icons-react";
 import { AI_ADDRESS_FORMS, AI_DEFAULTS, AI_EMOJI_LEVELS, AI_LENGTHS, AI_STYLES } from "@/lib/ai/settings";
-import { ChipChoice } from "../parts";
+import { ChipChoice } from "../fields";
 import { SectionForm } from "../SectionForm";
 
 export function CharacterSection({ config }: { config: AiConfig | null }) {

@@ -1,9 +1,3 @@
-/**
- * The company's contact details, as the admin panel's "Contact details" group holds them:
- * one email, one phone and four social profiles, shown on the contact page, in the footer
- * and in the structured data search engines read. Typed in by hand, so each value is turned
- * into a link that can only go where it should: mailto, tel, or an http(s) profile.
- */
 export type SocialNetwork = "facebook" | "instagram" | "whatsapp" | "linkedin";
 
 export type ContactLink = { value: string; href: string };
@@ -30,7 +24,6 @@ export function mailLink(raw: string): ContactLink | null {
   return EMAIL.test(email) ? { value: email, href: `mailto:${email}` } : null;
 }
 
-/** As people write it; a Georgian mobile written without its country code gets +995. */
 export function phoneLink(raw: string): ContactLink | null {
   const value = raw.trim();
   const digits = value.replace(/\D/g, "");
@@ -39,7 +32,6 @@ export function phoneLink(raw: string): ContactLink | null {
   return { value, href: `tel:${international}` };
 }
 
-/** A profile however it was pasted: a full address, one without https://, or for WhatsApp a number. */
 export function socialLink(network: SocialNetwork, raw: string): ContactLink | null {
   const value = raw.trim();
   if (!value) return null;
@@ -55,7 +47,6 @@ export function socialLink(network: SocialNetwork, raw: string): ContactLink | n
   }
 }
 
-/** What a profile address shows as: its handle when it has a clean one, else its host. */
 function handleOf(url: URL): string {
   const handle = url.pathname.split("/").filter(Boolean).at(-1) ?? "";
   if (/^[\w.-]{2,}$/.test(handle) && !handle.includes(".php")) {
@@ -64,7 +55,6 @@ function handleOf(url: URL): string {
   return url.hostname.replace(/^www\./, "");
 }
 
-/** Saved values as links. A blank or unusable value is left out rather than shown broken. */
 export function toContactDetails(values: Partial<Record<string, string>>): ContactDetails {
   return {
     email: mailLink(values.contact_email ?? ""),
@@ -76,7 +66,6 @@ export function toContactDetails(values: Partial<Record<string, string>>): Conta
   };
 }
 
-/** Until the group is saved for the first time. */
 export const CONTACT_DEFAULTS: ContactDetails = toContactDetails({
   contact_email: "sidekick@gmail.com",
   contact_phone: "599 99 99 99",

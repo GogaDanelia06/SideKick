@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { IconAlertTriangle, IconCheck, IconExternalLink } from "@tabler/icons-react";
+import { IconCheck, IconExternalLink } from "@tabler/icons-react";
 import { saveTextGroup } from "@/lib/admin/actions/texts";
 import { MediaField } from "@/components/admin/ui/MediaField";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { TextGroup } from "@/lib/site/textKeys";
 
@@ -12,8 +13,6 @@ const INPUT =
 
 type Values = Record<string, { ka: string; en: string }>;
 
-/** Generic editor rendered from the field registry — every text section on the
- *  public site uses this one screen. */
 export function TextGroupEditor({ group, values }: { group: TextGroup; values: Values }) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();
@@ -41,10 +40,7 @@ export function TextGroupEditor({ group, values }: { group: TextGroup; values: V
       </div>
 
       {error ? (
-        <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
-          <IconAlertTriangle size={16} className="shrink-0" />
-          {t("admin.content.textGroupEditor.somethingWentWrong")}
-        </div>
+        <ErrorBanner>{t("admin.content.textGroupEditor.somethingWentWrong")}</ErrorBanner>
       ) : null}
 
       <div className="flex flex-col gap-5 rounded-lg border border-border bg-card p-5">

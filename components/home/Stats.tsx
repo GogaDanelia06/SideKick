@@ -4,7 +4,6 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { LiveDot, LiveFigure } from "./LiveFigure";
 import type { SiteStatView } from "@/lib/site/content";
 
-/** The strip under the hero; only counted figures get the live dot. */
 export function Stats({ stats }: { stats: SiteStatView[] }) {
   const { t } = useLanguage();
   if (stats.length === 0) return null;

@@ -14,7 +14,6 @@ type LanguageContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   toggle: () => void;
-  /** A key from messages/*.json, or text the database holds in both languages. */
   t: (value: Text, vars?: Vars) => string;
 };
 

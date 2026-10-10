@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { advance, autoKey, between, type AutoConfig } from "./autoStat";
 
-/** Always returns the midpoint, so every draw is predictable. */
 const mid = () => 0.5;
 
 const CONFIG: AutoConfig = {
@@ -47,10 +46,6 @@ describe("advance", () => {
     expect(next.nextAt).toEqual(at(120_000));
   });
 
-  /**
-   * The point of catching up: a landing page nobody visited overnight should
-   * read as though it had been climbing all along, not as though time stopped.
-   */
   it("catches up every step missed while nobody was looking", () => {
     const state = { value: 1000, nextAt: at(60_000) };
     const next = advance(CONFIG, state, at(60_000 * 10), mid);
@@ -60,10 +55,8 @@ describe("advance", () => {
 
   it("caps a very long absence instead of grinding through every step", () => {
     const state = { value: 1000, nextAt: at(60_000) };
-    // A year of one-minute steps would be ~525,600 iterations.
     const next = advance(CONFIG, state, at(60_000 * 525_600), mid);
     expect(next.value).toBe(1000 + 500 * 3);
-    // And the schedule is pulled forward, so the next read is not another 500.
     expect(next.nextAt.getTime()).toBeGreaterThan(at(60_000 * 525_600).getTime());
   });
 
@@ -82,8 +75,6 @@ describe("advance", () => {
 
 describe("autoKey", () => {
   it("namespaces drifting figures away from counter keys", () => {
-    // Both kinds share one payload, so a stat keyed "users" must not collide
-    // with the "users" counter from STAT_SOURCES.
     expect(autoKey("users")).toBe("auto:users");
     expect(autoKey("users")).not.toBe("users");
   });

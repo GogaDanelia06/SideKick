@@ -7,11 +7,10 @@ import { testAiReply } from "@/lib/dashboard/actions/assistant";
 import { answerTester, askTester, clearTesterChat, useTesterChat } from "@/lib/dashboard/testerChat";
 import type { Text } from "@/lib/i18n/messages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import { AiModuleNotice, INPUT } from "../parts";
+import { AiModuleNotice, INPUT } from "../fields";
 import { TesterTranscript } from "./TesterTranscript";
 import { testerFailure } from "./testerFailure";
 
-/** Tries the current prompt against the real AI service. The chat stays until logout. */
 export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId: string }) {
   const { t } = useLanguage();
   const notify = useToast();
@@ -29,7 +28,6 @@ export function TesterSection({ aiReady, loginId }: { aiReady: boolean; loginId:
     const res = await testAiReply(text, thread).catch(() => null);
     if (res?.ok && res.promptDrafted) notify(t("dashboard.ai.testerSection.promptDrafted"));
     const answer = res?.ok ? { from: "ai" as const, text: res.reply, handoff: res.handoff } : null;
-    // Recorded even if this screen was left meanwhile; a failure is only shown if the chat is still this one.
     if (answerTester(thread, answer) && !answer) setFailure(testerFailure(res));
   }
 

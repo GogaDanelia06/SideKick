@@ -4,12 +4,10 @@ export type Day = { day: string; views: number };
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 
-/** Label every fifth day. */
 const TICK_EVERY = 5;
 
 const shortDay = (iso: string) => iso.slice(5).replace("-", "/");
 
-/** 30-day traffic bars with a labelled peak, an average line and periodic date ticks. */
 export function DailyBars({ days }: { days: Day[] }) {
   const peak = Math.max(1, ...days.map((d) => d.views));
   const total = days.reduce((sum, d) => sum + d.views, 0);
@@ -46,7 +44,6 @@ export function DailyBars({ days }: { days: Day[] }) {
                 className={`flex-1 rounded-t-[4px] transition-opacity hover:opacity-60 ${
                   isPeak ? "bg-blue" : "bg-blue/55"
                 }`}
-                // A 2px floor keeps empty days visible on the axis.
                 style={{ height: `${Math.max(2, (d.views / peak) * 100)}%` }}
               />
             );

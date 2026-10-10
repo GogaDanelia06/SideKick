@@ -3,10 +3,8 @@ import { ChatAttachment } from "./ChatAttachment";
 import { CHAT } from "@/lib/content/chat";
 import type { ChatMessage } from "@/lib/chat/types";
 
-/** AI bubble colours: blue in the floating widget, neutral on the contact page. */
 export type AiTone = "neutral" | "blue";
 
-/** Shared with ChatTyping, so the typing bubble matches the reply that replaces it. */
 export const BUBBLE_BASE =
   "max-w-[85%] whitespace-pre-line rounded-[14px] border px-3.5 py-2.5 text-sm leading-[1.55]";
 

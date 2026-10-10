@@ -29,7 +29,6 @@ describe("storeProductPhoto()", () => {
     ["PNG", PNG, "png", "image/png"],
     ["WebP", WEBP, "webp", "image/webp"],
   ])("stores a %s under products/, typed by its bytes", async (_, bytes, ext, type) => {
-    // The claimed type is wrong on purpose: only the bytes count.
     expect(await storeProductPhoto(form(bytes, "application/octet-stream"))).toEqual({ url: expect.any(String) });
     expect(store).toHaveBeenCalledWith(expect.any(File), ext, type, "products");
   });

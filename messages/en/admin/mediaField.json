@@ -1,0 +1,14 @@
+{
+  "fileIsLargerThan": "File is larger than 8MB",
+  "fileStorageIsNot": "File storage is not connected (Vercel → Storage → Blob). Paste a URL below in the meantime.",
+  "leaveEmptyToUse": "Leave empty to use the slide's built-in animation. Max 8MB.",
+  "notAllowed": "Not allowed",
+  "orPasteAUrl": "or paste a URL:",
+  "photo": "Photo",
+  "photoOrVideo": "Photo or video",
+  "remove": "Remove",
+  "somethingWentWrong": "Something went wrong",
+  "unsupportedFileType": "Unsupported file type",
+  "upload": "Upload",
+  "uploadFailed": "Upload failed"
+}

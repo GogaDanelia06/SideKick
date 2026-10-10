@@ -12,7 +12,6 @@ import type { Text } from "@/lib/i18n/messages";
 
 export const dynamic = "force-dynamic";
 
-/** Bank return page. Settles here too (idempotently), since the bank callback may arrive later. */
 export default async function PaymentReturnPage({
   searchParams,
 }: {
@@ -23,7 +22,6 @@ export default async function PaymentReturnPage({
 
   const payment = paymentId
     ? await prisma.payment.findFirst({
-        // Scoped to the caller's business.
         where: { id: paymentId, businessId: ctx.businessId },
       })
     : null;

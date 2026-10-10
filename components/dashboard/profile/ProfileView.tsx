@@ -28,7 +28,6 @@ export function ProfileView({ user, business }: { user: ProfileUser | null; busi
 
     if (!result.ok) return notify(t(PROFILE_ERRORS[result.error]), "error");
     notify(t(PROFILE_SAVED));
-    // The name shows in the sidebar and the account menu too.
     router.refresh();
   }
 

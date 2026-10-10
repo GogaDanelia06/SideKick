@@ -58,8 +58,6 @@ describe("POST /api/auth/resend", () => {
   });
 
   it("answers an unknown address exactly like a real one", async () => {
-    // The whole point. Anything that differed here — status, body, wording —
-    // would turn this into a way of asking which addresses have accounts.
     findUser.mockResolvedValue(null);
     const res = await post("nobody@example.com");
 
@@ -92,8 +90,6 @@ describe("POST /api/auth/resend", () => {
   });
 
   it("throttles repeated requests", async () => {
-    // An endpoint that mails an address a stranger typed is a way to have us
-    // deliver unwanted messages for them.
     limit.mockResolvedValue({ ok: false, remaining: 0, retryAfterSec: 900 });
     const res = await post("someone@example.com");
 
@@ -103,8 +99,6 @@ describe("POST /api/auth/resend", () => {
   });
 
   it("records a send that the provider refused", async () => {
-    // Silence here is how a broken sender goes unnoticed: the reply is `ok`
-    // whatever happens, so the log is the only trace.
     findUser.mockResolvedValue(unverified as never);
     mail.mockResolvedValue({ sent: false });
     const { log } = await import("@/lib/logger");

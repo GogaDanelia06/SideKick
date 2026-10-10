@@ -1,22 +1,20 @@
 "use client";
 
 import type { LegalSection } from "@prisma/client";
-import {
-  IconChevronDown,
-  IconChevronUp,
-  IconEye,
-  IconEyeOff,
-  IconLanguageOff,
-  IconPencil,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconLanguageOff } from "@tabler/icons-react";
+import { RowTools, type RowLabels } from "@/components/admin/ui/RowTools";
 import { readsInEnglish } from "@/lib/content/legalSections";
 import { toItems } from "@/lib/content/legalBlocks";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-const ICON = "grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink";
+const TOOLS: RowLabels = {
+  up: "admin.legal.editor.moveUp",
+  down: "admin.legal.editor.moveDown",
+  toggle: "admin.legal.editor.togglePublish",
+  edit: "admin.legal.editor.edit",
+  remove: "admin.legal.editor.delete",
+};
 
-/** One section as the list shows it: what it says, and what the public page will do with it. */
 export function SectionRow({
   section,
   first,
@@ -40,8 +38,6 @@ export function SectionRow({
 }) {
   const { t } = useLanguage();
   const bullets = toItems(section.bulletsKa).length;
-  // Written in English too, or the page shows this section in Georgian (lib/content/legalSections.ts).
-  const translated = readsInEnglish(section);
 
   return (
     <div className="flex items-start gap-3">
@@ -59,7 +55,7 @@ export function SectionRow({
           </div>
         ) : null}
 
-        {translated ? null : (
+        {readsInEnglish(section) ? null : (
           <div className="mt-1.5 flex items-start gap-1.5 text-[12px] text-amber">
             <IconLanguageOff size={14} className="mt-px shrink-0" />
             {t("admin.legal.editor.englishDoesNotLine")}
@@ -67,23 +63,17 @@ export function SectionRow({
         )}
       </div>
 
-      <div className="flex shrink-0 items-center gap-1">
-        <button type="button" disabled={busy || first} onClick={() => onMove("up")} aria-label={t("admin.legal.editor.moveUp")} className={`${ICON} disabled:opacity-30`}>
-          <IconChevronUp size={16} />
-        </button>
-        <button type="button" disabled={busy || last} onClick={() => onMove("down")} aria-label={t("admin.legal.editor.moveDown")} className={`${ICON} disabled:opacity-30`}>
-          <IconChevronDown size={16} />
-        </button>
-        <button type="button" disabled={busy} onClick={onPublish} aria-label={t("admin.legal.editor.togglePublish")} className={`${ICON} disabled:opacity-40`}>
-          {section.published ? <IconEye size={15} /> : <IconEyeOff size={15} />}
-        </button>
-        <button type="button" disabled={busy} onClick={onEdit} aria-label={t("admin.legal.editor.edit")} className={`${ICON} disabled:opacity-40`}>
-          <IconPencil size={15} />
-        </button>
-        <button type="button" disabled={busy} onClick={onRemove} aria-label={t("admin.legal.editor.delete")} className={`${ICON} border-border text-red hover:border-red disabled:opacity-40`}>
-          <IconTrash size={15} />
-        </button>
-      </div>
+      <RowTools
+        first={first}
+        last={last}
+        pending={busy}
+        published={section.published}
+        labels={TOOLS}
+        onMove={onMove}
+        onToggle={onPublish}
+        onEdit={onEdit}
+        onRemove={onRemove}
+      />
     </div>
   );
 }

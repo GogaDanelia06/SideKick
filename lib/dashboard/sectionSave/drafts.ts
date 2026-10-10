@@ -1,11 +1,6 @@
 import { applyFields, changedFields, type Fields } from "./fields";
 import type { SectionOwner, SectionKey } from "./request";
 
-/**
- * Changes the server has not confirmed yet, kept in this browser so a failed or
- * interrupted save loses nothing: they come back the next time the section opens.
- * Kept per user and business, and all cleared on logout.
- */
 const PREFIX = "sidekick.ai-draft:";
 
 export type DraftPlace = SectionOwner & { section: SectionKey };
@@ -29,40 +24,27 @@ export function readDraft(place: DraftPlace): Draft | null {
 
 let lastId = 0;
 
-/** Keeps the changes aside; returns the id `dropDraft` needs. */
 export function writeDraft(place: DraftPlace, fields: Fields): number {
   lastId = Math.max(Date.now(), lastId + 1);
   try {
     localStorage.setItem(keyOf(place), JSON.stringify({ id: lastId, fields }));
-  } catch {
-    // Storage full or blocked: the save still goes out, there is just no copy.
-  }
+  } catch {}
   return lastId;
 }
 
-/** Forgets a draft once the server has it; with an id, only if no newer one replaced it. */
 export function dropDraft(place: DraftPlace, id?: number) {
   try {
     if (id === undefined || readDraft(place)?.id === id) localStorage.removeItem(keyOf(place));
-  } catch {
-    // Nothing to clean up in a browser that stores nothing.
-  }
+  } catch {}
 }
 
-/** Run on logout, so nothing typed stays behind on a shared computer. */
 export function clearAiDrafts() {
   try {
     const keys = Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i));
     for (const key of keys) if (key?.startsWith(PREFIX)) localStorage.removeItem(key);
-  } catch {
-    // As above.
-  }
+  } catch {}
 }
 
-/**
- * Puts changes kept from last time back into the form, when they still differ from what the
- * server has; a draft that no longer does is dropped. Says whether anything came back.
- */
 export function restoreDraft(form: HTMLFormElement, place: DraftPlace, saved: Fields): boolean {
   const draft = readDraft(place);
   if (draft && changedFields(saved, { ...saved, ...draft.fields })) {

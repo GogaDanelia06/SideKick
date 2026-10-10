@@ -7,7 +7,6 @@ import { legalTitleKey } from "@/lib/site/textKeys";
 
 export type { LegalSectionView };
 
-/** Published sections of a legal document; empty means the drafted copy in lib/content/legal.ts applies. */
 export async function getLegalSections(doc: string): Promise<LegalSectionView[]> {
   const rows = await prisma.legalSection.findMany({
     where: { doc, published: true },
@@ -16,7 +15,6 @@ export async function getLegalSections(doc: string): Promise<LegalSectionView[]>
   return rows.map(pairSection);
 }
 
-/** A legal document's admin-set heading, or null to use the drafted title. */
 export async function getLegalTitle(doc: string): Promise<Bilingual | null> {
   const row = await prisma.siteSetting.findUnique({ where: { key: legalTitleKey(doc) } });
   const ka = row?.valueKa.trim();

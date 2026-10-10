@@ -4,15 +4,13 @@ import { useState } from "react";
 import { IconPlus } from "@tabler/icons-react";
 import { LANGUAGE_FLAGS } from "@/lib/dashboard/aiLanguages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import { INPUT } from "../parts";
+import { INPUT } from "../fields";
 
 const CHIP =
   "inline-flex items-center gap-1.5 rounded-[8px] border border-border px-3 text-[13px] text-muted hover:border-blue hover:text-ink disabled:opacity-60";
 
-/** Returns whether the language was accepted. */
 type Add = (name: string) => boolean;
 
-/** The "add language" button, which opens a name field. */
 export function LanguagePicker({
   disabled,
   disabledHint,

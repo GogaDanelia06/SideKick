@@ -1,11 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { num, pctFromSale, saleFromPct } from "./usePricing";
 
-/**
- * The arithmetic only. Wiring it to three inputs is the hook's job and is
- * checked in the browser; what belongs here is the sums a merchant would
- * otherwise be doing in their head while pricing a product.
- */
 describe("saleFromPct()", () => {
   it("takes a percentage off the price", () => {
     expect(saleFromPct(25000, 10)).toBe("22500");
@@ -40,8 +35,6 @@ describe("pctFromSale()", () => {
 
 describe("num()", () => {
   it("treats an empty box as no value rather than as zero", () => {
-    // The difference matters: zero is a real discount, blank is "not set", and
-    // reading blank as zero would stamp a 0% discount on every product.
     expect(num("")).toBeNull();
     expect(num("   ")).toBeNull();
     expect(num("0")).toBe(0);

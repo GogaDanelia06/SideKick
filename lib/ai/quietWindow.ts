@@ -2,12 +2,6 @@ import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
 import { answerCustomer } from "./answer";
 
-/**
- * Debounces AI replies. Each delivery waits a quiet window, then answers only if it
- * is still the newest message, covering everything the customer said in that turn.
- */
-
-/** Caps the configured delay, which holds a function open. */
 const MAX_DELAY_SEC = 120;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -21,7 +15,6 @@ async function delayFor(businessId: string): Promise<number> {
   return Math.min(MAX_DELAY_SEC, Math.max(0, seconds));
 }
 
-/** The customer's messages since the last reply, oldest first. */
 async function currentTurn(conversationId: string): Promise<{ text: string; newestId: string } | null> {
   const recent = await prisma.message.findMany({
     where: { conversationId },
@@ -57,7 +50,6 @@ export async function answerAfterQuietWindow(
   const turn = await currentTurn(conversationId);
   if (!turn) return;
 
-  // A newer message arrived during the window; it owns the reply.
   if (turn.newestId !== messageId) {
     log.info("reply yielded — a newer message arrived during the quiet window", {
       conversationId,

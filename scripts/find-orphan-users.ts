@@ -1,14 +1,6 @@
 import { prisma } from "../lib/db";
 import { provisionBusiness } from "../lib/provision";
 
-/**
- * Finds users without a business (left by an old non-transactional registration).
- * They can sign in, but every dashboard route redirects them to /login.
- *
- *   npx tsx scripts/find-orphan-users.ts          # list them
- *   npx tsx scripts/find-orphan-users.ts --fix    # give each one a business
- */
-
 async function main() {
   const fix = process.argv.includes("--fix");
 

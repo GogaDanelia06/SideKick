@@ -9,7 +9,6 @@ export function ThemeToggle() {
   const { t } = useLanguage();
   const { theme, toggle } = useTheme();
 
-  // The icon shows the theme you would switch to.
   const Icon = theme === "light" ? IconMoon : IconSun;
 
   return (

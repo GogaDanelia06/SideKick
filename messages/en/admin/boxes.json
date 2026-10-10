@@ -1,0 +1,24 @@
+{
+  "editor": {
+    "add": "Add",
+    "addBox": "Add box",
+    "boxes": "boxes",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "descriptionEnglish": "Description — English",
+    "descriptionGeorgian": "Description — Georgian",
+    "edit": "Edit",
+    "icon": "Icon",
+    "moveDown": "Move down",
+    "moveUp": "Move up",
+    "noBoxesYet": "No boxes yet.",
+    "notFound": "Not found",
+    "save": "Save",
+    "somethingWentWrong": "Something went wrong",
+    "titleEnglish": "Title — English",
+    "titleGeorgian": "Title — Georgian",
+    "titleIsRequiredIn": "Title is required in both languages",
+    "togglePublish": "Toggle publish"
+  }
+}

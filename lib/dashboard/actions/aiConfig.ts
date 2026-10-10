@@ -44,7 +44,6 @@ export async function saveAiRules(fd: FormData): Promise<ActionResult> {
   await saveConfig(ctx.businessId, {
     roles: fd.getAll("roles").map(String),
     handoffRule: optionalField(fd, "handoffRule"),
-    // Clamped on the server: the value decides how long a function is held open.
     replyDelaySec: Math.min(MAX_REPLY_DELAY_SEC, Math.max(0, Number(fd.get("replyDelaySec")) || 0)),
     leadEnabled: checkbox(fd, "leadEnabled"),
     leadRule: optionalField(fd, "leadRule"),

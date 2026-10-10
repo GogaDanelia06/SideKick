@@ -32,8 +32,6 @@ describe("readTheme()", () => {
   });
 
   it("carries an old background-only choice forward", async () => {
-    // The setting this screen shipped with. A live site is already wearing one,
-    // and reading only the new key would repaint it grey the moment this deploys.
     rows({ [BG_KEY]: "plum" });
     const plum = presetColors(findPreset("plum"), "dark");
 
@@ -44,8 +42,6 @@ describe("readTheme()", () => {
   });
 
   it("takes only the background from that old choice, not the whole preset", async () => {
-    // Someone who picked a background months ago did not also choose new borders
-    // and a new grey — a deploy is the wrong moment to decide that they did.
     rows({ [BG_KEY]: "plum" });
 
     const theme = await readTheme();
@@ -70,8 +66,6 @@ describe("readTheme()", () => {
   });
 
   it("survives an unparseable row, and says so", async () => {
-    // Hand-edited in the database. The shipped palette is a far better answer
-    // than a page with no colours, but a silent reset is unexplainable later.
     rows({ [THEME_KEY]: "{not json" });
 
     expect(await readTheme()).toEqual({

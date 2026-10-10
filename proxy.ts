@@ -7,11 +7,6 @@ import { expiredCookie, isSignInCookie } from "@/lib/auth/sessionCookie";
 
 const { auth } = NextAuth(authConfig);
 
-/**
- * Guards signed-in areas and ends idle sessions (Next 16's name for middleware).
- * A handler passed to `auth()` disables next-auth's own redirect, so `gateAllows`
- * decides here — the same rule the `authorized` callback uses.
- */
 export default auth(async (request) => {
   const { pathname } = request.nextUrl;
   const user = request.auth?.user;
@@ -23,8 +18,6 @@ export default auth(async (request) => {
     url.searchParams.set("callbackUrl", `${pathname}${request.nextUrl.search}`);
     const res = NextResponse.redirect(url);
     res.cookies.delete(IDLE_COOKIE);
-    // Signed out for real: the session and every account parked beside it. Deleting only
-    // the marker made the next visit look fresh, and the old session walked straight back in.
     const secure = request.nextUrl.protocol === "https:";
     for (const { name } of request.cookies.getAll()) {
       if (isSignInCookie(name)) res.cookies.set(expiredCookie(name, secure));
@@ -42,8 +35,6 @@ export default auth(async (request) => {
   if (!secret) return NextResponse.next();
 
   const marker = await readMarker(request.cookies.get(IDLE_COOKIE)?.value, secret);
-  // A marker from before this sign-in belongs to an earlier session (logging out never
-  // clears it). Counted, it ended every new sign-in on its first page, half an hour on.
   const seenAt = marker !== null && marker >= (user.startedAt ?? 0) ? marker : null;
 
   if (seenAt !== null && isIdle(seenAt)) return signOut();

@@ -3,14 +3,8 @@ import { isPlatformAdmin } from "@/lib/auth/admin";
 import { storeMedia } from "@/lib/admin/storage";
 import { log } from "@/lib/logger";
 
-/** Admin media upload (hero slides, about photo). Storage lives in lib/admin/storage.ts. */
-
 const MAX_BYTES = 8 * 1024 * 1024;
 
-/**
- * Formats browsers render inline. SVG is excluded: it can carry scripts that run
- * on the serving origin.
- */
 const ALLOWED = new Set([
   "image/jpeg",
   "image/png",

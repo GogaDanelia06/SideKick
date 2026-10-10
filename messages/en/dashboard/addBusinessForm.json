@@ -1,0 +1,10 @@
+{
+  "add": "Add",
+  "addedAndOpened": "Added and opened \"{name}\"",
+  "businessName": "Business name",
+  "cancel": "Cancel",
+  "couldNotAddIt": "Could not add it. Try again.",
+  "enterTheBusinessName": "Enter the business name",
+  "youAlreadyHaveA": "You already have a business with this name",
+  "yourSessionHasEnded": "Your session has ended. Log in and try again."
+}

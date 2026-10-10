@@ -1,7 +1,6 @@
 import { log } from "@/lib/logger";
 import type { ChannelType } from "@prisma/client";
 
-/** Ids only: the AI service reads message content through /api/agent/*. */
 export type AgentNotice = {
   event: "message.received";
   businessId: string;
@@ -12,7 +11,6 @@ export type AgentNotice = {
 
 const TIMEOUT_MS = 10_000;
 
-/** Notifies the AI service of a new message. Failures are logged, never retried. */
 export async function notifyAgent(notice: AgentNotice): Promise<void> {
   const url = process.env.AI_SERVICE_WEBHOOK_URL;
   const token = process.env.AI_SERVICE_WEBHOOK_TOKEN;

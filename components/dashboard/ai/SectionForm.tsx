@@ -5,14 +5,13 @@ import { IconRestore } from "@tabler/icons-react";
 import type { IconType } from "@/lib/content/types";
 import type { SectionKey } from "@/lib/dashboard/sectionSave/request";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import { SectionHead } from "./parts";
+import { SectionHead } from "./fields";
 import { RESTORED } from "./saveMessages";
 import { SaveBar } from "./SaveBar";
 import { SectionSaveContext } from "./sectionSaveContext";
 import { useSectionSave } from "./useSectionSave";
 import type { Text } from "@/lib/i18n/messages";
 
-/** A section of the AI page: it is saved by its own Save button, and by nothing else. */
 export function SectionForm({
   section,
   icon,
@@ -36,7 +35,6 @@ export function SectionForm({
   return (
     <form
       ref={formRef}
-      // Nothing is posted: Enter in a field saves the section, like the button.
       onSubmit={(event) => {
         event.preventDefault();
         void save();

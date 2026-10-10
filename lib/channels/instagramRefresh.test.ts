@@ -19,7 +19,6 @@ const refresh = vi.mocked(refreshLongLived);
 const NOW = new Date("2026-09-09T03:00:00Z");
 const DAY = 24 * 60 * 60 * 1000;
 
-/** Obtained long ago, so age never gets in the way unless a test says so. */
 const channel = (over: Record<string, unknown> = {}) => ({
   id: "ch1",
   businessId: "b1",
@@ -50,8 +49,6 @@ describe("refreshInstagramTokens()", () => {
   });
 
   it("only asks for tokens that are still alive and near the end", async () => {
-    // Renewing is impossible once a token has lapsed, so an already-dead one is
-    // not worth a call — and one with months left would be renewed nightly.
     find.mockResolvedValue([] as never);
     await refreshInstagramTokens(NOW);
 
@@ -62,8 +59,6 @@ describe("refreshInstagramTokens()", () => {
   });
 
   it("skips a token Meta considers too young to renew", async () => {
-    // Meta refuses anything under 24 hours old. Calling anyway would fail every
-    // night and read like a broken integration.
     find.mockResolvedValue([channel({ lastSyncAt: new Date(NOW.getTime() - 60 * 60 * 1000) })] as never);
 
     const report = await refreshInstagramTokens(NOW);
@@ -73,8 +68,6 @@ describe("refreshInstagramTokens()", () => {
   });
 
   it("counts a refusal and leaves the old token in place", async () => {
-    // The old one may still have days left; replacing it with nothing would
-    // turn a warning into an outage.
     find.mockResolvedValue([channel()] as never);
     refresh.mockResolvedValue(null);
 

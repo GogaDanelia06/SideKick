@@ -1,0 +1,25 @@
+{
+  "editor": {
+    "channels": "Channels",
+    "emptyNoDiscountMonthly": "Empty = no discount (monthly × number of months).",
+    "extraEnglish": "{n}. English",
+    "extraFeatures5Slots": "Extra features (5 slots)",
+    "extraGeorgian": "{n}. Georgian",
+    "featured": "Featured",
+    "featuredPlan": "Featured plan",
+    "limitsMustBeNumbers": "Limits must be numbers (-1 = unlimited)",
+    "messages": "Messages",
+    "nameEn": "Name (EN)",
+    "nameIsRequired": "Name is required",
+    "nameKa": "Name (KA)",
+    "price12Months": "Price — 12 months (₾)",
+    "price3Months": "Price — 3 months (₾)",
+    "priceMo": "Price (₾ / mo)",
+    "priceMustBeA": "Price must be a whole number ≥ 0",
+    "products": "Products",
+    "save": "Save",
+    "saved": "Saved",
+    "somethingWentWrong": "Something went wrong",
+    "users": "Users"
+  }
+}

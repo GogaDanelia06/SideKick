@@ -5,7 +5,6 @@ import { log } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
-/** Vercel Cron sends `Bearer CRON_SECRET`; without a configured secret every call is refused. */
 function authorised(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
   if (!secret) return false;

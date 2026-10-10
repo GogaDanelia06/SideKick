@@ -8,9 +8,6 @@ const ahead = (days: number) => new Date(NOW.getTime() + days * DAY);
 
 describe("isExpired()", () => {
   it("treats a subscription with no renewal date as live", () => {
-    // Every trial and every hand-seeded row is in this state. Reading "was
-    // never bought" as "has run out" would switch off every tenant the day
-    // this shipped.
     expect(isExpired(null, NOW)).toBe(false);
     expect(isExpired(undefined, NOW)).toBe(false);
   });

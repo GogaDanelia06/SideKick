@@ -6,12 +6,9 @@ import { listOtherAccounts } from "@/lib/auth/otherAccounts";
 import { googleSignInEnabled } from "@/lib/auth/providers";
 
 export const metadata: Metadata = { title: "შესვლა" };
-// Dynamic: the Google button depends on runtime environment variables.
 export const dynamic = "force-dynamic";
 
-
 export default async function LoginPage() {
-  // Accounts still signed in on this browser, e.g. after "Sign in with another account".
   const remembered = await listOtherAccounts();
 
   return (

@@ -19,7 +19,6 @@ export type CtaContent = {
   url?: string;
 };
 
-/** Admin-editable CTA (`cta_*` keys) with per-field fallbacks; the button defaults to /start. */
 export function CtaBanner({ content = {} }: { content?: CtaContent }) {
   const { t } = useLanguage();
 

@@ -1,0 +1,25 @@
+{
+  "editor": {
+    "channels": "არხები",
+    "emptyNoDiscountMonthly": "ცარიელი = ფასდაკლების გარეშე (თვიური × თვეების რაოდენობა).",
+    "extraEnglish": "{n}. ინგლისურად",
+    "extraFeatures5Slots": "დამატებითი პარამეტრები (5 ველი)",
+    "extraGeorgian": "{n}. ქართულად",
+    "featured": "გამორჩეული",
+    "featuredPlan": "გამორჩეული პაკეტი",
+    "limitsMustBeNumbers": "ლიმიტი უნდა იყოს რიცხვი (-1 = შეუზღუდავი)",
+    "messages": "შეტყობინება",
+    "nameEn": "სახელი (ინგ.)",
+    "nameIsRequired": "სახელი სავალდებულოა",
+    "nameKa": "სახელი (ქართ.)",
+    "price12Months": "ფასი — 1 წელი (₾)",
+    "price3Months": "ფასი — 3 თვე (₾)",
+    "priceMo": "ფასი (₾ / თვე)",
+    "priceMustBeA": "ფასი უნდა იყოს დადებითი მთელი რიცხვი",
+    "products": "პროდუქტი",
+    "save": "შენახვა",
+    "saved": "შენახულია",
+    "somethingWentWrong": "ვერ შესრულდა",
+    "users": "მომხმარებელი"
+  }
+}

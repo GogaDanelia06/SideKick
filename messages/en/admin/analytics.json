@@ -1,0 +1,51 @@
+{
+  "actions": "Actions",
+  "active": "Active",
+  "businesses": "Businesses",
+  "businessesNewThisMonth": "+{count} this month",
+  "cancelled": "Cancelled",
+  "collectedInTotal": "Collected in total",
+  "collectedThisMonth": "Collected this month",
+  "connectedChannels": "Connected channels",
+  "conversations": "Conversations",
+  "conversationsActive": "{count} active",
+  "dailyBars": {
+    "busiestDay": "busiest day"
+  },
+  "everySubscriptionTrialsIncluded": "Every subscription, trials included.",
+  "funnel": {
+    "ofStart": "of start",
+    "signUpFunnel": "Sign-up funnel",
+    "startingPoint": "starting point"
+  },
+  "insideTheApp": "Inside the app",
+  "last30Days": "Last 30 days.",
+  "leads": "Leads",
+  "leadsClosed": "{count} closed",
+  "messages": "Messages",
+  "messagesFromAi": "{share}% from AI",
+  "monthlyRecurringMrr": "Monthly recurring (MRR)",
+  "newBusinesses6Months": "New businesses (6 months)",
+  "note": "Signed-in screens — kept out of the marketing figures.",
+  "nothingRecordedYetFigures": "Nothing recorded yet — figures appear once visitors arrive.",
+  "ourIncome": "Our income",
+  "overSevenDays": "{value} / 7d",
+  "pageViews": "page views",
+  "pastDue": "Past due",
+  "paymentProblems": "Payment problems",
+  "paymentsFailedPending": "{failed} failed · {pending} pending",
+  "planDistribution": "Plan distribution",
+  "platformAnalytics": "Platform analytics",
+  "products": "Products",
+  "publicPages": "Public pages",
+  "rankedList": {
+    "nothingYet": "Nothing yet"
+  },
+  "subscriptionsActive": "{count} active subscriptions",
+  "subtitle": "Aggregate figures across every tenant. No conversation content is shown here — numbers only.",
+  "tenantsSales": "Tenants' sales",
+  "tenantsTurnover": "{total}₾ — their turnover, not ours",
+  "trial": "Trial",
+  "users": "Users",
+  "visitsAndActions": "Visits and actions"
+}

@@ -9,7 +9,6 @@ import { log } from "@/lib/logger";
 import { clientIp, consume } from "@/lib/security/rateLimit";
 import { invalidInput, throttled } from "@/lib/auth/apiError";
 
-/** Resends the signup confirmation link. The answer is identical for every address. */
 export async function POST(req: Request) {
   const ipLimit = await consume("resendIp", clientIp(req));
   if (!ipLimit.ok) return throttled(ipLimit.retryAfterSec);

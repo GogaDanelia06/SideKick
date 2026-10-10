@@ -1,7 +1,5 @@
 import type { Shade, ThemeColors } from "./tokens";
 
-/** Non-editable colours (hovers, tinted fills, translucent headers) derived from the editable ones. */
-
 type Rgb = [number, number, number];
 
 const HEX = /^#[0-9a-f]{6}$/i;
@@ -24,14 +22,12 @@ export function rgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-/** `t` of the way from `a` to `b`. */
 export function mix(a: string, b: string, t: number): string {
   const x = toRgb(a);
   const y = toRgb(b);
   return toHex([0, 1, 2].map((i) => x[i] + (y[i] - x[i]) * t) as Rgb);
 }
 
-/** Relative luminance, per WCAG. */
 export function luminance(hex: string): number {
   const [r, g, b] = toRgb(hex).map((v) => {
     const c = v / 255;
@@ -43,19 +39,16 @@ export function luminance(hex: string): number {
 const WHITE = "#ffffff";
 const BLACK = "#000000";
 
-/** White text where it stays readable (3:1, the minimum for UI controls), otherwise black. */
 export function readableOn(hex: string): string {
   return 1.05 / (luminance(hex) + 0.05) >= 3 ? WHITE : BLACK;
 }
 
-/** Derived variables per scope. Hover and ink shifts go lighter on dark, darker on light. */
 export function derived(c: ThemeColors, shade: Shade): { root: ThemeColors; dash: ThemeColors } {
   const dark = shade === "dark";
   const toward = dark ? WHITE : BLACK;
 
   return {
     root: {
-      // Nested cards: a lighter step on dark; the page colour on light.
       "--card2": dark ? mix(c.card, WHITE, 0.05) : c.bg,
       "--sidebar": c.card,
       "--primary-h": mix(c.primary, toward, dark ? 0.16 : 0.1),

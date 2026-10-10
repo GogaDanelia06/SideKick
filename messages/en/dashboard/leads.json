@@ -1,0 +1,29 @@
+{
+  "useLeadSaves": {
+    "couldnTSaveTry": "Couldn't save — try again",
+    "enterAName": "Enter a name",
+    "leadAdded": "Lead added",
+    "leadDeleted": "Lead deleted",
+    "statusChanged": "Status changed",
+    "youMayNotChange": "You may not change leads"
+  },
+  "view": {
+    "active": "Active",
+    "addLead": "Add lead",
+    "close": "Close",
+    "closed": "Closed",
+    "comment": "Comment",
+    "delete": "Delete",
+    "goToChat": "Go to chat",
+    "interest": "Interest",
+    "leads": "leads",
+    "name": "Name",
+    "name2": "Name *",
+    "new": "New",
+    "noLeadsYet": "No leads yet",
+    "phone": "Phone",
+    "save": "Save",
+    "source": "Source",
+    "status": "Status"
+  }
+}

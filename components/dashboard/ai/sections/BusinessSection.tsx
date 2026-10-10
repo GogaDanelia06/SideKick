@@ -2,7 +2,7 @@
 
 import type { Business } from "@prisma/client";
 import { IconBuildingStore } from "@tabler/icons-react";
-import { AreaField, TextField } from "../parts";
+import { AreaField, TextField } from "../fields";
 import { SectionForm } from "../SectionForm";
 
 export function BusinessSection({ business }: { business: Business | null }) {

@@ -1,14 +1,11 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 
-/** Signup confirmation tokens, built like password reset tokens: hashed, single use, 24h. */
-
 const TOKEN_TTL_HOURS = 24;
 
 const hash = (token: string) => createHash("sha256").update(token).digest("hex");
 
 export async function createVerificationToken(userId: string) {
-  // Reissuing invalidates older links.
   await prisma.emailVerificationToken.updateMany({
     where: { userId, usedAt: null },
     data: { usedAt: new Date() },
@@ -40,7 +37,6 @@ export async function verifyVerificationToken(token: string) {
   return record;
 }
 
-/** Marks the address verified and consumes the token in one transaction. */
 export async function consumeVerificationToken(id: string, userId: string) {
   await prisma.$transaction([
     prisma.emailVerificationToken.update({ where: { id }, data: { usedAt: new Date() } }),

@@ -1,0 +1,32 @@
+{
+  "editor": {
+    "1200630RecommendedBlank": "რეკომენდებულია 1200×630. ცარიელი = ავტომატურად გენერირებული სურათი.",
+    "aBlankFieldMeans": "ცარიელი ველი ნიშნავს, რომ სტანდარტული მნიშვნელობა გამოიყენება.",
+    "blankThePageS": "ცარიელი = გვერდის საკუთარი მისამართი.",
+    "canonicalMustBeA": "Canonical უნდა იყოს სრული მისამართი (https://…) ან დაიწყოს „/“-ით",
+    "canonicalUrl": "კანონიკური URL",
+    "default": "სტანდარტული",
+    "description": "აღწერა (description)",
+    "googlePreview": "გადახედვა Google-ში",
+    "indexVisibleInSearch": "Index — ჩანს ძებნაში",
+    "indexing": "ინდექსაცია",
+    "noindexHiddenFromSearch": "Noindex — დამალულია ძებნისგან",
+    "ogDescription": "OG აღწერა",
+    "ogImage": "OG სურათი",
+    "ogTitle": "OG სათაური",
+    "page": "გვერდი:",
+    "previewOnly": "მხოლოდ საჩვენებლად",
+    "save": "შენახვა",
+    "saved": "შენახულია",
+    "slugUrl": "Slug (მისამართი)",
+    "socialSharingOpenGraph": "სოციალური ქსელები (Open Graph)",
+    "somethingWentWrong": "ვერ შესრულდა",
+    "theAddressIsDefined": "მისამართი კოდშია განსაზღვრული — შეცვლა დეველოპერს სჭირდება.",
+    "theTwitterCardReuses": "Twitter Card ავტომატურად იმავე სათაურს, აღწერასა და სურათს იყენებს (summary_large_image).",
+    "thisAppearsInGoogle": "ეს ჩანს Google-ის შედეგებში და ბრაუზერის ჩანართზე — არა თვით გვერდზე.",
+    "thisIsWhatGoogle": "ეს არის ის, რასაც Google აჩვენებს. შესაცვლელად გამოიყენე ზემოთ მოცემული ველები.",
+    "thisSectionOnlyChanges": "აქ მხოლოდ ის იცვლება, რასაც საძიებო სისტემა ხედავს. გვერდზე დაწერილი დიდი სათაური (H1) და ტექსტები ამავე გვერდის სხვა სექციებშია.",
+    "title": "სათაური (title)",
+    "unknownPage": "უცნობი გვერდი"
+  }
+}

@@ -1,6 +1,5 @@
 import type { ColumnKey } from "./columns";
 
-/** One product from a file. An absent optional field keeps the product's current value. */
 export type ImportRow = {
   code: string;
   name: string;
@@ -16,10 +15,6 @@ export type RowProblem = "code" | "name" | "price" | "discount" | "sale" | "quan
 
 const MAX_LENGTH = { code: 64, name: 200, size: 50, description: 2000 };
 
-/**
- * A spreadsheet number: "1 200", "1,200.50", "1.200,50", "12,5" and "₾15" all read.
- * Empty is undefined; anything else that is not a number is null.
- */
 export function readNumber(raw: string | undefined): number | null | undefined {
   let s = (raw ?? "").replace(/[\s ₾$€]/g, "");
   if (s === "") return undefined;
@@ -32,7 +27,6 @@ export function readNumber(raw: string | undefined): number | null | undefined {
 
 const inRange = (n: number | undefined, max = Infinity) => n === undefined || (n >= 0 && n <= max);
 
-/** Turns one line of cells into a product, or says what is wrong with it. */
 export function checkRow(cells: Partial<Record<ColumnKey, string>>): { row: ImportRow } | { problem: RowProblem } {
   const text = (key: ColumnKey) => (cells[key] ?? "").trim();
   const [code, name, size, description] = [text("code"), text("name"), text("size"), text("description")];
@@ -55,7 +49,6 @@ export function checkRow(cells: Partial<Record<ColumnKey, string>>): { row: Impo
   }
 
   const row: ImportRow = { code, name, price: Math.round(price) };
-  // As in the product form: either discount value gives the other.
   if (discount !== undefined) {
     row.discountPct = Math.round(discount);
     row.salePrice = Math.round(sale ?? price * (1 - discount / 100));
@@ -72,7 +65,6 @@ export function checkRow(cells: Partial<Record<ColumnKey, string>>): { row: Impo
 const isText = (v: unknown, max: number) => typeof v === "string" && v.trim() !== "" && v.length <= max;
 const isWhole = (v: unknown, max = Infinity) => Number.isInteger(v) && (v as number) >= 0 && (v as number) <= max;
 
-/** The server's check of a row it did not parse itself. */
 export function isImportRow(value: unknown): value is ImportRow {
   const r = value as Partial<ImportRow> | null;
   return (

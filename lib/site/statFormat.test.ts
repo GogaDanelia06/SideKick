@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { formatStat } from "./statFormat";
 
-/**
- * These figures are rewritten on every animation frame while a counter climbs,
- * so the rules that keep them readable — no decimals, a stable width, the same
- * shape server-side and client-side — are worth pinning down.
- */
 describe("formatStat", () => {
   it("groups thousands", () => {
     expect(formatStat(1234, "number")).toBe("1,234");

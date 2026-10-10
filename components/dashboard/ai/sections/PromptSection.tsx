@@ -6,7 +6,7 @@ import { IconBrandYoutube, IconFileText } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { PromptAiActions } from "./PromptAiActions";
 import { PromptChanges } from "./PromptChanges";
-import { AREA } from "../parts";
+import { AREA } from "../fields";
 import { SectionForm } from "../SectionForm";
 
 export function PromptSection({ config, aiReady }: { config: AiConfig | null; aiReady: boolean }) {

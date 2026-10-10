@@ -1,15 +1,12 @@
-/** A trimmed text field; "" when missing. */
 export function field(fd: FormData, name: string): string {
   const value = fd.get(name);
   return typeof value === "string" ? value.trim() : "";
 }
 
-/** A trimmed text field, or null when empty. */
 export function optionalField(fd: FormData, name: string): string | null {
   return field(fd, name) || null;
 }
 
-/** A number field, or null when empty. */
 export function numberField(fd: FormData, name: string): number | null {
   const value = fd.get(name);
   return value ? Number(value) : null;

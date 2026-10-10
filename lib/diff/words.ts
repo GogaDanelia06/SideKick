@@ -1,19 +1,16 @@
 import { commonRun } from "./lcs";
 import type { Edit } from "./types";
 
-// Georgian letters are letters to \p{L}; \w would not know them.
 const PARTS = /[\p{L}\p{M}\p{N}]+|\s+|[^\s\p{L}\p{M}\p{N}]/gu;
 const WORD = /^[\p{L}\p{M}\p{N}]/u;
 const SPACE = /^\s+$/;
 
-/** A line cut into words, runs of spaces, and single marks. */
 export function parts(line: string): string[] {
   return line.match(PARTS) ?? [];
 }
 
 export const isWord = (part: string) => WORD.test(part);
 
-/** How alike two lines are by the words they share: 0 for nothing in common, 1 for the same words. */
 export function likeness(a: string, b: string): number {
   const x = parts(a).filter(isWord);
   const y = parts(b).filter(isWord);
@@ -26,11 +23,9 @@ type Swap = { removed: string; added: string };
 type Segment = Kept | Swap;
 
 const isKept = (segment: Segment): segment is Kept => "kept" in segment;
-/** A change that takes something out and puts something in its place. */
 const isReplacement = (segment: Segment | undefined): segment is Swap =>
   segment !== undefined && !isKept(segment) && segment.removed !== "" && segment.added !== "";
 
-/** A line walked token by token: what stayed, and what was taken out and put in between. */
 function segments(before: string, after: string): Segment[] {
   const a = parts(before);
   const b = parts(after);
@@ -52,7 +47,6 @@ function segments(before: string, after: string): Segment[] {
   return out;
 }
 
-/** Two replacements with only a space between them are one replacement: a phrase is one change. */
 function bridge(all: Segment[]): Segment[] {
   const out: Segment[] = [];
   for (let k = 0; k < all.length; k++) {
@@ -70,7 +64,6 @@ function bridge(all: Segment[]): Segment[] {
   return out;
 }
 
-/** Two versions of a line as one: the words that stayed, with the old ones and their replacements marked. */
 export function mergeWords(before: string, after: string): Edit[] {
   return bridge(segments(before, after)).flatMap((segment): Edit[] => {
     if (isKept(segment)) return [{ text: segment.kept, kind: "same" }];

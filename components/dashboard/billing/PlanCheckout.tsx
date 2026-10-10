@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from "react";
 import type { PaymentProvider, Plan, Subscription } from "@prisma/client";
-import { IconAlertTriangle, IconCheck } from "@tabler/icons-react";
-import { startPlanCheckout } from "@/lib/dashboard/actions";
+import { IconCheck } from "@tabler/icons-react";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { startPlanCheckout } from "@/lib/dashboard/actions/billing";
 import { BILLING_PERIODS, periodPrice, periodSavingPct, planLabel } from "@/lib/content/packages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { track } from "@/lib/analytics/track";
@@ -17,7 +18,6 @@ type Props = {
   canManage: boolean;
 };
 
-/** Plan, period and bank selection; the server recomputes the price. */
 export function PlanCheckout({ plans, subscription, providers, canManage }: Props) {
   const { t, locale } = useLanguage();
   const [pending, start] = useTransition();
@@ -97,10 +97,7 @@ export function PlanCheckout({ plans, subscription, providers, canManage }: Prop
       {selected ? <BankChoice providers={providers} pending={pending} onPay={pay} /> : null}
 
       {error ? (
-        <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
-          <IconAlertTriangle size={16} className="shrink-0" />
-          {t(checkoutError(error))}
-        </div>
+        <ErrorBanner>{t(checkoutError(error))}</ErrorBanner>
       ) : null}
     </div>
   );

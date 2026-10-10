@@ -1,48 +1,13 @@
 import { createVerify } from "node:crypto";
 import { log } from "@/lib/logger";
 import { PaymentError, type CheckoutRequest, type CheckoutSession, type PaymentAdapter, type ProviderStatus } from "./types";
+import { accessToken } from "./bogAuth";
 
-const OAUTH_URL = "https://oauth2.bog.ge/auth/realms/bog/protocol/openid-connect/token";
 const API = "https://api.bog.ge/payments/v1";
 
-/**
- * Bank of Georgia's callback verification key; set BOG_PUBLIC_KEY if they rotate it.
- * https://api.bog.ge/docs/en/payments/standard-process/callback
- */
 const DEFAULT_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu4RUyAw3+CdkS3ZNILQhzHI9Hemo+vKB9U2BSabppkKjzjjkf+0Sm76hSMiu/HFtYhqWOESryoCDJoqffY0Q1VNt25aTxbj068QNUtnxQ7KQVLA+pG0smf+EBWlS1vBEAFbIas9d8c9b9sSEkTrrTYQ90WIM8bGB6S/KLVoT1a7SnzabjoLc5Qf/SLDG5fu8dH8zckyeYKdRKSBJKvhxtcBuHV4f7qsynQT+f2UYbESX/TLHwT5qFWZDHZ0YUOUIvb8n7JujVSGZO9/+ll/g4ZIWhC1MlJgPObDwRkRd8NFOopgxMcMsDIZIoLbWKhHVq67hdbwpAq9K9WMmEhPnPwIDAQAB
 -----END PUBLIC KEY-----`;
-
-let token: { value: string; expiresAt: number } | undefined;
-
-/** Cached until a minute before it expires — one round trip per hour, not per payment. */
-async function accessToken(): Promise<string> {
-  if (token && Date.now() < token.expiresAt) return token.value;
-
-  const id = process.env.BOG_CLIENT_ID ?? "";
-  const secret = process.env.BOG_CLIENT_SECRET ?? "";
-  const basic = Buffer.from(`${id}:${secret}`).toString("base64");
-
-  const res = await fetch(OAUTH_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${basic}`,
-    },
-    body: "grant_type=client_credentials",
-  });
-
-  if (!res.ok) {
-    throw new PaymentError(`BOG auth failed: ${await res.text()}`, "BOG", res.status);
-  }
-
-  const data = (await res.json()) as { access_token: string; expires_in: number };
-  token = {
-    value: data.access_token,
-    expiresAt: Date.now() + Math.max(0, data.expires_in - 60) * 1000,
-  };
-  return token.value;
-}
 
 type OrderResponse = {
   id: string;
@@ -70,7 +35,6 @@ export const bog: PaymentAdapter = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${await accessToken()}`,
         "Accept-Language": req.locale,
-        // BOG de-duplicates on this key, so a double submit creates one order.
         "Idempotency-Key": req.paymentId,
       },
       body: JSON.stringify({
@@ -116,7 +80,6 @@ export const bog: PaymentAdapter = {
     const data = (await res.json()) as ReceiptResponse;
     const key = data.order_status?.key ?? "";
 
-    // Only an explicit "completed" counts as paid.
     if (key === "completed") return { state: "paid", reason: null };
     if (key === "created" || key === "processing") return { state: "pending" };
     return { state: "failed", reason: data.reject_reason ?? key ?? null };

@@ -1,0 +1,32 @@
+{
+  "editor": {
+    "1200630RecommendedBlank": "1200×630 recommended. Blank = the auto-generated image.",
+    "aBlankFieldMeans": "A blank field means the built-in default is used.",
+    "blankThePageS": "Blank = the page's own address.",
+    "canonicalMustBeA": "Canonical must be a full https:// URL or start with /",
+    "canonicalUrl": "Canonical URL",
+    "default": "default",
+    "description": "Description",
+    "googlePreview": "Google preview",
+    "indexVisibleInSearch": "Index — visible in search",
+    "indexing": "Indexing",
+    "noindexHiddenFromSearch": "Noindex — hidden from search",
+    "ogDescription": "OG Description",
+    "ogImage": "OG Image",
+    "ogTitle": "OG Title",
+    "page": "Page:",
+    "previewOnly": "preview only",
+    "save": "Save",
+    "saved": "Saved",
+    "slugUrl": "Slug (URL)",
+    "socialSharingOpenGraph": "Social sharing (Open Graph)",
+    "somethingWentWrong": "Something went wrong",
+    "theAddressIsDefined": "The address is defined in code — changing it needs a developer.",
+    "theTwitterCardReuses": "The Twitter card reuses the same title, description and image (summary_large_image).",
+    "thisAppearsInGoogle": "This appears in Google results and the browser tab — not on the page itself.",
+    "thisIsWhatGoogle": "This is what Google shows. Edit it with the fields above.",
+    "thisSectionOnlyChanges": "This section only changes what search engines see. The large heading (H1) and the text on the page itself live in the other sections of this same page.",
+    "title": "Title",
+    "unknownPage": "Unknown page"
+  }
+}

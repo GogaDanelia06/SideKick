@@ -8,7 +8,6 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 
 type Props = { account: OtherAccount; busy: boolean; disabled: boolean; onOpen: () => void; onRemove: () => void; large?: boolean };
 
-/** One account signed in on this browser, as in Gmail's account list: open it, or sign it out with ×. */
 export function AccountRow({ account, busy, disabled, onOpen, onRemove, large = false }: Props) {
   const { t } = useLanguage();
 

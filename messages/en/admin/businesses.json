@@ -1,0 +1,29 @@
+{
+  "businessPlans": {
+    "businesses": "Businesses",
+    "noBusinesses": "No businesses",
+    "noPlansExistYet": "No plans exist yet. Add them in the pricing page editor.",
+    "total": "total"
+  },
+  "businessRow": {
+    "active": "Active",
+    "businessNotFound": "Business not found",
+    "cancelled": "Cancelled",
+    "channels": "channels",
+    "chats": "chats",
+    "members": "members",
+    "messages": "Messages",
+    "pastDue": "Past due",
+    "plan": "Plan",
+    "planNotFound": "Plan not found",
+    "products": "products",
+    "resetCounter": "Reset counter",
+    "save": "Save",
+    "saved": "Saved",
+    "saving": "Saving…",
+    "status": "Status",
+    "trial": "Trial"
+  },
+  "businessesPlans": "Businesses & plans",
+  "subtitle": "Until the banks are connected, plans are assigned here by hand. Changes take effect immediately."
+}

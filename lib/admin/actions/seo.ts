@@ -7,7 +7,6 @@ import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { revalidateSeo } from "@/lib/admin/revalidate";
 import { fail, type AdminResult } from "./shared";
 
-/** Paths with an SEO section in the admin registry; no other path can be written. */
 function seoPaths(): string[] {
   return ADMIN_PAGES.flatMap((page) =>
     page.sections.filter((s) => s.kind === "seo").map((s) => s.seoPath ?? page.route),
@@ -18,7 +17,6 @@ export async function updateSeo(path: string, fd: FormData): Promise<AdminResult
   await requireAdmin();
   if (!seoPaths().includes(path)) return fail("unknown_page");
 
-  // A site-relative path or an http(s) URL; a bad canonical would de-index the page.
   const canonical = field(fd, "canonical");
   if (canonical && safeUrl(canonical, "") !== canonical) return fail("bad_canonical");
 

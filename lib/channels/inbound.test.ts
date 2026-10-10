@@ -3,10 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 vi.mock("@/lib/db", () => ({
   prisma: {
     channel: { findUnique: vi.fn() },
-    conversation: {
-      upsert: vi.fn(),
-      updateMany: vi.fn().mockResolvedValue({ count: 1 }),
-    },
+    conversation: { upsert: vi.fn(), updateMany: vi.fn().mockResolvedValue({ count: 1 }) },
     message: { findUnique: vi.fn(), create: vi.fn() },
   },
 }));
@@ -31,8 +28,19 @@ const MSG: InboundMessage = {
 
 const connectedChannel = { id: "ch1", businessId: "b1", connected: true };
 
+const recorded = {
+  businessId: "b1",
+  channel: "FACEBOOK",
+  conversationId: "conv1",
+  messageId: "m1",
+  isNew: true,
+  needsName: true,
+  text: "გამარჯობა",
+};
+
 beforeEach(() => {
   vi.clearAllMocks();
+  channelFind.mockResolvedValue(connectedChannel as never);
   convUpsert.mockResolvedValue({ id: "conv1", customerName: null } as never);
   convUpdateMany.mockResolvedValue({ count: 1 } as never);
   msgFind.mockResolvedValue(null);
@@ -41,19 +49,7 @@ beforeEach(() => {
 
 describe("recordInbound()", () => {
   it("routes a message to the tenant that owns the page", async () => {
-    channelFind.mockResolvedValue(connectedChannel as never);
-
-    const result = await recordInbound("FACEBOOK", MSG);
-
-    expect(result).toEqual({
-      businessId: "b1",
-      channel: "FACEBOOK",
-      conversationId: "conv1",
-      messageId: "m1",
-      isNew: true,
-      needsName: true,
-      text: "გამარჯობა",
-    });
+    expect(await recordInbound("FACEBOOK", MSG)).toEqual(recorded);
     expect(channelFind).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { type_externalId: { type: "FACEBOOK", externalId: "PAGE_1" } },
@@ -62,7 +58,6 @@ describe("recordInbound()", () => {
   });
 
   it("finds the chat by the customer's PSID so a second message joins the first", async () => {
-    channelFind.mockResolvedValue(connectedChannel as never);
     await recordInbound("FACEBOOK", MSG);
 
     expect(convUpsert).toHaveBeenCalledWith(
@@ -73,17 +68,11 @@ describe("recordInbound()", () => {
   });
 
   it("stores the message as CUSTOMER, carrying Meta's mid", async () => {
-    channelFind.mockResolvedValue(connectedChannel as never);
     await recordInbound("FACEBOOK", MSG);
 
     expect(msgCreate).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: {
-          conversationId: "conv1",
-          sender: "CUSTOMER",
-          text: "გამარჯობა",
-          externalId: "mid_1",
-        },
+        data: { conversationId: "conv1", sender: "CUSTOMER", text: "გამარჯობა", externalId: "mid_1" },
       }),
     );
   });
@@ -103,28 +92,13 @@ describe("recordInbound()", () => {
   });
 
   it("does not store a second copy when Meta re-sends the same message", async () => {
-    // The retry path. Meta re-sends whenever it misses a 200 inside five
-    // seconds, and a duplicate here means the tenant sees the question twice
-    // and the AI answers it twice.
-    channelFind.mockResolvedValue(connectedChannel as never);
     msgFind.mockResolvedValue({ id: "m1" } as never);
 
-    const result = await recordInbound("FACEBOOK", MSG);
-
-    expect(result).toEqual({
-      businessId: "b1",
-      channel: "FACEBOOK",
-      conversationId: "conv1",
-      messageId: "m1",
-      isNew: false,
-      needsName: true,
-      text: "გამარჯობა",
-    });
+    expect(await recordInbound("FACEBOOK", MSG)).toEqual({ ...recorded, isNew: false });
     expect(msgCreate).not.toHaveBeenCalled();
   });
 
   it("defers to the winner when two retries race the unique index", async () => {
-    channelFind.mockResolvedValue(connectedChannel as never);
     msgCreate.mockRejectedValue(new Error("Unique constraint failed"));
     msgFind.mockResolvedValueOnce(null).mockResolvedValueOnce({ id: "winner" } as never);
 
@@ -135,7 +109,6 @@ describe("recordInbound()", () => {
   });
 
   it("moves a NEW chat to ACTIVE but leaves a DONE one closed", async () => {
-    channelFind.mockResolvedValue(connectedChannel as never);
     await recordInbound("FACEBOOK", MSG);
 
     expect(convUpdateMany).toHaveBeenCalledWith({

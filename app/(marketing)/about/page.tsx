@@ -15,7 +15,6 @@ export const generateMetadata = seoFor({
   path: "/about",
 });
 
-// Cached: admin saves revalidate this path; the timer catches edits made outside the panel.
 export const revalidate = 3600;
 
 const crumbs: Crumb[] = [

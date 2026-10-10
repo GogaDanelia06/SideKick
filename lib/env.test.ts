@@ -49,8 +49,6 @@ describe("env()", () => {
   });
 
   it("treats a blank value as not set rather than as broken", () => {
-    // Adding a variable in a hosting panel and leaving the box empty stores an
-    // empty string. That is a placeholder, not a misconfiguration.
     setEnv({ AI_SERVICE_WEBHOOK_URL: "", META_APP_SECRET: "" });
 
     expect(() => env()).not.toThrow();
@@ -58,8 +56,6 @@ describe("env()", () => {
   });
 
   it("does not let a malformed optional setting take the app down", () => {
-    // The regression this exists for: `env()` runs on every signed-in request,
-    // so throwing here emptied the whole dashboard over a Facebook setting.
     setEnv({ AI_SERVICE_WEBHOOK_URL: "not-a-url", META_VERIFY_TOKEN: "short" });
 
     expect(() => env()).not.toThrow();

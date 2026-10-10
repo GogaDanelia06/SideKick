@@ -17,7 +17,6 @@ export function AuthShell({
   children,
   footer,
 }: {
-  /** Tile icon for forgot/reset; sign-in and sign-up show the logo instead. */
   icon?: IconType;
   iconTone?: "primary" | "outline";
   title: Text;

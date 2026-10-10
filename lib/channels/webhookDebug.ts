@@ -1,8 +1,5 @@
-/** Redacted webhook traces: the envelope is kept, human-written text becomes its length. */
-
 const MAX_CHARS = 4_000;
 
-/** Fields that carry what people wrote. */
 const SECRET_KEYS = new Set(["text", "body", "caption", "title", "subtitle", "payload"]);
 
 function redactValue(value: unknown): unknown {
@@ -10,7 +7,6 @@ function redactValue(value: unknown): unknown {
   return "‹redacted›";
 }
 
-/** Deep copy with text fields replaced by their length. */
 export function redact(value: unknown, depth = 0): unknown {
   if (depth > 8 || value === null || typeof value !== "object") return value;
   if (Array.isArray(value)) return value.map((v) => redact(v, depth + 1));
@@ -22,7 +18,6 @@ export function redact(value: unknown, depth = 0): unknown {
   return out;
 }
 
-/** The key skeleton of a payload, without values. */
 export function describe(payload: unknown): string {
   if (!payload || typeof payload !== "object") return typeof payload;
   const top = payload as Record<string, unknown>;
@@ -40,6 +35,14 @@ export function describe(payload: unknown): string {
       : "—";
 
   return `object=${String(top.object)} entry[0]={${entryKeys}} first={${leaf}}`;
+}
+
+export function describeRaw(raw: string): string {
+  try {
+    return describe(JSON.parse(raw));
+  } catch {
+    return describe(null);
+  }
 }
 
 export type DeliveryTrace = {

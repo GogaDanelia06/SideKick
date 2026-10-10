@@ -16,11 +16,6 @@ export const ACCOUNT_ERRORS: Record<string, Text> = {
   failed: "auth.accountSwitcher.somethingWentWrongTry",
 };
 
-/**
- * The other accounts signed in on this browser, as in Gmail's account menu: one click
- * to switch (a full load, as another person means other data everywhere), × to sign
- * one out, and "Add another account" through the login page.
- */
 export function AccountSwitcher({ others }: { others: OtherAccount[] }) {
   const { t } = useLanguage();
   const list = useAccountList(others, { back: () => window.location.pathname, parkFirst: true });

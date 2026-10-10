@@ -8,7 +8,6 @@ import { SHADE_ICON, SHADE_LABEL, SHADES } from "./shades";
 
 const HEADING = "mb-1.5 text-[12px] font-semibold uppercase tracking-wide text-muted";
 
-/** Which theme is on screen, and the one-click palettes. */
 export function ThemeToolbar({
   shade,
   onShade,

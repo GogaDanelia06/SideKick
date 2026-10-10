@@ -1,0 +1,32 @@
+{
+  "liveFigure": {
+    "liveFigure": "ლაივ მონაცემი"
+  },
+  "mocks": {
+    "chatMock": {
+      "aiTaggedAsA": "✦ AI — ლიდად მონიშნა",
+      "doYouHaveThe": "iPhone 15 Pro გაქვთ მარაგში? 📱",
+      "greatSendMeYour": "შესანიშნავი! მომწერეთ სახელი და ტელეფონი მიწოდებისთვის.",
+      "yesIDLike": "კი, მინდა შევუკვეთო",
+      "yesItSAvailable": "დიახ! ხელმისაწვდომია — 3,500₾. გსურთ შეკვეთის გაფორმება?"
+    },
+    "dashboardMock": {
+      "chats": "ჩათები",
+      "leads": "ლიდები",
+      "sales": "გაყიდვა",
+      "salesWeek": "გაყიდვები / კვირა"
+    },
+    "testerMock": {
+      "aiTestReply": "✦ AI — სატესტო პასუხი",
+      "aiTester": "AI ტესტერი",
+      "howMuchAreThe": "რა ღირს AirPods Pro?",
+      "howMuchAreThe2": "რა ღირს AirPods Pro და მარაგშია?",
+      "testIt": "გატესტე",
+      "testMode": "სატესტო რეჟიმი",
+      "theAirpodsProCost": "AirPods Pro ღირს 649₾ და ამჟამად მარაგშია. გსურთ შეკვეთა?"
+    }
+  },
+  "story": {
+    "aboutUs": "ჩვენ შესახებ"
+  }
+}

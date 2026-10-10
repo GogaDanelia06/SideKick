@@ -2,12 +2,6 @@
 
 import { useState } from "react";
 
-/**
- * Keeps price, discount % and sale price consistent: the last edited field wins
- * and the other is derived. Clearing the source clears the derived value.
- */
-
-/** The columns are integers. */
 const round = (n: number) => String(Math.round(n));
 
 export const num = (v: string) => {
@@ -39,7 +33,6 @@ export function usePricing(initial?: {
     const p = num(value);
     if (p === null || p <= 0) return;
 
-    // When the price changes, a set percentage is kept and the sale price follows.
     const pct = num(discountPct);
     if (pct !== null) {
       setSalePrice(saleFromPct(p, pct));

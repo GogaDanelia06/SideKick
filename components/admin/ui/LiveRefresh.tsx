@@ -6,7 +6,6 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 
 const REFRESH_MS = 30_000;
 
-/** Refreshes a server-rendered admin screen every REFRESH_MS while the tab is visible. */
 export function LiveRefresh() {
   const router = useRouter();
   const { t } = useLanguage();

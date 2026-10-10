@@ -12,14 +12,12 @@ vi.mock("@/lib/auth/permissions", () => ({
   can: vi.fn(() => true),
 }));
 vi.mock("@/lib/channels/send", () => ({ deliverOutbound: vi.fn() }));
-// `actions.ts` reaches next-auth through here, and next-auth does not resolve in
-// a plain node environment. The action under test never calls it.
 vi.mock("@/lib/session", () => ({ getContext: vi.fn() }));
 vi.mock("@/lib/payments", () => ({ availableProviders: vi.fn(() => []), parseProvider: vi.fn() }));
 vi.mock("@/lib/billing/checkout", () => ({ isAllowedMonths: vi.fn(), startCheckout: vi.fn() }));
 vi.mock("@/lib/billing/limits", () => ({ checkLimit: vi.fn() }));
 
-import { sendOperatorReply } from "./actions";
+import { sendOperatorReply } from "./actions/conversations";
 import { prisma } from "@/lib/db";
 import { requirePermission } from "@/lib/auth/permissions";
 import { deliverOutbound } from "@/lib/channels/send";
@@ -47,15 +45,11 @@ describe("sendOperatorReply()", () => {
     expect(res).toEqual({
       ok: true,
       delivery: "SENT",
-      // Handed straight back so the open thread can show the reply without
-      // asking the server for the conversation again.
       message: {
         id: "m1",
         sender: "OPERATOR",
         text: "დიახ, გვაქვს",
         stoppedReason: null,
-        // Matched by shape, not value: it is the wall clock, and pinning it
-        // would make this test fail once a minute for no reason.
         timeLabel: expect.stringMatching(/^\d{2}:\d{2}$/),
       },
     });
@@ -68,9 +62,6 @@ describe("sendOperatorReply()", () => {
   });
 
   it("looks the conversation up by business as well as id", async () => {
-    // The tenant boundary. Without `businessId` in the filter, an id from
-    // somewhere else would write into another merchant's inbox and send a
-    // message to their customer.
     await sendOperatorReply("conv1", "hi");
 
     expect(convFind).toHaveBeenCalledWith(
@@ -101,8 +92,6 @@ describe("sendOperatorReply()", () => {
   });
 
   it("still reports success when the message could not be delivered", async () => {
-    // It is in the merchant's thread either way. Saying the whole thing failed
-    // would have them type it again and send the customer a duplicate.
     deliver.mockResolvedValue({ status: "WINDOW_CLOSED" } as never);
 
     expect(await sendOperatorReply("conv1", "hi")).toMatchObject({

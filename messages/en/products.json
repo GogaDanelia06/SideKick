@@ -1,0 +1,12 @@
+{
+  "columns": {
+    "code": "Code",
+    "description": "Description",
+    "discount": "Discount %",
+    "name": "Name",
+    "price": "Price",
+    "quantity": "Quantity",
+    "salePrice": "Sale price",
+    "size": "Size"
+  }
+}

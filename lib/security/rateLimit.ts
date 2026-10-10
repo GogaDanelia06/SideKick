@@ -12,11 +12,9 @@ export const LIMITS = {
   register: { max: 5, windowSec: 60 * 60 },
   forgot: { max: 3, windowSec: 60 * 60 },
   forgotIp: { max: 10, windowSec: 60 * 60 },
-  // Sends mail to an address a stranger typed, like `forgot`.
   resend: { max: 3, windowSec: 60 * 60 },
   resendIp: { max: 10, windowSec: 60 * 60 },
   reset: { max: 10, windowSec: 60 * 60 },
-  // Per business, not per IP: all AI service traffic comes from the same servers.
   agent: { max: 600, windowSec: 60 },
 } as const satisfies Record<string, LimitRule>;
 
@@ -80,8 +78,7 @@ async function sweep(): Promise<void> {
     await prisma.rateLimitHit.deleteMany({
       where: { createdAt: { lt: new Date(Date.now() - MAX_WINDOW_SEC * 1000) } },
     });
-  } catch {
-  }
+  } catch {}
 }
 
 export function clientIp(req: Request): string {

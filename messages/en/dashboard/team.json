@@ -1,0 +1,38 @@
+{
+  "messages": {
+    "aBusinessNeedsAt": "A business needs at least one owner",
+    "allFeaturesExceptBilling": "All features except billing",
+    "allPagesExceptBilling": "All pages except billing",
+    "chatsOrdersLeads": "Chats, orders, leads",
+    "chatsOrdersLeads2": "Chats, orders, leads",
+    "emailIsRequired": "Email is required",
+    "fullAccess": "Full access",
+    "fullControlBillingTeam": "Full control, billing, team",
+    "memberNotFound": "Member not found",
+    "teamUpdated": "Team updated",
+    "thatIsNotA": "That is not a valid role",
+    "thisPersonIsAlready": "This person is already on the team",
+    "viewOnly": "View only",
+    "viewPermissionOnly": "View permission only",
+    "youCanTRemove": "You can't remove yourself",
+    "youDonTHave": "You don't have permission for this"
+  },
+  "view": {
+    "actions": "Actions",
+    "add": "Add",
+    "addMember": "Add member",
+    "cancel": "Cancel",
+    "changeRole": "Change role",
+    "email": "Email *",
+    "fullName": "Full name",
+    "member": "Member",
+    "permissions": "Permissions",
+    "removeFromTeam": "Remove from team",
+    "role": "Role",
+    "secondStage": "Second stage",
+    "somethingWentWrong": "Something went wrong",
+    "theMemberIsAdded": "The member is added with an account. They set their own password via “forgot password”.",
+    "you": "you",
+    "youCanTRemove": "You can't remove yourself"
+  }
+}

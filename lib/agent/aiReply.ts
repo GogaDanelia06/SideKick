@@ -4,10 +4,6 @@ import { checkLimit } from "@/lib/billing/limits";
 import { badRequest, type AgentDenial } from "./auth";
 import { textIn } from "@/lib/i18n/messages";
 
-/**
- * The text an AI message is recorded and sent with: styled the way the business chose,
- * and refused once the plan's AI messages are spent.
- */
 export async function acceptAiReply(businessId: string, text: string): Promise<string | AgentDenial> {
   const reply = await applyReplyStyle(businessId, text);
   if (!reply) return badRequest("text is empty once emoji are removed; this business chose no emoji");

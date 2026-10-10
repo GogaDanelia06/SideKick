@@ -46,7 +46,6 @@ describe("POST /api/accounts — signing out", () => {
 
     expect(await (await call({ action: "leave" })).json()).toEqual({ ok: true, next: null });
     expect(value(SESSION)).toBeUndefined();
-    // The expired account stays listed, to log in to again.
     expect(value(labelOf("sk.acct.1"))).toBeDefined();
   });
 

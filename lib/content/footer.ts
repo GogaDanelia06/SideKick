@@ -55,7 +55,6 @@ export const FOOTER = {
 
   ] satisfies FooterLink[],
 
-  /** Labels for the contact column; the details themselves are set in the admin panel. */
   contactLabels: {
     email: { ka: "მეილი", en: "Email" },
     phone: { ka: "ტელეფონი", en: "Phone" },

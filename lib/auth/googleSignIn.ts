@@ -1,7 +1,6 @@
 import { cookies, headers } from "next/headers";
 import { activeToken, readSession, sessionCookieName } from "./accountVault";
 
-/** Who is signed in on this browser right now, if anyone. */
 async function openSessionUid(): Promise<string | undefined> {
   const all = (await cookies()).getAll();
   const name = sessionCookieName(all, (await headers()).get("x-forwarded-proto") === "https");
@@ -9,14 +8,6 @@ async function openSessionUid(): Promise<string | undefined> {
   return (token ? await readSession(token, name) : null)?.uid;
 }
 
-/**
- * Whether a sign-in may go ahead. Runs before Auth.js decides what to do with the login.
- *
- * Google is let in only with an address Google itself has confirmed, and never while
- * someone else is signed in: Auth.js would then attach that Google login to the open
- * account, and every later Google sign-in would open that account instead. The account
- * switcher sets the open account aside first, so this refuses only stray sign-ins.
- */
 export async function googleSignInAllowed({
   account,
   profile,

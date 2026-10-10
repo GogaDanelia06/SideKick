@@ -1,0 +1,43 @@
+{
+  "chatDetail": {
+    "adminManual": "ადმინი (ხელით)",
+    "aiReply": "AI პასუხი",
+    "conversationNotFound": "მიმოწერა ვერ მოიძებნა.",
+    "createALeadFrom": "შექმენი ლიდი ამ მიმოწერიდან",
+    "done": "დასრულებული",
+    "giveBackToAi": "დაუბრუნე AI-ს",
+    "handingBack": "ბრუნდება…",
+    "lead": "ლიდი",
+    "new": "ახალი",
+    "noMessages": "შეტყობინებები არ არის",
+    "onceFacebookInstagramWhatsapp": "როგორც კი Facebook / Instagram / WhatsApp დაუკავშირდება, კლიენტების შეტყობინებები აქ ავტომატურად გამოჩნდება.",
+    "ongoing": "მიმდინარე",
+    "order": "შეკვეთა",
+    "ordersAreCreatedFrom": "შეკვეთა იქმნება შეკვეთების გვერდიდან",
+    "savedButMessengerWould": "პასუხი შენახულია, მაგრამ Messenger-მა არ მიიღო: კლიენტს 24 საათია არ მოუწერია. ხელახლა ცდა ვერ უშველის — დაელოდე, სანამ თვითონ დაგიკავშირდება.",
+    "savedButSendingFailed": "პასუხი შენახულია, მაგრამ გაგზავნა ვერ მოხერხდა. სცადე ხელახლა.",
+    "savedNotSentTo": "პასუხი შენახულია. კლიენტთან არ გაგზავნილა — ეს არხი ჯერ არ არის ბოლომდე მიერთებული.",
+    "selectAConversation": "აირჩიე მიმოწერა",
+    "send": "გაგზავნა",
+    "somethingWentWrongTry": "ვერ შესრულდა. სცადე ხელახლა.",
+    "theAiAskedFor": "AI-მ ადამიანი მოითხოვა. დააბრუნე ბოტთან, როცა დაასრულებ.",
+    "thisConversationAlreadyHas": "ამ მიმოწერას უკვე აქვს ლიდი",
+    "writeAReply": "დაწერე პასუხი…",
+    "youDoNotHave": "ამის უფლება არ გაქვს."
+  },
+  "chatList": {
+    "aiError": "AI შეცდომა",
+    "aiOff": "AI გათიშული",
+    "all": "ყველა",
+    "days": "{d} დღე",
+    "hours": "{h} სთ",
+    "lead": "ლიდი",
+    "messagesAppearHereAs": "შეტყობინებები აქ გამოჩნდება, როგორც კი არხი დაუკავშირდება (Facebook, Instagram, WhatsApp).",
+    "minutes": "{min} წთ",
+    "noConversationsYet": "მიმოწერა ჯერ არ არის",
+    "now": "ახლა",
+    "order": "შეკვეთა",
+    "planSpentOrLapsed": "გეგმა ამოიწურა",
+    "waitingForAHuman": "ელოდება ადამიანს"
+  }
+}

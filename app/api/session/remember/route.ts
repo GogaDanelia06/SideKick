@@ -5,10 +5,6 @@ import { sessionCookies } from "@/lib/auth/sessionCookie";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Turns the session cookie into a browser-session cookie ("remember me" off): the
- * same JWT without an expiry. Chunked cookies are rewritten too.
- */
 export async function POST() {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });

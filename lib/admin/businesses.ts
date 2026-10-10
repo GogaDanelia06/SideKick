@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 
-/** Every business with its plan and usage, for manual plan assignment. */
 export async function getBusinessesForAdmin() {
   const rows = await prisma.business.findMany({
     orderBy: { createdAt: "desc" },
@@ -17,7 +16,6 @@ export async function getBusinessesForAdmin() {
         },
       },
       _count: { select: { memberships: true, conversations: true, products: true } },
-      // Only connected channels count toward the plan cap.
       channels: { where: { connected: true }, select: { id: true } },
     },
   });
@@ -27,7 +25,6 @@ export async function getBusinessesForAdmin() {
 
 export type AdminBusiness = Awaited<ReturnType<typeof getBusinessesForAdmin>>[number];
 
-/** The plans a business can be put on, cheapest first. */
 export function getPlansForAdmin() {
   return prisma.plan.findMany({
     orderBy: { price: "asc" },

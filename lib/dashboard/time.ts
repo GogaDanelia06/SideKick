@@ -1,4 +1,3 @@
-/** Dashboard times are always shown in the shop's timezone. */
 const TZ = "Asia/Tbilisi";
 
 export const fmtDate = new Intl.DateTimeFormat("en-GB", {

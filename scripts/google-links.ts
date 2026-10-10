@@ -1,19 +1,5 @@
 import { prisma } from "../lib/db";
 
-/**
- * Lists which Google address opens which account, and unlinks a wrong one.
- *
- * Auth.js used to attach a Google account nobody had claimed to whoever was signed in
- * at that moment, so one person's Google address could end up opening another person's
- * account — for good, because the link is saved. `lib/auth/googleSignIn.ts` stops new
- * ones; this repairs a link already saved. Unlinking deletes nothing but the link: the
- * next sign-in with that Google address starts its own account.
- *
- *   npx tsx scripts/google-links.ts                        # list every link
- *   npx tsx scripts/google-links.ts --unlink a@gmail.com   # drop that address's link
- */
-
-/** The address Google itself put in the token it issued when the link was made. */
 function googleEmail(idToken: string | null): string | null {
   try {
     const payload = idToken?.split(".")[1];

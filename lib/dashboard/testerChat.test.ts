@@ -14,7 +14,6 @@ const AI = { from: "ai" as const, text: "გამარჯობა!" };
 
 let chat: Store;
 
-/** A fresh module is a page reload: only what is in storage survives. */
 async function reload() {
   vi.resetModules();
   chat = await import("./testerChat");
@@ -61,7 +60,6 @@ describe("tester chat", () => {
     const thread = chat.askTester("login-1", "one")!;
     expect(chat.askTester("login-1", "two")).toBeNull();
 
-    // A failed answer adds nothing, but the next question may be asked.
     expect(chat.answerTester(thread, null)).toBe(true);
     expect(chat.askTester("login-1", "two")).toBe(thread);
     expect(saved().turns.map((t: { text: string }) => t.text)).toEqual(["one", "two"]);

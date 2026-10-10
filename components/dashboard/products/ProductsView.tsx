@@ -30,9 +30,7 @@ export function ProductsView({ products }: { products: Product[] }) {
   const [tab, setTab] = useUrlTab("tab", TABS, "manual");
   const [editing, setEditing] = useState<Product | null>(null);
 
-  /** Held locally so new rows appear without a server re-render (same newest-first order). */
   const [rows, setRows] = useState(products);
-  // A server refresh (an import, an edit, a delete) brings a new list; it replaces the local one.
   const [served, setServed] = useState(products);
   if (products !== served) {
     setServed(products);

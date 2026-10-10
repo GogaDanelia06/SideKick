@@ -2,12 +2,11 @@
 
 import { useState, useTransition } from "react";
 import type { Plan, Subscription } from "@prisma/client";
-import { switchPlanWithoutPayment } from "@/lib/dashboard/actions";
+import { switchPlanWithoutPayment } from "@/lib/dashboard/actions/billing";
 import { planLabel } from "@/lib/content/packages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { CurrentPlanBadge, checkoutError } from "./checkoutParts";
 
-/** Plan switching while no bank is configured; the server enforces the same rule. */
 export function FreePlanSwitch({
   plans,
   subscription,

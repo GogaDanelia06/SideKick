@@ -6,10 +6,8 @@ import { applyReplyStyle } from "./replyStyle";
 import { deliverOutbound } from "@/lib/channels/send";
 import { checkLimit, countMessage } from "@/lib/billing/limits";
 
-/** How long a handed-off conversation stays with a person; matches Meta's 24h reply window. */
 const HANDOFF_HOURS = 24;
 
-/** Generates, stores and delivers the AI reply. Runs after the webhook response. */
 export async function answerCustomer(
   businessId: string,
   conversationId: string,
@@ -26,11 +24,9 @@ export async function answerCustomer(
   });
   if (!conversation) return;
 
-  // AI switched off for this chat, or an operator has taken it over.
   if (!conversation.aiEnabled) return;
   if (conversation.botPausedUntil && conversation.botPausedUntil > new Date()) return;
 
-  // Checked before generating: a discarded generation still costs money.
   const verdict = await checkLimit(businessId, "messages");
   if (!verdict.allowed) {
     const expired = verdict.reason === "expired";
@@ -44,7 +40,6 @@ export async function answerCustomer(
     return;
   }
 
-  // The AI service will not answer for a business that has no prompt, which is every new business.
   await ensurePrompt(businessId).catch((err) =>
     log.error("could not give the business a prompt to start from", err, { businessId }),
   );
@@ -62,10 +57,8 @@ export async function answerCustomer(
     select: { id: true },
   });
 
-  // Billed only once a reply exists; the increment is atomic.
   await countMessage(businessId);
 
-  // Stored before delivery, so the inbox always shows what the customer received.
   await deliverOutbound(conversationId, message.id, reply);
 
   if (answer.handoffRequested) {
@@ -84,7 +77,6 @@ export async function answerCustomer(
   }
 }
 
-/** Puts a reason on the newest message, which is where the inbox reads it. */
 async function markLastMessage(conversationId: string, reason: string): Promise<void> {
   const last = await prisma.message.findFirst({
     where: { conversationId },

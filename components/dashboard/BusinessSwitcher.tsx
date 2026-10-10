@@ -11,7 +11,6 @@ import { DeleteBusinessForm } from "./DeleteBusinessForm";
 import { SwitcherRow } from "./SwitcherRow";
 import { useBusinessChange } from "./useBusinessChange";
 
-/** Every business the user belongs to, one click apart, like switching accounts in Gmail. */
 export function BusinessSwitcher({ account, onDone }: { account: Account; onDone?: () => void }) {
   const { t } = useLanguage();
   const { settled } = useBusinessChange(onDone);
@@ -19,7 +18,6 @@ export function BusinessSwitcher({ account, onDone }: { account: Account; onDone
   const [failed, setFailed] = useState(false);
   const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState<{ id: string; name: string } | null>(null);
-  // Hidden at once; the refreshed list soon leaves them out anyway.
   const [removed, setRemoved] = useState<string[]>([]);
   const businesses = account.businesses.filter((b) => !removed.includes(b.id));
   const owned = businesses.filter((b) => b.role === "OWNER").length;
@@ -28,7 +26,6 @@ export function BusinessSwitcher({ account, onDone }: { account: Account; onDone
     if (opening || businessId === account.businessId) return;
     setOpening(businessId);
     setFailed(false);
-    // Unsaved AI settings belong to the business being left.
     const { ok } = await switchBusiness(businessId).catch(() => ({ ok: false }));
     if (ok) {
       settled(t("dashboard.businessSwitcher.opened", { name }));
@@ -41,7 +38,6 @@ export function BusinessSwitcher({ account, onDone }: { account: Account; onDone
   function deleted(businessId: string, message: string) {
     setRemoved((ids) => [...ids, businessId]);
     setDeleting(null);
-    // The menu stays open, so the owner sees the list without it.
     settled(message, { keepOpen: true });
   }
 
@@ -59,7 +55,6 @@ export function BusinessSwitcher({ account, onDone }: { account: Account; onDone
             opening={opening === b.id}
             busy={opening !== null}
             onOpen={() => open(b)}
-            // The server has the final word (teammates, payments); this only hides what can never work.
             onDelete={
               b.role === "OWNER" && businesses.length > 1
                 ? () => {

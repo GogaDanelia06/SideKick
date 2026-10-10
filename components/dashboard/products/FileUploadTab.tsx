@@ -12,7 +12,6 @@ import { useProductFile } from "./useProductFile";
 const SECONDARY =
   "inline-flex h-10 items-center gap-2 rounded-[6px] border border-border px-4 text-[13px] font-medium disabled:opacity-50";
 
-/** Products in and out as a spreadsheet: import an .xlsx or .csv, download the template or the stock. */
 export function FileUploadTab({ products }: { products: Product[] }) {
   const { t, locale } = useLanguage();
   const { input, chosen, problem, result, reading, importing, choose, remove, importNow } = useProductFile();

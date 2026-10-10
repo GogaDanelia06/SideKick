@@ -41,10 +41,6 @@ describe("googleSignInAllowed()", () => {
     expect(await googleSignInAllowed({ account: google, profile: verified, user: { id: "u1" } })).toBe(true);
   });
 
-  /**
-   * The bug this closes: Auth.js links an unclaimed Google account to the open session,
-   * for good. One person's Google address then opened somebody else's account for ever.
-   */
   it("refuses Google while a different account is open", async () => {
     await signedInAs("u1");
     expect(await googleSignInAllowed({ account: google, profile: verified, user: { id: "u2" } })).toBe(false);

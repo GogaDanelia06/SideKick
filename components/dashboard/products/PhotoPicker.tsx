@@ -7,11 +7,6 @@ import { resizePhoto, type ResizeError } from "@/lib/products/resizePhoto";
 import { PHOTO_ERRORS } from "./productErrors";
 import type { Text } from "@/lib/i18n/messages";
 
-/**
- * The product form's photo box: click or drop a photo. It is shrunk here and put back
- * into the form's own `<input name="photo">`, so the form sends it with the other
- * fields. `current` is the saved photo; removing it sends `removePhoto`.
- */
 export function PhotoPicker({ current, label }: { current?: string; label: Text }) {
   const { t } = useLanguage();
   const input = useRef<HTMLInputElement>(null);
@@ -20,13 +15,11 @@ export function PhotoPicker({ current, label }: { current?: string; label: Text 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ResizeError | null>(null);
 
-  // An object URL keeps the file in memory until it is revoked.
   useEffect(() => () => void (preview?.startsWith("blob:") && URL.revokeObjectURL(preview)), [preview]);
 
   async function choose(file: File | undefined) {
     const field = input.current;
     if (!file || !field) return;
-    // Emptied first: the original, often several MB, must never be what the form sends.
     field.value = "";
     setBusy(true);
     setError(null);

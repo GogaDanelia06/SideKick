@@ -7,10 +7,8 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { importResultText, rowErrorText } from "./importText";
 import type { ChosenFile } from "./useProductFile";
 
-/** How many row problems are listed before the rest are only counted. */
 const SHOWN_ERRORS = 5;
 
-/** The picked file: what is in it, a way to remove it, and the import itself. */
 export function ChosenFileCard({
   file,
   result,

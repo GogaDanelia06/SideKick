@@ -1,13 +1,11 @@
 import type { Text } from "@/lib/i18n/messages";
 
-/** A format name rather than a function, so it can cross to the client. */
 export type StatFormat = "number" | "money";
 
 export type StatSourceOption = { key: string; label: Text; format: StatFormat; value: string };
 
 const nf = new Intl.NumberFormat("en-US");
 
-/** Big money reads better shortened: 2,400,000 → 2.4M. */
 function money(total: number): string {
   if (total >= 1_000_000) return `${(total / 1_000_000).toFixed(1).replace(/\.0$/, "")}M₾`;
   if (total >= 1_000) return `${Math.round(total / 1_000)}K₾`;

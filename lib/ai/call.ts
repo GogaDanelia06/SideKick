@@ -1,23 +1,15 @@
-/** The one place that talks HTTP to the AI service: its key, a deadline, and why a call failed. */
-
 const base = () => process.env.AI_SERVICE_URL?.replace(/\/+$/, "");
 
 const key = () => process.env.AI_SERVICE_KEY;
 
-/** Generous for a language model; these calls never run inside the webhook deadline. */
 const TIMEOUT_MS = Number(process.env.AI_SERVICE_TIMEOUT_MS ?? 45_000);
 
-/**
- * Writing or rewriting a whole prompt is slower than answering a message: when measured, an
- * edit took 24 to 45 seconds, and one that ran past 45 was cut off and shown as a failure.
- */
 export const PROMPT_TIMEOUT_MS = Math.max(TIMEOUT_MS, 90_000);
 
 export function aiConfigured() {
   return Boolean(base() && key());
 }
 
-/** What went wrong, told apart so that whoever is testing can see which of these it was. */
 export type AiFailureKind =
   | "unconfigured" // no URL or key in this environment
   | "timeout" // no answer within the deadline
@@ -29,11 +21,8 @@ export type AiFailureKind =
 
 export type AiFailure = {
   kind: AiFailureKind;
-  /** The HTTP status, when the service answered at all. */
   status?: number;
-  /** How long the call took, in milliseconds. */
   waitedMs: number;
-  /** For the log only: it can hold what the service said, so it never reaches a screen. */
   detail: string;
 };
 
@@ -77,7 +66,6 @@ export async function call<T>(path: string, body?: unknown, timeoutMs = TIMEOUT_
     return { ok: true, data: (await res.json()) as T };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    // The deadline can also strike while the body is still arriving, so this checks every throw.
     if (err instanceof Error && err.name === "AbortError") return failed("timeout", message);
     return failed(err instanceof SyntaxError ? "bad_reply" : "unreachable", message);
   } finally {

@@ -5,16 +5,13 @@ import type { Text } from "@/lib/i18n/messages";
 export type Step = {
   event: { name: string; label: Text };
   count: number;
-  /** Share of the step above, or null on the first one. */
   ofPrevious: number | null;
 };
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 
-/** Half of the previous step is the line between "normal drop-off" and "a problem". */
 const HEALTHY_PCT = 50;
 
-/** Signup funnel: bars sized to the first step, percentages in words, and status as icon plus label. */
 export function Funnel({ steps }: { steps: Step[] }) {
   if (steps.length === 0) return null;
 
@@ -54,7 +51,6 @@ export function Funnel({ steps }: { steps: Step[] }) {
                     }`}
                   >
                     {Icon ? <Icon size={13} /> : null}
-                    {/* "Of start" appears only when it differs from "of previous". */}
                     <span className="font-mono tabular-nums">{step.ofPrevious}%</span>
                     {ofTop !== step.ofPrevious ? (
                       <>

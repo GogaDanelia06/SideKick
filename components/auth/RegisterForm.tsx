@@ -1,193 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { signIn, signInWithGoogle } from "@/lib/auth/browserSignIn";
-import {
-  IconArrowRight,
-  IconMailCheck,
-  IconMailFast,
-} from "@tabler/icons-react";
-
+import { signInWithGoogle } from "@/lib/auth/browserSignIn";
+import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
+import { REGISTER } from "@/lib/content/auth";
+import { ROUTES } from "@/lib/routes";
+import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AuthShell } from "./AuthShell";
 import { GoogleButton } from "./GoogleButton";
 import { OrDivider } from "./OrDivider";
-import { ResendVerification } from "./ResendVerification";
-import { Field } from "@/components/ui/Field";
-import { REGISTER } from "@/lib/content/auth";
-import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
-import { ROUTES } from "@/lib/routes";
-import { useLanguage } from "@/lib/i18n/useLanguage";
-import { AUTH_MESSAGES, refusalMessage, type AuthMessageKey } from "@/lib/auth/messages";
-import {
-  EMAIL_PATTERN,
-  NAME_PATTERN,
-  PASSWORD_NUMBER_OR_SYMBOL_PATTERN,
-  PHONE_PATTERN,
-} from "@/lib/validation/patterns";
+import { RegisterFields } from "./RegisterFields";
+import { SentNotice, VerifyNotice } from "./RegisterNotices";
 import { RegisterTrialNotice } from "./RegisterTrialNotice";
+import { useRegister } from "./useRegister";
 
-type RegisterField =
-  | "firstName"
-  | "lastName"
-  | "email"
-  | "password"
-  | "repeatPassword"
-  | "phone"
-  | "company"
-  | "field";
-
-type RegisterErrors = Partial<Record<RegisterField, AuthMessageKey>>;
-
-type RegisterFormProps = {
-  google: boolean;
-};
-
-export function RegisterForm({ google }: RegisterFormProps) {
+export function RegisterForm({ google }: { google: boolean }) {
   const { t } = useLanguage();
-  const searchParams = useSearchParams();
-
-  // Honour ?callbackUrl (e.g. /start sends people to billing after choosing a plan).
-  const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
-
-  const [sent, setSent] = useState(false);
-  /** Registered, but waiting on the customer to open the link we emailed. */
-  const [needsVerification, setNeedsVerification] = useState(false);
-  const [pendingEmail, setPendingEmail] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<RegisterErrors>({});
-  const [pending, setPending] = useState(false);
-
-  function clearFieldError(field: RegisterField) {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-
-      const next = { ...current };
-      delete next[field];
-
-      return next;
-    });
-
-    setError(null);
-  }
-
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-
-    const fd = new FormData(event.currentTarget);
-    const firstName = String(fd.get("firstName") ?? "").trim();
-    const lastName = String(fd.get("lastName") ?? "").trim();
-    const email = String(fd.get("email") ?? "").trim();
-    const password = String(fd.get("password") ?? "");
-    const repeatPassword = String(fd.get("repeatPassword") ?? "");
-    const phone = String(fd.get("phone") ?? "").trim();
-    const company = String(fd.get("company") ?? "").trim();
-    const field = String(fd.get("field") ?? "").trim();
-
-    const errors: RegisterErrors = {};
-
-    if (!firstName) {
-      errors.firstName = "firstNameRequired";
-    } else if (!NAME_PATTERN.test(firstName)) {
-      errors.firstName = "nameInvalid";
-    }
-
-    if (lastName && !NAME_PATTERN.test(lastName)) {
-      errors.lastName = "nameInvalid";
-    }
-
-    if (!email) {
-      errors.email = "emailRequired";
-    } else if (!EMAIL_PATTERN.test(email)) {
-      errors.email = "emailInvalid";
-    }
-
-    if (!password) {
-      errors.password = "passwordRequired";
-    } else if (password.length < 8) {
-      errors.password = "passwordLength";
-    } else if (!/[a-z]/.test(password)) {
-      errors.password = "passwordLowercase";
-    } else if (!/[A-Z]/.test(password)) {
-      errors.password = "passwordUppercase";
-    } else if (!PASSWORD_NUMBER_OR_SYMBOL_PATTERN.test(password)) {
-      errors.password = "passwordNumberOrSymbol";
-    }
-
-    if (!repeatPassword) {
-      errors.repeatPassword = "repeatRequired";
-    } else if (password !== repeatPassword) {
-      errors.repeatPassword = "passwordsMismatch";
-    }
-
-    if (phone && !PHONE_PATTERN.test(phone)) {
-      errors.phone = "phoneInvalid";
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    setFieldErrors({});
-    setPending(true);
-
-    const payload = {
-      firstName,
-      lastName,
-      email,
-      password,
-      phone,
-      company,
-      field,
-    };
-
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-
-        setError(t(refusalMessage(data, "auth.registerForm.registrationFailed")));
-        return;
-      }
-
-      // When a confirmation link was sent, don't sign in: the account stays closed until it is used.
-      const data = await res.json().catch(() => ({}));
-      if (data.verify) {
-        setPendingEmail(email);
-        setNeedsVerification(true);
-        return;
-      }
-
-      const signInResult = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (!signInResult?.ok || signInResult.error) {
-        setError(
-          t("auth.registerForm.registrationCompletedPleaseSign"),
-        );
-        return;
-      }
-
-      setSent(true);
-    } catch {
-      setError(
-        t("auth.registerForm.aNetworkErrorOccurred"),
-      );
-    } finally {
-      setPending(false);
-    }
-  }
+  const callbackUrl = safeCallbackUrl(useSearchParams().get("callbackUrl"));
+  const register = useRegister();
 
   return (
     <AuthShell
@@ -206,182 +37,23 @@ export function RegisterForm({ google }: RegisterFormProps) {
       <RegisterTrialNotice />
       {google ? (
         <>
-          <GoogleButton
-            label={t(REGISTER.google)}
-            onClick={() => signInWithGoogle(callbackUrl)}
-          />
+          <GoogleButton label={t(REGISTER.google)} onClick={() => signInWithGoogle(callbackUrl)} />
           <OrDivider />
         </>
       ) : null}
 
-      {needsVerification ? (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-start gap-3 rounded-md border border-blue-ring bg-blue-surface p-4">
-            <IconMailCheck size={22} className="shrink-0 text-green" />
-            <div className="flex flex-col gap-2">
-              <p className="text-sm leading-relaxed text-blue-ink">{t(REGISTER.checkInbox)}</p>
-              <p className="break-all text-sm font-medium text-blue-ink">{pendingEmail}</p>
-              <ResendVerification email={pendingEmail} />
-            </div>
-          </div>
-
-          <Link
-            href={`${ROUTES.login}?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-            className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm border border-border text-sm font-medium"
-          >
-            {t(REGISTER.signIn)}
-            <IconArrowRight size={18} />
-          </Link>
-        </div>
-      ) : sent ? (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-start gap-3 rounded-md border border-blue-ring bg-blue-surface p-4">
-            <IconMailCheck size={22} className="shrink-0 text-green" />
-            <p className="text-sm leading-relaxed text-blue-ink">
-              {t(REGISTER.sent)}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            // A real page load: the session is new, and the router may hold a signed-out redirect.
-            onClick={() => window.location.assign(callbackUrl)}
-            className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white"
-          >
-            {t("auth.registerForm.continue")}
-            <IconArrowRight size={18} />
-          </button>
-        </div>
+      {register.needsVerification ? (
+        <VerifyNotice email={register.pendingEmail} callbackUrl={callbackUrl} />
+      ) : register.sent ? (
+        <SentNotice callbackUrl={callbackUrl} />
       ) : (
-        <form className="flex flex-col gap-3.5" onSubmit={onSubmit} noValidate>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field
-              name="firstName"
-              label={t(REGISTER.firstName)}
-              type="text"
-              autoComplete="given-name"
-              error={
-                fieldErrors.firstName
-                  ? t(AUTH_MESSAGES[fieldErrors.firstName])
-                  : undefined
-              }
-              onChange={() => clearFieldError("firstName")}
-              required
-            />
-
-            <Field
-              name="lastName"
-              label={t(REGISTER.lastName)}
-              type="text"
-              autoComplete="family-name"
-              error={
-                fieldErrors.lastName
-                  ? t(AUTH_MESSAGES[fieldErrors.lastName])
-                  : undefined
-              }
-              onChange={() => clearFieldError("lastName")}
-            />
-          </div>
-
-          <Field
-            name="email"
-            label={t(REGISTER.email)}
-            type="email"
-            autoComplete="email"
-            error={
-              fieldErrors.email
-                ? t(AUTH_MESSAGES[fieldErrors.email])
-                : undefined
-            }
-            onChange={() => clearFieldError("email")}
-            required
-          />
-
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field
-              name="password"
-              label={t(REGISTER.password)}
-              type="password"
-              autoComplete="new-password"
-              error={
-                fieldErrors.password
-                  ? t(AUTH_MESSAGES[fieldErrors.password])
-                  : undefined
-              }
-              onChange={() => clearFieldError("password")}
-              required
-            />
-
-            <Field
-              name="repeatPassword"
-              label={t(REGISTER.repeatPassword)}
-              type="password"
-              autoComplete="new-password"
-              error={
-                fieldErrors.repeatPassword
-                  ? t(
-                      AUTH_MESSAGES[
-                        fieldErrors.repeatPassword
-                      ],
-                    )
-                  : undefined
-              }
-              onChange={() => clearFieldError("repeatPassword")}
-              required
-            />
-          </div>
-
-          <Field
-            name="phone"
-            label={t(REGISTER.phone)}
-            type="tel"
-            autoComplete="tel"
-            error={
-              fieldErrors.phone
-                ? t(AUTH_MESSAGES[fieldErrors.phone])
-                : undefined
-            }
-            onChange={() => clearFieldError("phone")}
-          />
-
-          <Field
-            name="company"
-            label={t(REGISTER.company)}
-            hint={t(REGISTER.optional)}
-            type="text"
-            autoComplete="organization"
-            error={
-              fieldErrors.company
-                ? t(AUTH_MESSAGES[fieldErrors.company])
-                : undefined
-            }
-            onChange={() => clearFieldError("company")}
-          />
-
-          <Field
-            name="field"
-            label={t(REGISTER.industry)}
-            hint={t(REGISTER.optional)}
-            type="text"
-            error={
-              fieldErrors.field
-                ? t(AUTH_MESSAGES[fieldErrors.field])
-                : undefined
-            }
-            onChange={() => clearFieldError("field")}
-          />
-
-          {error ? <p className="text-[13px] text-red">{error}</p> : null}
-
-          <button
-            type="submit"
-            disabled={pending}
-            className="inline-flex h-[42px] items-center justify-center gap-2 rounded-sm bg-primary text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <IconMailFast size={18} />
-            {pending ? "…" : t(REGISTER.submit)}
-          </button>
-        </form>
+        <RegisterFields
+          errors={register.fieldErrors}
+          onClear={register.clearFieldError}
+          error={register.error}
+          pending={register.pending}
+          onSubmit={register.onSubmit}
+        />
       )}
     </AuthShell>
   );

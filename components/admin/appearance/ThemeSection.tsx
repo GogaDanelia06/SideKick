@@ -14,7 +14,6 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { PICKER_WIDTH, SHADE_ICON, SHADE_LABEL, SHADES } from "./shades";
 import type { Text } from "@/lib/i18n/messages";
 
-/** Kept out of tokens.ts, which the root layout imports. */
 const ICONS: Record<TokenGroup, Icon> = {
   site: IconWorld,
   dash: IconLayoutDashboard,
@@ -34,7 +33,6 @@ export function ThemeSection({
   title: Text;
   hint: Text;
   count: number;
-  /** The theme on screen; its column heading is emphasised. */
   shade: Shade;
   children: ReactNode;
 }) {

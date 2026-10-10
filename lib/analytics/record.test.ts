@@ -5,7 +5,6 @@ vi.mock("@/lib/db", () => ({ prisma: { analyticsDaily: { upsert: (...a: unknown[
 
 const { recordEvent } = await import("./record");
 
-/** The path the upsert was keyed on, or null if nothing was written. */
 async function pathFor(raw: string): Promise<string | null> {
   upsert.mockClear();
   upsert.mockResolvedValue({});
@@ -36,11 +35,6 @@ describe("recordEvent", () => {
     expect(await pathFor("/about#team")).toBe("/about");
   });
 
-  /**
-   * The reason this file exists: /api/track is public, and `day_name_path` is
-   * unique. Without folding, anyone could post a million paths and get a
-   * million rows on a database with half a gigabyte to its name.
-   */
   it("folds anything unrecognised into a single bucket", async () => {
     expect(await pathFor("/made-up")).toBe("other");
     expect(await pathFor("/wp-admin.php")).toBe("other");

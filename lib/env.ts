@@ -1,10 +1,8 @@
 import { z } from "zod";
 
-/** Hosting panels store blank values as "", which should mean "not set". */
 const blankIsMissing = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess((value) => (value === "" ? undefined : value), schema.optional());
 
-/** Required to serve any signed-in request. */
 const required = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   AUTH_SECRET: z
@@ -12,7 +10,6 @@ const required = z.object({
     .min(1, "AUTH_SECRET is required (generate one with: openssl rand -base64 32)"),
 });
 
-/** Integration settings; a malformed one disables only its own feature. */
 const optional = z.object({
   AUTH_URL: blankIsMissing(z.string().url()),
   AUTH_GOOGLE_ID: blankIsMissing(z.string()),
@@ -28,7 +25,6 @@ const optional = z.object({
   META_VERIFY_TOKEN: blankIsMissing(
     z.string().min(16, "META_VERIFY_TOKEN should be at least 16 characters"),
   ),
-  // Instagram Login is a separate Meta app with its own id and secret.
   INSTAGRAM_APP_ID: blankIsMissing(z.string().min(1)),
   INSTAGRAM_APP_SECRET: blankIsMissing(z.string().min(1)),
 });
@@ -60,7 +56,6 @@ export function env(): Env {
     }
   }
 
-  // safeParse returns nothing on failure, so the valid values are kept one by one.
   const accepted: Record<string, unknown> = {};
   if (extras.success) {
     Object.assign(accepted, extras.data);
@@ -75,7 +70,6 @@ export function env(): Env {
   return cached;
 }
 
-/** Test-only: forget the parsed values so the next call reads `process.env` again. */
 export function resetEnvCache() {
   cached = undefined;
 }

@@ -3,11 +3,6 @@
 import type { ReactNode } from "react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * Save and discard, kept in view at the bottom of the screen while the colours are
- * edited. `children` (the readability check) sit at the start of the bar. Going back
- * to the shipped colours is the "Default" palette.
- */
 export function ThemeActions({
   pending,
   status,
@@ -17,7 +12,6 @@ export function ThemeActions({
 }: {
   pending: boolean;
   status: "idle" | "saved" | "failed";
-  /** How many colours differ from what is on the server, across both themes. */
   changed: number;
   onDiscard: () => void;
   children?: ReactNode;

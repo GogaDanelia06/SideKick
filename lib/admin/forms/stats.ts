@@ -20,10 +20,8 @@ export type StatData = {
 
 export type SlideStatData = Omit<StatData, "mode" | "value" | "autoValue" | "autoNextAt">;
 
-/** Shortest drift interval an admin may set, so a figure cannot flicker. */
 const MIN_INTERVAL_S = 5;
 
-/** A strip figure is typed, counted or drifting; the other modes' fields are reset. */
 export function parseSiteStat(fd: FormData): Parsed<StatData> {
   const labelKa = field(fd, "labelKa");
   const labelEn = field(fd, "labelEn");
@@ -43,7 +41,6 @@ export function parseSiteStat(fd: FormData): Parsed<StatData> {
     changeMax: 0,
     intervalMinMs: 60_000,
     intervalMaxMs: 300_000,
-    // Reset the running value so a new start value takes effect.
     autoValue: null,
     autoNextAt: null,
   };
@@ -78,7 +75,6 @@ export function parseSiteStat(fd: FormData): Parsed<StatData> {
   };
 }
 
-/** A slide figure is counted or drifting; a counted one zeroes its drift settings. */
 export function parseSlideStat(fd: FormData): Parsed<SlideStatData> {
   const source = field(fd, "source");
   if (source && !STAT_SOURCE_KEYS.includes(source)) return { error: "unknown_source" };

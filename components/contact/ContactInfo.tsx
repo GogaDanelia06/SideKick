@@ -25,7 +25,6 @@ function InfoCard({ icon: Icon, label, link }: { icon: IconType; label: Bilingua
   );
 }
 
-/** The contact details the admin panel holds; anything left blank there is simply not shown. */
 export function ContactInfo({ contact }: { contact: ContactDetails }) {
   const { t } = useLanguage();
 

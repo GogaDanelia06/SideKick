@@ -3,17 +3,14 @@ import type { Text } from "@/lib/i18n/messages";
 
 export type Row = {
   key: string;
-  /** Either a translated label or a path — both are rendered as given. */
   label: Text | string;
   value: number;
-  /** A quieter second figure, e.g. the same count over seven days. */
   aside?: Text;
   mono?: boolean;
 };
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 
-/** Ranked rows with bars scaled to the top row (the rows are a top-N, not a whole). */
 export function RankedList({
   title,
   rows,

@@ -1,14 +1,10 @@
 import type { Text } from "@/lib/i18n/messages";
 
-/** Admin-editable colours, grouped by where they appear. Everything else is derived (derive.ts). */
-
 export type TokenScope = "root" | "dash";
 export type TokenGroup = "site" | "dash" | "text" | "accent";
 
 export type ThemeToken = {
-  /** Key in the stored JSON. */
   id: string;
-  /** The custom property it writes. */
   cssVar: string;
   scope: TokenScope;
   group: TokenGroup;
@@ -92,7 +88,6 @@ export const TOKENS: ThemeToken[] = [
 export type Shade = "dark" | "light";
 export type ThemeColors = Record<string, string>;
 
-/** The shipped palette, as a plain object. Also the reset target. */
 export function defaultColors(shade: Shade): ThemeColors {
   return Object.fromEntries(TOKENS.map((t) => [t.id, t[shade]]));
 }

@@ -1,25 +1,29 @@
 # Where the words live
 
-Every word the interface says is in **`messages/ka.json`** and **`messages/en.json`**,
-under a key like `dashboard.profile.saved`. Nothing readable is written into a component
-any more, so a translator can work in one file and never open the code.
+Every word the interface says is in the **`messages/ka/`** and **`messages/en/`** folders,
+under a key like `dashboard.profile.fields.profileSaved`. Nothing readable is written into
+a component any more, so a translator can work in those folders and never open the code.
+
+Each folder holds one small JSON file per area, so a key is found by its path:
+`dashboard.profile.fields.profileSaved` is in `messages/ka/dashboard/profile.json`, under
+`fields`, and anything under `site.…` is in `messages/ka/site.json`. No file is longer than
+120 lines. The `index.ts` files only gather the pieces back into one catalogue.
 
 ```json
-// messages/ka.json                     // messages/en.json
-"dashboard": {                          "dashboard": {
-  "profile": {                            "profile": {
-    "saved": "პროფილი შენახულია"            "saved": "Profile saved"
+// messages/ka/dashboard/profile.json       // messages/en/dashboard/profile.json
+"fields": {                                 "fields": {
+  "profileSaved": "პროფილი შენახულია"         "profileSaved": "Profile saved"
 ```
 
 ## Using a message
 
 ```tsx
 const { t } = useLanguage();
-t("dashboard.profile.saved");                       // → "პროფილი შენახულია"
+t("dashboard.profile.fields.profileSaved");           // → "პროფილი შენახულია"
 t("dashboard.products.table.count", { count: 12 }); // → "სულ 12 პროდუქტი"
 ```
 
-`t` takes a key, and the compiler refuses one that is not in `ka.json` — a typo is a
+`t` takes a key, and the compiler refuses one that is not in `messages/ka/` — a typo is a
 build error, not a blank space on screen. Outside React (a server route, an email, a
 reply the bot sends) use `message(locale, key)` or `textIn(locale, value)` from
 `lib/i18n/messages.ts`.
@@ -72,11 +76,12 @@ the server-rendered HTML it is as easy to spot as a missing translation.
 
 ## Adding a language
 
-Copy `messages/en.json` to `messages/<code>.json`, translate the values, and add the
-code to `LOCALES` in `lib/i18n/config.ts`. Nothing in the components changes.
+Copy the `messages/en/` folder to `messages/<code>/`, translate the values, add the
+code to `LOCALES` in `lib/i18n/config.ts`, and import the new folder in
+`lib/i18n/messages.ts`. Nothing in the components changes.
 
 ## The test that keeps them honest
 
-`lib/i18n/messages.test.ts` fails if the two files drift apart: a key in one and not the
+`lib/i18n/messages.test.ts` fails if the two languages drift apart: a key in one and not the
 other, an empty message, or a message that asks for `{name}` in one language and
 `{title}` in the other.

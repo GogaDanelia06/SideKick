@@ -2,7 +2,6 @@ import { vi } from "vitest";
 import { encode } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 
-/** The cookie jar and helpers shared by the account switcher's tests. */
 export type Stored = { name: string; value: string; expires?: Date };
 export const SECRET = "test-secret-for-the-account-switcher-0123456789";
 export const SESSION = "authjs.session-token";
@@ -12,7 +11,6 @@ export const cookieJar = () => ({
   getAll: () => [...jar.values()],
   set: (a: Stored | string, value?: string, options?: { expires?: Date }) => {
     const cookie = typeof a === "string" ? { name: a, value: value ?? "", ...options } : a;
-    // An expiry in the past is how a cookie is deleted.
     if (cookie.expires && cookie.expires.getTime() < Date.now()) jar.delete(cookie.name);
     else jar.set(cookie.name, cookie);
   },

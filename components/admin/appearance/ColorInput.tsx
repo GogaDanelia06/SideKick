@@ -9,10 +9,8 @@ import { ColorPicker, PICKER_POPOVER_WIDTH } from "./ColorPicker";
 import { PICKER_WIDTH } from "./shades";
 import { usePopover } from "./usePopover";
 
-/** The popover's footprint; 250 is its height with some room to spare. */
 const POPOVER = { width: PICKER_POPOVER_WIDTH, height: 250 };
 
-/** One theme's value of one colour: a swatch that opens our picker, and a hex box. */
 export function ColorInput({
   label,
   value,
@@ -23,9 +21,7 @@ export function ColorInput({
 }: {
   label: string;
   value: string;
-  /** The value on the server, so this one field can be undone. */
   saved: string;
-  /** The shipped value. */
   fallback: string;
   onChange: (hex: string) => void;
   onFocus: () => void;
@@ -35,13 +31,11 @@ export function ColorInput({
   const [lastSeen, setLastSeen] = useState(value);
   const { open, place, box, trigger, toggle, close } = usePopover(POPOVER);
 
-  // Sync with outside changes during render, so a stale value is never painted.
   if (value !== lastSeen) {
     setLastSeen(value);
     setText(value);
   }
 
-  // Typed text is reported only once it is a full hex.
   function typed(next: string) {
     const withHash = next.startsWith("#") ? next : `#${next}`;
     setText(withHash);

@@ -1,0 +1,43 @@
+{
+  "chatDetail": {
+    "adminManual": "Admin (manual)",
+    "aiReply": "AI reply",
+    "conversationNotFound": "Conversation not found.",
+    "createALeadFrom": "Create a lead from this conversation",
+    "done": "Done",
+    "giveBackToAi": "Give back to AI",
+    "handingBack": "Handing back…",
+    "lead": "Lead",
+    "new": "New",
+    "noMessages": "No messages",
+    "onceFacebookInstagramWhatsapp": "Once Facebook / Instagram / WhatsApp is connected, customer messages appear here automatically.",
+    "ongoing": "Ongoing",
+    "order": "Order",
+    "ordersAreCreatedFrom": "Orders are created from the orders page",
+    "savedButMessengerWould": "Saved, but Messenger would not take it: the customer has not written for 24 hours. Trying again cannot help — wait until they message you.",
+    "savedButSendingFailed": "Saved, but sending failed. Try again.",
+    "savedNotSentTo": "Saved. Not sent to the customer — this channel is not fully connected yet.",
+    "selectAConversation": "Select a conversation",
+    "send": "Send",
+    "somethingWentWrongTry": "Something went wrong. Try again.",
+    "theAiAskedFor": "The AI asked for a person. Hand it back when you are done.",
+    "thisConversationAlreadyHas": "This conversation already has a lead",
+    "writeAReply": "Write a reply…",
+    "youDoNotHave": "You do not have permission for this."
+  },
+  "chatList": {
+    "aiError": "AI error",
+    "aiOff": "AI off",
+    "all": "All",
+    "days": "{d} d",
+    "hours": "{h} h",
+    "lead": "Lead",
+    "messagesAppearHereAs": "Messages appear here as soon as a channel is connected (Facebook, Instagram, WhatsApp).",
+    "minutes": "{min} min",
+    "noConversationsYet": "No conversations yet",
+    "now": "now",
+    "order": "Order",
+    "planSpentOrLapsed": "Plan spent or lapsed",
+    "waitingForAHuman": "Waiting for a human"
+  }
+}

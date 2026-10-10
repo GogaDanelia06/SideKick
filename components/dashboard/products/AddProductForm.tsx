@@ -27,7 +27,6 @@ export function AddProductForm({ onAdded }: { onAdded: (product: Product) => voi
   const form = useRef<HTMLFormElement>(null);
   const [pending, start] = useTransition();
   const [notice, setNotice] = useState<{ tone: "ok" | "bad"; key?: string } | null>(null);
-  // A new key empties the photo box once a product is added.
   const [photoKey, setPhotoKey] = useState(0);
 
   return (

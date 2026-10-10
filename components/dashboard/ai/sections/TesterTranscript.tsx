@@ -5,7 +5,6 @@ import { IconSparkles } from "@tabler/icons-react";
 import type { TesterTurn } from "@/lib/dashboard/testerChat";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** The tester's messages, kept scrolled to the newest one. */
 export function TesterTranscript({
   turns,
   waiting,

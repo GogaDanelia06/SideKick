@@ -18,8 +18,6 @@ const delivery = {
 
 group("redact()", () => {
   it("keeps the envelope and removes what the customer wrote", () => {
-    // Everything this project spent a week diagnosing was in the structure:
-    // which object, which account id, which array. None of it was in the text.
     const out = redact(delivery) as typeof delivery;
 
     expect(out.object).toBe("instagram");
@@ -38,8 +36,6 @@ group("redact()", () => {
   });
 
   it("cannot be smuggled past by a customer typing the word text", () => {
-    // A string-replace on the raw body would be fooled by this; walking the
-    // parsed object is not.
     const out = redact({ entry: [{ messaging: [{ message: { text: '{"text":"secret"}' } }] }] }) as {
       entry: { messaging: { message: { text: string } }[] }[];
     };
@@ -71,7 +67,6 @@ group("traceDelivery()", () => {
   });
 
   it("refuses to print a body it could not parse", () => {
-    // If it is not JSON it is not a delivery, and it could be anything at all.
     const t = traceDelivery(req("curl"), "<html>not json</html>");
 
     expect(t.body).toBe("‹unparseable›");

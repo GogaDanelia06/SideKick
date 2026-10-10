@@ -7,7 +7,6 @@ import type { Text } from "@/lib/i18n/messages";
 export function AdminHeading({
   title,
   subtitle,
-  /** Status or controls that belong beside the title, not under it. */
   aside,
 }: {
   title: Text;

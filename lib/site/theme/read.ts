@@ -3,10 +3,8 @@ import { getSiteValue } from "@/lib/site/content";
 import { findPreset, presetColors } from "./presets";
 import { THEME_KEY, defaultTheme, sanitizeTheme, type Theme } from "./css";
 
-/** Legacy background-only setting, still honoured when no theme is saved. */
 export const BG_KEY = "site_bg";
 
-/** The saved theme; otherwise the legacy `site_bg` preset; otherwise the default. */
 export async function readTheme(): Promise<Theme> {
   const [stored, preset] = await Promise.all([getSiteValue(THEME_KEY), getSiteValue(BG_KEY)]);
 
@@ -21,7 +19,6 @@ export async function readTheme(): Promise<Theme> {
   return fromPreset(preset);
 }
 
-/** Carries over only `bg` and `canvas` from the legacy preset. */
 function fromPreset(id: string | null): Theme {
   const theme = defaultTheme();
   const p = findPreset(id);

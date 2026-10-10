@@ -1,0 +1,24 @@
+{
+  "editor": {
+    "add": "დამატება",
+    "addBox": "ბოქსის დამატება",
+    "boxes": "ბოქსი",
+    "cancel": "გაუქმება",
+    "close": "დახურვა",
+    "delete": "წაშლა",
+    "descriptionEnglish": "აღწერა — English",
+    "descriptionGeorgian": "აღწერა — ქართული",
+    "edit": "რედაქტირება",
+    "icon": "აიკონი",
+    "moveDown": "ჩამოწევა",
+    "moveUp": "აწევა",
+    "noBoxesYet": "ჯერ არცერთი ბოქსი.",
+    "notFound": "ვერ მოიძებნა",
+    "save": "შენახვა",
+    "somethingWentWrong": "ვერ შესრულდა",
+    "titleEnglish": "სათაური — English",
+    "titleGeorgian": "სათაური — ქართული",
+    "titleIsRequiredIn": "სათაური ორივე ენაზე სავალდებულოა",
+    "togglePublish": "გამოქვეყნება"
+  }
+}

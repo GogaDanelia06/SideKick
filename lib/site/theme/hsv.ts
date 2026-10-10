@@ -1,6 +1,5 @@
 import { toRgb } from "./derive";
 
-/** Hue in degrees (0–360); saturation and value (brightness) from 0 to 1. */
 export type Hsv = { h: number; s: number; v: number };
 
 export function hexToHsv(hex: string): Hsv {

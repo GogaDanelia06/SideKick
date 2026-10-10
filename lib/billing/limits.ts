@@ -3,14 +3,10 @@ import { planLabel } from "@/lib/content/packages";
 import { isExpired } from "./subscriptionState";
 import type { Text } from "@/lib/i18n/messages";
 
-/** Plan caps; `-1` means unlimited. */
-
 export type LimitName = "messages" | "channels" | "users" | "products";
 
-/** `stoppedReason` values caused by billing rather than by an AI failure. */
 export const BILLING_STOPS: ReadonlySet<string> = new Set(["limit_reached", "subscription_expired"]);
 
-/** Why one more item is refused. `limit`: upgrade the plan. `expired`: renew it. */
 export type LimitRefusal = {
   allowed: false;
   reason: "limit" | "expired";
@@ -27,7 +23,6 @@ function unlimited(cap: number): boolean {
 
 type PlanCaps = {
   planName: Text;
-  /** End of the paid period, or null for a trial that never had one. */
   renewsAt: Date | null;
   msgLimit: number;
   channelCap: number;
@@ -67,7 +62,6 @@ async function capsFor(businessId: string): Promise<PlanCaps | null> {
   };
 }
 
-/** Whether `adding` more items (one by default) are allowed. A business without a subscription row is not blocked. */
 export async function checkLimit(businessId: string, what: LimitName, adding = 1): Promise<LimitVerdict> {
   const caps = await capsFor(businessId);
   if (!caps) return { allowed: true };
@@ -79,7 +73,6 @@ export async function checkLimit(businessId: string, what: LimitName, adding = 1
 
   switch (what) {
     case "messages":
-      // Expiry only stops AI replies; the dashboard and history stay available.
       if (isExpired(caps.renewsAt)) {
         return {
           allowed: false,
@@ -108,7 +101,6 @@ export async function checkLimit(businessId: string, what: LimitName, adding = 1
   }
 }
 
-/** Counts one delivered AI message against the monthly allowance. */
 export async function countMessage(businessId: string): Promise<void> {
   await prisma.subscription.updateMany({
     where: { businessId },

@@ -12,7 +12,6 @@ import { getContext } from "@/lib/session";
 export type ProfileError = "signed_out" | "name" | "taken" | "failed";
 export type ProfileResult = { ok: true } | { ok: false; error: ProfileError };
 
-/** Whether this person already has another business by this name — the switcher would show two alike. */
 async function nameTaken(userId: string, businessId: string, name: string): Promise<boolean> {
   const twin = await prisma.membership.findFirst({
     where: {
@@ -25,7 +24,6 @@ async function nameTaken(userId: string, businessId: string, name: string): Prom
   return twin !== null;
 }
 
-/** The profile page's Save: this person's own details, and their business's when they may change it. */
 export async function saveProfile(fd: FormData): Promise<ProfileResult> {
   const ctx = await getContext();
   if (!ctx) return { ok: false, error: "signed_out" };
@@ -57,7 +55,6 @@ export async function saveProfile(fd: FormData): Promise<ProfileResult> {
   }
 
   revalidatePath(DASH.profile);
-  // The business name is on the AI page, in the sidebar and in the switcher as well.
   revalidatePath(DASH.ai);
   return { ok: true };
 }

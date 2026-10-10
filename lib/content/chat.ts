@@ -8,7 +8,6 @@ export const CHAT = {
   ariaChat: { ka: "AI ჩათი", en: "AI chat" },
   ariaClose: { ka: "დახურვა", en: "Close" },
   widgetPlaceholder: { ka: "დაწერე შეტყობინება...", en: "Type a message..." },
-  /** Read out by screen readers while the dots animate; never shown as text. */
   typing: { ka: "Sidekick AI წერს…", en: "Sidekick AI is typing…" },
   attach: { ka: "ფოტოს ან ვიდეოს მიმაგრება", en: "Attach a photo or video" },
   badType: {
@@ -26,7 +25,6 @@ export const CHAT = {
   },
 } satisfies Record<string, Bilingual | string>;
 
-/** Suggested questions under the chat thread. */
 export const CHAT_CHIPS: Bilingual[] = [
   { ka: "ფასები რა არის?", en: "What are the prices?" },
   { ka: "როგორ ხდება ინტეგრაცია?", en: "How does integration work?" },

@@ -9,7 +9,6 @@ import { CHANNEL_TYPES } from "@/lib/dashboard/channels";
 import { normalizeYouTubeUrl } from "@/lib/dashboard/youtube";
 import { fail, type AdminResult } from "./shared";
 
-/** Upserts: one guide per channel type, and its row may not exist yet. */
 export async function saveChannelGuide(type: ChannelType, fd: FormData): Promise<AdminResult> {
   await requireAdmin();
   if (!CHANNEL_TYPES.includes(type)) return fail("not_found");

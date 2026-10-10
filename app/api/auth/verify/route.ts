@@ -8,7 +8,6 @@ import { log } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
-/** The signup email's confirmation link; every outcome redirects to the login page. */
 export async function GET(request: Request) {
   const token = new URL(request.url).searchParams.get("token") ?? "";
 
@@ -17,7 +16,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(absoluteUrl("/login?verify=invalid"));
   }
 
-  // A second click still counts as success.
   if (record.user.emailVerified) {
     return NextResponse.redirect(absoluteUrl("/login?verify=already"));
   }

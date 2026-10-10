@@ -1,10 +1,5 @@
 import { log } from "@/lib/logger";
 
-/**
- * Instagram Login token exchange: code → short-lived token (api.instagram.com)
- * → 60-day token (graph.instagram.com). Neither endpoint is versioned.
- */
-
 const TOKEN_EXCHANGE = "https://api.instagram.com/oauth/access_token";
 const LONG_LIVED = "https://graph.instagram.com/access_token";
 const REFRESH = "https://graph.instagram.com/refresh_access_token";
@@ -16,7 +11,6 @@ async function request(url: string, body?: URLSearchParams): Promise<Json | null
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-  // Host and path only: the query string carries the app secret and the token.
   const endpoint = (() => {
     const parsed = new URL(url);
     return parsed.host + parsed.pathname;
@@ -45,7 +39,6 @@ async function request(url: string, body?: URLSearchParams): Promise<Json | null
   }
 }
 
-/** Code → short-lived token. Meta requires a form body and the same redirect_uri. */
 export async function exchangeCode(
   appId: string,
   appSecret: string,
@@ -59,7 +52,6 @@ export async function exchangeCode(
       client_secret: appSecret,
       grant_type: "authorization_code",
       redirect_uri: redirectUri,
-      // Instagram appends "#_" to the code it redirects with.
       code: code.replace(/#_$/, ""),
     }),
   );
@@ -70,7 +62,6 @@ export async function exchangeCode(
 
 export type LongLivedToken = { token: string; expiresAt: Date | null };
 
-/** Meta's `expires_in` (seconds from now) as a date; null when missing or invalid. */
 function expiryFrom(data: Json | null, now = Date.now()): Date | null {
   const seconds = data?.expires_in;
   if (typeof seconds !== "number" || !Number.isFinite(seconds) || seconds <= 0) return null;
@@ -92,7 +83,6 @@ export async function toLongLived(
   return { token, expiresAt: expiryFrom(data) };
 }
 
-/** Extends a long-lived token by 60 days. Meta only allows it for valid tokens older than 24h. */
 export async function refreshLongLived(token: string): Promise<LongLivedToken | null> {
   const url = new URL(REFRESH);
   url.searchParams.set("grant_type", "ig_refresh_token");

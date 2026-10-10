@@ -1,10 +1,5 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
-/**
- * Signed OAuth `state`: binds a Meta authorisation round trip to the business that
- * started it, so an attacker's account cannot be attached to someone else's.
- */
-
 const MAX_AGE_SEC = 15 * 60;
 
 const secret = () => process.env.AUTH_SECRET ?? "";
@@ -24,7 +19,6 @@ export function issueState(businessId: string, now = Date.now()): string {
   return `${payload}.${sign(payload)}`;
 }
 
-/** The state's business, or null when it is missing, forged or expired. */
 export function readState(value: string | null, now = Date.now()): { businessId: string } | null {
   if (!value) return null;
 
@@ -40,7 +34,6 @@ export function readState(value: string | null, now = Date.now()): { businessId:
       t?: unknown;
     };
     if (typeof data.b !== "string" || typeof data.t !== "number") return null;
-    // A timestamp from the future (clock skew) is not treated as expired.
     if ((now - data.t) / 1000 > MAX_AGE_SEC) return null;
 
     return { businessId: data.b };

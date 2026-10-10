@@ -3,7 +3,6 @@ import { checkRow, type ImportRow, type RowProblem } from "./importRow";
 
 export const MAX_IMPORT_ROWS = 2000;
 
-/** `line` is the spreadsheet's own row number; `other` is the earlier row a duplicate code is on. */
 export type RowError = { line: number; problem: RowProblem; other?: number };
 
 export type TableProblem = "columns" | "empty" | "too_many";
@@ -12,7 +11,6 @@ export type ParsedTable =
   | { ok: true; rows: ImportRow[]; errors: RowError[] }
   | { ok: false; error: TableProblem };
 
-/** Reads a sheet whose first row is the header. Blank lines are skipped; each code may appear once. */
 export function tableToRows(table: string[][]): ParsedTable {
   const [header = [], ...body] = table;
   const keys = matchHeaders(header);

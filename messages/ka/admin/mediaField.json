@@ -1,0 +1,14 @@
+{
+  "fileIsLargerThan": "ფაილი 8MB-ზე დიდია",
+  "fileStorageIsNot": "ფაილების საცავი არ არის დაკავშირებული (Vercel → Storage → Blob). ამასობაში ჩასვი ბმული ქვემოთ.",
+  "leaveEmptyToUse": "ცარიელი რომ დატოვო, სლაიდზე ჩაშენებული ანიმაცია გამოჩნდება. მაქს. 8MB.",
+  "notAllowed": "უფლება არ გაქვთ",
+  "orPasteAUrl": "ან ჩასვი ბმული:",
+  "photo": "ფოტო",
+  "photoOrVideo": "ფოტო ან ვიდეო",
+  "remove": "წაშლა",
+  "somethingWentWrong": "ვერ შესრულდა",
+  "unsupportedFileType": "დაუშვებელი ფორმატი",
+  "upload": "ატვირთვა",
+  "uploadFailed": "ატვირთვა ვერ მოხერხდა"
+}

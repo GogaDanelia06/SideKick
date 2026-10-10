@@ -6,7 +6,6 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { ColorInput } from "./ColorInput";
 import { SHADE_ICON, SHADE_LABEL, SHADES } from "./shades";
 
-/** One colour with its dark and light values side by side. */
 export function ColorRow({
   token,
   draft,
@@ -18,11 +17,9 @@ export function ColorRow({
   draft: Theme;
   saved: Theme;
   onChange: (shade: Shade, hex: string) => void;
-  /** Editing a value shows the screen in that value's theme. */
   onShade: (shade: Shade) => void;
 }) {
   const { t } = useLanguage();
-  // "Background" and "Lines" exist in two groups, so the group is part of the name.
   const group = GROUPS.find((g) => g.id === token.group);
   const name = group ? `${t(token.label)} (${t(group.label)})` : t(token.label);
 
@@ -37,7 +34,6 @@ export function ColorRow({
           const ShadeIcon = SHADE_ICON[shade];
           return (
             <div key={shade} className="flex flex-col gap-1 @lg:contents">
-              {/* In a wide section the column headings say which theme this is. */}
               <span className="flex items-center gap-1 text-[11px] font-medium text-muted @lg:hidden">
                 <ShadeIcon size={12} />
                 {t(SHADE_LABEL[shade])}

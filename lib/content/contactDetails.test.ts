@@ -52,7 +52,6 @@ describe("socialLink()", () => {
 });
 
 describe("toContactDetails()", () => {
-  /** The bug this closes: the panel saved these, and the site never read them. */
   it("shows what was saved, and leaves out what was left blank", () => {
     const details = toContactDetails({
       contact_email: "info@sidekick.ge",

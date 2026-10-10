@@ -1,9 +1,5 @@
 import type { Bilingual } from "@/lib/content/types";
 
-/**
- * AI character options. AiConfig stores the Georgian label (`ka`) and the AI service
- * reads it as-is; `en` is only what the settings screen shows in English.
- */
 export const AI_STYLES: Bilingual[] = [
   { ka: "მეგობრული", en: "Friendly" },
   { ka: "პროფესიონალური", en: "Professional" },
@@ -29,10 +25,8 @@ export const AI_ADDRESS_FORMS: Bilingual[] = [
   { ka: "ფამილიარული", en: "Informal" },
 ];
 
-/** The emoji level under which replies must contain no emoji at all. */
 export const NO_EMOJI = "არასოდეს";
 
-/** What a new business starts with, and what the settings screen shows when nothing is saved. */
 export const AI_DEFAULTS = {
   style: "პროფესიონალური",
   length: "საშუალო",

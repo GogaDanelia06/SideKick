@@ -17,7 +17,6 @@ describe("POST /api/accounts — adding and switching", () => {
 
     expect((await call({ action: "add" })).status).toBe(200);
     expect(value("sk.acct.1")).toBe(mine);
-    // The name and email stay readable after the token expires, for the "session expired" row.
     expect(JSON.parse(Buffer.from(value(labelOf("sk.acct.1"))!, "base64url").toString())).toMatchObject({ uid: "u1" });
     expect(value(SESSION)).toBeUndefined();
   });

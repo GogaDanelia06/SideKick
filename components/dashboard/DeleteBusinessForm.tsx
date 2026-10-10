@@ -17,7 +17,6 @@ const ERRORS: Record<DeleteBusinessError, Text> = {
 
 type Props = { business: { id: string; name: string }; onCancel: () => void; onSettled: (message: string) => void };
 
-/** Deleting cannot be undone, so the owner types the business name first, as on GitHub. */
 export function DeleteBusinessForm({ business, onCancel, onSettled }: Props) {
   const { t } = useLanguage();
   const [typed, setTyped] = useState("");

@@ -18,7 +18,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     listOtherAccounts(userId),
   ]);
 
-  // Same fallback as the tenant dashboard's account menu.
   const name = user?.name?.trim() || user?.email?.split("@")[0] || "—";
 
   return (

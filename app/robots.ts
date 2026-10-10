@@ -6,7 +6,6 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Signed-in areas and auth screens (all noindex too); disallowing saves crawl budget.
       disallow: [
         "/dashboard",
         "/admin",

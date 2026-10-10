@@ -12,8 +12,6 @@ describe("sanitize()", () => {
   });
 
   it("falls back to the shipped colour for anything that is not #rrggbb", () => {
-    // The result is written into a <style> element on every page of the platform,
-    // so `red`, `#fff` and `; } body { display:none` all have to lose.
     const base = defaultColors("dark").bg;
     for (const bad of ["red", "#fff", "", "#12345g", "; }", null, 7, {}]) {
       expect(sanitize({ bg: bad }, "dark").bg).toBe(base);
@@ -46,9 +44,6 @@ describe("themeCss()", () => {
   });
 
   it("prefixes every selector with a type selector", () => {
-    // Specificity, not decoration: the <style> element and the stylesheet <link>
-    // can land in either order, and `:root` against `:root` would then be settled
-    // by that order rather than by intent.
     for (const selector of css.match(/[^{}]+(?=\{)/g) ?? []) {
       expect(selector.trim().startsWith("html")).toBe(true);
     }
@@ -90,9 +85,6 @@ describe("ratio()", () => {
 
 describe("presets", () => {
   it("are all readable, in both shades", () => {
-    // The one-click palettes are the path most people will take, so a preset
-    // that fails the contrast check is a readability bug we shipped rather than
-    // one the client chose.
     for (const preset of PRESETS) {
       for (const shade of ["dark", "light"] as const) {
         const bad = failures(presetColors(preset, shade)).map((f) => textIn("en", f.label));

@@ -5,14 +5,8 @@ import { env } from "@/lib/env";
 import { consume } from "@/lib/security/rateLimit";
 import { log } from "@/lib/logger";
 
-/**
- * Authentication for /api/agent/*: one shared token for the AI service, which names
- * the business on each request. The business id is verified on every call.
- */
-
 export type AgentContext = { businessId: string };
 
-/** A refusal the route handler can return as-is. */
 export type AgentDenial = { response: NextResponse };
 
 export function isDenial(v: unknown): v is AgentDenial {
@@ -27,7 +21,6 @@ export function notFound(message: string): AgentDenial {
   return { response: NextResponse.json({ error: message }, { status: 404 }) };
 }
 
-/** Constant-time token comparison. */
 function tokenMatches(given: string, expected: string): boolean {
   const a = Buffer.from(given);
   const b = Buffer.from(expected);
@@ -40,7 +33,6 @@ function bearer(request: Request): string {
   return header.startsWith("Bearer ") ? header.slice(7).trim() : "";
 }
 
-/** 401 for a bad or missing token, 403 for an unknown business. */
 export async function authenticate(
   request: Request,
   businessId: unknown,
@@ -70,7 +62,6 @@ export async function authenticate(
     return { response: NextResponse.json({ error: "unknown businessId" }, { status: 403 }) };
   }
 
-  // A per-business write ceiling, in case the shared token leaks.
   const limit = await consume("agent", business.id);
   if (!limit.ok) {
     log.warn("agent API rate limited", { businessId: business.id });
@@ -85,7 +76,6 @@ export async function authenticate(
   return { businessId: business.id };
 }
 
-/** Parses a JSON body without letting a malformed one become a 500. */
 export async function readJson(request: Request): Promise<Record<string, unknown> | AgentDenial> {
   try {
     const body: unknown = await request.json();
@@ -97,8 +87,6 @@ export async function readJson(request: Request): Promise<Record<string, unknown
     return badRequest("body must be valid JSON");
   }
 }
-
-// Field readers: a wrong type becomes a 400 naming the field, never a Prisma error.
 
 export function str(body: Record<string, unknown>, key: string): string | undefined {
   const v = body[key];
@@ -114,7 +102,6 @@ export function requireStr(
   return str(body, key) ?? badRequest(`${key} is required`);
 }
 
-/** Narrows a string to an allowed value, or a 400 listing the options. */
 export function oneOf<T extends string>(
   body: Record<string, unknown>,
   key: string,

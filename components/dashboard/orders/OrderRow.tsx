@@ -1,21 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import {
-  IconCalendarEvent,
-  IconChevronDown,
-  IconCircleCheck,
-  IconClock,
-  IconPrinter,
-  IconTruck,
-  IconX,
-} from "@tabler/icons-react";
+import { IconChevronDown } from "@tabler/icons-react";
 import type { OrderRowData } from "@/lib/dashboard/queries";
-import { useLanguage } from "@/lib/i18n/useLanguage";
+import { OrderDetails } from "./OrderDetails";
 import { useOrderStatus } from "./useOrderStatus";
 
-const CELL = "rounded-[10px] border border-border bg-surface px-3 py-2.5";
-const BTN = "inline-flex h-9 items-center gap-1.5 rounded-[6px] px-4 text-[13px] font-medium disabled:opacity-60";
+const DASH = "—";
 
 export function OrderRow({
   order,
@@ -26,9 +17,7 @@ export function OrderRow({
   open: boolean;
   onToggle: () => void;
 }) {
-  const { t } = useLanguage();
   const { pending, change } = useOrderStatus(order.id);
-  const dash = "—";
 
   return (
     <div className="border-b border-border2 last:border-b-0">
@@ -38,8 +27,8 @@ export function OrderRow({
         className="flex w-full items-center gap-3 px-4 py-3.5 text-left text-[13px]"
       >
         <span className="w-20 shrink-0 font-mono font-semibold">{order.ref}</span>
-        <span className="min-w-0 flex-1 truncate font-medium">{order.customerName ?? dash}</span>
-        <span className="hidden font-mono text-muted lg:block">{order.phone ?? dash}</span>
+        <span className="min-w-0 flex-1 truncate font-medium">{order.customerName ?? DASH}</span>
+        <span className="hidden font-mono text-muted lg:block">{order.phone ?? DASH}</span>
         <span className="font-mono font-semibold">{order.total}₾</span>
         <span className="hidden shrink-0 text-muted sm:block">{order.dateLabel}</span>
         <IconChevronDown
@@ -48,87 +37,7 @@ export function OrderRow({
         />
       </button>
 
-      {open ? (
-        <div className="flex flex-col gap-4 bg-soft p-4">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border pb-3 text-[13px]">
-            <span className="flex items-center gap-1.5 text-muted">
-              <IconCalendarEvent size={15} /> {order.dateLabel}
-            </span>
-            <span className="flex items-center gap-1.5 text-muted">
-              <IconClock size={15} /> <b className="font-mono text-ink">{order.timeLabel}</b>
-            </span>
-            <span className="ml-auto text-muted">
-              {t("dashboard.orders.row.total")}{" "}
-              <b className="font-mono text-base text-ink">{order.total}₾</b>
-            </span>
-          </div>
-
-          <div className="grid gap-2.5 sm:grid-cols-3">
-            <div className={CELL}>
-              <div className="mb-1 text-[11px] text-muted">{t("dashboard.orders.row.name")}</div>
-              <div className="text-sm font-medium">{order.customerName ?? dash}</div>
-            </div>
-            <div className={CELL}>
-              <div className="mb-1 text-[11px] text-muted">{t("dashboard.orders.row.phone")}</div>
-              <div className="font-mono text-sm">{order.phone ?? dash}</div>
-            </div>
-            <div className={CELL}>
-              <div className="mb-1 text-[11px] text-muted">{t("dashboard.orders.row.address")}</div>
-              <div className="text-sm">{order.address ?? dash}</div>
-            </div>
-          </div>
-
-          {order.items.length > 0 ? (
-            <div className="overflow-hidden rounded-[10px] border border-border bg-surface">
-              {order.items.map((it) => (
-                <div
-                  key={it.id}
-                  className="flex items-center gap-3 border-b border-border2 px-3 py-2.5 text-[13px] last:border-b-0"
-                >
-                  <span className="min-w-0 flex-1 truncate">{it.name}</span>
-                  <span className="shrink-0 font-mono text-xs text-muted">{it.code}</span>
-                  <span className="shrink-0 text-muted">×{it.qty}</span>
-                  <span className="w-20 shrink-0 text-right font-mono font-semibold">{it.lineTotal}₾</span>
-                </div>
-              ))}
-            </div>
-          ) : null}
-
-          <div className="flex flex-wrap gap-2.5">
-            <button
-              type="button"
-              disabled={pending || order.status === "TO_SEND"}
-              onClick={() => change("TO_SEND")}
-              className={`${BTN} bg-primary text-white`}
-            >
-              <IconTruck size={16} /> {t("dashboard.orders.row.accept")}
-            </button>
-            <button
-              type="button"
-              disabled={pending || order.status === "DONE"}
-              onClick={() => change("DONE")}
-              className={`${BTN} border border-border bg-surface text-green`}
-            >
-              <IconCircleCheck size={16} /> {t("dashboard.orders.row.complete")}
-            </button>
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className={`${BTN} border border-border bg-surface`}
-            >
-              <IconPrinter size={16} /> {t("dashboard.orders.row.print")}
-            </button>
-            <button
-              type="button"
-              disabled={pending || order.status === "CANCELLED"}
-              onClick={() => change("CANCELLED")}
-              className={`${BTN} border border-border bg-surface text-red`}
-            >
-              <IconX size={16} /> {t("dashboard.orders.row.cancel")}
-            </button>
-          </div>
-        </div>
-      ) : null}
+      {open ? <OrderDetails order={order} pending={pending} onChange={change} /> : null}
     </div>
   );
 }

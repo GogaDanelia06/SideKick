@@ -16,7 +16,6 @@ const SOMEBODY_ELSE = "17841417136050617";
 const channel = vi.mocked(prisma.channel.findFirst);
 const link = vi.mocked(linkChannel);
 
-/** One Page, with an Instagram account attached, granted by the merchant. */
 function metaAnswers(igId: string | null) {
   vi.stubGlobal(
     "fetch",
@@ -40,7 +39,6 @@ function metaAnswers(igId: string | null) {
           }),
         };
       }
-      // subscribed_apps
       return { ok: true, json: async () => ({ success: true }) };
     }),
   );
@@ -61,8 +59,6 @@ describe("connectFromCode() carrying Instagram across", () => {
     const res = await connectFromCode("b1", "code", "https://sidekick.ge/cb");
 
     expect(res).toEqual({ ok: true, pageName: "Sidekick", instagram: true });
-    // The Instagram account id, not the Page id: that is what Meta puts in
-    // `entry.id` and what recordInbound routes on.
     expect(link).toHaveBeenCalledWith("b1", "INSTAGRAM", SIDEKICK, "EAA-page-token");
   });
 
@@ -76,8 +72,6 @@ describe("connectFromCode() carrying Instagram across", () => {
   });
 
   it("leaves an Instagram Login token for the same account alone", async () => {
-    // That token is the better of the two — direct to graph.instagram.com, and
-    // it outlives the Page grant. Replacing it would be a silent downgrade.
     channel.mockResolvedValue({ externalId: SIDEKICK, accessToken: "IGA-good" } as never);
     metaAnswers(SIDEKICK);
 
@@ -87,9 +81,6 @@ describe("connectFromCode() carrying Instagram across", () => {
   });
 
   it("replaces an Instagram Login token that names a different account", async () => {
-    // The bug this closes: somebody connected their own Instagram by being
-    // signed into it when they clicked, and the wrong credential then defended
-    // itself against every attempt to grant the right Page.
     channel.mockResolvedValue({ externalId: SOMEBODY_ELSE, accessToken: "IGA-wrong" } as never);
     metaAnswers(SIDEKICK);
 

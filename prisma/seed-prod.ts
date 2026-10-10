@@ -6,7 +6,6 @@ import { BENEFITS } from "../lib/content/benefits";
 import { SERVICES } from "../lib/content/services";
 import { ICONS } from "../lib/content/icons";
 
-/** Map a shipped icon component back to the name stored in the database. */
 function iconName(icon: unknown): string {
   const hit = Object.entries(ICONS).find(([, c]) => c === icon);
   return hit?.[0] ?? "IconSparkles";
@@ -32,7 +31,6 @@ async function main() {
     });
   }
 
-  // Import drafted legal sections only into empty documents, so edits are never overwritten.
   for (const { doc, src } of [
     { doc: "terms", src: TERMS },
     { doc: "privacy", src: PRIVACY },
@@ -53,7 +51,6 @@ async function main() {
     });
   }
 
-  // Import the shipped benefit and service boxes into empty tables.
   if ((await prisma.benefit.count()) === 0) {
     await prisma.benefit.createMany({
       data: BENEFITS.map((b, i) => ({

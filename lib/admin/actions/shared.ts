@@ -9,7 +9,6 @@ export function fail(error: string): AdminResult {
   return { ok: false, error };
 }
 
-/** The order for a row appended after the current maximum. */
 export function nextOrder(max: number | null): number {
   return (max ?? -1) + 1;
 }
@@ -20,7 +19,6 @@ export const ORDER_SELECT = { id: true, order: true } as const;
 
 type Ordered = { id: string; order: number };
 
-/** Swaps a row's order with its neighbour in `rows`, which must be sorted by order. */
 export async function moveRow(
   rows: Ordered[],
   id: string,

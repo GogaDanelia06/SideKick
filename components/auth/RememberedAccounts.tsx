@@ -9,10 +9,6 @@ import { AccountRow } from "./AccountRow";
 import { ACCOUNT_ERRORS } from "./AccountSwitcher";
 import { useAccountList } from "./useAccountList";
 
-/**
- * Below the login form: the accounts on this browser. A live one opens with a click, an
- * expired one fills its email into the form above, and × forgets it here.
- */
 export function RememberedAccounts({ accounts }: { accounts: OtherAccount[] }) {
   const { t } = useLanguage();
   const callbackUrl = safeCallbackUrl(useSearchParams().get("callbackUrl"));

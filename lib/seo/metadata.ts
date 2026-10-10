@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { getPageSeo } from "@/lib/site/content";
 import { OG_IMAGE, SITE } from "./site";
 
-/** Admin overrides, as returned by getPageSeo(). Empty string = not set. */
 export type SeoOverrides = {
   title?: string;
   description?: string;
@@ -22,7 +21,6 @@ type PageMeta = {
   overrides?: SeoOverrides;
 };
 
-/** Page metadata: admin override → page value → site default. Blank overrides are ignored. */
 export function pageMetadata({
   title,
   absoluteTitle,
@@ -69,7 +67,6 @@ export function pageMetadata({
   };
 }
 
-/** A page's `generateMetadata` with the admin's SEO overrides applied. */
 export function seoFor(base: Omit<PageMeta, "overrides">) {
   return async function generateMetadata(): Promise<Metadata> {
     return pageMetadata({ ...base, overrides: await getPageSeo(base.path) });

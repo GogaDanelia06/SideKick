@@ -16,7 +16,6 @@ import { markConversationActive } from "@/lib/conversations";
 
 export const dynamic = "force-dynamic";
 
-/** Records a customer or AI message; AI messages are billed and delivered to the customer. */
 export async function POST(request: Request) {
   const body = await readJson(request);
   if (isDenial(body)) return body.response;
@@ -37,7 +36,6 @@ export async function POST(request: Request) {
   const conversation = await ownedConversation(auth.businessId, conversationId);
   if (isDenial(conversation)) return conversation.response;
 
-  // Only AI messages are restyled and count against the plan; customer messages are always recorded.
   const content = sender === "AI" ? await acceptAiReply(auth.businessId, text) : text;
   if (isDenial(content)) return content.response;
 
@@ -50,8 +48,6 @@ export async function POST(request: Request) {
 
   await markConversationActive(conversation.id);
 
-  // Awaited so the caller sees the delivery outcome; a failed delivery does not
-  // fail the request, because the message is already saved.
   const delivery =
     sender === "CUSTOMER" ? null : await deliverOutbound(conversation.id, message.id, content);
 
@@ -64,7 +60,6 @@ export async function POST(request: Request) {
 
 const HISTORY_LIMIT = 100;
 
-/** The latest messages of a conversation, oldest first. */
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const businessId = url.searchParams.get("businessId");
@@ -77,7 +72,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "conversationId is required" }, { status: 400 });
   }
 
-  // Another business's conversation reads as not found.
   const owned = await ownedConversation(auth.businessId, conversationId);
   if (isDenial(owned)) return owned.response;
 

@@ -17,7 +17,6 @@ import {
 
 export const generateMetadata = seoFor({ path: "/" });
 
-// Admin saves revalidate this page; the timer keeps the live figures fresh.
 export const revalidate = 60;
 
 export default async function HomePage() {

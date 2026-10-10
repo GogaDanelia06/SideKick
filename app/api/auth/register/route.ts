@@ -27,10 +27,8 @@ export async function POST(req: Request) {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  // Without a mail provider nobody could verify, so the address is trusted.
   const canSendMail = mailConfigured();
 
-  // User and business are created together, so no account exists without a business.
   const user = await prisma.$transaction(async (tx) => {
     const created = await tx.user.create({
       data: {
@@ -53,7 +51,6 @@ export async function POST(req: Request) {
     verifyEmailEmail(user.email, absoluteUrl(`/api/auth/verify?token=${token}`), user.name),
   );
 
-  // If the verification email cannot be sent, activate the account rather than strand it.
   if (!sent) {
     log.error("verification mail failed; activating the account instead", null, {
       userId: user.id,

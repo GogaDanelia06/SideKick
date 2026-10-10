@@ -4,7 +4,6 @@ import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { AdminHeading } from "@/components/admin/ui/AdminHeading";
 import { BiText } from "@/components/admin/ui/BiText";
 
-/** One card per public page with its sections, matching the sidebar. */
 export default function AdminHome() {
   return (
     <>

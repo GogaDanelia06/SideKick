@@ -1,0 +1,23 @@
+{
+  "editor": {
+    "add": "დამატება",
+    "addQuestion": "დამატება",
+    "answerEn": "პასუხი (ინგ.)",
+    "answerKa": "პასუხი (ქართ.)",
+    "cancel": "გაუქმება",
+    "close": "დახურვა",
+    "delete": "წაშლა",
+    "edit": "რედაქტირება",
+    "fillInAllFour": "შეავსეთ ოთხივე ველი",
+    "moveDown": "ჩამოწევა",
+    "moveUp": "აწევა",
+    "noQuestionsYet": "ჯერ არცერთი კითხვა.",
+    "notFound": "ვერ მოიძებნა",
+    "questionEn": "კითხვა (ინგ.)",
+    "questionKa": "კითხვა (ქართ.)",
+    "questions": "კითხვა",
+    "save": "შენახვა",
+    "somethingWentWrong": "ვერ შესრულდა",
+    "togglePublish": "გამოქვეყნება"
+  }
+}

@@ -2,10 +2,8 @@ import type { JWT } from "next-auth/jwt";
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
 
-/** Stamped once at sign-in: who it is, since when, and which of their businesses opens first. */
 export async function stampSignIn(token: JWT, user: { id: string; remember?: boolean }): Promise<JWT> {
   token.uid = user.id;
-  // See lib/auth/sessionExpiry.ts. OAuth sign-ins are never remembered.
   token.remember = user.remember === true;
   token.startedAt = Date.now();
 
@@ -21,10 +19,6 @@ export async function stampSignIn(token: JWT, user: { id: string; remember?: boo
   return token;
 }
 
-/**
- * Moves the session to another of the user's businesses. The request comes from the
- * browser, so it only takes effect for a business the user is a member of.
- */
 export async function switchTokenBusiness(token: JWT, businessId: unknown): Promise<JWT> {
   if (typeof businessId !== "string" || !token.uid) return token;
 
@@ -38,7 +32,6 @@ export async function switchTokenBusiness(token: JWT, businessId: unknown): Prom
       token.role = membership.role;
     }
   } catch (err) {
-    // Auth.js signs the user out when this callback throws; a failed switch should not.
     log.error("could not check the membership for a business switch", err, { userId: token.uid });
   }
   return token;

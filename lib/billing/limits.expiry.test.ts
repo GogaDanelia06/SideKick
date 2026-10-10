@@ -22,8 +22,6 @@ describe("checkLimit('messages') and subscription expiry", () => {
   });
 
   it("keeps answering during the grace period", async () => {
-    // A bank transfer clearing late is the ordinary case. Cutting the assistant
-    // off for it costs the merchant customers, not us.
     sub.mockResolvedValue(row(new Date(Date.now() - 2 * DAY)));
     expect(await checkLimit("b1", "messages")).toEqual({ allowed: true });
   });
@@ -37,8 +35,6 @@ describe("checkLimit('messages') and subscription expiry", () => {
   });
 
   it("reports a spent allowance as `limit`, not `expired`", async () => {
-    // The two send the merchant to different places — upgrade versus renew —
-    // so they must never be reported as the same thing.
     sub.mockResolvedValue(row(new Date(Date.now() + 10 * DAY), 1000));
     const v = await checkLimit("b1", "messages");
 
@@ -52,8 +48,6 @@ describe("checkLimit('messages') and subscription expiry", () => {
   });
 
   it("leaves the dashboard alone — expiry stops the assistant, not the account", async () => {
-    // The merchant still owns their conversations, their team and their
-    // products. Locking them out of their own records punishes the wrong thing.
     sub.mockResolvedValue(row(new Date(Date.now() - 30 * DAY)));
     vi.mocked(prisma.channel.count).mockResolvedValue(1 as never);
 

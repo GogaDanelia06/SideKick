@@ -131,7 +131,7 @@ role cannot enforce tenant isolation, cannot price an order, and cannot turn a
 malformed request into a `400` — these handlers do all three. Order totals in
 particular are computed from the merchant's own product rows and a `price` in
 the request body is ignored, for the same reason `amountFor` recomputes plan
-prices in `lib/billing/checkout.ts`.
+prices in `lib/billing/checkout/`.
 
 Unset `AI_SERVICE_TOKEN` closes the whole surface with a `503`, which is the
 correct state for an environment the AI service has not been pointed at.
@@ -163,7 +163,7 @@ One round of work is cached for ten seconds and shared across every open tab.
 
 ## Server Actions
 
-Defined in `lib/dashboard/actions.ts` (`"use server"`). Called directly from
+Defined in `lib/dashboard/actions/` (`"use server"`, one file per area). Called directly from
 client components — there is no URL to document, and none of these are part of a
 public API surface.
 
@@ -231,7 +231,7 @@ bilingual message — see the `ERRORS` map in each view component.
 
 ## Query functions
 
-`lib/dashboard/queries.ts`. Reads only, called from server components.
+`lib/dashboard/queries/`. Reads only, called from server components.
 
 **Every one takes `businessId` as a required argument.** That is the single
 invariant that keeps tenants apart — a query without it would return another

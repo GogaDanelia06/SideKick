@@ -5,10 +5,6 @@ export type Theme = { dark: ThemeColors; light: ThemeColors };
 
 export const THEME_KEY = "site_theme";
 
-/**
- * Keeps only known tokens with `#rrggbb` values and fills the rest from the default
- * palette. The result is written into a `<style>` tag, so nothing else may pass.
- */
 export function sanitize(input: unknown, shade: Shade): ThemeColors {
   const raw = (input ?? {}) as Record<string, unknown>;
   const out = defaultColors(shade);
@@ -45,7 +41,6 @@ function varsFor(colors: ThemeColors, shade: Shade) {
   return { root, dash };
 }
 
-/** CSS variable overrides for <head>. The extra `html` beats :root whatever the stylesheet order. */
 export function themeCss(theme: Theme): string {
   const dark = varsFor(theme.dark, "dark");
   const light = varsFor(theme.light, "light");

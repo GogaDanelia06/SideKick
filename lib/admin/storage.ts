@@ -3,14 +3,11 @@ import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { del, put } from "@vercel/blob";
 
-/** Media storage (admin uploads, product photos): Vercel Blob in production, public/uploads in development. */
-
 export type StoredMedia = { url: string };
 export type StorageResult = StoredMedia | { error: "not_configured" };
 
 const LOCAL_DIR = path.join(process.cwd(), "public", "uploads");
 
-/** Random rather than derived from the filename, so URLs are not guessable. */
 function filename(ext: string): string {
   return `${randomUUID()}.${ext}`;
 }
@@ -41,10 +38,6 @@ export async function storeMedia(
   return { error: "not_configured" };
 }
 
-/**
- * Deletes a file this storage made, once nothing points at it. Best effort: a file
- * left behind only costs space. URLs from anywhere else are left alone.
- */
 export async function removeStoredMedia(url: string): Promise<void> {
   try {
     if (url.startsWith("/uploads/")) {
@@ -52,7 +45,5 @@ export async function removeStoredMedia(url: string): Promise<void> {
     } else if (process.env.BLOB_READ_WRITE_TOKEN && new URL(url).hostname.endsWith(".public.blob.vercel-storage.com")) {
       await del(url);
     }
-  } catch {
-    // Already gone, or storage unreachable: nothing to do.
-  }
+  } catch {}
 }

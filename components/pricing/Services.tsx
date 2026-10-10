@@ -7,8 +7,6 @@ import { SERVICES, SERVICES_HEADING } from "@/lib/content/services";
 import type { BoxView } from "@/lib/site/content";
 import type { Text } from "@/lib/i18n/messages";
 
-/** Admin-editable heading and boxes; each falls back to the shipped copy when
- *  the admin hasn't set it. The title here is the page's H1. */
 export function Services({
   boxes,
   badge,

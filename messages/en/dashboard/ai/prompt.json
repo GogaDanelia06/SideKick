@@ -1,0 +1,75 @@
+{
+  "promptAiActions": {
+    "eGAnswerMore": "e.g. answer more briefly and always state the price",
+    "generatePrompt": "Generate prompt",
+    "refineWithAi": "Refine with AI",
+    "requiresTheAiModule": "Requires the AI module",
+    "rewrite": "Rewrite",
+    "saveFirst": "The AI rewrites the saved prompt. Click Save first.",
+    "slow": "This can take up to a minute.",
+    "theAiServiceDid": "The AI service did not answer. Try again.",
+    "undo": "Bring back the previous text",
+    "working": "Working…"
+  },
+  "promptChanges": {
+    "added": "Added:",
+    "edited": "Edited:",
+    "emptyLine": "empty line",
+    "hint": "Compared with the saved prompt.",
+    "removed": "Removed:",
+    "same": "Only spaces or line breaks changed.",
+    "title": "What changed",
+    "toggle": "Show or hide the changes",
+    "unchanged": "{count} unchanged lines",
+    "wordsAdded": "Words added: {count}",
+    "wordsRemoved": "Words removed: {count}"
+  },
+  "promptSection": {
+    "promptInstructions": "Prompt / instructions",
+    "video": "Video",
+    "youAreCompanyS": "You are [company]'s virtual assistant…"
+  },
+  "saveMessages": {
+    "cancel": "Cancel",
+    "couldnTSaveTry": "Couldn't save — try again",
+    "couldnTSaveYour": "Couldn't save. Your changes stay in this browser — try again.",
+    "everythingIsSaved": "Everything is saved",
+    "save": "Save",
+    "saved": "Saved",
+    "saving": "Saving…",
+    "unsavedChanges": "Unsaved changes",
+    "youDonTHave": "You don't have permission to change this",
+    "youSwitchedToAnother": "You switched to another business. The changes are waiting for you back in this one.",
+    "yourSessionEndedYour": "Your session ended. Your changes stay in this browser — log in and save again.",
+    "yourUnsavedChangesWere": "Your unsaved changes were restored. Press Save to keep them."
+  },
+  "testerSection": {
+    "clearChat": "Clear chat",
+    "failure": {
+      "emojiOnly": "The answer was only emoji, and emoji are switched off in your settings.",
+      "forbidden": "You don't have permission to test the AI for this business.",
+      "noAnswer": "The AI service did not answer. Try again."
+    },
+    "promptDrafted": "Your assistant had no prompt, so one was drafted. See Prompt / instructions.",
+    "send": "Send",
+    "testYourCurrentPrompt": "Test your current prompt",
+    "tester": "Tester",
+    "text": "The tester needs the AI service, which is not connected yet.",
+    "typeAMessage": "Type a message…"
+  },
+  "testerTranscript": {
+    "asksForAPerson": "asks for a person",
+    "typing": "Typing…",
+    "writeSomethingACustomer": "Write something a customer might, and see how it answers."
+  },
+  "view": {
+    "behaviourRules": "Behaviour rules",
+    "businessInfo": "Business info",
+    "character": "Character",
+    "configuration": "Configuration",
+    "languages": "Languages",
+    "openTheTesterTo": "Open the tester to try your current prompt",
+    "promptInstructions": "Prompt / instructions",
+    "tester": "Tester"
+  }
+}

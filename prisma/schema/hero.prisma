@@ -1,0 +1,54 @@
+/// Homepage carousel slide. Media is optional — with none, the slide falls back
+/// to one of the built-in animated mocks (`mock`).
+model HeroSlide {
+  id         String          @id @default(cuid())
+  order      Int             @default(0)
+  published  Boolean         @default(true)
+  /// Uploaded image/video URL. Null = use `mock`.
+  mediaUrl   String?
+  mediaType  String?
+  /// Built-in mock to show when there's no media: chat | dashboard | tester
+  mock       String?
+  badgeKa    String          @default("")
+  badgeEn    String          @default("")
+  titleKa    String
+  titleEn    String
+  textKa     String
+  textEn     String
+  ctaLabelKa String          @default("")
+  ctaLabelEn String          @default("")
+  /// Where "learn more" goes. Defaults to the pricing page.
+  ctaUrl     String          @default("/pricing")
+  stats      HeroSlideStat[]
+
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([order])
+}
+
+/// A single figure inside a slide's panel.
+///
+/// With a `source` it is the real platform count, re-read while the visitor is
+/// on the page, so it moves when an actual customer signs up. Without one it
+/// falls back to the older behaviour: it starts at `baseValue` and drifts by a
+/// random amount in [changeMin, changeMax] every random interval in
+/// [intervalMinMs, intervalMaxMs] — decorative, and clearly not a measurement.
+model HeroSlideStat {
+  id            String    @id @default(cuid())
+  slideId       String
+  order         Int       @default(0)
+  labelKa       String
+  labelEn       String
+  /// A key from STAT_SOURCES, or "" for the hand-made drifting figure.
+  source        String    @default("")
+  baseValue     Float     @default(0)
+  changeMin     Float     @default(0)
+  changeMax     Float     @default(0)
+  intervalMinMs Int       @default(2000)
+  intervalMaxMs Int       @default(6000)
+  /// Rendered right after the number, e.g. "₾" or "%".
+  suffix        String    @default("")
+  slide         HeroSlide @relation(fields: [slideId], references: [id], onDelete: Cascade)
+
+  @@index([slideId, order])
+}

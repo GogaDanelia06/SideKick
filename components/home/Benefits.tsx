@@ -9,8 +9,6 @@ import { resolveIcon } from "@/lib/content/icons";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { BoxView } from "@/lib/site/content";
 
-/** Admin-editable boxes; falls back to the shipped set when the table is empty
- *  (e.g. before the production seed has run). */
 export function Benefits({ boxes }: { boxes?: BoxView[] }) {
   const { t } = useLanguage();
 
@@ -28,7 +26,6 @@ export function Benefits({ boxes }: { boxes?: BoxView[] }) {
         />
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {items.map((item, i) => {
-            // Fallback entries carry no icon name; use the shipped component.
             const Ico = item.icon ? resolveIcon(item.icon) : BENEFITS[i]?.icon ?? resolveIcon(null);
             return (
               <Card key={i} className="p-[22px]">

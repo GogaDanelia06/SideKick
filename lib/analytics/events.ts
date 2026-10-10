@@ -1,16 +1,10 @@
 import type { Text } from "@/lib/i18n/messages";
-/**
- * The closed list of trackable events (/api/track is public). Only an event name,
- * page, day and count are stored — nothing that identifies a visitor.
- */
-
 
 const ka = (ka: string, en: string): Text => ({ ka, en });
 
 export type TrackedEvent = {
   name: string;
   label: Text;
-  /** Groups the event in the admin panel. */
   group: "traffic" | "funnel" | "engagement";
 };
 
@@ -55,12 +49,9 @@ export const TRACKED_EVENTS: TrackedEvent[] = [
 
 export const EVENT_NAMES: string[] = TRACKED_EVENTS.map((e) => e.name);
 
-/** Extra fields a client may send. Anything else is ignored. */
 export type EventProps = {
-  /** For footer_link_click. */
   link_name?: string;
   link_url?: string;
   link_type?: string;
-  /** For pricing_plan_selected. */
   plan?: string;
 };

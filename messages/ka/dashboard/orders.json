@@ -1,0 +1,27 @@
+{
+  "cancelled": "გაუქმებული",
+  "done": "დასრულებული",
+  "issues": "პრობლემური",
+  "new": "ახალი",
+  "row": {
+    "accept": "დადასტურება",
+    "address": "მისამართი",
+    "cancel": "გაუქმება",
+    "complete": "დასრულება",
+    "name": "სახელი გვარი",
+    "phone": "ნომერი",
+    "print": "ბეჭდვა",
+    "total": "ჯამი"
+  },
+  "toShip": "გასაგზავნი",
+  "useOrderStatus": {
+    "couldnTChangeIt": "ვერ შეიცვალა — სცადე ხელახლა",
+    "orderAccepted": "შეკვეთა დადასტურდა",
+    "orderCancelled": "შეკვეთა გაუქმდა",
+    "orderCompleted": "შეკვეთა დასრულდა",
+    "orderUpdated": "შეკვეთა განახლდა"
+  },
+  "view": {
+    "noOrdersWithThis": "ამ სტატუსით შეკვეთა არ არის"
+  }
+}

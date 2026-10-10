@@ -21,7 +21,6 @@ function Field({ label, ...input }: { label: string } & ComponentProps<"input">)
   );
 }
 
-/** Split out so hooks never run behind an early return. */
 function EditForm({ product, onClose }: { product: Product; onClose: () => void }) {
   const { t } = useLanguage();
   const money = usePricing(product);
@@ -103,7 +102,6 @@ export function ProductModal({ product, onClose }: { product: Product | null; on
   return (
     <div className="fixed inset-0 z-[100] grid place-items-center p-4">
       <button type="button" aria-label={t("common.close")} onClick={onClose} className="absolute inset-0 cursor-default bg-black/55 backdrop-blur-[2px]" />
-      {/* Keyed by product, so the pricing state resets when another product opens. */}
       <EditForm key={product.id} product={product} onClose={onClose} />
     </div>
   );

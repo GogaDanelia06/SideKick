@@ -9,7 +9,6 @@ const ROW = "flex gap-2 px-3.5 py-[3px] text-[13px] leading-[1.55]";
 const TEXT = "min-w-0 flex-1 whitespace-pre-wrap [overflow-wrap:anywhere]";
 const SIGN = "w-3 shrink-0 select-none text-center font-semibold";
 
-// Colour is never the only sign: a removed word is struck through, and a line starts with −, + or ±.
 const MARK = {
   removed: "rounded-[3px] bg-red/25 px-px decoration-red decoration-[1.5px]",
   added: "rounded-[3px] bg-green/25 px-px no-underline",
@@ -20,7 +19,6 @@ function Mark({ kind, children }: { kind: "removed" | "added"; children: string 
   return <Tag className={MARK[kind]}>{children}</Tag>;
 }
 
-/** An edited line: its words as they were, each old word struck through with the new one after it. */
 function Edited({ pieces }: { pieces: Edit[] }) {
   return (
     <>
@@ -29,7 +27,6 @@ function Edited({ pieces }: { pieces: Edit[] }) {
           <Fragment key={i}>{piece.text}</Fragment>
         ) : (
           <Fragment key={i}>
-            {/* An old word and the one that replaced it would touch; a space keeps them apart. */}
             {piece.kind === "added" && pieces[i - 1]?.kind === "removed" ? " " : null}
             <Mark kind={piece.kind}>{piece.text}</Mark>
           </Fragment>
@@ -39,7 +36,6 @@ function Edited({ pieces }: { pieces: Edit[] }) {
   );
 }
 
-/** One line of the comparison: unchanged, removed (red), added (green), edited, or a fold of unchanged lines. */
 export function DiffLine({ row }: { row: DiffRow }) {
   const { t } = useLanguage();
 

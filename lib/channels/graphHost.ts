@@ -1,11 +1,5 @@
 import type { ChannelType } from "@prisma/client";
 
-/**
- * Which Graph host a stored token belongs to. Instagram Login tokens (`IGA…`) only
- * work on graph.instagram.com and Page tokens (`EAA…`) only on graph.facebook.com.
- * One Instagram channel can hold either, so decide by token, never by channel type.
- */
-
 export const GRAPH_FACEBOOK = "https://graph.facebook.com";
 export const GRAPH_INSTAGRAM = "https://graph.instagram.com";
 

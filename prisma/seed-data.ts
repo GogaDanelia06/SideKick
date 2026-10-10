@@ -4,7 +4,6 @@ export const PLANS = [
   { key: "premium", name: "პრემიუმი", nameEn: "Premium", price: 199, msgLimit: -1, channelCap: -1, userCap: -1, productCap: -1, featured: false },
 ];
 
-// One figure per mode, so the admin panel demonstrates all three.
 export const SITE_STATS = [
   {
     key: "total_users",

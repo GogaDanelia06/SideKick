@@ -20,7 +20,6 @@ import { requirePermission } from "@/lib/auth/permissions";
 
 const OWNER = { userId: "u1", businessId: "b1", role: "OWNER" } as never;
 
-/** What the AI writes is only a proposal: the merchant reads it in the box and presses Save. */
 function expectNothingStored() {
   expect(prisma.aiConfig.upsert).not.toHaveBeenCalled();
   expect(prisma.aiConfig.update).not.toHaveBeenCalled();

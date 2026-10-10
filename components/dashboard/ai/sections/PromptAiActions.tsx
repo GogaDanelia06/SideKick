@@ -9,19 +9,12 @@ import { RefinePanel } from "./RefinePanel";
 
 type Props = {
   ready: boolean;
-  /** What the box holds now, kept so an AI rewrite can be taken back. */
   current: string;
   onPrompt: (prompt: string) => void;
 };
 
 const BTN = "inline-flex h-10 items-center gap-2 rounded-[8px] px-4 text-[13px] font-medium";
 
-/**
- * Generate and refine buttons. Nothing they bring back is saved: the text lands in the box
- * like something the merchant typed, and only Save keeps it. The AI service rewrites the
- * prompt that is saved, not the one in the box, so a rewrite waits until the box is saved.
- * The text a result replaced stays one click away.
- */
 export function PromptAiActions({ ready, current, onPrompt }: Props) {
   const { t } = useLanguage();
   const [pending, start] = useTransition();
@@ -51,7 +44,6 @@ export function PromptAiActions({ ready, current, onPrompt }: Props) {
     });
   }
 
-  /** The replaced text goes back in the box as an edit: Save keeps it, Cancel drops it again. */
   function undo() {
     if (previous === null) return;
     onPrompt(previous);

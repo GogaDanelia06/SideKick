@@ -1,0 +1,32 @@
+{
+  "liveFigure": {
+    "liveFigure": "Live figure"
+  },
+  "mocks": {
+    "chatMock": {
+      "aiTaggedAsA": "✦ AI — tagged as a lead",
+      "doYouHaveThe": "Do you have the iPhone 15 Pro in stock? 📱",
+      "greatSendMeYour": "Great! Send me your name and phone number for delivery.",
+      "yesIDLike": "Yes, I'd like to order",
+      "yesItSAvailable": "Yes! It's available — ₾3,500. Would you like to place an order?"
+    },
+    "dashboardMock": {
+      "chats": "Chats",
+      "leads": "Leads",
+      "sales": "Sales",
+      "salesWeek": "Sales / week"
+    },
+    "testerMock": {
+      "aiTestReply": "✦ AI — test reply",
+      "aiTester": "AI tester",
+      "howMuchAreThe": "How much are the AirPods Pro?",
+      "howMuchAreThe2": "How much are the AirPods Pro, and are they in stock?",
+      "testIt": "Test it",
+      "testMode": "test mode",
+      "theAirpodsProCost": "The AirPods Pro cost ₾649 and are currently in stock. Would you like to order?"
+    }
+  },
+  "story": {
+    "aboutUs": "About us"
+  }
+}

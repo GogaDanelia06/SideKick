@@ -1,0 +1,21 @@
+{
+  "fields": {
+    "couldnTSaveTry": "ვერ შეინახა — სცადე ხელახლა",
+    "enterTheCompanyName": "ჩაწერე კომპანიის სახელი",
+    "profileSaved": "პროფილი შენახულია",
+    "youAlreadyHaveA": "ამ სახელით ბიზნესი უკვე გაქვს",
+    "yourSessionEndedLog": "სესია დასრულდა. შედი და სცადე ხელახლა."
+  },
+  "view": {
+    "businessInfo": "ბიზნესის ინფორმაცია",
+    "company": "კომპანია",
+    "description": "აღწერა",
+    "email": "ელფოსტა",
+    "field": "საქმიანობის სფერო",
+    "name": "სახელი",
+    "personalInfo": "პირადი ინფორმაცია",
+    "phone": "ტელეფონი",
+    "save": "შენახვა",
+    "saving": "ინახება…"
+  }
+}

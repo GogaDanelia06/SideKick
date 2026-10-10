@@ -4,7 +4,6 @@ import { LOCALES } from "@/lib/i18n/config";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { track } from "@/lib/analytics/track";
 
-/** Toggles between the two languages; the label names the language you would switch to. */
 export function LanguageToggle() {
   const { locale, setLocale } = useLanguage();
 

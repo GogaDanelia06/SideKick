@@ -20,7 +20,6 @@ import type { SectionOwner } from "@/lib/dashboard/sectionSave/request";
 import { AiSections, type AiTab } from "./AiSections";
 import type { Text } from "@/lib/i18n/messages";
 
-
 const NAV: { key: AiTab; label: Text; icon: IconType }[] = [
   { key: "business", label: "dashboard.ai.view.businessInfo", icon: IconBuildingStore },
   { key: "character", label: "dashboard.ai.view.character", icon: IconSquareRoundedLetterA },
@@ -31,7 +30,6 @@ const NAV: { key: AiTab; label: Text; icon: IconType }[] = [
 
 const TABS: AiTab[] = [...NAV.map((n) => n.key), "tester"];
 
-/** The sidebar always fills the screen; the tester panel matches it so the chat reaches the bottom. */
 const FULL_HEIGHT = "lg:h-[calc(100vh-7rem)] lg:min-h-[520px]";
 
 type Props = { config: AiConfig | null; business: Business | null; aiReady: boolean; loginId: string; owner: SectionOwner };

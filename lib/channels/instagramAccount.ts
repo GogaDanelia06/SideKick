@@ -1,7 +1,5 @@
 import { log } from "@/lib/logger";
 
-/** Instagram Login Graph calls: identify the connected account and subscribe it. */
-
 const GRAPH = "https://graph.instagram.com";
 const VERSION = process.env.META_GRAPH_VERSION ?? "v25.0";
 const TIMEOUT_MS = 15_000;
@@ -38,15 +36,10 @@ async function call(
   }
 }
 
-/**
- * The account this token belongs to. Uses `user_id` (the 17841… professional
- * account id that webhooks carry in `entry.id`), not the app-scoped `id`.
- */
 export async function fetchAccount(token: string): Promise<InstagramAccount | null> {
   const data = await call("/me?fields=user_id,username", token, "GET");
   const id = data?.user_id;
 
-  // Ids exceed 2^53 and must arrive as strings; a JSON number is already rounded.
   if (typeof id !== "string" || !id) {
     if (id !== undefined) {
       log.error("Instagram returned a user_id that was not a string", undefined, {
@@ -59,10 +52,6 @@ export async function fetchAccount(token: string): Promise<InstagramAccount | nu
   return { id, username: typeof data?.username === "string" ? data.username : "" };
 }
 
-/**
- * Subscribes the account to this app's `messages` webhook; without it Meta delivers
- * nothing. Returns false instead of throwing so the stored token survives a retry.
- */
 export async function subscribeToMessages(token: string): Promise<boolean> {
   const data = await call("/me/subscribed_apps?subscribed_fields=messages", token, "POST");
   return data?.success === true;

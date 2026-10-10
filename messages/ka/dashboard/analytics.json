@@ -1,0 +1,31 @@
+{
+  "12Months": "12 თვე",
+  "1Month": "1 თვე",
+  "1Week": "1 კვირა",
+  "3Months": "3 თვე",
+  "6Months": "6 თვე",
+  "activityChart": {
+    "activity": "აქტივობა",
+    "noDataForThis": "ამ პერიოდში მონაცემი არ არის"
+  },
+  "channelBoxes": {
+    "leads": "ლიდები",
+    "noData": "მონაცემი არ არის",
+    "orders": "შეკვეთები",
+    "revenue": "შემოსავალი"
+  },
+  "channelFilter": {
+    "allChannels": "ყველა არხი"
+  },
+  "kpis": {
+    "conversations": "მიმოწერები",
+    "leads": "ლიდები",
+    "noPreviousPeriod": "წინა პერიოდი ცარიელია",
+    "revenue": "შემოსავალი",
+    "sales": "გაყიდვები"
+  },
+  "topProducts": {
+    "noSalesInThis": "ამ პერიოდში გაყიდვა არ ყოფილა",
+    "topProducts": "ტოპ პროდუქტები"
+  }
+}

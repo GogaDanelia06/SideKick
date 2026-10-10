@@ -7,19 +7,16 @@ export type Mail = {
   text: string;
 };
 
-/** Must use the verified `send.` subdomain; Resend refuses the root domain. */
 const MAIL_FROM = process.env.MAIL_FROM ?? "Sidekick <noreply@send.sidekick.ge>";
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
 
 const TIMEOUT_MS = 10_000;
 
-/** Whether mail can be sent; registration skips email verification when it cannot. */
 export function mailConfigured() {
   return Boolean(process.env.RESEND_API_KEY);
 }
 
-/** Sends one message through Resend's HTTP API. */
 async function viaResend(mail: Mail): Promise<void> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -50,7 +47,6 @@ async function viaResend(mail: Mail): Promise<void> {
   }
 }
 
-/** Prints the message instead of sending it, so local work needs no account. */
 function toConsole(mail: Mail): void {
   console.warn(
     `\n─── EMAIL (not sent — no provider configured) ───\n` +
@@ -62,7 +58,6 @@ function toConsole(mail: Mail): void {
   );
 }
 
-/** Sends one message. Returns `sent` instead of throwing, so callers choose a fallback. */
 export async function sendMail(mail: Mail): Promise<{ sent: boolean }> {
   if (!mailConfigured()) {
     toConsole(mail);

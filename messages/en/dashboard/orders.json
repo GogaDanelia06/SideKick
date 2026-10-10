@@ -1,0 +1,27 @@
+{
+  "cancelled": "Cancelled",
+  "done": "Done",
+  "issues": "Issues",
+  "new": "New",
+  "row": {
+    "accept": "Accept",
+    "address": "Address",
+    "cancel": "Cancel",
+    "complete": "Complete",
+    "name": "Name",
+    "phone": "Phone",
+    "print": "Print",
+    "total": "Total"
+  },
+  "toShip": "To ship",
+  "useOrderStatus": {
+    "couldnTChangeIt": "Couldn't change it — try again",
+    "orderAccepted": "Order accepted",
+    "orderCancelled": "Order cancelled",
+    "orderCompleted": "Order completed",
+    "orderUpdated": "Order updated"
+  },
+  "view": {
+    "noOrdersWithThis": "No orders with this status"
+  }
+}

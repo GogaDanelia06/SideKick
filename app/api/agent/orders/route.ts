@@ -7,7 +7,6 @@ import { priceLines, type AgentOrderLine } from "@/lib/agent/pricing";
 
 export const dynamic = "force-dynamic";
 
-/** Reads the `items` array without trusting its shape. */
 function readLines(value: unknown): AgentOrderLine[] | { error: string } {
   if (!Array.isArray(value)) return { error: "items must be an array" };
 
@@ -23,7 +22,6 @@ function readLines(value: unknown): AgentOrderLine[] | { error: string } {
   return lines;
 }
 
-/** Records an order taken by the AI. Totals are computed from this business's products. */
 export async function POST(request: Request) {
   const body = await readJson(request);
   if (isDenial(body)) return body.response;
@@ -34,7 +32,6 @@ export async function POST(request: Request) {
   const lines = readLines(body.items);
   if ("error" in lines) return badRequest(lines.error).response;
 
-  // An optional conversation must belong to this business.
   const conversationId = str(body, "conversationId");
   if (conversationId) {
     const conversation = await ownedConversation(auth.businessId, conversationId);

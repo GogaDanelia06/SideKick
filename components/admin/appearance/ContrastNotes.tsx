@@ -6,7 +6,6 @@ import type { Theme } from "@/lib/site/theme/css";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { SHADE_LABEL, SHADES } from "./shades";
 
-/** One line for the save bar; the text colours that fail their contrast minimum open as a list. */
 export function ContrastNotes({ theme }: { theme: Theme }) {
   const { t } = useLanguage();
   const bad = SHADES.flatMap((shade) => failures(theme[shade]).map((f) => ({ ...f, shade })));

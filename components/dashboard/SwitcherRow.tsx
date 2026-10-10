@@ -12,11 +12,9 @@ type Props = {
   opening: boolean;
   busy: boolean;
   onOpen: () => void;
-  /** Absent when this business cannot be deleted from here. */
   onDelete?: () => void;
 };
 
-/** One business in the switcher: open it with a click, or delete it with the bin. */
 export function SwitcherRow({ business, current, opening, busy, onOpen, onDelete }: Props) {
   const { t } = useLanguage();
 

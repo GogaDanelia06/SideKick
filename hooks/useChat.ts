@@ -14,18 +14,12 @@ export function useChat(greeting: string) {
   const [typing, setTyping] = useState(false);
   const idRef = useRef(1);
 
-  /** Replies still waiting on their timer. The indicator stays up until the
-   *  last one lands, so a quick second question does not clear it early. */
   const pending = useRef(0);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  /** When the last scheduled reply is due, so replies cannot overtake each
-   *  other and answer two questions in the wrong order. */
   const readyAt = useRef(0);
-  /** Object URLs handed to <img>/<video>, released on unmount. */
   const objectUrls = useRef<string[]>([]);
 
   useEffect(() => {
-    // Cancel pending replies and release previews on unmount.
     const pendingTimers = timers.current;
     const urls = objectUrls.current;
     return () => {
@@ -64,7 +58,6 @@ export function useChat(greeting: string) {
     [t, scheduleReply],
   );
 
-  /** Shows a picked file from a local object URL (nothing is uploaded). Returns an error code or null. */
   const sendFile = useCallback(
     (file: File): AttachmentError | null => {
       const verdict = classifyAttachment(file);

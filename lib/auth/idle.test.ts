@@ -11,8 +11,6 @@ describe("stampMarker() / readMarker()", () => {
   });
 
   it("refuses a timestamp somebody edited", async () => {
-    // The point of signing it. Without this the cookie is just a number the
-    // browser owns, and anyone could set tomorrow's date and never time out.
     const marker = await stampMarker(SECRET, Date.now());
     const forged = `${Date.now() + 10 * 60 * 60 * 1000}.${marker.split(".")[1]}`;
 
@@ -51,7 +49,6 @@ describe("isIdle()", () => {
   });
 
   it("expires nothing when the clock has gone backwards", () => {
-    // A machine that resyncs its clock must not sign everyone out.
     expect(isIdle(now + 60 * MIN, now)).toBe(false);
   });
 });
@@ -60,8 +57,6 @@ describe("needsRefresh()", () => {
   const now = Date.UTC(2026, 7, 12, 12, 0, 0);
 
   it("leaves a marker written seconds ago alone", () => {
-    // Rewriting on every request would put a Set-Cookie on every navigation
-    // for no gain.
     expect(needsRefresh(now - 5_000, now)).toBe(false);
   });
 

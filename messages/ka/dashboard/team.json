@@ -1,0 +1,38 @@
+{
+  "messages": {
+    "aBusinessNeedsAt": "ბიზნესს ერთი მფლობელი მაინც სჭირდება",
+    "allFeaturesExceptBilling": "ყველა ფუნქცია, ბილინგის გარდა",
+    "allPagesExceptBilling": "ყველა გვერდი, ბილინგის გარდა",
+    "chatsOrdersLeads": "მიმოწერები, შეკვეთები, ლიდები",
+    "chatsOrdersLeads2": "მიმოწერა, შეკვეთა, ლიდები",
+    "emailIsRequired": "ელფოსტა სავალდებულოა",
+    "fullAccess": "სრული წვდომა",
+    "fullControlBillingTeam": "სრული კონტროლი, ბილინგი, გუნდი",
+    "memberNotFound": "წევრი ვერ მოიძებნა",
+    "teamUpdated": "გუნდი განახლდა",
+    "thatIsNotA": "ასეთი როლი არ არსებობს",
+    "thisPersonIsAlready": "ეს მომხმარებელი უკვე გუნდშია",
+    "viewOnly": "მხოლოდ ნახვა",
+    "viewPermissionOnly": "მხოლოდ ნახვის უფლება",
+    "youCanTRemove": "საკუთარ თავს ვერ წაშლი",
+    "youDonTHave": "ამის უფლება არ გაქვთ"
+  },
+  "view": {
+    "actions": "მოქმედებები",
+    "add": "დამატება",
+    "addMember": "წევრის დამატება",
+    "cancel": "გაუქმება",
+    "changeRole": "როლის შეცვლა",
+    "email": "ელფოსტა *",
+    "fullName": "სახელი გვარი",
+    "member": "წევრი",
+    "permissions": "უფლებები",
+    "removeFromTeam": "გუნდიდან წაშლა",
+    "role": "როლი",
+    "secondStage": "მეორე ეტაპი",
+    "somethingWentWrong": "ვერ შესრულდა",
+    "theMemberIsAdded": "წევრი დაემატება ანგარიშით. პაროლს თავად დააყენებს „პაროლის აღდგენით“.",
+    "you": "თქვენ",
+    "youCanTRemove": "საკუთარ თავს ვერ წაშლი"
+  }
+}

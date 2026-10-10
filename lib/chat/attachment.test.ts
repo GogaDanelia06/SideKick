@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MAX_BYTES, classifyAttachment } from "./attachment";
 
-/** `File` needs a size we control, and a real 8MB buffer in a unit test is waste. */
 function fake(type: string, size: number): File {
   const file = new File(["x"], "sample", { type });
   Object.defineProperty(file, "size", { value: size });

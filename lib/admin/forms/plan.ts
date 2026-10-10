@@ -17,13 +17,11 @@ export type PlanData = {
 
 const EXTRA_SLOTS = 5;
 
-/** A non-negative integer, or -1 for unlimited; null when invalid. */
 function cap(raw: string): number | null {
   const n = Number(raw);
   return Number.isInteger(n) && n >= -1 ? n : null;
 }
 
-/** A term price: null when empty (monthly × months applies), undefined when invalid. */
 function termPrice(raw: string): number | null | undefined {
   if (!raw) return null;
   const n = Number(raw);

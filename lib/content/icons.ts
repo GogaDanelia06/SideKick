@@ -29,7 +29,6 @@ import {
   type Icon,
 } from "@tabler/icons-react";
 
-/** Icons an admin may choose; stored names resolve through this table, never a dynamic import. */
 export const ICONS: Record<string, Icon> = {
   IconSparkles,
   IconBolt,
@@ -62,7 +61,6 @@ export const ICONS: Record<string, Icon> = {
 
 export const ICON_NAMES = Object.keys(ICONS);
 
-/** Resolve a stored icon name, falling back to a safe default. */
 export function resolveIcon(name: string | null | undefined): Icon {
   return (name && ICONS[name]) || IconSparkles;
 }

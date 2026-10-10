@@ -9,7 +9,6 @@ const CACHE_MS = 10_000;
 
 let cache: { at: number; body: Record<string, number> } | null = null;
 
-/** Only counters that are actually shown on the site are published. */
 async function countedKeys(): Promise<string[]> {
   const [strip, hero] = await Promise.all([
     prisma.siteStat.findMany({
@@ -24,7 +23,6 @@ async function countedKeys(): Promise<string[]> {
   return [...new Set([...strip, ...hero].map((r) => r.source))];
 }
 
-/** Live and drifting landing-page figures, recomputed at most every CACHE_MS per instance. */
 export async function GET() {
   if (!cache || Date.now() - cache.at >= CACHE_MS) {
     const body: Record<string, number> = {};

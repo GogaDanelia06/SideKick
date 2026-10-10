@@ -6,7 +6,6 @@ export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
 export type FileProblem = TableProblem | "size" | "type" | "unreadable";
 
-/** Reads a product file chosen in the browser into checked rows. */
 export async function readProductFile(file: File): Promise<ParsedTable | { ok: false; error: FileProblem }> {
   if (file.size > MAX_FILE_BYTES) return { ok: false, error: "size" };
 

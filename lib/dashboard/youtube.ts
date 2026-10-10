@@ -23,10 +23,6 @@ export function normalizeYouTubeUrl(raw: string): string | null {
   return id && /^[\w-]{11}$/.test(id) ? `https://www.youtube.com/watch?v=${id}` : null;
 }
 
-/**
- * YouTube's thumbnail for a watch URL. Free of database imports because a client
- * component (the admin tutorials editor) uses it.
- */
 export function youtubeThumbnail(url: string): string | null {
   try {
     const id = new URL(url).searchParams.get("v");

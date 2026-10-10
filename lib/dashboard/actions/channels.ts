@@ -11,12 +11,10 @@ export type ChannelToggleResult =
   | { ok: false; error: "forbidden" }
   | ({ ok: false; error: "limit" } & Pick<LimitRefusal, "limit" | "used" | "planName">);
 
-/** Toggles a channel; says why when the plan's channel cap refuses. */
 export async function setChannelConnected(channelId: string, connected: boolean): Promise<ChannelToggleResult> {
   const ctx = await requirePermission("channels:write");
   if (!ctx) return { ok: false, error: "forbidden" };
 
-  // Only connecting is capped, so a business can always get back under its limit.
   if (connected) {
     const verdict = await checkLimit(ctx.businessId, "channels");
     if (!verdict.allowed) {
@@ -33,11 +31,6 @@ export async function setChannelConnected(channelId: string, connected: boolean)
   return { ok: true };
 }
 
-/**
- * Lets a channel's account go. Switching a channel off keeps the account on this business, so
- * Facebook and Instagram, which tell us the account and never the business, still answer to it
- * and no other business can connect it. This clears the account and its token as well.
- */
 export async function disconnectChannel(channelId: string): Promise<{ ok: true } | { ok: false; error: "forbidden" }> {
   const ctx = await requirePermission("channels:write");
   if (!ctx) return { ok: false, error: "forbidden" };

@@ -17,7 +17,6 @@ function systemPrefers(theme: "dark" | "light") {
   vi.stubGlobal("matchMedia", (query: string) => ({ matches: query.includes("dark") && theme === "dark" }));
 }
 
-/** Runs the <head> script against the stubs and returns the theme it painted. */
 function firstPaint(env: { matchMedia?: unknown; localStorage?: unknown } = {}): string | undefined {
   const document = { documentElement: { dataset: {} as Record<string, string> } };
   new Function("document", "matchMedia", "localStorage", themeScript)(

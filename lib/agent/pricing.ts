@@ -1,5 +1,3 @@
-/** Product pricing for AI orders; prices are always computed here, never taken from the caller. */
-
 export type PricedProduct = {
   id: string;
   code: string;
@@ -8,7 +6,6 @@ export type PricedProduct = {
   salePrice: number | null;
 };
 
-/** The price a customer actually pays: the sale price when one is set. */
 export function effectivePrice(product: Pick<PricedProduct, "price" | "salePrice">): number {
   return product.salePrice != null && product.salePrice > 0 ? product.salePrice : product.price;
 }
@@ -24,7 +21,6 @@ export type PricedLine = {
   lineTotal: number;
 };
 
-/** Prices the caller's lines, snapshotting code and name so later product edits don't rewrite orders. */
 export function priceLines(
   lines: AgentOrderLine[],
   catalogue: PricedProduct[],

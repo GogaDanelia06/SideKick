@@ -22,9 +22,7 @@ type Props = {
   owner: SectionOwner;
 };
 
-/** Keeps a form mounted while hidden, so what was typed in it survives a look elsewhere. */
 function Kept({ show, children }: { show: boolean; children: ReactNode }) {
-  // `hidden` too: the React canary in Next 16.2 left the first section added after hydration visible.
   return (
     <Activity mode={show ? "visible" : "hidden"}>
       <div hidden={!show}>{children}</div>
@@ -32,11 +30,6 @@ function Kept({ show, children }: { show: boolean; children: ReactNode }) {
   );
 }
 
-/**
- * The open section. The four forms stay mounted while hidden (Activity), so what was
- * typed survives switching sections until its Save button is pressed (useSectionSave).
- * Languages save on every click, and the tester has nothing to save.
- */
 export function AiSections({ tab, config, business, aiReady, loginId, owner }: Props) {
   return (
     <SectionOwnerContext.Provider value={owner}>

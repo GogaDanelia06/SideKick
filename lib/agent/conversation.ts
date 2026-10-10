@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/db";
 import { notFound, type AgentDenial } from "./auth";
 
-/** The named conversation, only if it belongs to this business. */
 export async function ownedConversation(
   businessId: string,
   conversationId: string,

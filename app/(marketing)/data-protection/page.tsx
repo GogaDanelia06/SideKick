@@ -15,14 +15,12 @@ export const generateMetadata = seoFor({
   path: "/data-protection",
 });
 
-// Cached: admin saves revalidate this path; the timer catches edits made outside the panel.
 export const revalidate = 3600;
 
 const crumbs: Crumb[] = [
   HOME_CRUMB,
   { label: "dataProtection.personalDataProtection", href: "/data-protection" },
 ];
-
 
 export default async function Page() {
   const [sections, title] = await Promise.all([

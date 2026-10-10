@@ -19,19 +19,16 @@ const config = vi.mocked(prisma.aiConfig.findUnique);
 const messages = vi.mocked(prisma.message.findMany);
 const answer = vi.mocked(answerCustomer);
 
-/** Newest first, the order the query returns. */
 const said = (...rows: { id: string; sender: string; text: string }[]) =>
   messages.mockResolvedValue(rows as never);
 
 beforeEach(() => {
   vi.clearAllMocks();
-  // Zero delay: the waiting is not what these tests are about.
   config.mockResolvedValue({ replyDelaySec: 0 } as never);
 });
 
 describe("answerAfterQuietWindow()", () => {
   it("answers the whole run of what the customer said, oldest first", async () => {
-    // The point of the feature: three deliveries are one question.
     said(
       { id: "m3", sender: "CUSTOMER", text: "in blue" },
       { id: "m2", sender: "CUSTOMER", text: "do you have the 15 Pro" },
@@ -44,7 +41,6 @@ describe("answerAfterQuietWindow()", () => {
   });
 
   it("steps aside when a newer message arrived while it waited", async () => {
-    // Without this every delivery answers and the customer gets three replies.
     said(
       { id: "m3", sender: "CUSTOMER", text: "in blue" },
       { id: "m2", sender: "CUSTOMER", text: "hi" },
@@ -56,7 +52,6 @@ describe("answerAfterQuietWindow()", () => {
   });
 
   it("stops the run at the last thing that was not the customer", async () => {
-    // Only the current turn. Everything before the previous answer is history.
     said(
       { id: "m4", sender: "CUSTOMER", text: "and the price?" },
       { id: "m3", sender: "AI", text: "yes, in stock" },
@@ -77,7 +72,6 @@ describe("answerAfterQuietWindow()", () => {
   });
 
   it("caps a delay somebody typed too large", async () => {
-    // The value decides how long a serverless function is held open.
     config.mockResolvedValue({ replyDelaySec: 99_999 } as never);
     said({ id: "m1", sender: "CUSTOMER", text: "hi" });
 

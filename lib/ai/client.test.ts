@@ -31,7 +31,6 @@ describe("askAi()", () => {
     expect((init as RequestInit).headers).toMatchObject({
       Authorization: "Bearer service-key",
     });
-    // Their field names, not ours — the translation lives in this one file.
     expect(JSON.parse((init as RequestInit).body as string)).toEqual({
       conversation_id: "conv_1",
       message: "ფასი?",
@@ -52,7 +51,6 @@ describe("askAi()", () => {
   });
 
   it("treats a blank reply as no reply", async () => {
-    // Stored, it would show the customer an empty bubble from the business.
     vi.stubGlobal("fetch", ok({ reply: "   " }));
     expect(await askAi("b", "c", "hi")).toBeNull();
   });

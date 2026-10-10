@@ -7,7 +7,6 @@ import { revalidateTexts } from "@/lib/admin/revalidate";
 import { findGroup } from "@/lib/site/textKeys";
 import { fail, type AdminResult } from "./shared";
 
-/** Saves one registry text group; only that group's keys can be written. */
 export async function saveTextGroup(slug: string, fd: FormData): Promise<AdminResult> {
   await requireAdmin();
   const group = findGroup(slug);

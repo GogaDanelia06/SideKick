@@ -5,7 +5,6 @@ import { ROUTES } from "@/lib/routes";
 
 export const dynamic = "force-dynamic";
 
-/** "Get started": billing when signed in, otherwise registration with billing as the destination. */
 export default async function StartPage() {
   const session = await auth();
 

@@ -1,143 +1,68 @@
 "use client";
 
-import { useOptimistic, useRef, useState, useTransition } from "react";
 import type { SiteFaq } from "@prisma/client";
-import {
-  IconAlertTriangle,
-  IconChevronDown,
-  IconChevronUp,
-  IconEye,
-  IconEyeOff,
-  IconPencil,
-  IconPlus,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
-import {
-  createFaq,
-  updateFaq,
-  deleteFaq,
-  moveFaq,
-  toggleFaqPublished,
-} from "@/lib/admin/actions/faq";
+import { createFaq, updateFaq, deleteFaq, moveFaq, toggleFaqPublished } from "@/lib/admin/actions/faq";
+import { AddForm, EditForm } from "@/components/admin/ui/EditorForms";
+import { EditorBar, EmptyState, ItemCard } from "@/components/admin/ui/EditorParts";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { RowTools, type RowLabels } from "@/components/admin/ui/RowTools";
+import { useListEditor } from "@/components/admin/ui/useListEditor";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Text } from "@/lib/i18n/messages";
-
-const INPUT =
-  "h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue";
-const AREA =
-  "min-h-[76px] w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-blue";
+import { FaqFields } from "./FaqFields";
 
 const ERRORS: Record<string, Text> = {
   all_fields_required: "admin.faq.editor.fillInAllFour",
   not_found: "admin.faq.editor.notFound",
 };
 
-type Fields = Pick<SiteFaq, "questionKa" | "questionEn" | "answerKa" | "answerEn">;
-
-function FaqFields({ initial }: { initial?: Fields }) {
-  const { t } = useLanguage();
-  return (
-    <div className="grid gap-2.5 sm:grid-cols-2">
-      <input name="questionKa" required defaultValue={initial?.questionKa} placeholder={t("admin.faq.editor.questionKa")} className={INPUT} />
-      <input name="questionEn" required defaultValue={initial?.questionEn} placeholder={t("admin.faq.editor.questionEn")} className={INPUT} />
-      <textarea name="answerKa" required defaultValue={initial?.answerKa} placeholder={t("admin.faq.editor.answerKa")} className={AREA} />
-      <textarea name="answerEn" required defaultValue={initial?.answerEn} placeholder={t("admin.faq.editor.answerEn")} className={AREA} />
-    </div>
-  );
-}
+const TOOLS: RowLabels = {
+  up: "admin.faq.editor.moveUp",
+  down: "admin.faq.editor.moveDown",
+  toggle: "admin.faq.editor.togglePublish",
+  edit: "admin.faq.editor.edit",
+  remove: "admin.faq.editor.delete",
+};
 
 export function FaqEditor({ faqs }: { faqs: SiteFaq[] }) {
   const { t } = useLanguage();
-  const [pending, start] = useTransition();
-  const [adding, setAdding] = useState(false);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const addRef = useRef<HTMLFormElement>(null);
-
-  // Optimistic removal; React restores the row if the server refuses.
-  const [visible, removeOptimistic] = useOptimistic(
-    faqs,
-    (rows: SiteFaq[], id: string) => rows.filter((r) => r.id !== id),
-  );
-
-  function remove(id: string) {
-    setError(null);
-    start(async () => {
-      removeOptimistic(id);
-      const res = await deleteFaq(id);
-      if (!res.ok) setError(res.error ?? "error");
-    });
-  }
-
-  function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
-    setError(null);
-    start(async () => {
-      const res = await fn();
-      if (!res.ok) setError(res.error ?? "error");
-      else onDone?.();
-    });
-  }
+  const editor = useListEditor(faqs, deleteFaq);
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted">
-          {faqs.length} {t("admin.faq.editor.questions")}
-        </span>
-        <button
-          type="button"
-          onClick={() => { setAdding((v) => !v); setError(null); }}
-          className="inline-flex h-9 items-center gap-1.5 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas"
-        >
-          {adding ? <IconX size={16} /> : <IconPlus size={16} />}
-          {adding ? t("admin.faq.editor.close") : t("admin.faq.editor.addQuestion")}
-        </button>
-      </div>
+      <EditorBar
+        count={faqs.length}
+        noun="admin.faq.editor.questions"
+        adding={editor.adding}
+        addLabel="admin.faq.editor.addQuestion"
+        closeLabel="admin.faq.editor.close"
+        onToggle={editor.toggleAdding}
+      />
 
-      {error ? (
-        <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
-          <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? "admin.faq.editor.somethingWentWrong")}
-        </div>
-      ) : null}
+      {editor.error ? <ErrorBanner>{t(ERRORS[editor.error] ?? "admin.faq.editor.somethingWentWrong")}</ErrorBanner> : null}
 
-      {adding ? (
-        <form
-          ref={addRef}
-          action={(fd) => run(() => createFaq(fd), () => { addRef.current?.reset(); setAdding(false); })}
-          className="rounded-lg border border-border bg-card p-4"
-        >
+      {editor.adding ? (
+        <AddForm create={createFaq} run={editor.run} onDone={editor.closeAdding} pending={editor.pending} label="admin.faq.editor.add">
           <FaqFields />
-          <div className="mt-3 flex justify-end">
-            <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-              {pending ? "…" : t("admin.faq.editor.add")}
-            </button>
-          </div>
-        </form>
+        </AddForm>
       ) : null}
 
-      {faqs.length === 0 && !adding ? (
-        <div className="rounded-lg border border-border bg-card px-6 py-10 text-center text-sm text-muted">
-          {t("admin.faq.editor.noQuestionsYet")}
-        </div>
-      ) : null}
+      {faqs.length === 0 && !editor.adding ? <EmptyState>{t("admin.faq.editor.noQuestionsYet")}</EmptyState> : null}
 
       <div className="flex flex-col gap-2.5">
-        {visible.map((f, i) => (
-          <div key={f.id} className="rounded-lg border border-border bg-card p-4">
-            {editing === f.id ? (
-              <form action={(fd) => run(() => updateFaq(f.id, fd), () => setEditing(null))}>
+        {editor.visible.map((f, i) => (
+          <ItemCard key={f.id}>
+            {editor.editing === f.id ? (
+              <EditForm
+                update={(fd) => updateFaq(f.id, fd)}
+                run={editor.run}
+                onDone={editor.finishEditing}
+                onCancel={editor.cancelEditing}
+                pending={editor.pending}
+                labels={{ cancel: "admin.faq.editor.cancel", save: "admin.faq.editor.save" }}
+              >
                 <FaqFields initial={f} />
-                <div className="mt-3 flex justify-end gap-2">
-                  <button type="button" onClick={() => { setEditing(null); setError(null); }} className="h-9 rounded-[8px] border border-border px-4 text-[13px] font-medium">
-                    {t("admin.faq.editor.cancel")}
-                  </button>
-                  <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-                    {pending ? "…" : t("admin.faq.editor.save")}
-                  </button>
-                </div>
-              </form>
+              </EditForm>
             ) : (
               <div className="flex items-start gap-3">
                 <div className="min-w-0 flex-1">
@@ -146,26 +71,20 @@ export function FaqEditor({ faqs }: { faqs: SiteFaq[] }) {
                   </div>
                   <div className="mt-0.5 truncate text-[13px] text-muted">{f.answerKa}</div>
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  <button type="button" disabled={pending || i === 0} onClick={() => run(() => moveFaq(f.id, "up"))} aria-label={t("admin.faq.editor.moveUp")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
-                    <IconChevronUp size={16} />
-                  </button>
-                  <button type="button" disabled={pending || i === faqs.length - 1} onClick={() => run(() => moveFaq(f.id, "down"))} aria-label={t("admin.faq.editor.moveDown")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
-                    <IconChevronDown size={16} />
-                  </button>
-                  <button type="button" disabled={pending} onClick={() => run(() => toggleFaqPublished(f.id, !f.published))} aria-label={t("admin.faq.editor.togglePublish")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
-                    {f.published ? <IconEye size={15} /> : <IconEyeOff size={15} />}
-                  </button>
-                  <button type="button" disabled={pending} onClick={() => { setEditing(f.id); setError(null); }} aria-label={t("admin.faq.editor.edit")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
-                    <IconPencil size={15} />
-                  </button>
-                  <button type="button" disabled={pending} onClick={() => remove(f.id)} aria-label={t("admin.faq.editor.delete")} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
-                    <IconTrash size={15} />
-                  </button>
-                </div>
+                <RowTools
+                  first={i === 0}
+                  last={i === faqs.length - 1}
+                  pending={editor.pending}
+                  published={f.published}
+                  labels={TOOLS}
+                  onMove={(direction) => editor.run(() => moveFaq(f.id, direction))}
+                  onToggle={() => editor.run(() => toggleFaqPublished(f.id, !f.published))}
+                  onEdit={() => editor.startEditing(f.id)}
+                  onRemove={() => editor.remove(f.id)}
+                />
               </div>
             )}
-          </div>
+          </ItemCard>
         ))}
       </div>
     </div>

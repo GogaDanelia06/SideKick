@@ -3,10 +3,6 @@ import { can } from "@/lib/auth/permissions";
 import { readState } from "./oauthState";
 import { log } from "@/lib/logger";
 
-/**
- * Checks shared by the channel OAuth callbacks: a signed-in member allowed to
- * manage channels, and a valid signed `state` issued for that same business.
- */
 export type Guarded =
   | { ok: true; businessId: string; code: string }
   | { ok: false; status: "cancelled" | "signed_out" | "bad_state" | "forbidden" };
@@ -19,7 +15,6 @@ export async function guardCallback(request: Request): Promise<Guarded> {
   const ctx = await getContext();
   if (!ctx) return { ok: false, status: "signed_out" };
 
-  // Without this, any member could replace the business's channel credentials.
   if (!can(ctx.role, "channels:write")) {
     log.warn("channel connect refused — the signed-in role may not change channels", {
       role: ctx.role,

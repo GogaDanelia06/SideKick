@@ -56,7 +56,6 @@ describe("testAiReply()", () => {
     expect(ask).not.toHaveBeenCalled();
   });
 
-  /** The cause (status, wait, what the service said) is logged by the AI client; the screen only learns it failed. */
   it("tells the screen only that there was no answer", async () => {
     ask.mockResolvedValue(null);
 

@@ -21,11 +21,6 @@ describe("effectivePrice", () => {
   });
 });
 
-/**
- * The AI service never sends a price. These cases are what stops a wrong one
- * from getting in anyway — through a bad code, a nonsense quantity, or an empty
- * order that would otherwise book as 0₾.
- */
 describe("priceLines", () => {
   it("prices from the catalogue, not from the caller", () => {
     const result = priceLines([{ code: "DR-014", qty: 2 }], CATALOGUE);

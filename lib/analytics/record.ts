@@ -2,7 +2,6 @@ import { prisma } from "@/lib/db";
 import { EVENT_NAMES } from "./events";
 import { log } from "@/lib/logger";
 
-/** Paths counted separately; anything else is folded into "other" to bound the table size. */
 const KNOWN_PATHS = new Set([
   "/",
   "/about",
@@ -38,7 +37,6 @@ function normalisePath(raw: string): string {
   if (!path) return "";
   if (!path.startsWith("/")) return OTHER;
 
-  // Query strings and fragments describe one visit, not a different page.
   const clean = (path.split(/[?#]/)[0] ?? "").replace(/(.)\/+$/, "$1");
   return KNOWN_PATHS.has(clean) ? clean : OTHER;
 }
@@ -48,7 +46,6 @@ function today(): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
-/** Increments today's counter for an event and page. Never throws. */
 export async function recordEvent(name: string, path = ""): Promise<void> {
   if (!EVENT_NAMES.includes(name)) return;
 

@@ -5,10 +5,6 @@ import { log } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Bank payment callbacks. The body only identifies the payment; its status is read
- * back from the bank. Answers 200 unless the bank is unreachable, so only that retries.
- */
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ provider: string }> },

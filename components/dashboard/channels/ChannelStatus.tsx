@@ -2,7 +2,6 @@
 
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Four states: connected, switched on but never authorised, switched off with its account kept, or disconnected. */
 export function ChannelStatus({ connected, linked }: { connected: boolean; linked: boolean }) {
   const { t } = useLanguage();
 

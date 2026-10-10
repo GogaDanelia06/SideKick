@@ -6,7 +6,6 @@ import { textIn } from "@/lib/i18n/messages";
 
 const header = (locale: Locale) => PRODUCT_COLUMNS.map((c) => textIn(locale, c.label));
 
-/** The header and one filled-in example, in the page's language. */
 export function templateRows(locale: Locale): Cell[][] {
   const example =
     locale === "ka"
@@ -15,7 +14,6 @@ export function templateRows(locale: Locale): Cell[][] {
   return [header(locale), example];
 }
 
-/** Every product, in the columns an import reads back. */
 export function stockRows(products: Product[], locale: Locale): Cell[][] {
   return [
     header(locale),
@@ -32,7 +30,6 @@ export function stockRows(products: Product[], locale: Locale): Cell[][] {
   ];
 }
 
-/** Saves rows as an .xlsx file through the browser. */
 export async function downloadXlsx(filename: string, rows: Cell[][]): Promise<void> {
   const bytes = await writeXlsx(rows);
   const blob = new Blob([bytes as BlobPart], {
@@ -45,6 +42,5 @@ export async function downloadXlsx(filename: string, rows: Cell[][]): Promise<vo
   document.body.append(link);
   link.click();
   link.remove();
-  // Revoked on the next tick, once the download has started.
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }

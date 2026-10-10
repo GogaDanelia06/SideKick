@@ -7,10 +7,6 @@ import { HueSlider, SaturationArea } from "./pickerParts";
 
 export const PICKER_POPOVER_WIDTH = 232;
 
-/**
- * The colour picker, drawn by us so it looks and behaves the same in every browser
- * (the native one differs per browser and could not always be closed).
- */
 export function ColorPicker({
   label,
   value,
@@ -20,7 +16,6 @@ export function ColorPicker({
 }: {
   label: string;
   value: string;
-  /** The shipped colour, offered as a one-click reset. */
   fallback: string;
   onChange: (hex: string) => void;
   onDone: () => void;
@@ -29,8 +24,6 @@ export function ColorPicker({
   const [hsv, setHsv] = useState(() => hexToHsv(value));
   const [lastSeen, setLastSeen] = useState(value);
 
-  // A value from outside (the hex box, Default, Undo) moves the handles. Our own output
-  // does not, so the hue survives dragging through grey, where hex has no hue.
   if (value !== lastSeen) {
     setLastSeen(value);
     setHsv(hexToHsv(value));

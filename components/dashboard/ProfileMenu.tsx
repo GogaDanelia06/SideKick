@@ -24,7 +24,6 @@ import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { useTheme } from "@/lib/theme/useTheme";
 
-/** `onNavigate` closes what holds the menu, such as the mobile drawer. */
 export function ProfileMenu({ account, onNavigate }: { account: Account; onNavigate?: () => void }) {
   const { t, locale, toggle: toggleLang } = useLanguage();
   const { theme, toggle: toggleTheme } = useTheme();
@@ -92,7 +91,6 @@ export function ProfileMenu({ account, onNavigate }: { account: Account; onNavig
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[13px] font-semibold">{account.name}</span>
           <span className="block truncate text-[11px] text-muted">
-            {/* With several businesses, which one is open matters more than its plan. */}
             {account.businesses.length > 1 && business
               ? business.name
               : account.planName

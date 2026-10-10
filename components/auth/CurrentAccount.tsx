@@ -1,6 +1,5 @@
 import { initialOf } from "@/lib/i18n/initial";
 
-/** The account menu's top: who is signed in right now, as in Gmail's account menu. */
 export function CurrentAccount({ name, email }: { name: string; email: string }) {
   return (
     <div className="mb-1 flex items-center gap-3 border-b border-border2 px-2.5 pb-2.5 pt-1.5">

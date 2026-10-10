@@ -27,11 +27,9 @@ function apply(theme: Theme) {
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
 
-  // Without a pick of their own, visitors follow the system as it changes (e.g. at sunset).
   const stopWatching = watchSystemTheme((theme) => {
     if (!chosenTheme()) apply(theme);
   });
-  // A pick made in another tab.
   const onStorage = (event: StorageEvent) => {
     if (event.key === null || event.key === THEME_STORAGE_KEY) apply(chosenTheme() ?? systemTheme());
   };

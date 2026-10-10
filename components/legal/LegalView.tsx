@@ -13,8 +13,6 @@ import type { Text } from "@/lib/i18n/messages";
 
 const PLACEHOLDER = /【[^】]*】/;
 
-/** `sections` and `title` override the drafted copy when the admin has edited
- *  this document; without them the page falls back to lib/content/legal.ts. */
 export function LegalView({
   doc,
   sections,
@@ -26,7 +24,6 @@ export function LegalView({
 }) {
   const { t, locale } = useLanguage();
 
-  // The admin panel's sections when it has any, and the drafted copy until then.
   const list: LegalSectionView[] =
     sections && sections.length > 0
       ? sections

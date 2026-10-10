@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 
-/** While something is unsaved, the browser asks before the page is closed or left behind. */
 export function useUnsavedChanges(unsaved: boolean) {
   useEffect(() => {
     if (!unsaved) return;

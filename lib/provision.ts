@@ -5,7 +5,6 @@ import { DEFAULT_AI_LANGUAGE } from "@/lib/dashboard/aiLanguages";
 
 const CHANNELS: ChannelType[] = ["FACEBOOK", "INSTAGRAM", "WHATSAPP", "WEBSITE"];
 
-/** Creates a user's business with its defaults; takes a transaction client so registration stays atomic. */
 export async function provisionBusiness(
   userId: string,
   name: string,

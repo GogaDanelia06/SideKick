@@ -13,9 +13,6 @@ describe("sessionCookies()", () => {
   });
 
   it("finds every chunk of a session too large for one cookie", () => {
-    // Missing one would leave half a credential persistent after the other half
-    // had been scoped to the window — signed in, or not, depending on which
-    // half the browser kept.
     const found = sessionCookies(
       named("__Secure-authjs.session-token.0", "__Secure-authjs.session-token.1"),
     );
@@ -40,8 +37,6 @@ describe("sessionCookies()", () => {
   });
 
   it("does not match a name that merely contains it", () => {
-    // Anchored at the end, so a cookie called `authjs.session-token-backup`
-    // belonging to something else is not rewritten.
     expect(sessionCookies(named("authjs.session-token-backup"))).toHaveLength(0);
   });
 });

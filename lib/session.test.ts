@@ -31,19 +31,12 @@ describe("getContext()", () => {
   });
 
   it("refuses a cookie whose membership has been removed", async () => {
-    // The hole this closes: sessions are JWTs, believed on their own word, and
-    // `remember me` stops the expiry from bounding them. Without this check a
-    // fired employee keeps reading the merchant's inbox and answering their
-    // customers until they happen to sign out.
     memberFind.mockResolvedValue(null);
 
     expect(await getContext()).toBeNull();
   });
 
   it("runs as the role in the database, not the one in the token", async () => {
-    // The demotion case. The cookie was minted while they were an admin and
-    // still says so; the row says otherwise, and the row wins — otherwise a
-    // demoted admin keeps every permission until their cookie expires.
     session.mockResolvedValue({ user: { id: "u1", businessId: "b1", role: "ADMIN" } });
     memberFind.mockResolvedValue({ role: "VIEWER" } as never);
 
@@ -83,8 +76,6 @@ describe("getContext()", () => {
 
 describe("diagnostics", () => {
   it("says why it refused when the membership is gone", async () => {
-    // The silent version of this cost an evening: correct password, session
-    // issued, every guarded route bouncing to /login with nothing in the logs.
     memberFind.mockResolvedValue(null);
 
     await getContext();
@@ -96,7 +87,6 @@ describe("diagnostics", () => {
   });
 
   it("stays quiet for a visitor who is simply signed out", async () => {
-    // Not a fault and not rare — logging it would bury the real refusals.
     session.mockResolvedValue(null);
 
     await getContext();

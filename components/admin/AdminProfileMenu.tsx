@@ -19,7 +19,6 @@ import { DASH } from "@/lib/dashboard/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { useTheme } from "@/lib/theme/useTheme";
 
-/** The same account menu as the tenant dashboard; opens upward from the bottom of the sidebar. */
 type Props = { name: string; email: string; otherAccounts: OtherAccount[] };
 
 export function AdminProfileMenu({ name, email, otherAccounts }: Props) {

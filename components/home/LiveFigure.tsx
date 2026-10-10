@@ -14,10 +14,8 @@ function prefersReducedMotion(): boolean {
   );
 }
 
-/** Animates from the displayed value to the latest target, restarting when interrupted. */
 function useCountUp(target: number): number {
   const [value, setValue] = useState(target);
-  // Read once: false on the server, and the first render shows the target either way.
   const [reduced] = useState(prefersReducedMotion);
   const fromRef = useRef(target);
 
@@ -48,7 +46,6 @@ function useCountUp(target: number): number {
   return reduced ? target : value;
 }
 
-/** A counted figure: server-rendered `initial`, then kept current by the shared poller. */
 export function LiveFigure({
   source,
   initial,
@@ -77,7 +74,6 @@ export function LiveFigure({
   );
 }
 
-/** The "this is being counted right now" marker that sits beside a label. */
 export function LiveDot() {
   const { t } = useLanguage();
   return (

@@ -1,33 +1,16 @@
 "use client";
 
-import { useOptimistic, useRef, useState, useTransition } from "react";
 import type { Tutorial } from "@prisma/client";
-import {
-  IconAlertTriangle,
-  IconChevronDown,
-  IconChevronUp,
-  IconEye,
-  IconEyeOff,
-  IconPencil,
-  IconPlus,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
-import {
-  createTutorial,
-  updateTutorial,
-  deleteTutorial,
-  moveTutorial,
-  toggleTutorialPublished,
-} from "@/lib/admin/actions/tutorials";
-import { youtubeThumbnail } from "@/lib/dashboard/youtube";
+import { IconPlus, IconX } from "@tabler/icons-react";
+import { createTutorial, updateTutorial, deleteTutorial, moveTutorial, toggleTutorialPublished } from "@/lib/admin/actions/tutorials";
+import { AddForm, EditForm } from "@/components/admin/ui/EditorForms";
+import { EmptyState, ItemCard } from "@/components/admin/ui/EditorParts";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { useListEditor } from "@/components/admin/ui/useListEditor";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Text } from "@/lib/i18n/messages";
-
-const INPUT =
-  "h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue";
-const AREA =
-  "min-h-[64px] w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-blue";
+import { TutorialFields } from "./TutorialFields";
+import { TutorialRow } from "./TutorialRow";
 
 const ERRORS: Record<string, Text> = {
   title_required: "admin.tutorials.editor.georgianTitleIsRequired",
@@ -35,61 +18,9 @@ const ERRORS: Record<string, Text> = {
   not_found: "admin.tutorials.editor.notFound",
 };
 
-function Fields({ initial }: { initial?: Tutorial }) {
-  const { t } = useLanguage();
-  return (
-    <div className="grid gap-2.5">
-      <input
-        name="youtubeUrl"
-        required
-        defaultValue={initial?.youtubeUrl}
-        placeholder="https://www.youtube.com/watch?v=…"
-        className={INPUT}
-      />
-      <div className="grid gap-2.5 sm:grid-cols-2">
-        <input name="titleKa" required defaultValue={initial?.titleKa} placeholder={t("admin.tutorials.editor.titleKa")} className={INPUT} />
-        <input name="titleEn" defaultValue={initial?.titleEn} placeholder={t("admin.tutorials.editor.titleEn")} className={INPUT} />
-        <textarea name="descKa" defaultValue={initial?.descKa} placeholder={t("admin.tutorials.editor.descriptionKa")} className={AREA} />
-        <textarea name="descEn" defaultValue={initial?.descEn} placeholder={t("admin.tutorials.editor.descriptionEn")} className={AREA} />
-        <input name="categoryKa" defaultValue={initial?.categoryKa} placeholder={t("admin.tutorials.editor.categoryKa")} className={INPUT} />
-        <input name="categoryEn" defaultValue={initial?.categoryEn} placeholder={t("admin.tutorials.editor.categoryEn")} className={INPUT} />
-      </div>
-    </div>
-  );
-}
-
-/** The how-to videos every tenant sees under "Tutorials" in their dashboard. */
 export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
   const { t } = useLanguage();
-  const [pending, start] = useTransition();
-  const [adding, setAdding] = useState(false);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const addRef = useRef<HTMLFormElement>(null);
-
-  // Optimistic removal; React restores the row if the server refuses.
-  const [visible, removeOptimistic] = useOptimistic(
-    tutorials,
-    (rows: Tutorial[], id: string) => rows.filter((r) => r.id !== id),
-  );
-
-  function remove(id: string) {
-    setError(null);
-    start(async () => {
-      removeOptimistic(id);
-      const res = await deleteTutorial(id);
-      if (!res.ok) setError(res.error ?? "error");
-    });
-  }
-
-  function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
-    setError(null);
-    start(async () => {
-      const res = await fn();
-      if (!res.ok) setError(res.error ?? "error");
-      else onDone?.();
-    });
-  }
+  const editor = useListEditor(tutorials, deleteTutorial);
 
   return (
     <div className="flex flex-col gap-4">
@@ -104,102 +35,52 @@ export function TutorialsEditor({ tutorials }: { tutorials: Tutorial[] }) {
         </div>
         <button
           type="button"
-          onClick={() => { setAdding((v) => !v); setError(null); }}
+          onClick={editor.toggleAdding}
           className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas"
         >
-          {adding ? <IconX size={16} /> : <IconPlus size={16} />}
-          {adding ? t("admin.tutorials.editor.close") : t("admin.tutorials.editor.addVideo")}
+          {editor.adding ? <IconX size={16} /> : <IconPlus size={16} />}
+          {editor.adding ? t("admin.tutorials.editor.close") : t("admin.tutorials.editor.addVideo")}
         </button>
       </div>
 
-      {error ? (
-        <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
-          <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? "admin.tutorials.editor.somethingWentWrong")}
-        </div>
+      {editor.error ? <ErrorBanner>{t(ERRORS[editor.error] ?? "admin.tutorials.editor.somethingWentWrong")}</ErrorBanner> : null}
+
+      {editor.adding ? (
+        <AddForm create={createTutorial} run={editor.run} onDone={editor.closeAdding} pending={editor.pending} label="admin.tutorials.editor.add">
+          <TutorialFields />
+        </AddForm>
       ) : null}
 
-      {adding ? (
-        <form
-          ref={addRef}
-          action={(fd) => run(() => createTutorial(fd), () => { addRef.current?.reset(); setAdding(false); })}
-          className="rounded-lg border border-border bg-card p-4"
-        >
-          <Fields />
-          <div className="mt-3 flex justify-end">
-            <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-              {pending ? "…" : t("admin.tutorials.editor.add")}
-            </button>
-          </div>
-        </form>
-      ) : null}
-
-      {tutorials.length === 0 && !adding ? (
-        <div className="rounded-lg border border-border bg-card px-6 py-10 text-center text-sm text-muted">
-          {t("admin.tutorials.editor.noVideosYet")}
-        </div>
-      ) : null}
+      {tutorials.length === 0 && !editor.adding ? <EmptyState>{t("admin.tutorials.editor.noVideosYet")}</EmptyState> : null}
 
       <div className="flex flex-col gap-2.5">
-        {visible.map((v, i) => {
-          const thumb = youtubeThumbnail(v.youtubeUrl);
-          return (
-            <div key={v.id} className="rounded-lg border border-border bg-card p-4">
-              {editing === v.id ? (
-                <form action={(fd) => run(() => updateTutorial(v.id, fd), () => setEditing(null))}>
-                  <Fields initial={v} />
-                  <div className="mt-3 flex justify-end gap-2">
-                    <button type="button" onClick={() => { setEditing(null); setError(null); }} className="h-9 rounded-[8px] border border-border px-4 text-[13px] font-medium">
-                      {t("admin.tutorials.editor.cancel")}
-                    </button>
-                    <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-                      {pending ? "…" : t("admin.tutorials.editor.save")}
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                <div className="flex items-start gap-3">
-                  <span className="hidden h-12 w-20 shrink-0 place-items-center overflow-hidden rounded-[6px] bg-soft sm:grid">
-                    {thumb ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={thumb} alt="" className="size-full object-cover" loading="lazy" />
-                    ) : null}
-                  </span>
-
-                  <div className="min-w-0 flex-1">
-                    <div className={v.published ? "text-sm font-medium" : "text-sm font-medium text-muted line-through"}>
-                      {v.titleKa}
-                    </div>
-                    {v.descKa ? (
-                      <div className="mt-0.5 truncate text-[13px] text-muted">{v.descKa}</div>
-                    ) : null}
-                    <a href={v.youtubeUrl} target="_blank" rel="noopener noreferrer" className="mt-0.5 block truncate text-[11px] text-faint hover:text-ink">
-                      {v.youtubeUrl}
-                    </a>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-1">
-                    <button type="button" disabled={pending || i === 0} onClick={() => run(() => moveTutorial(v.id, "up"))} aria-label={t("admin.tutorials.editor.moveUp")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
-                      <IconChevronUp size={16} />
-                    </button>
-                    <button type="button" disabled={pending || i === tutorials.length - 1} onClick={() => run(() => moveTutorial(v.id, "down"))} aria-label={t("admin.tutorials.editor.moveDown")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
-                      <IconChevronDown size={16} />
-                    </button>
-                    <button type="button" disabled={pending} onClick={() => run(() => toggleTutorialPublished(v.id, !v.published))} aria-label={t("admin.tutorials.editor.togglePublish")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
-                      {v.published ? <IconEye size={15} /> : <IconEyeOff size={15} />}
-                    </button>
-                    <button type="button" disabled={pending} onClick={() => { setEditing(v.id); setError(null); }} aria-label={t("admin.tutorials.editor.edit")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
-                      <IconPencil size={15} />
-                    </button>
-                    <button type="button" disabled={pending} onClick={() => remove(v.id)} aria-label={t("admin.tutorials.editor.delete")} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
-                      <IconTrash size={15} />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {editor.visible.map((v, i) => (
+          <ItemCard key={v.id}>
+            {editor.editing === v.id ? (
+              <EditForm
+                update={(fd) => updateTutorial(v.id, fd)}
+                run={editor.run}
+                onDone={editor.finishEditing}
+                onCancel={editor.cancelEditing}
+                pending={editor.pending}
+                labels={{ cancel: "admin.tutorials.editor.cancel", save: "admin.tutorials.editor.save" }}
+              >
+                <TutorialFields initial={v} />
+              </EditForm>
+            ) : (
+              <TutorialRow
+                video={v}
+                first={i === 0}
+                last={i === tutorials.length - 1}
+                pending={editor.pending}
+                onMove={(direction) => editor.run(() => moveTutorial(v.id, direction))}
+                onToggle={() => editor.run(() => toggleTutorialPublished(v.id, !v.published))}
+                onEdit={() => editor.startEditing(v.id)}
+                onRemove={() => editor.remove(v.id)}
+              />
+            )}
+          </ItemCard>
+        ))}
       </div>
     </div>
   );

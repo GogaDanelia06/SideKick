@@ -7,7 +7,6 @@ import { revalidateTheme } from "@/lib/admin/revalidate";
 import { THEME_KEY, sanitizeTheme } from "@/lib/site/theme/css";
 import { fail, type AdminResult } from "./shared";
 
-/** Saves the platform theme as one row; `sanitizeTheme` makes it safe to write into `<style>`. */
 export async function updateTheme(fd: FormData): Promise<AdminResult> {
   await requireAdmin();
 

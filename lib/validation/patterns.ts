@@ -1,5 +1,3 @@
-/** Shared by the auth forms and the server schemas, so both accept the same input. */
-
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const NAME_PATTERN = /^[A-Za-zÀ-ÖØ-öø-ÿა-ჰ' -]+$/;

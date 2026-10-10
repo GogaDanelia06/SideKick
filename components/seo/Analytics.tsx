@@ -1,10 +1,6 @@
 import Script from "next/script";
 import { ANALYTICS } from "@/lib/seo/site";
 
-/**
- * Analytics tags from seo.config.json; renders nothing while the IDs are blank.
- * Enabling a tag also needs its domains in the CSP (next.config.ts).
- */
 export function Analytics() {
   const { googleAnalyticsId: ga, googleTagManagerId: gtm, facebookPixelId: pixel } = ANALYTICS;
 

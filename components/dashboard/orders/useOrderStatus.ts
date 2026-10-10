@@ -16,7 +16,6 @@ const DONE: Partial<Record<OrderStatus, Text>> = {
 const CHANGED: Text = "dashboard.orders.useOrderStatus.orderUpdated";
 const TROUBLE: Text = "dashboard.orders.useOrderStatus.couldnTChangeIt";
 
-/** Moves an order along, and says so: the row alone only shows a new state. */
 export function useOrderStatus(orderId: string) {
   const { t } = useLanguage();
   const notify = useToast();

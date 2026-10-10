@@ -4,7 +4,6 @@ import { ADMIN } from "@/lib/admin/routes";
 import { DASH } from "@/lib/dashboard/routes";
 import { THEME_TAG } from "@/lib/site/theme/cached";
 
-/** Every page-section editor (/admin/page/landing, /admin/page/pricing, …). */
 function pageEditors() {
   revalidatePath("/admin/page/[slug]", "page");
 }
@@ -17,7 +16,6 @@ export function revalidateStats() {
 export function revalidatePlans() {
   pageEditors();
   revalidatePath("/pricing");
-  // The landing page quotes the price range in its structured data.
   revalidatePath("/");
 }
 
@@ -26,7 +24,6 @@ export function revalidateFaq() {
   revalidatePath("/contact");
 }
 
-/** Every page, not a list of them: the contact details are in the footer, which all of them show. */
 export function revalidateTexts() {
   pageEditors();
   revalidatePath("/", "layout");
@@ -64,7 +61,6 @@ export function revalidateBusinesses() {
 }
 
 export function revalidateTheme() {
-  // Expire the cached theme first, or the refreshed pages would render the old one.
   updateTag(THEME_TAG);
   revalidatePath("/", "layout");
 }

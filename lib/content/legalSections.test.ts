@@ -24,10 +24,6 @@ describe("pairSection()", () => {
     });
   });
 
-  /**
-   * The bug this closes: a section whose English stopped halfway published two English
-   * paragraphs and then carried on in Georgian, mid-thought, under an English heading.
-   */
   it("shows the whole section in Georgian when the English stops short", () => {
     expect(pairSection(section({ bodyEn: "One" }))).toEqual({
       heading: both("4. მიზნები"),

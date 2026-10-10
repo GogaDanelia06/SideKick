@@ -1,0 +1,23 @@
+{
+  "editor": {
+    "add": "Add",
+    "addQuestion": "Add question",
+    "answerEn": "Answer (EN)",
+    "answerKa": "Answer (KA)",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "fillInAllFour": "Fill in all four fields",
+    "moveDown": "Move down",
+    "moveUp": "Move up",
+    "noQuestionsYet": "No questions yet.",
+    "notFound": "Not found",
+    "questionEn": "Question (EN)",
+    "questionKa": "Question (KA)",
+    "questions": "questions",
+    "save": "Save",
+    "somethingWentWrong": "Something went wrong",
+    "togglePublish": "Toggle publish"
+  }
+}

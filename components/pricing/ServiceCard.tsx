@@ -15,13 +15,10 @@ export function ServiceCard({
 }: {
   title: Text;
   body: Text;
-  /** Component from the shipped copy (fallback path). */
   icon?: IconType;
-  /** Icon name stored in the database (admin-editable path). */
   iconName?: string;
 }) {
   const { t } = useLanguage();
-  // createElement keeps this lookup clear of React's "component created during render" rule.
   const iconComponent = iconName ? resolveIcon(iconName) : (icon ?? resolveIcon(null));
 
   return (

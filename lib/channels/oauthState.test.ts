@@ -13,14 +13,10 @@ describe("issueState() / readState()", () => {
   });
 
   it("gives a different value every time", () => {
-    // Two attempts from one business must not share a state, or a captured
-    // link could be replayed as a later one.
     expect(issueState("biz_1")).not.toBe(issueState("biz_1"));
   });
 
   it("refuses a business id swapped into a valid state", () => {
-    // The attack this exists for: attach an attacker's Instagram account to
-    // somebody else's business by editing the state they were handed.
     const good = issueState("biz_1");
     const payload = Buffer.from(JSON.stringify({ b: "biz_2", n: "x", t: Date.now() })).toString(
       "base64url",

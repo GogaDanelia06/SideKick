@@ -7,7 +7,6 @@ import { revalidateBusinesses } from "@/lib/admin/revalidate";
 import { log } from "@/lib/logger";
 import { fail, type AdminResult } from "./shared";
 
-/** Platform admin only: assigns a plan by hand, creating the subscription if missing. */
 export async function setBusinessPlan(
   businessId: string,
   planId: string,

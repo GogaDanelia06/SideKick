@@ -1,0 +1,31 @@
+{
+  "12Months": "12 months",
+  "1Month": "1 month",
+  "1Week": "1 week",
+  "3Months": "3 months",
+  "6Months": "6 months",
+  "activityChart": {
+    "activity": "Activity",
+    "noDataForThis": "No data for this period"
+  },
+  "channelBoxes": {
+    "leads": "Leads",
+    "noData": "No data",
+    "orders": "Orders",
+    "revenue": "Revenue"
+  },
+  "channelFilter": {
+    "allChannels": "All channels"
+  },
+  "kpis": {
+    "conversations": "Conversations",
+    "leads": "Leads",
+    "noPreviousPeriod": "No previous period",
+    "revenue": "Revenue",
+    "sales": "Sales"
+  },
+  "topProducts": {
+    "noSalesInThis": "No sales in this period",
+    "topProducts": "Top products"
+  }
+}

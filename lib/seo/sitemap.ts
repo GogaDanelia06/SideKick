@@ -5,9 +5,7 @@ export type SitemapEntry = {
   path: string;
   changeFrequency: "weekly" | "monthly" | "yearly";
   priority: number;
-  /** Setting keys whose edits change this page. */
   settingKeys: string[];
-  /** The last time any table behind this page changed. */
   contentUpdatedAt: () => Promise<Date | null>;
 };
 
@@ -31,7 +29,6 @@ function legalPage(doc: string, path: string): SitemapEntry {
   };
 }
 
-/** Public pages with the sources behind them, so `lastmod` reflects real content edits. */
 export const SITEMAP_PAGES: SitemapEntry[] = [
   {
     path: "/",
@@ -86,7 +83,6 @@ export const SITEMAP_PAGES: SitemapEntry[] = [
 
 export type ResolvedPage = { path: string; lastModified: Date; changeFrequency: SitemapEntry["changeFrequency"]; priority: number };
 
-/** Sitemap entries with a truthful `lastmod`; pages set to noindex are left out. */
 export async function resolveSitemap(fallback: Date): Promise<ResolvedPage[]> {
   const [seoRows, settingRows] = await Promise.all([
     prisma.pageSeo.findMany(),
@@ -109,7 +105,6 @@ export async function resolveSitemap(fallback: Date): Promise<ResolvedPage[]> {
         await page.contentUpdatedAt(),
       ) ?? fallback;
 
-    // Never report a lastmod in the future.
     const lastModified = newest > fallback ? fallback : newest;
 
     out.push({

@@ -3,16 +3,12 @@ import { call, PROMPT_TIMEOUT_MS, type AiFailure } from "./call";
 
 export { aiConfigured } from "./call";
 
-/** Client for the AI service: synchronous request/response, snake_case translated here. */
-
 export type AiReply = {
   reply: string;
-  /** The AI has decided this needs a person. */
   handoffRequested: boolean;
   handoffReason: string | null;
 };
 
-/** Asks for a reply to one message and says why when there is none; the service keeps history per `conversationId`. */
 export async function askAiDetailed(
   businessId: string,
   conversationId: string,
@@ -49,7 +45,6 @@ export async function askAiDetailed(
   };
 }
 
-/** The same, for callers that only need to know whether there is an answer. */
 export async function askAi(
   businessId: string,
   conversationId: string,
@@ -59,10 +54,6 @@ export async function askAi(
   return answer.ok ? answer.reply : null;
 }
 
-/**
- * The two calls that write a whole prompt. They are the slow ones (13 to 45 seconds when
- * measured), so each says how long it took, and why when it failed.
- */
 async function writePrompt(
   businessId: string,
   endpoint: "build-prompt" | "edit-prompt",
@@ -84,17 +75,14 @@ async function writePrompt(
   return res.data.system_prompt?.trim() || null;
 }
 
-/** Generates a system prompt from what the business has already told us. */
 export function buildPrompt(businessId: string): Promise<string | null> {
   return writePrompt(businessId, "build-prompt", "AI service could not build a prompt");
 }
 
-/** Rewrites the prompt according to an instruction the merchant typed. */
 export function editPrompt(businessId: string, instructions: string): Promise<string | null> {
   return writePrompt(businessId, "edit-prompt", "AI service could not edit the prompt", { edit_instructions: instructions });
 }
 
-/** Hands a conversation back to the bot after a person has stepped in. */
 export async function releaseToBot(
   businessId: string,
   conversationId: string,

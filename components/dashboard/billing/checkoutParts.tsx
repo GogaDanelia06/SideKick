@@ -23,7 +23,6 @@ const ERRORS: Record<string, Text> = {
 
 const FAILED: Text = "dashboard.billing.checkoutParts.somethingWentWrong";
 
-/** What to tell the owner when a plan change is refused. */
 export function checkoutError(code: string): Text {
   return Object.hasOwn(ERRORS, code) ? ERRORS[code] : FAILED;
 }
@@ -37,7 +36,6 @@ export function CurrentPlanBadge() {
   );
 }
 
-/** The bank buttons for a chosen plan; card details are only ever typed on the bank's page. */
 export function BankChoice({
   providers,
   pending,

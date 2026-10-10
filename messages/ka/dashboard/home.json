@@ -1,0 +1,32 @@
+{
+  "active": "აქტიური",
+  "channelStatusCard": {
+    "channelStatus": "არხების სტატუსი",
+    "noChannelsYet": "არხები ჯერ არ არის დამატებული"
+  },
+  "issue": "ხარვეზია",
+  "kpiGrid": {
+    "noDataForYesterday": "გუშინდელი მონაცემი არ არის",
+    "vsYesterday": "გუშინდელთან"
+  },
+  "left": "დარჩა",
+  "newLeads": "ახალი ლიდები",
+  "newOrders": "ახალი შეკვეთები",
+  "noActivePlan": "აქტიური პაკეტი არ არის",
+  "offline": "გათიშული",
+  "remainingMessageLimit": "დარჩენილი შეტყობინებების ლიმიტი",
+  "renews": "განახლდება",
+  "revenue": "შემოსავალი",
+  "stoppedMessages": {
+    "botStatusStoppedMessages": "ბოტის სტატუსი — გაჩერებული შეტყობინებები",
+    "days": "{d} დღე",
+    "hours": "{h} სთ",
+    "minutes": "{min} წთ",
+    "noStoppedMessages": "გაჩერებული შეტყობინება არ არის",
+    "unknown": "უცნობი",
+    "viewAll": "ყველას ნახვა →"
+  },
+  "todaySConversations": "დღევანდელი მიმოწერები",
+  "unlimited": "ულიმიტო",
+  "used": "გამოყენებული"
+}

@@ -5,7 +5,6 @@ export const hasChanges = (rows: DiffRow[]) => rows.some((row) => row.kind !== "
 
 const wordsIn = (text: string) => parts(text).filter(isWord).length;
 
-/** How many words were added and how many removed. */
 export function countChanges(rows: DiffRow[]): { added: number; removed: number } {
   const count = { added: 0, removed: 0 };
   for (const row of rows) {
@@ -20,7 +19,6 @@ export function countChanges(rows: DiffRow[]): { added: number; removed: number 
   return count;
 }
 
-/** Keeps the lines around each change and folds the longer stretches between them into one gap. */
 export function foldUnchanged(rows: DiffRow[], around = 1): DiffRow[] {
   const keep = rows.map(() => false);
   rows.forEach((row, i) => {
@@ -36,7 +34,6 @@ export function foldUnchanged(rows: DiffRow[], around = 1): DiffRow[] {
     }
     let end = i;
     while (end < rows.length && !keep[end]) end++;
-    // A gap that hides a single line saves nothing: show the line.
     if (end - i === 1) out.push(rows[i]);
     else out.push({ kind: "gap", count: end - i });
     i = end;

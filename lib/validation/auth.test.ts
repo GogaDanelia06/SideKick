@@ -36,9 +36,6 @@ describe("passwordSchema", () => {
     expect(passwordSchema.safeParse("Abcdef12").success).toBe(true);
   });
 
-  // Georgian has no upper and lower case, so requiring both rules out a
-  // password written in the product's own language. Recorded as the behaviour
-  // that ships, not as an endorsement — see the note in the handover docs.
   it("rejects a password written only in Georgian", () => {
     expect(passwordSchema.safeParse("გამარჯობა1").success).toBe(false);
   });

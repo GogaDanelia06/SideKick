@@ -1,0 +1,78 @@
+/// "What Sidekick does" boxes on the landing page.
+model Benefit {
+  id        String  @id @default(cuid())
+  order     Int     @default(0)
+  published Boolean @default(true)
+  /// Tabler icon name, e.g. "IconClockHour4". Resolved through an allow-list.
+  icon      String  @default("IconSparkles")
+  titleKa   String
+  titleEn   String
+  descKa    String
+  descEn    String
+
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([order])
+}
+
+/// "What Sidekick gives you" boxes on the pricing page.
+model ServiceBox {
+  id        String  @id @default(cuid())
+  order     Int     @default(0)
+  published Boolean @default(true)
+  icon      String  @default("IconSparkles")
+  titleKa   String
+  titleEn   String
+  bodyKa    String
+  bodyEn    String
+
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([order])
+}
+
+/// One numbered section of a legal document (Terms / Privacy / Data protection).
+/// Kept as rows rather than one giant text field so the admin edits section by
+/// section and the page keeps its heading structure — which is also what makes
+/// these documents readable and linkable.
+model LegalSection {
+  id        String  @id @default(cuid())
+  /// Which document: "terms" | "privacy" | "data-protection"
+  doc       String
+  order     Int     @default(0)
+  published Boolean @default(true)
+  headingKa String
+  headingEn String
+  /// Paragraphs, separated by a blank line.
+  bodyKa    String  @default("")
+  bodyEn    String  @default("")
+  /// Bullet points, one per line. Empty means no list.
+  bulletsKa String  @default("")
+  bulletsEn String  @default("")
+
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([doc, order])
+}
+
+/// SEO overrides for one public page, keyed by its path ("/", "/pricing", …).
+///
+/// Every field is optional in effect: an empty string means "use the default
+/// derived in lib/seo", so clearing a box in the admin panel restores the
+/// built-in value rather than blanking the tag. A page with no row at all
+/// behaves exactly as it did before this table existed.
+model PageSeo {
+  path          String   @id
+  title         String   @default("")
+  description   String   @default("")
+  /// Absolute URL, or empty to derive it from `path`. Wrong values here can
+  /// de-index a page, so the admin form validates it.
+  canonical     String   @default("")
+  /// False emits robots noindex,nofollow for this page.
+  indexable     Boolean  @default(true)
+  ogTitle       String   @default("")
+  ogDescription String   @default("")
+  /// Empty falls back to the generated /opengraph-image.
+  ogImageUrl    String   @default("")
+  updatedAt     DateTime @default(now()) @updatedAt
+}

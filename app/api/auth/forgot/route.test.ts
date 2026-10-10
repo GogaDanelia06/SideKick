@@ -72,8 +72,6 @@ describe("POST /api/auth/forgot", () => {
   });
 
   it("rate-limits before looking the address up, so probing stays bounded", async () => {
-    // With "not registered" said plainly, the limiter is the only thing between
-    // this endpoint and a list of who has an account. It must run first.
     limit.mockResolvedValueOnce({ ok: false, remaining: 0, retryAfterSec: 600 });
 
     const res = await post("nobody@b.ge");

@@ -1,5 +1,3 @@
-/** Writes rows into a one-sheet .xlsx that Excel, Numbers and Google Sheets open as is. */
-
 export type Cell = string | number | null | undefined;
 
 const escape = (s: string) =>
@@ -24,7 +22,6 @@ function sheetXml(rows: Cell[][]): string {
     .map((row, r) => {
       const cells = row.map((value, c) => {
         const ref = `${columnName(c)}${r + 1}`;
-        // The first row is the header, drawn bold (style 1).
         const style = r === 0 ? ' s="1"' : "";
         if (typeof value === "number" && Number.isFinite(value)) return `<c r="${ref}"${style}><v>${value}</v></c>`;
         const text = value == null ? "" : escape(String(value));

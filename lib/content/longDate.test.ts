@@ -8,7 +8,6 @@ describe("longDate()", () => {
   });
 
   it("reads a date in the shop's own timezone, not the reader's", () => {
-    // Late evening in London is already the next day in Tbilisi.
     expect(longDate("2026-01-31T21:30:00Z", "en")).toBe("1 February 2026");
   });
 

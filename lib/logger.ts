@@ -11,7 +11,6 @@ const REDACT = [
   "cookie",
   "creditcard",
   "cardnumber",
-  // URLs can carry secrets in their query string (Meta token exchanges).
   "url",
   "href",
   "uri",

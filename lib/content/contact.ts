@@ -9,7 +9,6 @@ export const CONTACT_HEADING = {
   },
 };
 
-/** The contact cards' labels; the email and phone themselves are set in the admin panel. */
 export const CONTACT_LABELS = {
   email: { ka: "ელფოსტა", en: "Email" },
   phone: { ka: "ტელეფონი", en: "Phone" },

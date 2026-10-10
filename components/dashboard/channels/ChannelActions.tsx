@@ -6,15 +6,10 @@ import { useToast } from "@/components/dashboard/ui/Toast";
 import { disconnectChannel, setChannelConnected } from "@/lib/dashboard/actions/channels";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Text } from "@/lib/i18n/messages";
-import { ConnectButton } from "./ConnectMeta";
+import { ConnectButton } from "./ConnectButton";
 
 const BTN = "h-9 rounded-[8px] px-4 text-sm font-medium disabled:opacity-60";
 
-/**
- * What can be done with a channel that has an account: authorise it again, switch it off or
- * on (the account stays), or disconnect it (the account is let go, so another business can
- * connect it).
- */
 export function ChannelActions({
   channel,
   name,
@@ -52,9 +47,7 @@ export function ChannelActions({
 
   return (
     <>
-      {/* One group, so on a narrow screen the buttons move to their own line together. */}
       <div className="flex flex-wrap items-center gap-2 max-sm:w-full">
-        {/* Re-authorising stays available: tokens expire and grants can miss scopes. */}
         <ConnectButton type={channel.type} relink />
         <button
           type="button"

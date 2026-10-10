@@ -17,17 +17,12 @@ describe("sessionIsStale", () => {
     expect(sessionIsStale({ startedAt: agoSec(UNREMEMBERED_MAX_SEC) }, NOW)).toBe(false);
   });
 
-  /** A remembered session keeps the full lifetime of its token. */
   it("never expires a remembered session", () => {
     expect(
       sessionIsStale({ remember: true, startedAt: agoSec(UNREMEMBERED_MAX_SEC * 100) }, NOW),
     ).toBe(false);
   });
 
-  /**
-   * Tokens issued before this check existed have no stamp. Expiring them would
-   * sign out everyone online the moment it shipped — including remembered users.
-   */
   it("leaves a token with no stamp alone", () => {
     expect(sessionIsStale({}, NOW)).toBe(false);
     expect(sessionIsStale({ remember: false }, NOW)).toBe(false);

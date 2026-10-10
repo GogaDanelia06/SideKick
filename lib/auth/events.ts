@@ -3,9 +3,7 @@ import { prisma } from "@/lib/db";
 import { provisionBusiness } from "@/lib/provision";
 import { log } from "@/lib/logger";
 
-/** What Auth.js does on its own after a sign-in, once the account itself is settled. */
 export const authEvents: NextAuthConfig["events"] = {
-  /** Provisions a business for a new Google account (email signups get one at registration). */
   async createUser({ user }) {
     if (!user.id) return;
 
@@ -21,12 +19,10 @@ export const authEvents: NextAuthConfig["events"] = {
 
       log.info("provisioned a business for a new OAuth account", { userId: user.id });
     } catch (err) {
-      // Sign-in still succeeds; scripts/find-orphan-users.ts --fix repairs the account.
       log.error("could not provision a business for a new OAuth account", err, { userId: user.id });
     }
   },
 
-  /** Google has just proven the address belongs to this person, so it counts as confirmed. */
   async linkAccount({ user, account }) {
     if (account.provider !== "google" || !user.id) return;
     try {

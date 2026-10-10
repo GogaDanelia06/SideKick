@@ -6,7 +6,6 @@ import { parseBox, type BoxData, type BoxKind } from "@/lib/admin/forms/content"
 import { revalidateBoxes } from "@/lib/admin/revalidate";
 import { ORDER_ASC, ORDER_SELECT, fail, moveRow, nextOrder, type AdminResult, type Direction } from "./shared";
 
-/** Benefits keep the body in `desc*` columns; service boxes in `body*`. */
 function benefitColumns({ bodyKa, bodyEn, ...rest }: BoxData) {
   return { ...rest, descKa: bodyKa, descEn: bodyEn };
 }

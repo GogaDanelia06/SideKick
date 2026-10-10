@@ -5,7 +5,6 @@ import { IconCheck, IconDeviceFloppy, IconLoader2, IconPencilExclamation } from 
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { ALL_SAVED, CANCEL, SAVE, SAVING, UNSAVED } from "./saveMessages";
 
-/** A section's Save and Cancel, with a word on where the section stands. */
 export function SaveBar({
   dirty,
   saving,

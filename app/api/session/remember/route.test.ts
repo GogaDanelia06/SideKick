@@ -27,7 +27,6 @@ describe("POST /api/session/remember", () => {
     expect(set).not.toHaveBeenCalled();
   });
 
-  /** The whole point: no maxAge and no expires makes it die with the browser. */
   it("rewrites the session cookie with no lifetime", async () => {
     await POST();
 
@@ -41,8 +40,6 @@ describe("POST /api/session/remember", () => {
     expect(options.path).toBe("/");
   });
 
-  /** A large session is split across `.0`, `.1`; leaving one chunk persistent
-   *  would store half a credential. */
   it("rewrites every chunk of a split session", async () => {
     getAll.mockReturnValue([
       { name: "__Secure-authjs.session-token.0", value: "a" },

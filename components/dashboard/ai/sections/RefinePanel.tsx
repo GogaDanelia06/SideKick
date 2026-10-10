@@ -2,10 +2,6 @@
 
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/**
- * Where the merchant says how the AI should rewrite the prompt. The AI works from the saved
- * prompt, so with unsaved changes in the box the button waits and says why.
- */
 export function RefinePanel({
   instructions,
   onInstructions,

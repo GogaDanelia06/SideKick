@@ -21,7 +21,6 @@ export default function OpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        {/* Wordmark paths only: Satori cannot load the app's fonts, so the tagline is left off. */}
         <div style={{ display: "flex" }}>
           <svg width="420" height="83" viewBox={WORDMARK_VIEWBOX} fill="#e6edf3">
             {WORDMARK_PATHS.map((d, i) => (

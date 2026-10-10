@@ -46,7 +46,6 @@ describe("importProducts()", () => {
         },
       ],
     });
-    // The stored 20% discount follows the new price; quantity, size and description stay.
     expect(update).toHaveBeenCalledWith({
       where: { businessId_code: { businessId: "b1", code: "OLD" } },
       data: { name: "Dress", price: 200, salePrice: 160 },

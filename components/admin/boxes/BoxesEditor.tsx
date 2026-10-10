@@ -1,207 +1,79 @@
 "use client";
 
-import { useOptimistic, useRef, useState, useTransition } from "react";
-import clsx from "clsx";
-import {
-  IconAlertTriangle,
-  IconChevronDown,
-  IconChevronUp,
-  IconEye,
-  IconEyeOff,
-  IconPencil,
-  IconPlus,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
-import {
-  createBox,
-  updateBox,
-  deleteBox,
-  moveBox,
-  toggleBoxPublished,
-} from "@/lib/admin/actions/boxes";
+import { createBox, updateBox, deleteBox, moveBox, toggleBoxPublished } from "@/lib/admin/actions/boxes";
+import { AddForm, EditForm } from "@/components/admin/ui/EditorForms";
+import { EditorBar, EmptyState, ItemCard } from "@/components/admin/ui/EditorParts";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { RowTools, type RowLabels } from "@/components/admin/ui/RowTools";
+import { useListEditor } from "@/components/admin/ui/useListEditor";
 import type { BoxKind } from "@/lib/admin/forms/content";
-import { ICON_NAMES, resolveIcon } from "@/lib/content/icons";
+import { resolveIcon } from "@/lib/content/icons";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Text } from "@/lib/i18n/messages";
+import { BoxFields, type BoxItem } from "./BoxFields";
 
-const INPUT =
-  "w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-blue";
-const LABEL = "mb-1 block text-[11px] uppercase tracking-wide text-faint";
+export type { BoxItem } from "./BoxFields";
 
 const ERRORS: Record<string, Text> = {
   title_required: "admin.boxes.editor.titleIsRequiredIn",
   not_found: "admin.boxes.editor.notFound",
 };
 
-/** Shape both tables share, once the differing body column is normalised. */
-export type BoxItem = {
-  id: string;
-  order: number;
-  published: boolean;
-  icon: string;
-  titleKa: string;
-  titleEn: string;
-  bodyKa: string;
-  bodyEn: string;
+const TOOLS: RowLabels = {
+  up: "admin.boxes.editor.moveUp",
+  down: "admin.boxes.editor.moveDown",
+  toggle: "admin.boxes.editor.togglePublish",
+  edit: "admin.boxes.editor.edit",
+  remove: "admin.boxes.editor.delete",
 };
-
-/** Visual grid picker — the admin sees the icon, not a name to memorise. */
-function IconPicker({ initial }: { initial?: string }) {
-  const { t } = useLanguage();
-  const [selected, setSelected] = useState(initial ?? "IconSparkles");
-
-  return (
-    <div>
-      <span className={LABEL}>{t("admin.boxes.editor.icon")}</span>
-      <input type="hidden" name="icon" value={selected} />
-      <div className="flex flex-wrap gap-1.5 rounded-[8px] border border-input bg-canvas p-2">
-        {ICON_NAMES.map((name) => {
-          const Ico = resolveIcon(name);
-          const on = selected === name;
-          return (
-            <button
-              key={name}
-              type="button"
-              title={name}
-              aria-pressed={on}
-              onClick={() => setSelected(name)}
-              className={clsx(
-                "grid size-9 place-items-center rounded-[7px] border transition-colors",
-                on ? "border-blue bg-blue-surface text-blue" : "border-border text-muted hover:text-ink",
-              )}
-            >
-              <Ico size={18} />
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function BoxFields({ initial }: { initial?: BoxItem }) {
-  const { t } = useLanguage();
-  return (
-    <div className="flex flex-col gap-3">
-      <IconPicker initial={initial?.icon} />
-      <div className="grid gap-2.5 sm:grid-cols-2">
-        <label className="block">
-          <span className={LABEL}>{t("admin.boxes.editor.titleGeorgian")}</span>
-          <input name="titleKa" required defaultValue={initial?.titleKa} className={INPUT} />
-        </label>
-        <label className="block">
-          <span className={LABEL}>{t("admin.boxes.editor.titleEnglish")}</span>
-          <input name="titleEn" required defaultValue={initial?.titleEn} className={INPUT} />
-        </label>
-      </div>
-      <div className="grid gap-2.5 sm:grid-cols-2">
-        <label className="block">
-          <span className={LABEL}>{t("admin.boxes.editor.descriptionGeorgian")}</span>
-          <textarea name="bodyKa" defaultValue={initial?.bodyKa} className={`${INPUT} min-h-[100px]`} />
-        </label>
-        <label className="block">
-          <span className={LABEL}>{t("admin.boxes.editor.descriptionEnglish")}</span>
-          <textarea name="bodyEn" defaultValue={initial?.bodyEn} className={`${INPUT} min-h-[100px]`} />
-        </label>
-      </div>
-    </div>
-  );
-}
 
 export function BoxesEditor({ kind, items }: { kind: BoxKind; items: BoxItem[] }) {
   const { t } = useLanguage();
-  const [pending, start] = useTransition();
-  const [adding, setAdding] = useState(false);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const addRef = useRef<HTMLFormElement>(null);
-
-  // Optimistic removal; React restores the row if the server refuses.
-  const [visible, removeOptimistic] = useOptimistic(
-    items,
-    (rows: BoxItem[], id: string) => rows.filter((r) => r.id !== id),
-  );
-
-  function remove(id: string) {
-    setError(null);
-    start(async () => {
-      removeOptimistic(id);
-      const res = await deleteBox(kind, id);
-      if (!res.ok) setError(res.error ?? "error");
-    });
-  }
-
-  function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
-    setError(null);
-    start(async () => {
-      const res = await fn();
-      if (!res.ok) setError(res.error ?? "error");
-      else onDone?.();
-    });
-  }
+  const editor = useListEditor(items, (id) => deleteBox(kind, id));
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted">
-          {items.length} {t("admin.boxes.editor.boxes")}
-        </span>
-        <button
-          type="button"
-          onClick={() => { setAdding((v) => !v); setError(null); }}
-          className="inline-flex h-9 items-center gap-1.5 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas"
-        >
-          {adding ? <IconX size={16} /> : <IconPlus size={16} />}
-          {adding ? t("admin.boxes.editor.close") : t("admin.boxes.editor.addBox")}
-        </button>
-      </div>
+      <EditorBar
+        count={items.length}
+        noun="admin.boxes.editor.boxes"
+        adding={editor.adding}
+        addLabel="admin.boxes.editor.addBox"
+        closeLabel="admin.boxes.editor.close"
+        onToggle={editor.toggleAdding}
+      />
 
-      {error ? (
-        <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
-          <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? "admin.boxes.editor.somethingWentWrong")}
-        </div>
-      ) : null}
+      {editor.error ? <ErrorBanner>{t(ERRORS[editor.error] ?? "admin.boxes.editor.somethingWentWrong")}</ErrorBanner> : null}
 
-      {adding ? (
-        <form
-          ref={addRef}
-          action={(fd) => run(() => createBox(kind, fd), () => { addRef.current?.reset(); setAdding(false); })}
-          className="rounded-lg border border-border bg-card p-4"
+      {editor.adding ? (
+        <AddForm
+          create={(fd) => createBox(kind, fd)}
+          run={editor.run}
+          onDone={editor.closeAdding}
+          pending={editor.pending}
+          label="admin.boxes.editor.add"
         >
           <BoxFields />
-          <div className="mt-3 flex justify-end">
-            <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-              {pending ? "…" : t("admin.boxes.editor.add")}
-            </button>
-          </div>
-        </form>
+        </AddForm>
       ) : null}
 
-      {items.length === 0 && !adding ? (
-        <div className="rounded-lg border border-border bg-card px-6 py-10 text-center text-sm text-muted">
-          {t("admin.boxes.editor.noBoxesYet")}
-        </div>
-      ) : null}
+      {items.length === 0 && !editor.adding ? <EmptyState>{t("admin.boxes.editor.noBoxesYet")}</EmptyState> : null}
 
       <div className="flex flex-col gap-2.5">
-        {visible.map((b, i) => {
+        {editor.visible.map((b, i) => {
           const Ico = resolveIcon(b.icon);
           return (
-            <div key={b.id} className="rounded-lg border border-border bg-card p-4">
-              {editing === b.id ? (
-                <form action={(fd) => run(() => updateBox(kind, b.id, fd), () => setEditing(null))}>
+            <ItemCard key={b.id}>
+              {editor.editing === b.id ? (
+                <EditForm
+                  update={(fd) => updateBox(kind, b.id, fd)}
+                  run={editor.run}
+                  onDone={editor.finishEditing}
+                  onCancel={editor.cancelEditing}
+                  pending={editor.pending}
+                  labels={{ cancel: "admin.boxes.editor.cancel", save: "admin.boxes.editor.save" }}
+                >
                   <BoxFields initial={b} />
-                  <div className="mt-3 flex justify-end gap-2">
-                    <button type="button" onClick={() => { setEditing(null); setError(null); }} className="h-9 rounded-[8px] border border-border px-4 text-[13px] font-medium">
-                      {t("admin.boxes.editor.cancel")}
-                    </button>
-                    <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-                      {pending ? "…" : t("admin.boxes.editor.save")}
-                    </button>
-                  </div>
-                </form>
+                </EditForm>
               ) : (
                 <div className="flex items-start gap-3">
                   <span className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-blue-surface text-blue">
@@ -213,26 +85,20 @@ export function BoxesEditor({ kind, items }: { kind: BoxKind; items: BoxItem[] }
                     </div>
                     <div className="mt-0.5 line-clamp-2 text-[13px] text-muted">{b.bodyKa}</div>
                   </div>
-                  <div className="flex shrink-0 items-center gap-1">
-                    <button type="button" disabled={pending || i === 0} onClick={() => run(() => moveBox(kind, b.id, "up"))} aria-label={t("admin.boxes.editor.moveUp")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
-                      <IconChevronUp size={16} />
-                    </button>
-                    <button type="button" disabled={pending || i === items.length - 1} onClick={() => run(() => moveBox(kind, b.id, "down"))} aria-label={t("admin.boxes.editor.moveDown")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-30">
-                      <IconChevronDown size={16} />
-                    </button>
-                    <button type="button" disabled={pending} onClick={() => run(() => toggleBoxPublished(kind, b.id, !b.published))} aria-label={t("admin.boxes.editor.togglePublish")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
-                      {b.published ? <IconEye size={15} /> : <IconEyeOff size={15} />}
-                    </button>
-                    <button type="button" disabled={pending} onClick={() => { setEditing(b.id); setError(null); }} aria-label={t("admin.boxes.editor.edit")} className="grid size-8 place-items-center rounded-[7px] border border-border text-muted hover:text-ink disabled:opacity-40">
-                      <IconPencil size={15} />
-                    </button>
-                    <button type="button" disabled={pending} onClick={() => remove(b.id)} aria-label={t("admin.boxes.editor.delete")} className="grid size-8 place-items-center rounded-[7px] border border-border text-red hover:border-red disabled:opacity-40">
-                      <IconTrash size={15} />
-                    </button>
-                  </div>
+                  <RowTools
+                    first={i === 0}
+                    last={i === items.length - 1}
+                    pending={editor.pending}
+                    published={b.published}
+                    labels={TOOLS}
+                    onMove={(direction) => editor.run(() => moveBox(kind, b.id, direction))}
+                    onToggle={() => editor.run(() => toggleBoxPublished(kind, b.id, !b.published))}
+                    onEdit={() => editor.startEditing(b.id)}
+                    onRemove={() => editor.remove(b.id)}
+                  />
                 </div>
               )}
-            </div>
+            </ItemCard>
           );
         })}
       </div>

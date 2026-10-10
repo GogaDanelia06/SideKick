@@ -14,20 +14,14 @@ export type ImportResult =
   | { ok: false; error: "forbidden" | "invalid" | "failed" }
   | { ok: false; error: "limit"; limit: number; used: number; adding: number };
 
-/** Updates run in transactions of this size, so a long file never holds one open for long. */
 const BATCH = 100;
 
-/** Every row checked, and each code only once. */
 function validRows(rows: unknown): rows is ImportRow[] {
   if (!Array.isArray(rows) || rows.length === 0 || rows.length > MAX_IMPORT_ROWS) return false;
   const codes = new Set<string>();
   return rows.every((row) => isImportRow(row) && !codes.has(row.code) && Boolean(codes.add(row.code)));
 }
 
-/**
- * Adds the products whose codes are new and updates the rest. Nothing is deleted, and a
- * blank optional cell leaves the current value alone.
- */
 export async function importProducts(rows: ImportRow[]): Promise<ImportResult> {
   const ctx = await requirePermission("products:write");
   if (!ctx) return { ok: false, error: "forbidden" };
@@ -68,7 +62,6 @@ export async function importProducts(rows: ImportRow[]): Promise<ImportResult> {
     for (let i = 0; i < stale.length; i += BATCH) {
       await prisma.$transaction(
         stale.slice(i, i + BATCH).map((r) => {
-          // A new price without discount cells keeps the stored percentage, as the form does.
           const pct = known.get(r.code);
           const discount =
             r.discountPct !== undefined

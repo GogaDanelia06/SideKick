@@ -1,10 +1,6 @@
 import { useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 
-/**
- * A tab kept in the URL (`?name=value`), so a refresh or a shared link reopens it.
- * replaceState updates the URL without a server request or an extra history entry.
- */
 export function useUrlTab<T extends string>(
   name: string,
   tabs: readonly T[],

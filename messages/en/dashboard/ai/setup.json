@@ -1,0 +1,63 @@
+{
+  "businessSection": {
+    "additionalInformation": "Additional information",
+    "branchLocations": "Branch locations",
+    "businessInformation": "Business information",
+    "companyName": "Company name",
+    "detailedDescription": "Detailed description",
+    "email": "Email",
+    "industry": "Industry",
+    "otherContactDetails": "Other contact details",
+    "phoneNumber": "Phone number",
+    "placeholder": "Mon–Fri 10:00–18:00",
+    "placeholder2": "Separate addresses with commas: Tbilisi …, Batumi …",
+    "viberTelegramFax": "Viber, Telegram, fax…",
+    "website": "Website",
+    "workingHours": "Working hours"
+  },
+  "characterSection": {
+    "character": "Character",
+    "communicationStyle": "Communication style",
+    "emoji": "Emoji",
+    "formOfAddress": "Form of address",
+    "responseLength": "Response length"
+  },
+  "languageControls": {
+    "add": "Add",
+    "addLanguage": "Add language",
+    "languageName": "Language name",
+    "suggested": "Suggested"
+  },
+  "languagesSection": {
+    "added": "{name} added",
+    "atMostLanguages": "At most {max} languages",
+    "empty": "At least one language is required",
+    "hint": "Which languages the bot replies in",
+    "languages": "Languages",
+    "remove": "Remove",
+    "removed": "{name} removed"
+  },
+  "rulesSection": {
+    "7DeliveryReturnsPolicy": "7. Delivery / returns policy",
+    "appointmentBooking": "Appointment booking",
+    "behaviourRules": "Behaviour rules",
+    "customersOftenSendSeveral": "Customers often send several short messages in a row. Waiting gathers them into one question and one answer — 0 replies immediately.",
+    "eGWhenThe": "e.g. when the customer asks for a human, or it's a complaint…",
+    "frequentlyAskedQuestionsFaq": "Frequently asked questions (FAQ)",
+    "howLongToWait": "How long to wait before replying",
+    "informationAgent": "Information agent",
+    "leadCapture": "Lead capture",
+    "leadCollector": "Lead collector",
+    "mayAmendCancelAn": "May amend / cancel an order",
+    "orderCapture": "Order capture",
+    "orderTaking": "Order taking",
+    "questionAnswer": "question → answer…",
+    "roles": "Roles",
+    "salesSpecialist": "Sales specialist",
+    "seconds": "seconds",
+    "supportAgent": "Support agent",
+    "whatCountsAsA": "What counts as a lead",
+    "whatCountsAsAn": "What counts as an order",
+    "whenToHandOff": "When to hand off to a person"
+  }
+}

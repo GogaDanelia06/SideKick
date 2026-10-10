@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import ka from "@/messages/ka.json";
-import en from "@/messages/en.json";
+import ka from "@/messages/ka";
+import en from "@/messages/en";
 import { message, textIn } from "./messages";
 
 type Branch = { [key: string]: string | Branch };
@@ -18,10 +18,6 @@ const georgian = flatten(ka as Branch);
 const english = flatten(en as Branch);
 const fillers = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
 
-/**
- * The two files are one catalogue in two languages: a key missing from either would
- * show an English string to a Georgian reader, or nothing at all.
- */
 describe("the message catalogue", () => {
   it("holds the same keys in both languages", () => {
     expect(Object.keys(georgian).sort()).toEqual(Object.keys(english).sort());

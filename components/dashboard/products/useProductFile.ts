@@ -8,7 +8,6 @@ import { readProductFile, type FileProblem } from "@/lib/products/readFile";
 
 export type ChosenFile = { name: string; rows: ImportRow[]; errors: RowError[] };
 
-/** The chosen product file: reading it, removing it, and importing it. */
 export function useProductFile() {
   const input = useRef<HTMLInputElement>(null);
   const [chosen, setChosen] = useState<ChosenFile | null>(null);
@@ -16,7 +15,6 @@ export function useProductFile() {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [reading, setReading] = useState(false);
   const [importing, start] = useTransition();
-  // Only the latest pick counts, if one file is chosen while another is still being read.
   const pick = useRef(0);
 
   function remove() {

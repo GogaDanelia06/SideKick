@@ -1,0 +1,101 @@
+{
+  "addProductForm": {
+    "add": "Add",
+    "addProduct": "Add product",
+    "adding": "Adding…",
+    "code": "Code",
+    "descriptionUsedByAi": "Description (used by AI for matching)",
+    "discount": "Discount %",
+    "name": "Name",
+    "price": "Price",
+    "productAdded": "Product added.",
+    "quantity": "Quantity",
+    "salePrice": "Sale price",
+    "size": "Size",
+    "uploadPhoto": "Upload photo"
+  },
+  "chosenFileCard": {
+    "andMore": "…and {count} more",
+    "errorS": "error(s)",
+    "fixTheseRowsIn": "Fix these rows in the file and upload it again:",
+    "importCount": "Import {count} products",
+    "importing": "Importing…",
+    "products": "products",
+    "removeFile": "Remove file"
+  },
+  "errors": {
+    "error": "Could not save it. Try again.",
+    "nameAndCodeAre": "Name and code are required.",
+    "photoStorageIsNot": "Photo storage is not set up yet. Save without a photo for now.",
+    "productDeleted": "Product deleted",
+    "productSaved": "Product saved",
+    "thatCodeIsAlready": "That code is already used by another product. Pick a different one.",
+    "thePhotoIsToo": "The photo is too large.",
+    "thePhotoIsToo2": "The photo is too large even after shrinking. Try another one.",
+    "thePhotoMustBe": "The photo must be a JPG, PNG or WebP.",
+    "thisFileCanT": "This file can't be read. Choose a JPG, PNG or WebP photo.",
+    "youMayNotChange": "You may not change products.",
+    "yourPlanDoesNot": "Your plan does not allow more products. Delete one, or change the plan."
+  },
+  "fileUploadTab": {
+    "downloadStock": "Download stock",
+    "downloadTemplate": "Download template",
+    "readingTheFile": "Reading the file…",
+    "uploadExcelCsv": "Upload EXCEL / CSV"
+  },
+  "importText": {
+    "aTextIsToo": "a text is too long",
+    "atMostRows": "At most {max} products per file.",
+    "done": "Done: {created} added, {updated} updated.",
+    "duplicateOfRow": "the same code is already on row {other}",
+    "empty": "The file has no products in it.",
+    "planLimit": "Your plan allows {limit} products: you have {used}, and this file would add {adding} new ones.",
+    "productsAreMatchedBy": "Products are matched by code: new codes are added, existing ones updated. Blank cells keep the current value, and nothing is deleted.",
+    "theCodeIsEmpty": "the code is empty",
+    "theDiscountMustBe": "the discount must be between 0 and 100",
+    "theFileCouldNot": "The file could not be read. Save it again as .xlsx or .csv.",
+    "theFileIsLarger": "The file is larger than 5 MB.",
+    "theFileNeedsThe": "The file needs the columns Code, Name and Price. Download the template and use it.",
+    "theFileSData": "The file's data is not valid. Upload it again.",
+    "theImportFailedTry": "The import failed. Try again.",
+    "theNameIsEmpty": "the name is empty",
+    "thePriceMustBe": "the price must be a number, 0 or more",
+    "theQuantityMustBe": "the quantity must be a whole number, 0 or more",
+    "theSalePriceMust": "the sale price must not be above the price",
+    "uploadAnXlsxOr": "Upload an .xlsx or .csv file.",
+    "youMayNotImport": "You may not import products."
+  },
+  "modal": {
+    "cancel": "Cancel",
+    "changePhoto": "Change photo",
+    "code": "Code",
+    "descriptionUsedByAi": "Description (used by AI for matching)",
+    "discount": "Discount %",
+    "editProduct": "Edit product",
+    "name": "Name",
+    "price": "Price",
+    "quantity": "Quantity",
+    "salePrice": "Sale price",
+    "save": "Save",
+    "size": "Size"
+  },
+  "photoPicker": {
+    "removePhoto": "Remove photo"
+  },
+  "table": {
+    "count": "{count} products",
+    "delete": "Delete",
+    "edit": "Edit",
+    "inStock": "In stock",
+    "noProducts": "No products",
+    "outOfStock": "Out of stock",
+    "price": "Price",
+    "product": "Product",
+    "productList": "Product list",
+    "salePrice": "Sale price"
+  },
+  "view": {
+    "fileUpload": "File upload",
+    "manualEntry": "Manual entry"
+  }
+}

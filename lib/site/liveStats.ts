@@ -1,5 +1,3 @@
-/** One shared poller for every live figure on the page; failures keep the last values. */
-
 const ENDPOINT = "/api/stats/live";
 const REFRESH_MS = 15_000;
 
@@ -15,9 +13,7 @@ async function pull(): Promise<void> {
     if (!res.ok) return;
     snapshot = (await res.json()) as Snapshot;
     for (const notify of listeners) notify();
-  } catch {
-    // Keep the last known figures.
-  }
+  } catch {}
 }
 
 function visible(): boolean {
@@ -28,7 +24,6 @@ function onVisibility(): void {
   if (visible()) void pull();
 }
 
-/** Subscribe in the shape `useSyncExternalStore` expects. */
 export function subscribeLiveStats(onChange: () => void): () => void {
   listeners.add(onChange);
   if (listeners.size === 1) {
@@ -49,7 +44,6 @@ export function subscribeLiveStats(onChange: () => void): () => void {
   };
 }
 
-/** The latest figure for a counter, or undefined before the first read. */
 export function getLiveStat(key: string): number | undefined {
   return snapshot[key];
 }

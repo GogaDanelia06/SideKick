@@ -13,17 +13,10 @@ import { SectionOwnerContext } from "./sectionOwner";
 import { SAVED, SAVE_OUTCOME } from "./saveMessages";
 import type { Text } from "@/lib/i18n/messages";
 
-/**
- * A section of the AI page saves when the user says so — nothing is sent while they type.
- * Until then their changes are kept in this browser, so another section, a lost connection
- * or a closed tab never takes them away, and the browser asks before the page is left.
- */
 export function useSectionSave(section: SectionKey, title: Text) {
   const owner = useContext(SectionOwnerContext);
   const formRef = useRef<HTMLFormElement>(null);
-  /** The form as the server has it, as far as this page knows. */
   const saved = useRef<Fields | null>(null);
-  /** What the draft in this browser holds, so it is only written when it would differ. */
   const kept = useRef("");
   const [restored, setRestored] = useState(false);
   const [dirty, setDirty] = useState(false);
@@ -34,7 +27,6 @@ export function useSectionSave(section: SectionKey, title: Text) {
 
   useUnsavedChanges(dirty);
 
-  /** Whether the form still differs from the server, and a copy of what differs. */
   const sync = useEffectEvent(() => {
     const form = formRef.current;
     if (!form || !owner || saved.current === null) return;
@@ -52,7 +44,6 @@ export function useSectionSave(section: SectionKey, title: Text) {
     const form = formRef.current;
     if (!form || !owner) return;
 
-    // Once per mount; a section hidden for another one keeps what was typed in it.
     if (saved.current === null) {
       saved.current = readFields(form);
       if (restoreDraft(form, { ...owner, section }, saved.current)) setRestored(true);
@@ -67,11 +58,8 @@ export function useSectionSave(section: SectionKey, title: Text) {
     };
   }, [owner, section]);
 
-  // Every render, because React fills fields itself too — a prompt written by the AI,
-  // a restored draft — and neither of those is an edit the browser reports.
   useEffect(sync);
 
-  /** Sends the form; true once the server holds what it shows. */
   async function save(): Promise<boolean> {
     const form = formRef.current;
     if (!form || !owner || saving) return false;
@@ -93,12 +81,10 @@ export function useSectionSave(section: SectionKey, title: Text) {
     saved.current = now;
     setRestored(false);
     notify(`${t(SAVED)}: ${t(title)}`);
-    // Fresh server data everywhere, so the rest of the dashboard shows the new values too.
     router.refresh();
     return true;
   }
 
-  /** Puts the fields back the way the server has them. */
   function cancel() {
     const form = formRef.current;
     if (!form || !saved.current || saving) return;

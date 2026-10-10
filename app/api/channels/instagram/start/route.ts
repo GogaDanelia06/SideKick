@@ -8,7 +8,6 @@ import { DASH } from "@/lib/dashboard/routes";
 
 export const dynamic = "force-dynamic";
 
-/** Instagram Login, not Facebook Login; its redirect URI is registered under the Instagram product. */
 export const CALLBACK_PATH = "/api/channels/instagram/callback";
 
 export async function GET() {
@@ -20,7 +19,6 @@ export async function GET() {
     );
   }
 
-  // The Instagram app's id, not META_APP_ID.
   const appId = process.env.INSTAGRAM_APP_ID;
   if (!appId) {
     return NextResponse.redirect(

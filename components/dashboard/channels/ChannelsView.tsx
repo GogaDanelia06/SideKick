@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-// A subset of Channel, so the access token never reaches the browser.
 import type { ChannelSummary } from "@/lib/dashboard/queries";
 import {
   IconBrandFacebook,
@@ -11,7 +10,8 @@ import {
 } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import { ChannelActions } from "./ChannelActions";
-import { ConnectButton, ConnectResult } from "./ConnectMeta";
+import { ConnectButton } from "./ConnectButton";
+import { ConnectResult } from "./ConnectResult";
 import { ChannelStatus } from "./ChannelStatus";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 

@@ -21,7 +21,6 @@ afterEach(() => {
   delete process.env.AI_SERVICE_KEY;
 });
 
-/** Writing a prompt is the slow part of the page: the log keeps how slow, call by call. */
 describe("prompt calls: timing", () => {
   it("logs how long a prompt took to build, and which call it was", async () => {
     vi.stubGlobal("fetch", answers({ system_prompt: " ready " }));

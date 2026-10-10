@@ -7,7 +7,6 @@ export const dynamic = "force-dynamic";
 
 const PRODUCT_LIMIT = 500;
 
-/** Everything the AI needs to answer for one business, with final product prices. */
 export async function GET(request: Request) {
   const businessId = new URL(request.url).searchParams.get("businessId");
 
@@ -57,7 +56,6 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     business,
-    // Null until the assistant is configured; the AI service then uses its defaults.
     config,
     products: products.map((p) => ({
       code: p.code,

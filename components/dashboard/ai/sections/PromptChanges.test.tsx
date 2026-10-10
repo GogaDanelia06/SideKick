@@ -4,7 +4,6 @@ import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { SectionSaveContext } from "../sectionSaveContext";
 import { PromptChanges } from "./PromptChanges";
 
-/** The panel as the page draws it: `dirty` is whether the section has changes that are not saved. */
 const html = (saved: string, current: string, dirty = true) =>
   renderToStaticMarkup(
     <LanguageProvider>
@@ -54,7 +53,6 @@ describe("<PromptChanges>", () => {
     expect(out).not.toContain("<del");
   });
 
-  /** The text is whatever was typed or the AI wrote: it may be shown, never run. */
   it("shows a tag in the prompt as text", () => {
     const out = html("ა ბ", "ა ბ <script>alert(1)</script>");
     expect(out).not.toContain("<script");

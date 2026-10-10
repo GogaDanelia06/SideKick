@@ -18,9 +18,7 @@ function countChanges(draft: Theme, saved: Theme): number {
   return SHADES.reduce((n, s) => n + TOKENS.filter((t) => draft[s][t.id] !== saved[s][t.id]).length, 0);
 }
 
-/** Both themes' colours side by side; the page itself shows the result as you edit. */
 export function ThemeEditor({ initial }: { initial: Theme }) {
-  // Opens on the theme the admin is already looking at.
   const { theme: opened } = useTheme();
   const [chosen, setChosen] = useState<Shade | null>(null);
   const shade = chosen ?? opened;

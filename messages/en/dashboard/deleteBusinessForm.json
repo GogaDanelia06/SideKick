@@ -1,0 +1,14 @@
+{
+  "cancel": "Cancel",
+  "couldnTDeleteIt": "Couldn't delete it. Try again.",
+  "delete": "Delete",
+  "deleted": "Deleted \"{name}\"",
+  "onlyTheOwnerCan": "Only the owner can delete a business",
+  "removeTheOtherTeam": "Remove the other team members first, on the Team page",
+  "theNameDoesnT": "The name doesn't match",
+  "thisBusinessHasPayments": "This business has payments on record, so it can't be deleted here. Write to us and we'll help.",
+  "typeTheBusinessName": "Type the business name to confirm",
+  "warning": "\"{name}\" will be deleted for good, with its products, orders, chats and AI settings. This can't be undone.",
+  "youCanTDelete": "You can't delete your only business",
+  "yourSessionHasEnded": "Your session has ended. Log in and try again."
+}

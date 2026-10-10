@@ -2,18 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
-/**
- * Closes a popover on an outside pointerdown or Escape; attach the ref to everything
- * that counts as inside. A document listener avoids `fixed inset-0` overlays, which
- * break under ancestors with backdrop-filter or transform.
- */
 export function useDismiss<T extends HTMLElement = HTMLDivElement>(
   open: boolean,
   onClose: (reason: "outside" | "escape") => void,
 ) {
   const ref = useRef<T>(null);
 
-  // A ref, so an inline callback does not re-register the listeners on every render.
   const close = useRef(onClose);
   useEffect(() => {
     close.current = onClose;

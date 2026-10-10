@@ -1,12 +1,5 @@
-/**
- * Idle sign-out: a signed cookie records the last activity, and a session unused
- * for IDLE_MAX_SEC is refused. Kept outside the Auth.js JWT, because updating the
- * token would re-issue its cookie with the 7-day maxAge.
- */
-
 export const IDLE_MAX_SEC = 30 * 60;
 
-/** The marker is rewritten at most this often. */
 const REFRESH_AFTER_SEC = 60;
 
 export const IDLE_COOKIE = "sk.seen";
@@ -27,7 +20,6 @@ async function hmac(secret: string, data: string): Promise<string> {
     .join("");
 }
 
-/** Constant-time comparison. */
 function equal(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let diff = 0;
@@ -35,13 +27,11 @@ function equal(a: string, b: string): boolean {
   return diff === 0;
 }
 
-/** The current time, signed so the browser cannot forge it. */
 export async function stampMarker(secret: string, now = Date.now()): Promise<string> {
   const ts = String(now);
   return `${ts}.${await hmac(secret, ts)}`;
 }
 
-/** The marker's timestamp, or null when missing, malformed or forged (treated as a fresh visit). */
 export async function readMarker(
   value: string | undefined,
   secret: string,

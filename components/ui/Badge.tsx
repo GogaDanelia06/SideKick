@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
-/** Section eyebrow label with a decorative slash. */
 export function Badge({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <span

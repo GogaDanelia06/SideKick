@@ -47,11 +47,9 @@ export async function createProduct(fd: FormData): Promise<ProductResult> {
     const product = await prisma.product.create({
       data: { ...rest, businessId: ctx.businessId, name, code, photos, price: price ?? 0, quantity: quantity ?? 0 },
     });
-    // No revalidatePath: the client inserts the returned row without a re-render.
     return { ok: true, product };
   } catch (err) {
     await dropPhotos(photos);
-    // `[businessId, code]` is unique.
     if (isUniqueViolation(err)) return { ok: false, error: "duplicate" };
     log.error("could not create a product", err, { businessId: ctx.businessId });
     return { ok: false, error: "error" };
@@ -70,7 +68,6 @@ export async function updateProduct(id: string, fd: FormData): Promise<UpdateRes
   const { photos, dropped } = nextPhotos(current.photos, photo?.url ?? null, checkbox(fd, "removePhoto"));
 
   const { name, price, quantity, ...rest } = productFields(fd);
-  // A field the form did not send keeps its value, rather than being cleared.
   const sent = Object.fromEntries(Object.entries(rest).filter(([field]) => fd.has(field)));
   await prisma.product.updateMany({
     where: { id, businessId: ctx.businessId },

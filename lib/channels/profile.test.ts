@@ -23,7 +23,6 @@ const conversation = (over: Record<string, unknown> = {}) =>
     ...over,
   }) as never;
 
-/** Meta's reply, and what the fetch mock hands back. */
 function graph(body: unknown, ok = true) {
   return vi.fn().mockResolvedValue({ ok, json: async () => body });
 }
@@ -57,8 +56,6 @@ describe("nameCustomer()", () => {
     );
     await nameCustomer("conv1");
 
-    // Asking Facebook's fields of an Instagram id is an error, not an empty
-    // answer, so the wrong one here means every Instagram chat stays a dash.
     expect(String(fetchMock.mock.calls[0][0])).toContain("fields=name,username");
   });
 
@@ -75,7 +72,6 @@ describe("nameCustomer()", () => {
   });
 
   it("leaves a name somebody already set alone", async () => {
-    // The merchant's own word for their customer beats Facebook's.
     const fetchMock = graph({ first_name: "Lika" });
     vi.stubGlobal("fetch", fetchMock);
     convFind.mockResolvedValue(conversation({ customerName: "ლიკა — მუდმივი კლიენტი" }));
@@ -97,8 +93,6 @@ describe("nameCustomer()", () => {
   });
 
   it("writes nothing when Meta refuses the profile", async () => {
-    // Deleted accounts and undisclosed profiles are ordinary. The message is
-    // already stored and answerable; only the label is missing.
     vi.stubGlobal("fetch", graph({ error: { message: "Unsupported get request" } }, false));
     await nameCustomer("conv1");
 

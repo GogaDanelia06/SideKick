@@ -6,7 +6,6 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Text } from "@/lib/i18n/messages";
 
 type Props = {
-  /** Omit for a section that reads better as a plain heading. */
   badge?: Text | string;
   title: Text;
   sub?: Text;

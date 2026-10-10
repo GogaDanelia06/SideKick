@@ -51,7 +51,6 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
-  // Only the verification tags filled in seo.config.json are emitted.
   ...(VERIFICATION.google || VERIFICATION.bing || VERIFICATION.yandex
     ? {
         verification: {
@@ -67,7 +66,6 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // The admin theme applies to every route; cached, since this runs on every uncached request.
   const palette = themeCss(await cachedTheme());
 
   return (

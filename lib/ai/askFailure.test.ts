@@ -25,7 +25,6 @@ afterEach(() => {
   delete process.env.AI_SERVICE_KEY;
 });
 
-/** Why there was no reply, told apart: each of these needs a different fix. */
 describe("askAiDetailed() failures", () => {
   it("calls a 5xx an error in the service, with its status", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 502, text: async () => "bad gateway" }));
@@ -83,7 +82,6 @@ describe("prompt calls", () => {
 
   it("wait longer than a chat reply, because writing a whole prompt takes the service 25 to 45 seconds", async () => {
     vi.useFakeTimers();
-    // A service that answers after 60 seconds, unless the caller gives up first.
     vi.stubGlobal(
       "fetch",
       vi.fn(

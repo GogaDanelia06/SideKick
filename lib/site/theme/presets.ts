@@ -1,11 +1,6 @@
 import { defaultColors, type Shade, type ThemeColors } from "./tokens";
 import type { Text } from "@/lib/i18n/messages";
 
-/**
- * One-click palettes, stored as patches over the default palette. Their `bg` and
- * `canvas` match the legacy `site_bg` presets that read.ts still migrates.
- */
-
 export type Preset = {
   id: string;
   label: Text;
@@ -70,7 +65,6 @@ export function findPreset(id: string | null | undefined): Preset {
   return PRESETS.find((p) => p.id === id) ?? PRESETS[0];
 }
 
-/** The preset, filled out into a complete palette. */
 export function presetColors(preset: Preset, shade: Shade): ThemeColors {
   const out = defaultColors(shade);
   for (const [id, hex] of Object.entries(preset[shade])) {
@@ -79,7 +73,6 @@ export function presetColors(preset: Preset, shade: Shade): ThemeColors {
   return out;
 }
 
-/** The page and card colours, which are what tell the palettes apart in the toolbar. */
 export function presetSwatch(preset: Preset, shade: Shade): [string, string] {
   const c = presetColors(preset, shade);
   return [c.bg, c.card];

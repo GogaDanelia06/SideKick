@@ -1,0 +1,10 @@
+{
+  "add": "დამატება",
+  "addedAndOpened": "„{name}“ დაემატა და გაიხსნა",
+  "businessName": "ბიზნესის სახელი",
+  "cancel": "გაუქმება",
+  "couldNotAddIt": "ვერ დაემატა. სცადე ხელახლა.",
+  "enterTheBusinessName": "ჩაწერე ბიზნესის სახელი",
+  "youAlreadyHaveA": "ამ სახელით ბიზნესი უკვე გაქვს",
+  "yourSessionHasEnded": "სესია ამოიწურა. შედი და სცადე თავიდან."
+}

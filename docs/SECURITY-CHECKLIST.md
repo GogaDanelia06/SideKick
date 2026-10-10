@@ -43,8 +43,8 @@ worse failure, and the attempt is logged either way.
 | 2.1 | Every dashboard route requires a valid session | ✅ | `proxy.ts` + `requireContext()` in each page |
 | 2.2 | Defence in depth: edge middleware **and** per-page guard | ✅ | `proxy.ts`, `lib/session.ts` |
 | 2.3 | Role-based permissions enforced server-side | ✅ | `lib/auth/permissions.ts` — every action calls `requirePermission()` |
-| 2.4 | Tenant isolation: every query scoped by `businessId` | ✅ | `lib/dashboard/queries.ts` — `businessId` is a required argument on all |
-| 2.5 | Writes re-check tenant ownership in the `where` clause | ✅ | `lib/dashboard/actions.ts` — `updateMany`/`deleteMany` with `businessId` |
+| 2.4 | Tenant isolation: every query scoped by `businessId` | ✅ | `lib/dashboard/queries/` — `businessId` is a required argument on all |
+| 2.5 | Writes re-check tenant ownership in the `where` clause | ✅ | `lib/dashboard/actions/` — `updateMany`/`deleteMany` with `businessId` |
 | 2.6 | Cross-tenant read attempt returns nothing | ✅ | *Tested:* forged `businessId` matched 0 rows |
 | 2.7 | Cross-tenant write attempt changes nothing | ✅ | *Tested:* crafted request under a foreign id affected 0 rows |
 | 2.8 | Same action denied/allowed correctly across roles | ✅ | *Tested:* one crafted request replayed under OWNER/OPERATOR/VIEWER matched the matrix |

@@ -14,8 +14,6 @@ const ERRORS: Record<AddBusinessError, Text> = {
   failed: "dashboard.addBusinessForm.couldNotAddIt",
 };
 
-/** Names a new business; it gets the same defaults as at registration and opens straight away. */
-/** `taken`: the names already in the switcher, so a repeat is caught while typing. */
 type Props = { taken: string[]; onCancel: () => void; onSettled: (message: string) => void };
 
 export function AddBusinessForm({ taken, onCancel, onSettled }: Props) {

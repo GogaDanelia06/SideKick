@@ -27,7 +27,6 @@ beforeEach(() => {
   vi.mocked(askAi).mockResolvedValue({ reply: "გამარჯობა", handoffRequested: false, handoffReason: null });
 });
 
-/** A new business has no prompt, and the AI service refuses to answer for one: its customers got nothing. */
 describe("answerCustomer() for a business that has no prompt yet", () => {
   it("gives it one before asking the AI", async () => {
     const order: string[] = [];

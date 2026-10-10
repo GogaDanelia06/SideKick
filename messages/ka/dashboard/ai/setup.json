@@ -1,0 +1,63 @@
+{
+  "businessSection": {
+    "additionalInformation": "დამატებითი ინფორმაცია",
+    "branchLocations": "ფილიალების მდებარეობა",
+    "businessInformation": "ბიზნესის ინფორმაცია",
+    "companyName": "კომპანიის დასახელება",
+    "detailedDescription": "საქმიანობის დეტალური აღწერა",
+    "email": "იმეილი",
+    "industry": "საქმიანობის სფერო",
+    "otherContactDetails": "სხვა საკონტაქტო ინფორმაცია",
+    "phoneNumber": "ტელეფონის ნომერი",
+    "placeholder": "ორშ–პარ 10:00–18:00",
+    "placeholder2": "მისამართები გამოყავით მძიმით: თბილისი …, ბათუმი …",
+    "viberTelegramFax": "Viber, Telegram, ფაქსი…",
+    "website": "საიტი",
+    "workingHours": "სამუშაო საათები"
+  },
+  "characterSection": {
+    "character": "ხასიათი",
+    "communicationStyle": "კომუნიკაციის სტილი",
+    "emoji": "ემოჯები",
+    "formOfAddress": "მიმართვის ფორმა",
+    "responseLength": "პასუხის სიგრძე"
+  },
+  "languageControls": {
+    "add": "დამატება",
+    "addLanguage": "ენის დამატება",
+    "languageName": "ენის სახელი",
+    "suggested": "შემოთავაზებული"
+  },
+  "languagesSection": {
+    "added": "{name} დაემატა",
+    "atMostLanguages": "მაქსიმუმ {max} ენა",
+    "empty": "ერთი ენა მაინც საჭიროა",
+    "hint": "რომელ ენებზე უპასუხოს ბოტმა",
+    "languages": "ენები",
+    "remove": "წაშლა",
+    "removed": "{name} წაიშალა"
+  },
+  "rulesSection": {
+    "7DeliveryReturnsPolicy": "7. მიწოდების / დაბრუნების წესები",
+    "appointmentBooking": "შეხვედრის დაჯავშნა",
+    "behaviourRules": "ქცევის წესები",
+    "customersOftenSendSeveral": "კლიენტი ხშირად რამდენიმე მოკლე მესიჯს აგზავნის ზედიზედ. ლოდინი მათ ერთად კრებს და ერთ პასუხს აძლევს — 0 ნიშნავს მაშინვე პასუხს.",
+    "eGWhenThe": "მაგ: როცა კლიენტი ითხოვს ოპერატორს ან საჩივარია…",
+    "frequentlyAskedQuestionsFaq": "ხშირად დასმული კითხვები (FAQ)",
+    "howLongToWait": "რამდენ ხანს დაელოდოს პასუხამდე",
+    "informationAgent": "საინფორმაციო აგენტი",
+    "leadCapture": "ლიდების შეგროვება",
+    "leadCollector": "ლიდების შემგროვებელი",
+    "mayAmendCancelAn": "შეკვეთის ჩასწორება / გაუქმების უფლება",
+    "orderCapture": "შეკვეთების შეგროვება",
+    "orderTaking": "შეკვეთის მიღება",
+    "questionAnswer": "კითხვა → პასუხი…",
+    "roles": "როლები",
+    "salesSpecialist": "გაყიდვების სპეციალისტი",
+    "seconds": "წამი",
+    "supportAgent": "მხარდაჭერის აგენტი",
+    "whatCountsAsA": "რა აქტივობა ჩაითვლება ლიდად",
+    "whatCountsAsAn": "რა ნაბიჯი ჩაითვალოს შეკვეთად",
+    "whenToHandOff": "როდის გადასცეს საჭირო ადამიანს"
+  }
+}

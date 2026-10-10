@@ -2,15 +2,8 @@ import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
 import { refreshLongLived } from "./instagramToken";
 
-/**
- * Renews 60-day Instagram Login tokens before they expire. An expired token fails
- * silently (replies are refused while the channel still looks connected), and only
- * a token that still works can be renewed.
- */
-
 const RENEW_WITHIN_DAYS = 15;
 
-/** Meta refuses to renew a token younger than a day. */
 const MIN_AGE_HOURS = 24;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -39,7 +32,6 @@ export async function refreshInstagramTokens(now = new Date()): Promise<RefreshR
   const report: RefreshReport = { considered: due.length, renewed: 0, failed: 0 };
 
   for (const channel of due) {
-    // `lastSyncAt` is when the current token was issued.
     const age = channel.lastSyncAt ? now.getTime() - channel.lastSyncAt.getTime() : Infinity;
     if (age < MIN_AGE_HOURS * 60 * 60 * 1000) continue;
 

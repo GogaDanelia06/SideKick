@@ -1,0 +1,45 @@
+{
+  "admin": {
+    "channelSetup": "Channel setup",
+    "helpContent": "Help content",
+    "subtitle": "The videos and text customers see inside their dashboard.",
+    "tutorials": "Tutorials"
+  },
+  "channelGuidesEditor": {
+    "enterAValidYoutube": "Enter a valid YouTube link",
+    "notFound": "Not found",
+    "save": "Save",
+    "saved": "Saved",
+    "somethingWentWrong": "Something went wrong",
+    "stepsEnOnePer": "Steps (EN) — one per line",
+    "stepsKaOnePer": "Steps (KA) — one per line",
+    "theseAppearNextTo": "These appear next to each channel on the tenant's Channels screen.",
+    "togglePublish": "Toggle publish",
+    "youtubeLinkOptional": "YouTube link (optional)"
+  },
+  "editor": {
+    "add": "Add",
+    "addVideo": "Add video",
+    "cancel": "Cancel",
+    "categoryEn": "Category (EN)",
+    "categoryKa": "Category (KA)",
+    "close": "Close",
+    "delete": "Delete",
+    "descriptionEn": "Description (EN)",
+    "descriptionKa": "Description (KA)",
+    "edit": "Edit",
+    "enterAValidYoutube": "Enter a valid YouTube link",
+    "everyBusinessSeesThese": "Every business sees these under Tutorials in their dashboard.",
+    "georgianTitleIsRequired": "Georgian title is required",
+    "moveDown": "Move down",
+    "moveUp": "Move up",
+    "noVideosYet": "No videos yet.",
+    "notFound": "Not found",
+    "save": "Save",
+    "somethingWentWrong": "Something went wrong",
+    "titleEn": "Title (EN)",
+    "titleKa": "Title (KA) *",
+    "togglePublish": "Toggle publish",
+    "videos": "videos"
+  }
+}

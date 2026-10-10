@@ -12,7 +12,7 @@ import {
   SUGGESTED_LANGUAGES,
 } from "@/lib/dashboard/aiLanguages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import { SectionHead } from "../parts";
+import { SectionHead } from "../fields";
 import { FORBIDDEN, SAVE_ERROR } from "../saveMessages";
 import { LanguagePicker, SuggestedLanguages } from "./LanguageControls";
 import type { Text } from "@/lib/i18n/messages";
@@ -31,7 +31,6 @@ export function LanguagesSection({ config }: { config: AiConfig | null }) {
   const [languages, showLanguages] = useOptimistic(config?.languages ?? [DEFAULT_AI_LANGUAGE]);
   const full = languages.length >= MAX_AI_LANGUAGES;
 
-  // Shown at once; the list falls back to the saved one if the server refuses.
   function save(next: string[], done: Text) {
     startTransition(async () => {
       showLanguages(next);

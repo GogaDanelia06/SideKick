@@ -4,29 +4,21 @@ import { useState } from "react";
 import type { OtherAccount } from "@/lib/auth/accountVault";
 import { accountsRequest, landingAfterSwitch, loginUrl } from "@/lib/auth/accountsClient";
 
-/**
- * The account list's behaviour, shared by the menu and the login page. `back` is where
- * to return to; `parkFirst` sets the open account aside before going to the login page,
- * as the menu must (an open session is replaced by the next sign-in, and would be lost).
- */
 export function useAccountList(accounts: OtherAccount[], { back, parkFirst }: { back: () => string; parkFirst: boolean }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // Hidden at once; the server forgets them in the same moment.
   const [removed, setRemoved] = useState<string[]>([]);
 
   async function run(key: string, work: () => Promise<string | null>) {
     if (busy) return;
     setBusy(key);
     setError(null);
-    // Unsaved AI settings belong to the account being left.
     const failure = await work();
     if (failure === null) return;
     setBusy(null);
     setError(failure);
   }
 
-  /** To the login page, for a new account or one whose session ended. */
   const toLogin = (email?: string) =>
     run(email ?? "add", async () => {
       if (parkFirst) {

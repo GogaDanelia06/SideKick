@@ -1,113 +1,25 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { signIn, signInWithGoogle } from "@/lib/auth/browserSignIn";
-import { AuthShell } from "./AuthShell";
-import { GoogleButton } from "./GoogleButton";
-import { ResendVerification } from "./ResendVerification";
-import { OrDivider } from "./OrDivider";
-import { Field } from "@/components/ui/Field";
+import { signInWithGoogle } from "@/lib/auth/browserSignIn";
+import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
 import { LOGIN } from "@/lib/content/auth";
 import { oauthErrorMessage } from "@/lib/content/oauthErrors";
-import { safeCallbackUrl } from "@/lib/auth/callbackUrl";
 import { ROUTES } from "@/lib/routes";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import { AUTH_MESSAGES } from "@/lib/auth/messages";
-import { EMAIL_PATTERN } from "@/lib/validation/patterns";
+import { AuthShell } from "./AuthShell";
+import { GoogleButton } from "./GoogleButton";
+import { LoginFields } from "./LoginFields";
+import { OrDivider } from "./OrDivider";
+import { useLogin } from "./useLogin";
 
-type LoginField = "email" | "password";
-type LoginErrorKey = "emailRequired" | "emailInvalid" | "passwordRequired";
-type LoginErrors = Partial<Record<LoginField, LoginErrorKey>>;
-
-type LoginFormProps = {
-  google: boolean;
-};
-
-/** Messages for the `?error=` NextAuth adds after a failed Google sign-in. */
-export function LoginForm({ google }: LoginFormProps) {
+export function LoginForm({ google }: { google: boolean }) {
   const { t } = useLanguage();
   const searchParams = useSearchParams();
-  const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<LoginErrors>({});
-  const [pending, setPending] = useState(false);
-  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
-
   const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
-
   const oauthError = oauthErrorMessage(searchParams.get("error"));
-
-  function clearFieldError(field: LoginField) {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-    setError(null);
-  }
-
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-
-    const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") ?? "").trim();
-    const password = String(formData.get("password") ?? "");
-    const remember = formData.get("remember") === "on";
-    const errors: LoginErrors = {};
-
-    if (!email) errors.email = "emailRequired";
-    else if (!EMAIL_PATTERN.test(email)) errors.email = "emailInvalid";
-
-    if (!password) errors.password = "passwordRequired";
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    setFieldErrors({});
-    setUnverifiedEmail(null);
-    setPending(true);
-
-    try {
-      const res = await signIn("credentials", {
-        email,
-        password,
-        // Stored in the token: browsers restore session cookies, so the server must know (see sessionExpiry.ts).
-        remember: remember ? "1" : "0",
-        redirect: false,
-      });
-
-      if (!res?.ok || res.error) {
-        // Safe to be specific: this check runs only after the password matched.
-        const unverified = res?.code === "unverified_email";
-        const message = unverified
-          ? LOGIN.unverified
-          : res?.code === "rate_limited"
-            ? LOGIN.rateLimited
-            : LOGIN.invalid;
-
-        setUnverifiedEmail(unverified ? email : null);
-        setPending(false);
-        return setError(t(message));
-      }
-
-      // Not remembered: turn the cookie into a browser-session cookie. A failure does not block sign-in.
-      if (!remember) {
-        await fetch("/api/session/remember", { method: "POST" }).catch(() => {});
-      }
-
-      // The cookies just changed, so the next page is loaded for real: a client-side push
-      // could replay a redirect the router cached while signed out, and bring the form back.
-      window.location.assign(callbackUrl);
-    } catch {
-      setPending(false);
-      setError(t(LOGIN.invalid));
-    }
-  }
+  const login = useLogin(callbackUrl);
 
   return (
     <AuthShell
@@ -124,66 +36,21 @@ export function LoginForm({ google }: LoginFormProps) {
     >
       {google ? (
         <>
-          <GoogleButton
-            label={t(LOGIN.google)}
-            onClick={() => signInWithGoogle(callbackUrl)}
-          />
+          <GoogleButton label={t(LOGIN.google)} onClick={() => signInWithGoogle(callbackUrl)} />
 
           <OrDivider />
         </>
       ) : null}
 
-      <form className="flex flex-col gap-3.5" onSubmit={onSubmit} noValidate>
-        <Field
-          name="email"
-          label={t(LOGIN.email)}
-          type="email"
-          placeholder="you@company.com"
-          autoComplete="email"
-          // Filled in when an account whose session ended is picked below the form.
-          defaultValue={searchParams.get("email") ?? undefined}
-          error={fieldErrors.email ? t(AUTH_MESSAGES[fieldErrors.email]) : undefined}
-          onChange={() => clearFieldError("email")}
-          required
-        />
-
-        <Field
-          name="password"
-          label={t(LOGIN.password)}
-          type="password"
-          placeholder="••••••••"
-          autoComplete="current-password"
-          error={fieldErrors.password ? t(AUTH_MESSAGES[fieldErrors.password]) : undefined}
-          onChange={() => clearFieldError("password")}
-          required
-        />
-
-        <div className="flex items-center justify-between text-[13px]">
-          <label className="flex items-center gap-2 text-muted">
-            <input name="remember" type="checkbox" className="accent-[var(--primary)]" />
-            {t(LOGIN.remember)}
-          </label>
-
-          <Link href={ROUTES.forgot} className="text-blue">
-            {t(LOGIN.forgot)}
-          </Link>
-        </div>
-
-        {error || oauthError ? (
-          <div className="flex flex-col gap-1.5">
-            <p className="text-[13px] text-red">{error ?? t(oauthError!)}</p>
-            {unverifiedEmail ? <ResendVerification email={unverifiedEmail} /> : null}
-          </div>
-        ) : null}
-
-        <button
-          type="submit"
-          disabled={pending}
-          className="h-[42px] rounded-sm bg-primary text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {pending ? "…" : t(LOGIN.submit)}
-        </button>
-      </form>
+      <LoginFields
+        defaultEmail={searchParams.get("email") ?? undefined}
+        errors={login.fieldErrors}
+        onClear={login.clearFieldError}
+        error={login.error ?? (oauthError ? t(oauthError) : null)}
+        unverifiedEmail={login.unverifiedEmail}
+        pending={login.pending}
+        onSubmit={login.onSubmit}
+      />
     </AuthShell>
   );
 }

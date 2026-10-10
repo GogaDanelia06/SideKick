@@ -7,7 +7,6 @@ import type { Text } from "@/lib/i18n/messages";
 
 export type RailItem = { key: string; label: Text; icon: Icon };
 
-/** Section list for multi-section admin screens: vertical on desktop, a scrolling row on mobile. */
 export function SectionRail({
   items,
   active,
@@ -20,7 +19,6 @@ export function SectionRail({
   const { t } = useLanguage();
 
   return (
-    // min-w-0 lets the grid child shrink, so the row scrolls instead of widening the page.
     <div className="min-w-0 rounded-lg border border-border bg-card p-3 lg:sticky lg:top-4">
       <div className="px-2 pb-2 text-[11px] uppercase tracking-wide text-faint">
         {t("admin.sectionRail.sections")}
@@ -52,7 +50,6 @@ export function SectionRail({
   );
 }
 
-/** The two-column body every multi-section admin screen uses. */
 export function SectionLayout({
   rail,
   children,

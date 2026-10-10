@@ -11,7 +11,6 @@ export type HeroSlide = {
   sub: Bilingual;
 };
 
-/** Long enough to read a slide's headline, paragraph and mock conversation. */
 export const HERO_INTERVAL_MS = 10_000;
 
 export const HERO_SLIDES: HeroSlide[] = [

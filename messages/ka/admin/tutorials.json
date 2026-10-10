@@ -1,0 +1,45 @@
+{
+  "admin": {
+    "channelSetup": "არხების დაკავშირება",
+    "helpContent": "ინსტრუქციები",
+    "subtitle": "ვიდეოები და ტექსტი, რომელსაც მომხმარებელი დაშბორდში ხედავს.",
+    "tutorials": "ვიდეო ინსტრუქციები"
+  },
+  "channelGuidesEditor": {
+    "enterAValidYoutube": "მიუთითეთ სწორი YouTube ბმული",
+    "notFound": "ვერ მოიძებნა",
+    "save": "შენახვა",
+    "saved": "შენახულია",
+    "somethingWentWrong": "ვერ შესრულდა",
+    "stepsEnOnePer": "ნაბიჯები (ინგ.) — თითო ხაზზე თითო",
+    "stepsKaOnePer": "ნაბიჯები (ქართ.) — თითო ხაზზე თითო",
+    "theseAppearNextTo": "ეს ინსტრუქციები გამოჩნდება მომხმარებლის „არხების“ გვერდზე, თითოეული არხის გვერდით.",
+    "togglePublish": "გამოქვეყნება",
+    "youtubeLinkOptional": "YouTube ბმული (არასავალდებულო)"
+  },
+  "editor": {
+    "add": "დამატება",
+    "addVideo": "ვიდეოს დამატება",
+    "cancel": "გაუქმება",
+    "categoryEn": "კატეგორია (ინგ.)",
+    "categoryKa": "კატეგორია (ქართ.)",
+    "close": "დახურვა",
+    "delete": "წაშლა",
+    "descriptionEn": "აღწერა (ინგ.)",
+    "descriptionKa": "აღწერა (ქართ.)",
+    "edit": "რედაქტირება",
+    "enterAValidYoutube": "მიუთითეთ სწორი YouTube ბმული",
+    "everyBusinessSeesThese": "ეს ვიდეოები ყველა ბიზნესს უჩანს დაშბორდში, „ვიდეო ინსტრუქციების“ ჩანართში.",
+    "georgianTitleIsRequired": "ქართული სათაური სავალდებულოა",
+    "moveDown": "ჩამოწევა",
+    "moveUp": "აწევა",
+    "noVideosYet": "ჯერ არცერთი ვიდეო.",
+    "notFound": "ვერ მოიძებნა",
+    "save": "შენახვა",
+    "somethingWentWrong": "ვერ შესრულდა",
+    "titleEn": "სათაური (ინგ.)",
+    "titleKa": "სათაური (ქართ.) *",
+    "togglePublish": "გამოქვეყნება",
+    "videos": "ვიდეო"
+  }
+}

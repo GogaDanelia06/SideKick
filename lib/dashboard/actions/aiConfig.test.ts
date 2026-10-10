@@ -60,8 +60,6 @@ describe("saveAiPrompt()", () => {
 
 describe("saveAiCharacter()", () => {
   it("saves the chosen character and leaves the roles alone", async () => {
-    // Roles are edited in the Rules section; this form has no role inputs, so
-    // writing them here would wipe the roles on every save.
     const fd = new FormData();
     fd.set("style", "მეგობრული");
     fd.set("length", "მოკლე");

@@ -15,7 +15,6 @@ describe("testerFailure()", () => {
     expect(textIn("en", testerFailure({ ok: false, error: "emoji_only" }))).toContain("emoji are switched off");
   });
 
-  /** The details are for whoever reads the log, never for a merchant. */
   it("has nothing technical in any message, in either language", () => {
     for (const reply of [null, { ok: false, error: "failed" }, { ok: false, error: "forbidden" }, { ok: false, error: "emoji_only" }] as const) {
       for (const locale of ["ka", "en"] as const) {

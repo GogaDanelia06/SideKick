@@ -14,7 +14,6 @@ const ICON_BTN = "grid size-[30px] place-items-center rounded-[6px] border borde
 
 const stockCls = (n: number) => (n === 0 ? "text-red" : n < 5 ? "text-amber" : "text-ink");
 
-/** Shared column widths, so the header lines up with the rows. */
 const COL = { price: "w-[92px]", sale: "w-[104px]", stock: "w-[96px]" };
 
 export function ProductTable({ products, onEdit }: { products: Product[]; onEdit: (p: Product) => void }) {
@@ -63,7 +62,6 @@ export function ProductTable({ products, onEdit }: { products: Product[]; onEdit
               <div className="font-mono text-xs text-muted">{p.code}</div>
             </div>
 
-            {/* Struck through when a sale price applies. */}
             <div className={clsx(COL.price, "hidden text-right font-mono text-sm sm:block")}>
               <span className={p.salePrice ? "text-muted line-through" : undefined}>{p.price}₾</span>
             </div>

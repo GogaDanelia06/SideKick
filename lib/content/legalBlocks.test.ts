@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { toBlocks, toItems } from "./legalBlocks";
 
-/** What the client pasted into the admin panel, word joiners and all. */
 const PASTED = [
   "მომხმარებელი ვალდებულია Sidekick გამოიყენოს მოქმედი კანონმდებლობის დაცვით.",
   "აკრძალულია Sidekick-ის გამოყენება:",

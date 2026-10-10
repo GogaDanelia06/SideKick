@@ -1,6 +1,5 @@
 import { AI_SAVE_URL, SAVE_ERRORS, type SaveError, type SaveRequest } from "./request";
 
-/** Browsers refuse `keepalive` bodies over 64 KB; a bigger save still goes out, without surviving a closed tab. */
 const KEEPALIVE_MAX = 60 * 1024;
 
 export type SaveOutcome = { ok: true } | { ok: false; error: SaveError };
@@ -15,9 +14,7 @@ export async function sendSave(request: SaveRequest): Promise<SaveOutcome> {
       headers: { "Content-Type": "application/json" },
       body,
       credentials: "same-origin",
-      // The proxy sends a signed-out user to the login page: a refusal, not something to follow.
       redirect: "manual",
-      // Lets the save finish even though the tab is closing.
       keepalive: new Blob([body]).size <= KEEPALIVE_MAX,
     });
     if (res.ok) return { ok: true };

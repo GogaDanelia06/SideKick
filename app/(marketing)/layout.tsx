@@ -10,7 +10,6 @@ export default async function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // The footer is on every page, so every page reads the contact details the admin panel holds.
   const contact = await getContactDetails();
   return (
     <>

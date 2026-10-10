@@ -9,8 +9,6 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe("authorizeUrl()", () => {
   it("sends the merchant to instagram.com, not facebook.com", () => {
-    // The whole bug this flow replaces: Facebook's dialog does not know these
-    // scopes, so the account silently never grants message access.
     expect(authorizeUrl("APP_1", "https://sidekick.ge/cb", "STATE")).toContain(
       "https://www.instagram.com/oauth/authorize",
     );
@@ -30,8 +28,6 @@ describe("authorizeUrl()", () => {
   });
 
   it("forces a fresh sign-in", () => {
-    // Without this, whichever Instagram account the browser is already signed
-    // into is the one that gets connected — silently, and often the wrong one.
     const url = new URL(authorizeUrl("APP_1", "https://sidekick.ge/cb", "STATE"));
     expect(url.searchParams.get("force_reauth")).toBe("true");
   });
@@ -39,9 +35,6 @@ describe("authorizeUrl()", () => {
 
 describe("fetchAccount()", () => {
   it("stores user_id, not id", async () => {
-    // Both come back from the same call. Only user_id matches the `entry.id`
-    // Meta puts on an incoming webhook, so picking `id` produces a channel that
-    // looks connected and drops every message.
     vi.stubGlobal(
       "fetch",
       ok({ user_id: "17841436214263005", username: "sidekickge", id: "27874418322242107" }),
@@ -54,10 +47,6 @@ describe("fetchAccount()", () => {
   });
 
   it("refuses a numeric user_id rather than storing a rounded one", async () => {
-    // These ids are past 2^53. JSON.parse turns 17841436214263005 into
-    // …004 before this code ever sees it, so an id that arrives unquoted is
-    // already wrong and would match no webhook. Failing loudly beats a channel
-    // that looks connected and silently drops every message.
     vi.stubGlobal("fetch", ok({ user_id: 17841436214263005, username: "x" }));
     await expect(fetchAccount("IGA_TOKEN")).resolves.toBeNull();
   });
@@ -96,8 +85,6 @@ describe("subscribeToMessages()", () => {
 
 describe("cron route authorisation", () => {
   it("refuses when CRON_SECRET is unset rather than defaulting to open", async () => {
-    // An unauthenticated job anyone can trigger is worse than one that does not
-    // run: it calls Meta on demand for every connected account.
     delete process.env.CRON_SECRET;
     const { GET } = await import("@/app/api/cron/instagram-refresh/route");
     const res = await GET(new Request("https://sidekick.ge/api/cron/instagram-refresh"));

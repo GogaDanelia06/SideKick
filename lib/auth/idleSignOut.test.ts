@@ -11,7 +11,6 @@ beforeEach(() => vi.stubEnv("AUTH_SECRET", SECRET));
 async function visit(cookies: Record<string, string>) {
   const { default: proxy } = await import("@/proxy");
   const cookie = Object.entries(cookies).map(([name, value]) => `${name}=${value}`).join("; ");
-  // Host and protocol as a browser sends them: without them Auth.js assumes https and a __Secure- cookie.
   const headers = { cookie, host: "localhost", "x-forwarded-proto": "http" };
   const request = new NextRequest("http://localhost/dashboard/products", { headers });
   return (proxy as unknown as (req: NextRequest, ctx: unknown) => Promise<Response>)(request, {});
@@ -34,7 +33,6 @@ describe("proxy idle sign-out", () => {
 
     expect(res.status).toBe(307);
     expect(res.headers.get("location")).toContain("/login?callbackUrl=%2Fdashboard%2Fproducts");
-    // Before, only the marker went: the next visit looked fresh and the session walked back in.
     expect(deleted(res, SESSION)).toBe(true);
     expect(deleted(res, "sk.acct.1")).toBe(true);
   });
@@ -51,11 +49,6 @@ describe("proxy idle sign-out", () => {
     expect(deleted(res, SESSION)).toBe(false);
   });
 
-  /**
-   * The bug this closes: logging out leaves the marker behind. Signing in again half an
-   * hour later, the new session was judged idle by its predecessor's marker and ended on
-   * its first page — the login form simply came back, with no error, again and again.
-   */
   it("does not end a new sign-in over a marker an earlier session left behind", async () => {
     const token = await encode({
       token: { uid: "u1", remember: false, startedAt: Date.now() - 5_000 },
@@ -69,7 +62,6 @@ describe("proxy idle sign-out", () => {
 
     expect(res.headers.get("location")).toBeNull();
     expect(deleted(res, SESSION)).toBe(false);
-    // And it starts its own idle clock from now.
     expect(res.headers.getSetCookie().some((c) => c.startsWith(`${IDLE_COOKIE}=`) && !/Expires=Thu, 01 Jan 1970/.test(c))).toBe(true);
   });
 });

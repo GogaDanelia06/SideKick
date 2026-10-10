@@ -2,7 +2,6 @@ import { z } from "zod";
 import type { AuthMessageKey } from "@/lib/auth/messages";
 import { NAME_PATTERN, PASSWORD_NUMBER_OR_SYMBOL_PATTERN, PHONE_PATTERN } from "./patterns";
 
-/** Messages are AUTH_MESSAGES keys; the route answers with the text in both languages. */
 const code = (key: AuthMessageKey) => key;
 
 export const passwordSchema = z

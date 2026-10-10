@@ -18,7 +18,6 @@ export function ChatInput({
 }: {
   placeholder: string;
   onSend: (text: string) => void;
-  /** Omit to hide the attach button entirely. */
   onFile?: (file: File) => AttachmentError | null;
 }) {
   const { t } = useLanguage();
@@ -32,7 +31,6 @@ export function ChatInput({
   };
 
   function pick(file: File | undefined) {
-    // Reset, so picking the same file again still fires a change event.
     if (fileRef.current) fileRef.current.value = "";
     if (!file || !onFile) return;
     setError(onFile(file));

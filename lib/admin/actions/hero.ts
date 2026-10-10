@@ -55,7 +55,6 @@ export async function moveSlide(id: string, dir: Direction): Promise<AdminResult
   return { ok: true };
 }
 
-/** Carousel auto-advance, in seconds (1–60). */
 export async function updateHeroInterval(fd: FormData): Promise<AdminResult> {
   await requireAdmin();
   const seconds = Number(field(fd, "seconds"));

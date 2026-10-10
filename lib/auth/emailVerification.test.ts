@@ -45,7 +45,6 @@ describe("createVerificationToken", () => {
   it("never stores the token itself, only its hash", async () => {
     const { token } = await createVerificationToken("u1");
     const stored = (create.mock.calls[0]![0] as { data: { tokenHash: string } }).data;
-    // A database leak must not hand anyone a working link.
     expect(stored.tokenHash).toBe(sha(token));
     expect(stored.tokenHash).not.toBe(token);
   });
@@ -103,8 +102,6 @@ describe("verifyVerificationToken", () => {
 
 describe("consumeVerificationToken", () => {
   it("burns the token and verifies the user in one transaction", async () => {
-    // Half-applied is the worst case: a spent token on an unverified account,
-    // or a verified account with a live link still in someone's inbox.
     await consumeVerificationToken("t1", "u1");
     expect(transaction).toHaveBeenCalledTimes(1);
     expect(update).toHaveBeenCalledWith({ where: { id: "t1" }, data: { usedAt: expect.any(Date) } });

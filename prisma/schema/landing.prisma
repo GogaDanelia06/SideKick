@@ -1,0 +1,77 @@
+/// One figure in the strip on the landing page.
+///
+/// Either the platform counts it or a person writes it, never both. When
+/// `source` names a counter from lib/site/statSources.ts the figure is read
+/// from the database on every request and `value` is ignored; when `source` is
+/// empty the typed `value` is shown as-is. That split exists because a typed
+/// number goes stale the moment it is saved — so anything the system actually
+/// knows should never be typed.
+/// How one figure in the strip gets its number.
+///
+/// MANUAL — whatever an admin typed, shown as typed.
+/// LIVE   — counted from the database on every read.
+/// AUTO   — starts at `baseValue` and climbs on its own, by a random amount in
+///          [changeMin, changeMax] every random interval in [intervalMinMs,
+///          intervalMaxMs]. Decorative, and the spec's third option.
+enum StatMode {
+  MANUAL
+  LIVE
+  AUTO
+}
+
+model SiteStat {
+  id     String   @id @default(cuid())
+  key    String   @unique
+  mode   StatMode @default(MANUAL)
+  /// Shown as-is when mode is MANUAL.
+  value  String
+  /// A key from STAT_SOURCES. Used when mode is LIVE.
+  source String   @default("")
+
+  /// AUTO: where the figure starts and the two ranges it drifts by.
+  baseValue     Float  @default(0)
+  changeMin     Float  @default(0)
+  changeMax     Float  @default(0)
+  intervalMinMs Int    @default(60000)
+  intervalMaxMs Int    @default(300000)
+  /// Rendered right after the number, e.g. "₾" or "+".
+  suffix        String @default("")
+
+  /// AUTO running state.
+  ///
+  /// Kept here rather than in each visitor's browser on purpose: rolling the
+  /// dice client-side means two people see two different figures and a refresh
+  /// sends the number back to its start value, which is what gives an invented
+  /// figure away. One number on the server is one number for everybody.
+  autoValue  Float?
+  autoNextAt DateTime?
+
+  labelKa   String
+  labelEn   String
+  order     Int      @default(0)
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model SiteFaq {
+  id         String   @id @default(cuid())
+  questionKa String
+  questionEn String
+  answerKa   String
+  answerEn   String
+  order      Int      @default(0)
+  published  Boolean  @default(true)
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+/// Every simple editable text on the public site, addressed by a stable key
+/// (e.g. "story_title", "terms_body", "contact_email"). One table instead of a
+/// model per section — a new editable field costs a key, not a migration.
+/// A key that is absent falls back to the hardcoded default in lib/content,
+/// so the site always renders even before an admin touches anything.
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  valueKa   String
+  valueEn   String   @default("")
+  updatedAt DateTime @updatedAt
+}

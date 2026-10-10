@@ -1,0 +1,47 @@
+{
+  "connectMeta": {
+    "connect": "Connect",
+    "connected": "Connected.",
+    "connectionCancelled": "Connection cancelled.",
+    "noSignInFlow": "No sign-in flow is set up for this channel yet",
+    "reconnect": "Reconnect",
+    "text": "Facebook connected. This Page has no Instagram account linked — connect Instagram separately.",
+    "text10": "More than one Page was granted. Try again and pick just one.",
+    "text11": "That request could not be verified. Please start again.",
+    "text12": "Your session expired. Sign in again.",
+    "text13": "META_APP_ID is not set.",
+    "text14": "Meta rejected the code. Try again.",
+    "text2": "INSTAGRAM_APP_ID is not set.",
+    "text3": "Instagram would not issue a long-lived token. Try again.",
+    "text4": "Could not read the Instagram account. Check that it is a professional account.",
+    "text5": "The account linked, but Meta refused the messages subscription. Try again.",
+    "text6": "You do not have permission to manage channels. Ask the business owner.",
+    "text7": "Your plan does not allow another channel. Turn one off first, or change the plan.",
+    "text8": "That account is already linked to another business. Disconnect it there first.",
+    "text9": "No Page was granted. Pick the Page you want on Meta's consent screen.",
+    "thatDidNotWork": "That did not work.",
+    "walksThroughMetaS": "Walks through Meta's consent screen again and takes a fresh token"
+  },
+  "status": {
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "needsAuthorising": "Needs authorising",
+    "off": "Off"
+  },
+  "view": {
+    "connectedToast": "{name} turned on",
+    "disconnect": "Disconnect",
+    "disconnectAsk": "Disconnect {name}? It stops answering until you connect it again, and the account can be connected to another business.",
+    "disconnectedToast": "{name} disconnected",
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "keep": "Keep",
+    "lastSync": "Last sync",
+    "planLimit": "The \"{plan}\" plan allows {limit} channel(s) and {used} are already on. Turn one off first, or change the plan.",
+    "turnOff": "Turn off",
+    "turnOn": "Turn on",
+    "turnedOffToast": "{name} turned off",
+    "websiteApi": "API for websites",
+    "whatsapp": "WhatsApp"
+  }
+}

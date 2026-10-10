@@ -1,7 +1,6 @@
 import type { Bilingual } from "./types";
 import { toBlocks, toItems, type LegalBlock, type LegalSectionView, type RawBlock } from "./legalBlocks";
 
-/** A section as the admin panel stores it: one column per language. */
 export type StoredSection = {
   headingKa: string;
   headingEn: string;
@@ -14,7 +13,6 @@ export type StoredSection = {
 const pairUp = (ka: string[], en: string[]): Bilingual[] =>
   ka.map((text, i) => ({ ka: text, en: en[i] ?? text }));
 
-/** Whether the English was written as a translation of the Georgian: block for block, item for item. */
 function alike(georgian: RawBlock[], english: RawBlock[]): boolean {
   return (
     georgian.length === english.length &&
@@ -26,11 +24,6 @@ function alike(georgian: RawBlock[], english: RawBlock[]): boolean {
   );
 }
 
-/**
- * Whether this section is written in English as fully as in Georgian — heading, text and
- * every bullet. The admin panel shows this beside each section, because the rule below
- * decides what the public page does with it.
- */
 export function readsInEnglish(section: StoredSection): boolean {
   return (
     section.headingEn.trim() !== "" &&
@@ -39,13 +32,6 @@ export function readsInEnglish(section: StoredSection): boolean {
   );
 }
 
-/**
- * One section in both languages.
- *
- * A section is shown in English only when all of it was written in English: half a section
- * in one language and half in the other reads as broken, and on a legal page that matters.
- * Anything short of that shows in Georgian, and the panel says which sections those are.
- */
 export function pairSection(section: StoredSection): LegalSectionView {
   const english = readsInEnglish(section);
   const georgian = toBlocks(section.bodyKa);
@@ -59,7 +45,6 @@ export function pairSection(section: StoredSection): LegalSectionView {
     return { kind: "text", text: { ka: block.text, en: other?.kind === "text" ? other.text : block.text } };
   });
 
-  // The bullets box, where a section still uses it, is a list after the text.
   const items = toItems(section.bulletsKa);
   if (items.length > 0) {
     blocks.push({ kind: "list", items: pairUp(items, english ? toItems(section.bulletsEn) : []) });
@@ -71,7 +56,6 @@ export function pairSection(section: StoredSection): LegalSectionView {
   };
 }
 
-/** The drafted copy (lib/content/legal.ts) already knows its shape; this is it as blocks. */
 export function draftedBlocks(section: { paragraphs?: Bilingual[]; bullets?: Bilingual[] }): LegalBlock[] {
   const paragraphs = (section.paragraphs ?? []).map((text): LegalBlock => ({ kind: "text", text }));
   const bullets = section.bullets ?? [];

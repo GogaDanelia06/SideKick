@@ -4,7 +4,6 @@ import { getConversation } from "@/lib/dashboard/queries";
 
 export const dynamic = "force-dynamic";
 
-/** One conversation for the inbox, scoped to the caller's business (404 otherwise). */
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getContext();
   if (!ctx) return NextResponse.json({ error: "unauthorized" }, { status: 401 });

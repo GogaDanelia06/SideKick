@@ -3,11 +3,6 @@
 import { useRef, useState } from "react";
 import { useDismiss } from "@/hooks/useDismiss";
 
-/**
- * Open state and placement for a popover anchored in `box`. It opens leftwards near the
- * right edge of the screen and upwards near the bottom, and closes on an outside click
- * or Escape; Escape hands focus back to the button that opened it.
- */
 export function usePopover(size: { width: number; height: number }) {
   const [open, setOpen] = useState(false);
   const [place, setPlace] = useState({ right: false, up: false });
@@ -25,7 +20,6 @@ export function usePopover(size: { width: number; height: number }) {
     setOpen(!open);
   }
 
-  /** Closes and gives focus back to the button that opened it. */
   function close() {
     setOpen(false);
     trigger.current?.focus();

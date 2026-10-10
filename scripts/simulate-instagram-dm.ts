@@ -1,18 +1,10 @@
 import { createHmac } from "node:crypto";
 
-/**
- * Sends a correctly signed Instagram webhook, since Meta does not deliver real DMs to
- * an unpublished app. The message lands in the real inbox; delete it afterwards.
- *
- *   INSTAGRAM_APP_SECRET=… IG_ACCOUNT_ID=… npx tsx scripts/simulate-instagram-dm.ts "text"
- */
-
 const secret = process.env.INSTAGRAM_APP_SECRET;
 const accountId = process.env.IG_ACCOUNT_ID;
 const url = process.env.WEBHOOK_URL ?? "https://sidekick.ge/api/webhooks/messenger";
 const text = process.argv[2] ?? "გამარჯობა, ეს სატესტო შეტყობინებაა";
 
-// A stable fake sender keeps every run in one conversation.
 const senderId = process.env.IG_SENDER_ID ?? "9900000000000001";
 
 if (!secret || !accountId) {
@@ -24,7 +16,6 @@ if (!secret || !accountId) {
   process.exit(1);
 }
 
-// Instagram Login's `changes[]` shape.
 const payload = JSON.stringify({
   object: "instagram",
   entry: [
@@ -38,7 +29,6 @@ const payload = JSON.stringify({
             sender: { id: senderId },
             recipient: { id: accountId },
             timestamp: String(Date.now()),
-            // A unique mid per run; a repeated one is treated as a retry.
             message: { mid: `sim_${Date.now()}`, text },
           },
         },
@@ -49,7 +39,6 @@ const payload = JSON.stringify({
 
 const signature = `sha256=${createHmac("sha256", secret).update(payload, "utf8").digest("hex")}`;
 
-// tsx compiles to CommonJS, where top-level await is not allowed.
 async function main() {
   const res = await fetch(url, {
     method: "POST",

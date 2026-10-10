@@ -63,8 +63,8 @@ lib/
   auth/admin.ts           requireAdmin — platform-owner guard (DB re-check)
   auth/passwordReset.ts   Hashed, single-use, expiring reset tokens
   security/rateLimit.ts   Database-backed sliding-window limiter
-  dashboard/queries.ts    Every read. All take businessId.
-  dashboard/actions.ts    Every write. All permission-gated Server Actions.
+  dashboard/queries/      Every read. All take businessId.
+  dashboard/actions/      Every write. All permission-gated Server Actions.
   admin/actions.ts        Admin content writes. All requireAdmin-gated.
   site/content.ts         Reads for admin-editable public content
   content/                All user-facing copy, bilingual
@@ -98,7 +98,7 @@ export async function requireContext(): Promise<Ctx>      // same, or redirect t
 ```
 
 Every dashboard page begins with `requireContext()` and passes `ctx.businessId`
-into its queries. Every function in `lib/dashboard/queries.ts` takes
+into its queries. Every function in `lib/dashboard/queries/` takes
 `businessId` as a required first argument — there is no query in the codebase
 that can be called without one. That is the invariant to preserve: **if you add
 a query that does not take a tenant id, you have created a data leak.**
@@ -162,7 +162,7 @@ VIEWER     read-only
 - `can(role, permission)` — pure, safe to call in a server component to decide
   what to render.
 - `requirePermission(permission)` — returns the context or `null`. Every Server
-  Action in `lib/dashboard/actions.ts` starts with this call.
+  Action in `lib/dashboard/actions/` starts with this call.
 
 Hiding a button is a convenience, not a control. The server check is the
 control, and it is what was tested: the same crafted request under three
@@ -179,12 +179,12 @@ locked out immediately. See [HANDOVER.md](HANDOVER.md#admin-panel).
 
 ## Data flow
 
-**Reads.** Server component → `requireContext()` → `lib/dashboard/queries.ts` →
+**Reads.** Server component → `requireContext()` → `lib/dashboard/queries/` →
 Prisma → props. No client-side data fetching in the dashboard; no API layer in
 between. Slow sections are wrapped in `<Suspense>` with a matching
 `loading.tsx` skeleton.
 
-**Writes.** Client component → Server Action in `lib/dashboard/actions.ts` →
+**Writes.** Client component → Server Action in `lib/dashboard/actions/` →
 `requirePermission()` → Prisma → `revalidatePath()`. Actions return a small
 `ActionResult` (`{ ok: true }` or `{ ok: false, error: "code" }`); the client
 maps the code to a bilingual message. Error codes never carry raw database text.
@@ -199,7 +199,7 @@ reset, and the Auth.js catch-all — are route handlers. See [API.md](API.md).
 
 ## Styling and theming
 
-Tailwind v4 with design tokens defined once in `app/globals.css`:
+Tailwind v4 with design tokens defined once in `app/styles/theme.css` (imported by `app/globals.css`):
 
 ```css
 @theme inline { --color-primary: var(--primary); … }
@@ -339,7 +339,7 @@ does not touch the second.
 ### Payments
 
 `lib/payments/` holds one adapter per Georgian bank behind a shared
-`PaymentAdapter` interface, and `lib/billing/checkout.ts` holds the money logic
+`PaymentAdapter` interface, and `lib/billing/checkout/` holds the money logic
 that both share. A bank only appears as an option when its credentials are set,
 so the platform can launch with one and add the other with no code change.
 

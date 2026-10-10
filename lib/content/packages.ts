@@ -3,17 +3,13 @@ import type { Bilingual } from "./types";
 
 export type Package = {
   name: Bilingual;
-  /** Monthly price. */
   price: number;
-  /** Explicit multi-month prices. Null falls back to price × months, so a plan
-   *  with no discount configured still shows a sensible number. */
   price3m: number | null;
   price12m: number | null;
   featured: boolean;
   features: Bilingual[];
 };
 
-/** A plan's name in both languages; a plan without an English name shows the Georgian one. */
 export function planLabel(plan: { name: string; nameEn: string }): Bilingual {
   return bilingual(plan.name, plan.nameEn);
 }
@@ -45,17 +41,14 @@ export const BILLING_PERIODS: BillingPeriod[] = [
   { months: 12, label: { ka: "12 თვე", en: "12 month" }, unit: { ka: "₾ / თვე", en: "₾ / mo" } },
 ];
 
-/** The price columns shared by the Plan row and the marketing Package. */
 export type Priced = Pick<Package, "price" | "price3m" | "price12m">;
 
-/** Price for a whole period: the term price when set, else monthly × months. Shared by pricing and checkout. */
 export function periodPrice(pkg: Priced, months: number): number {
   if (months === 3 && pkg.price3m != null) return pkg.price3m;
   if (months === 12 && pkg.price12m != null) return pkg.price12m;
   return pkg.price * months;
 }
 
-/** Percentage saved against paying monthly, or 0 when there's no discount. */
 export function periodSavingPct(pkg: Priced, months: number): number {
   if (months === 1) return 0;
   const full = pkg.price * months;

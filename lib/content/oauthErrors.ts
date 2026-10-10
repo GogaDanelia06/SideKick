@@ -1,6 +1,5 @@
 import type { Bilingual } from "./types";
 
-/** What the login page says when a Google sign-in comes back with `?error=`. */
 const OAUTH_ERRORS: Record<string, Bilingual> = {
   OAuthAccountNotLinked: {
     ka: "ეს ელფოსტა უკვე რეგისტრირებულია პაროლით. შედი პაროლით.",

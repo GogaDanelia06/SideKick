@@ -383,9 +383,9 @@ These are not arbitrary — breaking them is how the properties above get lost.
 2. [ARCHITECTURE.md](ARCHITECTURE.md) — how it fits together.
 3. `lib/session.ts` and `lib/auth/permissions.ts` — the two files that define
    who can see and do what. Everything else assumes them.
-4. One dashboard screen end to end: `app/dashboard/videos/page.tsx` →
-   `components/dashboard/videos/VideosView.tsx` → `createVideo` in
-   `lib/dashboard/actions.ts`. It is small and shows every pattern in the
+4. One dashboard screen end to end: `app/dashboard/leads/page.tsx` →
+   `components/dashboard/leads/LeadsView.tsx` → `createLead` in
+   `lib/dashboard/actions/leads.ts`. It is small and shows every pattern in the
    codebase.
 5. [API.md](API.md) when you need to add an endpoint.
 6. [DEPLOYMENT.md](DEPLOYMENT.md) before you ship.

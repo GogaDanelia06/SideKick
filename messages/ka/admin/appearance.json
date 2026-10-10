@@ -1,0 +1,42 @@
+{
+  "appearance": "იერსახე",
+  "colorInput": {
+    "undoThisChange": "დაბრუნება"
+  },
+  "colorPicker": {
+    "default": "სტანდარტული",
+    "done": "მზაა"
+  },
+  "contrastNotes": {
+    "everyTextColourIs": "ორივე თემაში ყველა ტექსტი იკითხება",
+    "hardToRead": "{count} ძნელად იკითხება",
+    "needs": "საჭიროა",
+    "youCanStillSave": "შენახვა მაინც შესაძლებელია — ეს გაფრთხილებაა, არა შეზღუდვა."
+  },
+  "pickerParts": {
+    "hue": "ელფერი",
+    "saturationAndBrightness": "გაჯერებულობა და სიკაშკაშე"
+  },
+  "shades": {
+    "darkTheme": "მუქი თემა",
+    "lightTheme": "ღია თემა"
+  },
+  "subtitle": "საიტისა და დაშბორდის ფერები — ერთ ადგილას.",
+  "themeActions": {
+    "couldNotSaveTry": "ვერ შეინახა. სცადე ხელახლა.",
+    "discard": "გაუქმება",
+    "matchesWhatIsSaved": "შენახულის იდენტურია.",
+    "save": "შენახვა",
+    "savedTheSiteAlready": "შენახულია — საიტზე უკვე აისახა.",
+    "unsavedChangeS": "შეუნახავი ცვლილება"
+  },
+  "themeSection": {
+    "colour": "{count} ფერი",
+    "colours": "{count} ფერი"
+  },
+  "themeToolbar": {
+    "editingAColourSwitches": "ფერის შეცვლისას ეკრანი თვითონ ის თემაზე გადაირთვება.",
+    "onScreen": "ეკრანზე ჩანს",
+    "readyMadePalettesSet": "მზა პალიტრები — ორივე თემას ერთად ცვლის"
+  }
+}

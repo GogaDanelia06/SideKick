@@ -15,7 +15,6 @@ export const PROFILE_ERRORS: Record<ProfileError, Text> = {
 
 const BOX = "w-full rounded-[8px] border border-input bg-canvas text-sm outline-none focus:border-blue disabled:opacity-60";
 
-/** One field of the profile form: a line, or a box of `rows` lines. */
 export function ProfileField({
   name,
   label,

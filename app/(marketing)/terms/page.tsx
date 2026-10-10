@@ -15,14 +15,12 @@ export const generateMetadata = seoFor({
   path: "/terms",
 });
 
-// Cached: admin saves revalidate this path; the timer catches edits made outside the panel.
 export const revalidate = 3600;
 
 const crumbs: Crumb[] = [
   HOME_CRUMB,
   { label: "terms.termsAndConditions", href: "/terms" },
 ];
-
 
 export default async function Page() {
   const [sections, title] = await Promise.all([

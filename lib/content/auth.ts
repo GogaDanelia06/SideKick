@@ -16,14 +16,12 @@ export const LOGIN = {
     ka: "ძალიან ბევრი მცდელობა. სცადეთ ხელახლა რამდენიმე წუთში.",
     en: "Too many attempts. Please try again in a few minutes.",
   },
-  // Shown only after a correct password, so it never reveals which addresses exist.
   unverified: {
     ka: "ელფოსტა ჯერ არ არის დადასტურებული. შეამოწმე ფოსტა — გამოგზავნილია ბმული.",
     en: "Your email is not confirmed yet. Check your inbox — we sent you a link.",
   },
   resend: { ka: "ბმულის ხელახლა გაგზავნა", en: "Send the link again" },
   resending: { ka: "იგზავნება…", en: "Sending…" },
-  // Worded as "if": the endpoint answers the same for unknown addresses.
   resendDone: {
     ka: "თუ ანგარიში არსებობს და ჯერ არ არის დადასტურებული, ბმული გაიგზავნა.",
     en: "If that account exists and is not confirmed yet, the link has been sent.",

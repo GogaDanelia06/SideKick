@@ -12,7 +12,6 @@ export const SOCIAL_LABEL = {
   en: "Social networks",
 };
 
-/** How each network is named and drawn; the addresses come from the admin panel (lib/content/contactDetails.ts). */
 export const SOCIAL_NETWORKS: Record<SocialNetwork, { label: string; icon: IconType; hover: string }> = {
   facebook: { label: "Facebook", icon: IconBrandFacebook, hover: "hover:border-[#1877F2] hover:text-[#1877F2]" },
   instagram: { label: "Instagram", icon: IconBrandInstagram, hover: "hover:border-[#E4405F] hover:text-[#E4405F]" },

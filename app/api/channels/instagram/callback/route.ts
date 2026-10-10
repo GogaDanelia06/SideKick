@@ -7,7 +7,6 @@ import { CALLBACK_PATH } from "../start/route";
 
 export const dynamic = "force-dynamic";
 
-/** Back to the channels page, on the request's own origin so local testing stays local. */
 const back = (request: Request, status: string) =>
   NextResponse.redirect(
     new URL(`${DASH.channels}?connect=${status}&channel=INSTAGRAM`, request.url),

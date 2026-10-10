@@ -10,7 +10,7 @@ vi.mock("@/lib/db", () => ({
 vi.mock("@/lib/session", () => ({ getContext: vi.fn() }));
 vi.mock("@/lib/billing/limits", () => ({ checkLimit: vi.fn() }));
 
-import { addTeamMember } from "./actions";
+import { addTeamMember } from "./actions/teamInvite";
 import { prisma } from "@/lib/db";
 import { getContext } from "@/lib/session";
 import { checkLimit } from "@/lib/billing/limits";
@@ -34,11 +34,6 @@ beforeEach(() => {
 });
 
 describe("addTeamMember", () => {
-  /**
-   * The account was created before the plan was checked, so hitting the user cap
-   * left a User row with no membership — and registration refuses an address that
-   * already exists, so that address could never be signed up again.
-   */
   it("creates no account when the plan refuses the invitation", async () => {
     vi.mocked(checkLimit).mockResolvedValue({ allowed: false, reason: "limit" as const, limit: 3,
       used: 3,
@@ -53,8 +48,6 @@ describe("addTeamMember", () => {
     expect(prisma.membership.create).not.toHaveBeenCalled();
   });
 
-  /** An invited colleague has no password; left unverified they could never sign
-   *  in, and there is no route that reissues a confirmation link. */
   it("marks an invited account verified so it can be signed into", async () => {
     await addTeamMember(form("new@example.com", "Nino"));
 
@@ -64,8 +57,6 @@ describe("addTeamMember", () => {
     expect(data.email).toBe("new@example.com");
   });
 
-  /** The old `upsert` wrote `name` on the update branch, which let the owner of
-   *  one business rename a person belonging to another. */
   it("never renames somebody who already has an account", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: "existing" } as never);
 

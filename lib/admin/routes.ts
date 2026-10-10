@@ -8,8 +8,6 @@ import {
 } from "@tabler/icons-react";
 import type { Text } from "@/lib/i18n/messages";
 
-/** Platform-level admin routes. Page-specific editing lives under
- *  /admin/page/[slug] and is driven by ADMIN_PAGES in lib/admin/pages.ts. */
 export const ADMIN = {
   home: "/admin",
   businesses: "/admin/businesses",

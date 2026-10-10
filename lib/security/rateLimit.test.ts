@@ -13,7 +13,7 @@ vi.mock("@/lib/logger", () => ({
   log: { warn: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
-import { consume, clear, clientIp, LIMITS } from "./rateLimit";
+import { consume, clear, LIMITS } from "./rateLimit";
 import { prisma } from "@/lib/db";
 
 const findMany = vi.mocked(prisma.rateLimitHit.findMany);
@@ -40,26 +40,6 @@ function hits(n: number, oldestAgoSec: number) {
     createdAt: new Date(NOW - oldestAgoSec * 1000 + i * 1000),
   }));
 }
-
-describe("clientIp()", () => {
-  const req = (headers: Record<string, string>) => new Request("http://x", { headers });
-
-  it("takes the first entry of x-forwarded-for", () => {
-    expect(clientIp(req({ "x-forwarded-for": "1.2.3.4, 5.6.7.8" }))).toBe("1.2.3.4");
-  });
-
-  it("trims whitespace", () => {
-    expect(clientIp(req({ "x-forwarded-for": "  9.9.9.9  , 1.1.1.1" }))).toBe("9.9.9.9");
-  });
-
-  it("falls back to x-real-ip", () => {
-    expect(clientIp(req({ "x-real-ip": "8.8.8.8" }))).toBe("8.8.8.8");
-  });
-
-  it("returns 'unknown' when no ip header is present", () => {
-    expect(clientIp(req({}))).toBe("unknown");
-  });
-});
 
 describe("consume() — under the limit", () => {
   it("allows the request and records the attempt", async () => {

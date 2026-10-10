@@ -20,7 +20,6 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** `contact` is what the admin panel holds (lib/site/content/contactDetails.ts). */
 export function Footer({ contact }: { contact: ContactDetails }) {
   const { t } = useLanguage();
   const lines = [

@@ -7,7 +7,6 @@ import { ADMIN_NAV } from "@/lib/admin/routes";
 import { ADMIN_PAGES } from "@/lib/admin/pages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Platform screens, then one entry per public page (its sections open in a second column). */
 export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { t } = useLanguage();

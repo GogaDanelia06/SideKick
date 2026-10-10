@@ -5,7 +5,6 @@ import { BUBBLE_BASE, aiBubbleClass, type AiTone } from "./ChatBubble";
 import { CHAT } from "@/lib/content/chat";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 
-/** Typing indicator: decorative dots with a screen-reader status label. */
 export function ChatTyping({ aiTone = "neutral" }: { aiTone?: AiTone }) {
   const { t } = useLanguage();
 

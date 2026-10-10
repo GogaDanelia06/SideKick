@@ -7,7 +7,6 @@ import type { HeroStatView } from "@/lib/site/content";
 
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 
-/** Thousands separators, and at most one decimal so the width stays stable. */
 function format(n: number): string {
   const rounded = Math.round(n * 10) / 10;
   return Number.isInteger(rounded)
@@ -27,7 +26,6 @@ function Frame({ value, label, live }: { value: React.ReactNode; label: string; 
   );
 }
 
-/** A decorative figure that drifts upward; with reduced motion it stays at its base value. */
 function DriftStat({ stat }: { stat: HeroStatView }) {
   const { t } = useLanguage();
   const [value, setValue] = useState(stat.baseValue);
@@ -59,7 +57,6 @@ function DriftStat({ stat }: { stat: HeroStatView }) {
   );
 }
 
-/** The same slot, filled with a figure the platform actually counted. */
 function CountedStat({ stat }: { stat: HeroStatView }) {
   const { t } = useLanguage();
   return (

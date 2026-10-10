@@ -1,4 +1,3 @@
-/** The delimiter the first line uses most; Excel saves ";" where the decimal mark is a comma. */
 function sniff(text: string): string {
   const firstLine = text.split(/\r?\n/, 1)[0];
   let best = ",";
@@ -13,7 +12,6 @@ function sniff(text: string): string {
   return best;
 }
 
-/** CSV as Excel writes it: quoted fields with "" escapes, CRLF or LF, and an optional UTF-8 BOM. */
 export function parseCsv(input: string): string[][] {
   const text = input.replace(/^﻿/, "");
   const delimiter = sniff(text);

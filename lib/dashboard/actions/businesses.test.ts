@@ -17,7 +17,6 @@ const provision = vi.mocked(provisionBusiness);
 const owned = tx.membership.count;
 const sameName = tx.membership.findFirst;
 
-/** What Auth.js answers once the jwt callback has run: the session is now in `businessId`. */
 const landsIn = (businessId: string) => update.mockResolvedValue({ user: { id: "u1", businessId }, expires: "" });
 
 beforeEach(() => {
@@ -34,7 +33,6 @@ describe("switchBusiness()", () => {
     expect(await switchBusiness("b2")).toEqual({ ok: true });
     expect(update).toHaveBeenCalledWith({ user: { businessId: "b2" } });
 
-    // The jwt callback refused a business the user is not in, so the session stayed in b1.
     landsIn("b1");
     expect(await switchBusiness("b3")).toEqual({ ok: false });
   });
@@ -59,7 +57,6 @@ describe("addBusiness()", () => {
     expect(await addBusiness("  Flower   shop ")).toEqual({ ok: true });
     expect(provision).toHaveBeenCalledWith("u1", "Flower shop", undefined, tx);
     expect(update).toHaveBeenCalledWith({ user: { businessId: "b9" } });
-    // Checked and created under one lock per person, so two quick submits cannot both pass.
     expect(tx.$executeRaw).toHaveBeenCalledTimes(1);
   });
 

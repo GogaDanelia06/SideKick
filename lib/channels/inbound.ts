@@ -8,18 +8,17 @@ export type RecordedMessage = {
   channel: ChannelType;
   conversationId: string;
   messageId: string;
-  /** False when this exact platform message had already been stored. */
   isNew: boolean;
-  /** The conversation has no customer name yet. */
   needsName: boolean;
   text: string;
 };
 
-/**
- * Stores one customer message under the business that owns the receiving account.
- * Returns null for Meta's test payloads and for accounts without a connected
- * channel; those are not errors and must not trigger retries.
- */
+const findStored = (conversationId: string, externalId: string) =>
+  prisma.message.findUnique({
+    where: { conversationId_externalId: { conversationId, externalId } },
+    select: { id: true },
+  });
+
 export async function recordInbound(
   type: ChannelType,
   msg: InboundMessage,
@@ -29,7 +28,6 @@ export async function recordInbound(
     select: { id: true, businessId: true, connected: true },
   });
 
-  // The App Dashboard "Test" button sends placeholder ids ("0").
   if (msg.pageId === "0") {
     log.info(
       `ignored Meta's ${type} test payload (account id "0") — this is the Dashboard "Test" button, not a real message`,
@@ -56,33 +54,22 @@ export async function recordInbound(
       customerRef: msg.senderId,
       status: "ACTIVE",
     },
-    // Only fetches the existing row; the status change happens below.
     update: {},
     select: { id: true, customerName: true },
   });
 
-  // Retries are found here; concurrent duplicates hit the unique index below.
-  const existing = await prisma.message.findUnique({
-    where: {
-      conversationId_externalId: {
-        conversationId: conversation.id,
-        externalId: msg.externalId,
-      },
-    },
-    select: { id: true },
+  const result = (messageId: string, isNew: boolean): RecordedMessage => ({
+    businessId: channel.businessId,
+    channel: type,
+    needsName: !conversation.customerName,
+    text: msg.text,
+    conversationId: conversation.id,
+    messageId,
+    isNew,
   });
 
-  if (existing) {
-    return {
-      businessId: channel.businessId,
-      channel: type,
-      needsName: !conversation.customerName,
-      text: msg.text,
-      conversationId: conversation.id,
-      messageId: existing.id,
-      isNew: false,
-    };
-  }
+  const existing = await findStored(conversation.id, msg.externalId);
+  if (existing) return result(existing.id, false);
 
   let messageId: string;
   try {
@@ -97,41 +84,15 @@ export async function recordInbound(
     });
     messageId = created.id;
   } catch {
-    // A concurrent delivery of the same message won the insert; use its row.
-    const winner = await prisma.message.findUnique({
-      where: {
-        conversationId_externalId: {
-          conversationId: conversation.id,
-          externalId: msg.externalId,
-        },
-      },
-      select: { id: true },
-    });
+    const winner = await findStored(conversation.id, msg.externalId);
     if (!winner) throw new Error("message insert failed");
-    return {
-      businessId: channel.businessId,
-      channel: type,
-      needsName: !conversation.customerName,
-      text: msg.text,
-      conversationId: conversation.id,
-      messageId: winner.id,
-      isNew: false,
-    };
+    return result(winner.id, false);
   }
 
-  // New traffic moves NEW to ACTIVE but never reopens a conversation marked DONE.
   await prisma.conversation.updateMany({
     where: { id: conversation.id, status: "NEW" },
     data: { status: "ACTIVE" },
   });
 
-  return {
-    businessId: channel.businessId,
-    channel: type,
-    needsName: !conversation.customerName,
-    text: msg.text,
-    conversationId: conversation.id,
-    messageId,
-    isNew: true,
-  };
+  return result(messageId, true);
 }

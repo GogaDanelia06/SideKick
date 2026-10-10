@@ -2,20 +2,6 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
-/**
- * Analytics is off by default (seo.config.json), so its domains are not allowed.
- * Enabling a tag means adding its entries:
- *
- *   Google Analytics / Tag Manager
- *     script-src  + https://www.googletagmanager.com
- *     connect-src + https://www.google-analytics.com https://*.analytics.google.com
- *     img-src     + https://www.google-analytics.com
- *
- *   Facebook Pixel
- *     script-src  + https://connect.facebook.net
- *     img-src     + https://www.facebook.com
- */
-/** Admin uploads (Vercel Blob); unrelated to the `blob:` scheme used for local object URLs. */
 const BLOB_HOST = "https://*.public.blob.vercel-storage.com";
 
 const csp = [
@@ -23,7 +9,6 @@ const csp = [
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: ${BLOB_HOST} https://img.youtube.com https://*.googleusercontent.com`,
-  // Hero videos come from blob storage; `blob:` covers local chat attachment previews.
   `media-src 'self' blob: ${BLOB_HOST}`,
   "font-src 'self' data:",
   `connect-src 'self'${isDev ? " ws: http://localhost:*" : ""}`,

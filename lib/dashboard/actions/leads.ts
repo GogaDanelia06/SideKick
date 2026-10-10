@@ -46,3 +46,33 @@ export async function deleteLead(id: string): Promise<ActionResult> {
   return { ok: true };
 }
 
+export async function createLeadFromConversation(
+  conversationId: string,
+): Promise<ActionResult & { created?: boolean }> {
+  const ctx = await requirePermission("leads:write");
+  if (!ctx) return { ok: false, error: "forbidden" };
+
+  const conversation = await prisma.conversation.findFirst({
+    where: { id: conversationId, businessId: ctx.businessId },
+    select: { id: true, customerName: true, channel: { select: { type: true } }, lead: { select: { id: true } } },
+  });
+  if (!conversation) return { ok: false, error: "not_found" };
+  if (conversation.lead) return { ok: true, created: false };
+
+  try {
+    await prisma.lead.create({
+      data: {
+        businessId: ctx.businessId,
+        conversationId: conversation.id,
+        name: conversation.customerName?.trim() || null,
+        source: conversation.channel?.type ?? "manual",
+      },
+    });
+  } catch {
+    return { ok: true, created: false };
+  }
+
+  revalidatePath(DASH.leads);
+  revalidatePath(DASH.conversations);
+  return { ok: true, created: true };
+}

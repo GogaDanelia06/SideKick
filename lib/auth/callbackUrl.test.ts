@@ -24,10 +24,6 @@ describe("safeCallbackUrl", () => {
     expect(safeCallbackUrl(null, "/dashboard/billing")).toBe("/dashboard/billing");
   });
 
-  /**
-   * The reason this function exists. Each of these would send the customer to
-   * another host from a link that looked like ours.
-   */
   it("refuses anywhere off this site", () => {
     for (const hostile of [
       "https://evil.com",

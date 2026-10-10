@@ -12,7 +12,6 @@ import type { Text } from "@/lib/i18n/messages";
 
 export type KpiKey = "conversations" | "leads" | "orders" | "revenue";
 
-/** Each card opens the page its number comes from; revenue lives in the analytics. */
 export const KPI_META: { key: KpiKey; label: Text; icon: IconType; href: DashPath; money?: boolean }[] = [
   { key: "conversations", label: "dashboard.home.todaySConversations", icon: IconMessage2, href: DASH.conversations },
   { key: "leads", label: "dashboard.home.newLeads", icon: IconUserPlus, href: DASH.leads },

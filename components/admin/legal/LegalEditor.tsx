@@ -1,86 +1,28 @@
 "use client";
 
-import { useOptimistic, useRef, useState, useTransition } from "react";
 import type { LegalSection } from "@prisma/client";
-import { IconAlertTriangle, IconPlus, IconX } from "@tabler/icons-react";
 import {
   createLegalSection,
   updateLegalSection,
   deleteLegalSection,
   moveLegalSection,
   toggleLegalPublished,
-  saveLegalTitle,
 } from "@/lib/admin/actions/legal";
+import { AddForm, EditForm } from "@/components/admin/ui/EditorForms";
+import { EditorBar, ItemCard } from "@/components/admin/ui/EditorParts";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { useListEditor } from "@/components/admin/ui/useListEditor";
 import { useLanguage } from "@/lib/i18n/useLanguage";
-import { SectionRow } from "./SectionRow";
 import type { Text } from "@/lib/i18n/messages";
-
-const INPUT =
-  "w-full rounded-[8px] border border-input bg-canvas px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-blue";
-const LABEL = "mb-1 block text-[11px] uppercase tracking-wide text-faint";
+import { LegalTitleForm } from "./LegalTitleForm";
+import { SectionFields } from "./SectionFields";
+import { SectionRow } from "./SectionRow";
 
 const ERRORS: Record<string, Text> = {
   heading_required: "admin.legal.editor.headingIsRequiredIn",
   unknown_doc: "admin.legal.editor.unknownDocument",
   not_found: "admin.legal.editor.notFound",
 };
-
-type Fields = Pick<
-  LegalSection,
-  "headingKa" | "headingEn" | "bodyKa" | "bodyEn" | "bulletsKa" | "bulletsEn"
->;
-
-function SectionFields({ initial }: { initial?: Fields }) {
-  const { t } = useLanguage();
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="grid gap-2.5 sm:grid-cols-2">
-        <label className="block">
-          <span className={LABEL}>{t("admin.legal.editor.headingGeorgian")}</span>
-          <input name="headingKa" required defaultValue={initial?.headingKa} className={INPUT} />
-        </label>
-        <label className="block">
-          <span className={LABEL}>{t("admin.legal.editor.headingEnglish")}</span>
-          <input name="headingEn" required defaultValue={initial?.headingEn} className={INPUT} />
-        </label>
-      </div>
-
-      <div className="grid gap-2.5 sm:grid-cols-2">
-        <label className="block">
-          <span className={LABEL}>{t("admin.legal.editor.bodyGeorgian")}</span>
-          <textarea
-            name="bodyKa"
-            defaultValue={initial?.bodyKa}
-            placeholder={t("admin.legal.editor.separateParagraphsWithA")}
-            className={`${INPUT} min-h-[130px]`}
-          />
-        </label>
-        <label className="block">
-          <span className={LABEL}>{t("admin.legal.editor.bodyEnglish")}</span>
-          <textarea name="bodyEn" defaultValue={initial?.bodyEn} className={`${INPUT} min-h-[130px]`} />
-        </label>
-      </div>
-
-      <p className="text-[12px] text-faint">{t("admin.legal.editor.bulletsNote")}</p>
-
-      <div className="grid gap-2.5 sm:grid-cols-2">
-        <label className="block">
-          <span className={LABEL}>{t("admin.legal.editor.bulletsGeorgian")}</span>
-          <textarea
-            name="bulletsKa"
-            defaultValue={initial?.bulletsKa}
-            placeholder={t("admin.legal.editor.oneItemPerLine")}
-            className={`${INPUT} min-h-[90px]`}
-          />
-        </label>
-        <label className="block">
-          <span className={LABEL}>{t("admin.legal.editor.bulletsEnglish")}</span>
-          <textarea name="bulletsEn" defaultValue={initial?.bulletsEn} className={`${INPUT} min-h-[90px]`} />
-        </label>
-      </div>
-    </div>
-  );
-}
 
 export function LegalEditor({
   doc,
@@ -94,153 +36,69 @@ export function LegalEditor({
   defaultTitle: string;
 }) {
   const { t } = useLanguage();
-  const [pending, start] = useTransition();
-  const [adding, setAdding] = useState(false);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [savedTitle, setSavedTitle] = useState(false);
-  const addRef = useRef<HTMLFormElement>(null);
-
-  // Optimistic removal; React restores the row if the server refuses.
-  const [visible, removeOptimistic] = useOptimistic(
-    sections,
-    (rows: LegalSection[], id: string) => rows.filter((r) => r.id !== id),
-  );
-
-  function remove(id: string) {
-    setError(null);
-    start(async () => {
-      removeOptimistic(id);
-      const res = await deleteLegalSection(id);
-      if (!res.ok) setError(res.error ?? "error");
-    });
-  }
-
-  function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
-    setError(null);
-    start(async () => {
-      const res = await fn();
-      if (!res.ok) setError(res.error ?? "error");
-      else onDone?.();
-    });
-  }
+  const editor = useListEditor(sections, deleteLegalSection);
 
   return (
     <div className="flex flex-col gap-4">
-      {/* The document's H1; blank falls back to the drafted title. */}
-      <form
-        action={(fd) =>
-          run(() => saveLegalTitle(doc, fd), () => {
-            setSavedTitle(true);
-            setTimeout(() => setSavedTitle(false), 2500);
-          })
-        }
-        className="rounded-lg border border-border bg-card p-4"
-      >
-        <span className="mb-1.5 block text-[12px] font-medium text-muted">
-          {t("admin.legal.editor.documentHeadingH1")}
-        </span>
-        <div className="grid gap-2.5 sm:grid-cols-2">
-          <input
-            name="titleKa"
-            defaultValue={title.ka}
-            placeholder={defaultTitle}
-            className="h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue"
-          />
-          <input
-            name="titleEn"
-            defaultValue={title.en}
-            placeholder={t("admin.legal.editor.inEnglish")}
-            className="h-10 w-full rounded-[8px] border border-input bg-canvas px-3 text-sm outline-none placeholder:text-faint focus:border-blue"
-          />
-        </div>
-        <div className="mt-3 flex items-center justify-end gap-3">
-          {savedTitle ? (
-            <span className="text-[13px] text-green">{t("admin.legal.editor.saved")}</span>
-          ) : null}
-          <button
-            type="submit"
-            disabled={pending}
-            className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60"
-          >
-            {pending ? "…" : t("admin.legal.editor.save")}
-          </button>
-        </div>
-      </form>
+      <LegalTitleForm doc={doc} title={title} defaultTitle={defaultTitle} run={editor.run} pending={editor.pending} />
 
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted">
-          {sections.length} {t("admin.legal.editor.sections")}
-        </span>
-        <button
-          type="button"
-          onClick={() => { setAdding((v) => !v); setError(null); }}
-          className="inline-flex h-9 items-center gap-1.5 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas"
-        >
-          {adding ? <IconX size={16} /> : <IconPlus size={16} />}
-          {adding ? t("admin.legal.editor.close") : t("admin.legal.editor.addSection")}
-        </button>
-      </div>
+      <EditorBar
+        count={sections.length}
+        noun="admin.legal.editor.sections"
+        adding={editor.adding}
+        addLabel="admin.legal.editor.addSection"
+        closeLabel="admin.legal.editor.close"
+        onToggle={editor.toggleAdding}
+      />
 
-      {error ? (
-        <div className="flex items-center gap-2 rounded-[8px] border border-red bg-red-surface px-3.5 py-2.5 text-[13px] text-red">
-          <IconAlertTriangle size={16} className="shrink-0" />
-          {t(ERRORS[error] ?? "admin.legal.editor.somethingWentWrong")}
-        </div>
-      ) : null}
+      {editor.error ? <ErrorBanner>{t(ERRORS[editor.error] ?? "admin.legal.editor.somethingWentWrong")}</ErrorBanner> : null}
 
-      {adding ? (
-        <form
-          ref={addRef}
-          action={(fd) =>
-            run(() => createLegalSection(doc, fd), () => { addRef.current?.reset(); setAdding(false); })
-          }
-          className="rounded-lg border border-border bg-card p-4"
+      {editor.adding ? (
+        <AddForm
+          create={(fd) => createLegalSection(doc, fd)}
+          run={editor.run}
+          onDone={editor.closeAdding}
+          pending={editor.pending}
+          label="admin.legal.editor.add"
         >
           <SectionFields />
-          <div className="mt-3 flex justify-end">
-            <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-              {pending ? "…" : t("admin.legal.editor.add")}
-            </button>
-          </div>
-        </form>
+        </AddForm>
       ) : null}
 
-      {visible.length === 0 ? (
+      {editor.visible.length === 0 ? (
         <p className="rounded-lg border border-border bg-card px-4 py-3 text-[13px] text-muted">
           {t("admin.legal.editor.noSectionsYet")}
         </p>
       ) : null}
 
       <div className="flex flex-col gap-2.5">
-        {visible.map((s, i) => (
-          <div key={s.id} className="rounded-lg border border-border bg-card p-4">
-            {editing === s.id ? (
-              <form action={(fd) => run(() => updateLegalSection(s.id, fd), () => setEditing(null))}>
+        {editor.visible.map((s, i) => (
+          <ItemCard key={s.id}>
+            {editor.editing === s.id ? (
+              <EditForm
+                update={(fd) => updateLegalSection(s.id, fd)}
+                run={editor.run}
+                onDone={editor.finishEditing}
+                onCancel={editor.cancelEditing}
+                pending={editor.pending}
+                labels={{ cancel: "admin.legal.editor.cancel", save: "admin.legal.editor.save" }}
+              >
                 <SectionFields initial={s} />
-                <div className="mt-3 flex justify-end gap-2">
-                  <button type="button" onClick={() => { setEditing(null); setError(null); }} className="h-9 rounded-[8px] border border-border px-4 text-[13px] font-medium">
-                    {t("admin.legal.editor.cancel")}
-                  </button>
-                  <button type="submit" disabled={pending} className="h-9 rounded-[8px] bg-ink px-4 text-[13px] font-medium text-canvas disabled:opacity-60">
-                    {pending ? "…" : t("admin.legal.editor.save")}
-                  </button>
-                </div>
-              </form>
+              </EditForm>
             ) : (
               <SectionRow
                 section={s}
                 index={i}
                 first={i === 0}
                 last={i === sections.length - 1}
-                busy={pending}
-                onMove={(where) => run(() => moveLegalSection(s.id, where))}
-                onPublish={() => run(() => toggleLegalPublished(s.id, !s.published))}
-                onEdit={() => { setEditing(s.id); setError(null); }}
-                onRemove={() => remove(s.id)}
+                busy={editor.pending}
+                onMove={(where) => editor.run(() => moveLegalSection(s.id, where))}
+                onPublish={() => editor.run(() => toggleLegalPublished(s.id, !s.published))}
+                onEdit={() => editor.startEditing(s.id)}
+                onRemove={() => editor.remove(s.id)}
               />
             )}
-          </div>
+          </ItemCard>
         ))}
       </div>
     </div>

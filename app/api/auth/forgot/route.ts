@@ -22,8 +22,6 @@ export async function POST(req: Request) {
 
   const issued = await createResetToken(parsed.data.email);
 
-  // Unregistered addresses are told so: /api/auth/register already reveals it, and
-  // the rate limits above run before this lookup.
   if (!issued) {
     log.info("password reset requested for unknown address");
     return authError(AUTH_MESSAGES.emailUnknown, { status: 404, code: "not_registered" });

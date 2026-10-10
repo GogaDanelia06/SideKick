@@ -1,0 +1,32 @@
+{
+  "active": "Active",
+  "channelStatusCard": {
+    "channelStatus": "Channel status",
+    "noChannelsYet": "No channels yet"
+  },
+  "issue": "Issue",
+  "kpiGrid": {
+    "noDataForYesterday": "No data for yesterday",
+    "vsYesterday": "vs yesterday"
+  },
+  "left": "left",
+  "newLeads": "New leads",
+  "newOrders": "New orders",
+  "noActivePlan": "No active plan",
+  "offline": "Offline",
+  "remainingMessageLimit": "Remaining message limit",
+  "renews": "Renews",
+  "revenue": "Revenue",
+  "stoppedMessages": {
+    "botStatusStoppedMessages": "Bot status — stopped messages",
+    "days": "{d} d",
+    "hours": "{h} h",
+    "minutes": "{min} min",
+    "noStoppedMessages": "No stopped messages",
+    "unknown": "Unknown",
+    "viewAll": "View all →"
+  },
+  "todaySConversations": "Today's conversations",
+  "unlimited": "Unlimited",
+  "used": "used"
+}
