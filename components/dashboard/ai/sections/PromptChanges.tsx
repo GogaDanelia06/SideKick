@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useContext, useId, useMemo, useState } from "react";
 import clsx from "clsx";
 import { IconChevronDown, IconFileDiff } from "@tabler/icons-react";
 import { countChanges, diffText, foldUnchanged, hasChanges } from "@/lib/diff";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { SectionSaveContext } from "../sectionSaveContext";
 import { DiffLine } from "./DiffLine";
 
 function Count({ sign, count, label, tone }: { sign: string; count: number; label: string; tone: "added" | "removed" }) {
@@ -27,30 +28,25 @@ function Count({ sign, count, label, tone }: { sign: string; count: number; labe
 }
 
 /**
- * What changed in the prompt since before the AI rewrote it: removed words in red, added
- * words in green, with the lines around them for context. It compares with the text as it is
- * now, so it follows whatever the merchant edits afterwards.
+ * What the merchant is about to save: the prompt box against the saved prompt, removed words
+ * in red and added words in green, with the lines around them for context. It shows for any
+ * unsaved change, typed or written by the AI, and goes away once the change is saved or dropped.
  */
-export function PromptChanges({ before, after }: { before: string; after: string }) {
+export function PromptChanges({ saved, current }: { saved: string; current: string }) {
   const { t } = useLanguage();
+  const { dirty } = useContext(SectionSaveContext);
   const [open, setOpen] = useState(true);
-  const panel = useRef<HTMLElement>(null);
   const bodyId = useId();
-  const rows = useMemo(() => diffText(before, after), [before, after]);
+  const rows = useMemo(() => diffText(saved, current), [saved, current]);
   const counts = useMemo(() => countChanges(rows), [rows]);
   const shown = useMemo(() => foldUnchanged(rows), [rows]);
 
-  // On a long prompt the changes sit below the fold: bring them into view as they appear.
-  useEffect(() => {
-    panel.current?.scrollIntoView({ block: "nearest" });
-  }, []);
-
-  // Nothing to compare with when the box was empty: the whole text is new, and it is right there.
-  if (!before.trim()) return null;
+  // Nothing is unsaved, or there is nothing to compare with: a first prompt is all new, and it is right there.
+  if (!dirty || !saved.trim()) return null;
   if (!hasChanges(rows)) return <p className="text-[13px] text-muted">{t("dashboard.ai.promptChanges.same")}</p>;
 
   return (
-    <section ref={panel} aria-label={t("dashboard.ai.promptChanges.title")} className="overflow-hidden rounded-[10px] border border-border bg-canvas">
+    <section aria-label={t("dashboard.ai.promptChanges.title")} className="overflow-hidden rounded-[10px] border border-border bg-canvas">
       <button
         type="button"
         aria-expanded={open}

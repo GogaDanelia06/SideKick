@@ -5,7 +5,6 @@ import { IconArrowBackUp, IconSparkles, IconWand } from "@tabler/icons-react";
 import { generateAiPrompt, refineAiPrompt } from "@/lib/dashboard/actions/assistant";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { SectionSaveContext } from "../sectionSaveContext";
-import { PromptChanges } from "./PromptChanges";
 import { RefinePanel } from "./RefinePanel";
 
 type Props = {
@@ -21,7 +20,7 @@ const BTN = "inline-flex h-10 items-center gap-2 rounded-[8px] px-4 text-[13px] 
  * Generate and refine buttons. Nothing they bring back is saved: the text lands in the box
  * like something the merchant typed, and only Save keeps it. The AI service rewrites the
  * prompt that is saved, not the one in the box, so a rewrite waits until the box is saved.
- * What a result changed is shown below it, and the text it replaced stays one click away.
+ * The text a result replaced stays one click away.
  */
 export function PromptAiActions({ ready, current, onPrompt }: Props) {
   const { t } = useLanguage();
@@ -98,13 +97,10 @@ export function PromptAiActions({ ready, current, onPrompt }: Props) {
 
       {pending && !refining ? <p className="text-[13px] text-muted">{t("dashboard.ai.promptAiActions.working")}</p> : null}
       {previous !== null && !pending ? (
-        <>
-          <PromptChanges before={previous} after={current} />
-          <button type="button" onClick={undo} className="inline-flex items-center gap-1.5 self-start text-[13px] text-muted hover:text-ink">
-            <IconArrowBackUp size={15} />
-            {t("dashboard.ai.promptAiActions.undo")}
-          </button>
-        </>
+        <button type="button" onClick={undo} className="inline-flex items-center gap-1.5 self-start text-[13px] text-muted hover:text-ink">
+          <IconArrowBackUp size={15} />
+          {t("dashboard.ai.promptAiActions.undo")}
+        </button>
       ) : null}
       {error ? <p className="text-[13px] text-red">{error}</p> : null}
     </div>
