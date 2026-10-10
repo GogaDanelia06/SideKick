@@ -170,6 +170,12 @@ that is there rather than creating a second one. A channel only accepts messages
 when `connected` is true, so switching it off in the dashboard really does stop
 the AI answering for that tenant.
 
+Switching a channel off keeps its account on the business. **Disconnect** is the
+other button: it clears the account and its token (`disconnectChannel`), and that is
+what frees a Facebook Page or an Instagram account for another business — one
+account belongs to one business, so until it is let go, connecting it elsewhere
+fails with "already linked".
+
 `(type, externalId)` is unique across the whole table, so an account already
 linked to another business is refused rather than stolen — the callback reports
 `already_linked` instead of throwing a 500 at the end of a consent flow.

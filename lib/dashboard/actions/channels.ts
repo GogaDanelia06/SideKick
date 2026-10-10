@@ -32,3 +32,20 @@ export async function setChannelConnected(channelId: string, connected: boolean)
   revalidatePath(DASH.channels);
   return { ok: true };
 }
+
+/**
+ * Lets a channel's account go. Switching a channel off keeps the account on this business, so
+ * Facebook and Instagram, which tell us the account and never the business, still answer to it
+ * and no other business can connect it. This clears the account and its token as well.
+ */
+export async function disconnectChannel(channelId: string): Promise<{ ok: true } | { ok: false; error: "forbidden" }> {
+  const ctx = await requirePermission("channels:write");
+  if (!ctx) return { ok: false, error: "forbidden" };
+
+  await prisma.channel.updateMany({
+    where: { id: channelId, businessId: ctx.businessId },
+    data: { connected: false, status: "OFF", externalId: null, accessToken: null, tokenExpiresAt: null, lastSyncAt: null },
+  });
+  revalidatePath(DASH.channels);
+  return { ok: true };
+}
