@@ -244,9 +244,10 @@ endpoint **and** clears the pause. Doing only one leaves the two sides
 disagreeing about who is holding the conversation.
 
 The other two endpoints — `build-prompt` and `edit-prompt` — sit behind the
-buttons on the AI Assistant page. They generate text and store nothing, so the
-result is written to `AiConfig.prompt` on our side, into the same box the
-merchant can edit by hand.
+buttons on the AI Assistant page. They generate text and store nothing, and
+neither do we: the result goes into the same box the merchant can edit by hand,
+and reaches `AiConfig.prompt` only when they press Save. `edit-prompt` works
+from the prompt that is saved, so that button waits until the box has been saved.
 
 ---
 

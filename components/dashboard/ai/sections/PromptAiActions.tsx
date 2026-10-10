@@ -16,10 +16,10 @@ type Props = {
 const BTN = "inline-flex h-10 items-center gap-2 rounded-[8px] px-4 text-[13px] font-medium";
 
 /**
- * Generate and refine buttons. The AI service reads the saved prompt, so whatever the
- * merchant has written is saved first: otherwise the AI works from the old text and the new
- * one is lost under its answer. What comes back is saved on the server and shown as saved,
- * and the text it replaced stays one click away.
+ * Generate and refine buttons. Nothing they bring back is saved: the text lands in the box
+ * like something the merchant typed, and only Save keeps it. The AI service rewrites the
+ * prompt that is saved, not the one in the box, so a rewrite waits until the box is saved.
+ * The text a result replaced stays one click away.
  */
 export function PromptAiActions({ ready, current, onPrompt }: Props) {
   const { t } = useLanguage();
@@ -28,7 +28,7 @@ export function PromptAiActions({ ready, current, onPrompt }: Props) {
   const [instructions, setInstructions] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [previous, setPrevious] = useState<string | null>(null);
-  const { dirty, saving, save, adopt } = useContext(SectionSaveContext);
+  const { dirty, saving } = useContext(SectionSaveContext);
   const blocked = !ready || pending || saving;
 
   const offline = t("dashboard.ai.promptAiActions.requiresTheAiModule");
@@ -38,11 +38,8 @@ export function PromptAiActions({ ready, current, onPrompt }: Props) {
     setError(null);
     const before = current;
     start(async () => {
-      // A save that fails says why itself; the AI does not start on an unsaved text.
-      if (dirty && !(await save())) return;
       const res = await work();
       if (res.ok && res.prompt) {
-        adopt();
         onPrompt(res.prompt);
         setPrevious(before);
         setRefining(false);
@@ -95,9 +92,10 @@ export function PromptAiActions({ ready, current, onPrompt }: Props) {
             placeholder={t("dashboard.ai.promptAiActions.eGAnswerMore")}
             className="w-full rounded-[8px] border border-border bg-transparent p-2.5 text-[13px]"
           />
+          {dirty ? <p className="text-[13px] text-amber">{t("dashboard.ai.promptAiActions.saveFirst")}</p> : null}
           <button
             type="button"
-            disabled={blocked || !instructions.trim()}
+            disabled={blocked || dirty || !instructions.trim()}
             onClick={() => run(() => refineAiPrompt(instructions))}
             className={`${BTN} self-start bg-primary text-white disabled:opacity-60`}
           >

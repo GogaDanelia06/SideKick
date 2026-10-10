@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/db";
 import { aiConfigured, askAi, buildPrompt, editPrompt } from "@/lib/ai/client";
 import { ensurePrompt } from "@/lib/ai/ensurePrompt";
 import { applyReplyStyle } from "@/lib/ai/replyStyle";
@@ -25,34 +24,30 @@ async function assistantAccess(): Promise<{ businessId: string } | { error: "for
   return { businessId: ctx.businessId };
 }
 
-async function savePrompt(businessId: string, prompt: string | null): Promise<PromptResult> {
-  if (!prompt) return { ok: false, error: "failed" };
-
-  await prisma.aiConfig.upsert({
-    where: { businessId },
-    create: { businessId, prompt, languages: [], roles: [] },
-    update: { prompt },
-  });
-  revalidatePath(DASH.ai);
-  return { ok: true, prompt };
+/**
+ * The text the AI wrote, for the merchant to read in the prompt box. Nothing is stored here:
+ * it reaches `AiConfig.prompt` only when they press Save, like anything else they type.
+ */
+function proposal(prompt: string | null): PromptResult {
+  return prompt ? { ok: true, prompt } : { ok: false, error: "failed" };
 }
 
-/** Generates a system prompt from the business profile and saves it to `AiConfig.prompt`. */
+/** Generates a system prompt from the business profile. */
 export async function generateAiPrompt(): Promise<PromptResult> {
   const access = await assistantAccess();
   if ("error" in access) return { ok: false, error: access.error };
 
-  return savePrompt(access.businessId, await buildPrompt(access.businessId));
+  return proposal(await buildPrompt(access.businessId));
 }
 
-/** Rewrites the prompt according to an instruction the merchant typed. */
+/** Rewrites the saved prompt according to an instruction the merchant typed. */
 export async function refineAiPrompt(instructions: string): Promise<PromptResult> {
   const access = await assistantAccess();
   if ("error" in access) return { ok: false, error: access.error };
 
   const clean = instructions.trim();
   if (!clean) return { ok: false, error: "empty" };
-  return savePrompt(access.businessId, await editPrompt(access.businessId, clean));
+  return proposal(await editPrompt(access.businessId, clean));
 }
 
 /** The tester names its chat; the AI service keeps that history under a thread of this business. */

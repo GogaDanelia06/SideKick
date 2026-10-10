@@ -31,7 +31,7 @@ export function SectionForm({
   children: ReactNode;
 }) {
   const { t } = useLanguage();
-  const { formRef, restored, dirty, saving, save, cancel, adopt } = useSectionSave(section, title);
+  const { formRef, restored, dirty, saving, save, cancel } = useSectionSave(section, title);
 
   return (
     <form
@@ -52,7 +52,7 @@ export function SectionForm({
         </p>
       ) : null}
 
-      <SectionSaveContext.Provider value={{ dirty, saving, save, adopt }}>
+      <SectionSaveContext.Provider value={{ dirty, saving }}>
         {children}
         {extraActions}
       </SectionSaveContext.Provider>

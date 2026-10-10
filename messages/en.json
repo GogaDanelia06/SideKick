@@ -606,16 +606,10 @@
         "refineWithAi": "Refine with AI",
         "requiresTheAiModule": "Requires the AI module",
         "rewrite": "Rewrite",
+        "saveFirst": "The AI rewrites the saved prompt. Click Save first.",
         "theAiServiceDid": "The AI service did not answer. Try again.",
         "undo": "Bring back the previous text",
         "working": "Working…"
-      },
-      "promptBox": {
-        "edit": "Edit",
-        "empty": "Nothing is written yet. Switch to Edit and write the prompt.",
-        "hint": "Formatting (Markdown): # Heading · ## Subheading · - list · **bold text**",
-        "preview": "Preview",
-        "view": "How the prompt is shown"
       },
       "promptSection": {
         "promptInstructions": "Prompt / instructions",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useContext, useEffect, useEffectEvent, useRef, useState } from "react";
+import { useContext, useEffect, useEffectEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/dashboard/ui/Toast";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
@@ -25,8 +25,6 @@ export function useSectionSave(section: SectionKey, title: Text) {
   const saved = useRef<Fields | null>(null);
   /** What the draft in this browser holds, so it is only written when it would differ. */
   const kept = useRef("");
-  /** Set when the next text to arrive was already saved elsewhere (the AI buttons save on the server). */
-  const adopting = useRef(false);
   const [restored, setRestored] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -40,11 +38,6 @@ export function useSectionSave(section: SectionKey, title: Text) {
   const sync = useEffectEvent(() => {
     const form = formRef.current;
     if (!form || !owner || saved.current === null) return;
-    if (adopting.current) {
-      adopting.current = false;
-      saved.current = readFields(form);
-      setRestored(false);
-    }
     const changed = changedFields(saved.current, readFields(form));
     setDirty(changed !== null);
 
@@ -105,9 +98,6 @@ export function useSectionSave(section: SectionKey, title: Text) {
     return true;
   }
 
-  /** The text about to fill the form is what the server already holds: not an edit to save. */
-  const adopt = useCallback(() => void (adopting.current = true), []);
-
   /** Puts the fields back the way the server has them. */
   function cancel() {
     const form = formRef.current;
@@ -116,5 +106,5 @@ export function useSectionSave(section: SectionKey, title: Text) {
     setRestored(false);
   }
 
-  return { formRef, restored, dirty, saving, save, cancel, adopt };
+  return { formRef, restored, dirty, saving, save, cancel };
 }
