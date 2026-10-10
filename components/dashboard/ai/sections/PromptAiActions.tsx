@@ -96,6 +96,7 @@ export function PromptAiActions({ ready, current, onPrompt }: Props) {
       ) : null}
 
       {pending && !refining ? <p className="text-[13px] text-muted">{t("dashboard.ai.promptAiActions.working")}</p> : null}
+      {pending ? <p className="text-[12px] text-faint">{t("dashboard.ai.promptAiActions.slow")}</p> : null}
       {previous !== null && !pending ? (
         <button type="button" onClick={undo} className="inline-flex items-center gap-1.5 self-start text-[13px] text-muted hover:text-ink">
           <IconArrowBackUp size={15} />

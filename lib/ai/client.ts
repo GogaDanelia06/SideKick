@@ -1,5 +1,5 @@
 import { log } from "@/lib/logger";
-import { call, type AiFailure } from "./call";
+import { call, PROMPT_TIMEOUT_MS, type AiFailure } from "./call";
 
 export { aiConfigured } from "./call";
 
@@ -63,9 +63,12 @@ export async function askAi(
 export async function buildPrompt(businessId: string): Promise<string | null> {
   const res = await call<{ system_prompt?: string }>(
     `/businesses/${encodeURIComponent(businessId)}/build-prompt`,
+    undefined,
+    PROMPT_TIMEOUT_MS,
   );
   if (!res.ok) {
-    log.error("AI service could not build a prompt", undefined, { businessId, detail: res.detail });
+    const { kind, status, waitedMs, detail } = res;
+    log.error("AI service could not build a prompt", undefined, { businessId, kind, status, waitedMs, detail });
     return null;
   }
   return res.data.system_prompt?.trim() || null;
@@ -79,9 +82,11 @@ export async function editPrompt(
   const res = await call<{ system_prompt?: string }>(
     `/businesses/${encodeURIComponent(businessId)}/edit-prompt`,
     { edit_instructions: instructions },
+    PROMPT_TIMEOUT_MS,
   );
   if (!res.ok) {
-    log.error("AI service could not edit the prompt", undefined, { businessId, detail: res.detail });
+    const { kind, status, waitedMs, detail } = res;
+    log.error("AI service could not edit the prompt", undefined, { businessId, kind, status, waitedMs, detail });
     return null;
   }
   return res.data.system_prompt?.trim() || null;

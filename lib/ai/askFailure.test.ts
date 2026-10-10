@@ -4,7 +4,7 @@ vi.mock("@/lib/logger", () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
 
-import { askAiDetailed } from "./client";
+import { askAi, askAiDetailed, editPrompt } from "./client";
 import { log } from "@/lib/logger";
 
 const failureOf = async () => {
@@ -74,6 +74,43 @@ describe("askAiDetailed() failures", () => {
       "AI service could not answer",
       undefined,
       expect.objectContaining({ conversationId: "conv_1", kind: "server_error", status: 500, detail: "HTTP 500: model overloaded" }),
+    );
+  });
+});
+
+describe("prompt calls", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("wait longer than a chat reply, because writing a whole prompt takes the service 25 to 45 seconds", async () => {
+    vi.useFakeTimers();
+    // A service that answers after 60 seconds, unless the caller gives up first.
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        (_url: string, init: RequestInit) =>
+          new Promise((resolve, reject) => {
+            init.signal?.addEventListener("abort", () => reject(Object.assign(new Error("This operation was aborted"), { name: "AbortError" })));
+            setTimeout(() => resolve({ ok: true, json: async () => ({ system_prompt: " ready ", reply: "ready" }) }), 60_000);
+          }),
+      ),
+    );
+
+    const prompt = editPrompt("biz_1", "shorter");
+    const chat = askAi("biz_1", "conv_1", "hi");
+    await vi.advanceTimersByTimeAsync(61_000);
+
+    expect(await prompt).toBe("ready");
+    expect(await chat).toBeNull();
+  });
+
+  it("log why one failed, so a timeout reads as a timeout", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(Object.assign(new Error("This operation was aborted"), { name: "AbortError" })));
+
+    expect(await editPrompt("biz_1", "shorter")).toBeNull();
+    expect(log.error).toHaveBeenCalledWith(
+      "AI service could not edit the prompt",
+      undefined,
+      expect.objectContaining({ businessId: "biz_1", kind: "timeout", detail: "This operation was aborted" }),
     );
   });
 });

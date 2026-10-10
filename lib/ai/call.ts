@@ -7,6 +7,12 @@ const key = () => process.env.AI_SERVICE_KEY;
 /** Generous for a language model; these calls never run inside the webhook deadline. */
 const TIMEOUT_MS = Number(process.env.AI_SERVICE_TIMEOUT_MS ?? 45_000);
 
+/**
+ * Writing or rewriting a whole prompt is slower than answering a message: when measured, an
+ * edit took 24 to 45 seconds, and one that ran past 45 was cut off and shown as a failure.
+ */
+export const PROMPT_TIMEOUT_MS = Math.max(TIMEOUT_MS, 90_000);
+
 export function aiConfigured() {
   return Boolean(base() && key());
 }
@@ -33,7 +39,7 @@ export type AiFailure = {
 
 export type Result<T> = { ok: true; data: T } | ({ ok: false } & AiFailure);
 
-export async function call<T>(path: string, body?: unknown): Promise<Result<T>> {
+export async function call<T>(path: string, body?: unknown, timeoutMs = TIMEOUT_MS): Promise<Result<T>> {
   const url = base();
   const token = key();
   if (!url || !token) {
@@ -50,7 +56,7 @@ export async function call<T>(path: string, body?: unknown): Promise<Result<T>> 
   });
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const res = await fetch(`${url}${path}`, {

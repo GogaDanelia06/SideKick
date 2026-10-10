@@ -54,7 +54,7 @@ what makes a re-send land on the same row instead of creating a second copy.
 | `AI_SERVICE_WEBHOOK_TOKEN` | to notify the AI | Bearer token we send with that push, so they can tell it is us. 32+ characters. |
 | `AI_SERVICE_URL` | **to get replies** | Base URL of the AI service, e.g. `https://si-….on.aws`. Paths are appended to it. |
 | `AI_SERVICE_KEY` | **to get replies** | Their `SERVICE_API_KEY`, sent as `Authorization: Bearer`. |
-| `AI_SERVICE_TIMEOUT_MS` | no | How long to wait on a reply. Defaults to 45000 — a language model is not fast. |
+| `AI_SERVICE_TIMEOUT_MS` | no | How long to wait on a chat reply. Defaults to 45000 — a language model is not fast. Writing or rewriting a prompt waits at least 90000: an edit was measured at 24 to 45 seconds, and one that ran past 45 failed. |
 
 Until the last two are set, messages are still received and stored — they are
 just not announced. The log says so plainly:
@@ -248,6 +248,8 @@ buttons on the AI Assistant page. They generate text and store nothing, and
 neither do we: the result goes into the same box the merchant can edit by hand,
 and reaches `AiConfig.prompt` only when they press Save. `edit-prompt` works
 from the prompt that is saved, so that button waits until the box has been saved.
+Both are slow (24 to 45 seconds for an edit when measured on 2026-10-10), so Sidekick
+waits up to 90 seconds for them; a faster `edit-prompt` would be a better page.
 
 ---
 

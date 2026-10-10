@@ -607,6 +607,7 @@
         "requiresTheAiModule": "Requires the AI module",
         "rewrite": "Rewrite",
         "saveFirst": "The AI rewrites the saved prompt. Click Save first.",
+        "slow": "This can take up to a minute.",
         "theAiServiceDid": "The AI service did not answer. Try again.",
         "undo": "Bring back the previous text",
         "working": "Working…"
