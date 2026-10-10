@@ -59,37 +59,39 @@ export async function askAi(
   return answer.ok ? answer.reply : null;
 }
 
-/** Generates a system prompt from what the business has already told us. */
-export async function buildPrompt(businessId: string): Promise<string | null> {
+/**
+ * The two calls that write a whole prompt. They are the slow ones (13 to 45 seconds when
+ * measured), so each says how long it took, and why when it failed.
+ */
+async function writePrompt(
+  businessId: string,
+  endpoint: "build-prompt" | "edit-prompt",
+  failed: string,
+  body?: unknown,
+): Promise<string | null> {
+  const started = Date.now();
   const res = await call<{ system_prompt?: string }>(
-    `/businesses/${encodeURIComponent(businessId)}/build-prompt`,
-    undefined,
+    `/businesses/${encodeURIComponent(businessId)}/${endpoint}`,
+    body,
     PROMPT_TIMEOUT_MS,
   );
   if (!res.ok) {
     const { kind, status, waitedMs, detail } = res;
-    log.error("AI service could not build a prompt", undefined, { businessId, kind, status, waitedMs, detail });
+    log.error(failed, undefined, { businessId, kind, status, waitedMs, detail });
     return null;
   }
+  log.info("AI service wrote a prompt", { businessId, call: endpoint, waitedMs: Date.now() - started });
   return res.data.system_prompt?.trim() || null;
 }
 
+/** Generates a system prompt from what the business has already told us. */
+export function buildPrompt(businessId: string): Promise<string | null> {
+  return writePrompt(businessId, "build-prompt", "AI service could not build a prompt");
+}
+
 /** Rewrites the prompt according to an instruction the merchant typed. */
-export async function editPrompt(
-  businessId: string,
-  instructions: string,
-): Promise<string | null> {
-  const res = await call<{ system_prompt?: string }>(
-    `/businesses/${encodeURIComponent(businessId)}/edit-prompt`,
-    { edit_instructions: instructions },
-    PROMPT_TIMEOUT_MS,
-  );
-  if (!res.ok) {
-    const { kind, status, waitedMs, detail } = res;
-    log.error("AI service could not edit the prompt", undefined, { businessId, kind, status, waitedMs, detail });
-    return null;
-  }
-  return res.data.system_prompt?.trim() || null;
+export function editPrompt(businessId: string, instructions: string): Promise<string | null> {
+  return writePrompt(businessId, "edit-prompt", "AI service could not edit the prompt", { edit_instructions: instructions });
 }
 
 /** Hands a conversation back to the bot after a person has stepped in. */
