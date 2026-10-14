@@ -25,8 +25,13 @@
     "wordsRemoved": "Words removed: {count}"
   },
   "promptSection": {
+    "edit": "Edit",
+    "oldFormat": "This prompt is in the old format, so editing it with AI is slow. Press “Generate prompt” once and save — after that, edits are fast. Generating replaces the current text, and nothing changes until you save.",
+    "preview": "Preview",
+    "previewEmpty": "The prompt is empty.",
     "promptInstructions": "Prompt / instructions",
     "video": "Video",
+    "viewLabel": "Prompt view",
     "youAreCompanyS": "You are [company]'s virtual assistant…"
   },
   "saveMessages": {
