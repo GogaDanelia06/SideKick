@@ -33,7 +33,7 @@ export function ConversationsView({
   }
 
   return (
-    <div className="grid gap-4 lg:h-[calc(100vh-7rem)] lg:min-h-[520px] lg:grid-cols-[340px_1fr]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:h-[calc(100vh-7rem)] lg:min-h-[520px] lg:grid-cols-[340px_minmax(0,1fr)]">
       <div className={clsx("min-h-0 lg:h-full", view.openId && "hidden lg:block")}>
         <ChatList
           conversations={shown}

@@ -10,7 +10,7 @@ export function MessageBubble({ msg, picked = false }: { msg: ChatMessage; picke
   return (
     <div
       className={clsx(
-        "max-w-[80%] rounded-[13px] px-3.5 py-2.5 text-[13px] leading-relaxed sm:max-w-[70%]",
+        "max-w-[80%] rounded-[13px] px-3.5 py-2.5 text-[13px] leading-relaxed [overflow-wrap:anywhere] sm:max-w-[70%]",
         msg.sender === "CUSTOMER" && "self-start rounded-tl-[4px] border border-border bg-surface",
         msg.sender === "AI" && "ml-auto self-end rounded-tr-[4px] border border-ai bg-ai-surface",
         msg.sender === "OPERATOR" && "ml-auto self-end rounded-tr-[4px] bg-primary text-white",
