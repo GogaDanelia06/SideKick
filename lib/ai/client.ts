@@ -1,7 +1,8 @@
 import { log } from "@/lib/logger";
-import { call, PROMPT_TIMEOUT_MS, type AiFailure } from "./call";
+import { call, type AiFailure } from "./call";
 
 export { aiConfigured } from "./call";
+export { buildPrompt, buildPromptDetailed, editPrompt, editPromptDetailed, type PromptOutcome } from "./promptCalls";
 
 export type AiReply = {
   reply: string;
@@ -52,35 +53,6 @@ export async function askAi(
 ): Promise<AiReply | null> {
   const answer = await askAiDetailed(businessId, conversationId, message);
   return answer.ok ? answer.reply : null;
-}
-
-async function writePrompt(
-  businessId: string,
-  endpoint: "build-prompt" | "edit-prompt",
-  failed: string,
-  body?: unknown,
-): Promise<string | null> {
-  const started = Date.now();
-  const res = await call<{ system_prompt?: string }>(
-    `/businesses/${encodeURIComponent(businessId)}/${endpoint}`,
-    body,
-    PROMPT_TIMEOUT_MS,
-  );
-  if (!res.ok) {
-    const { kind, status, waitedMs, detail } = res;
-    log.error(failed, undefined, { businessId, kind, status, waitedMs, detail });
-    return null;
-  }
-  log.info("AI service wrote a prompt", { businessId, call: endpoint, waitedMs: Date.now() - started });
-  return res.data.system_prompt?.trim() || null;
-}
-
-export function buildPrompt(businessId: string): Promise<string | null> {
-  return writePrompt(businessId, "build-prompt", "AI service could not build a prompt");
-}
-
-export function editPrompt(businessId: string, instructions: string): Promise<string | null> {
-  return writePrompt(businessId, "edit-prompt", "AI service could not edit the prompt", { edit_instructions: instructions });
 }
 
 export async function releaseToBot(

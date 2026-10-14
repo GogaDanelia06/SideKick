@@ -4,20 +4,20 @@ const key = () => process.env.AI_SERVICE_KEY;
 
 const TIMEOUT_MS = Number(process.env.AI_SERVICE_TIMEOUT_MS ?? 45_000);
 
-export const PROMPT_TIMEOUT_MS = Math.max(TIMEOUT_MS, 90_000);
+export const PROMPT_TIMEOUT_MS = Math.max(TIMEOUT_MS, 280_000);
 
 export function aiConfigured() {
   return Boolean(base() && key());
 }
 
 export type AiFailureKind =
-  | "unconfigured" // no URL or key in this environment
-  | "timeout" // no answer within the deadline
-  | "unreachable" // the request never reached the service
-  | "refused" // the service answered 4xx
-  | "server_error" // the service answered 5xx
-  | "bad_reply" // answered 200, but not with JSON we can read
-  | "empty_reply"; // answered 200, with no text
+  | "unconfigured"
+  | "timeout"
+  | "unreachable"
+  | "refused"
+  | "server_error"
+  | "bad_reply"
+  | "empty_reply";
 
 export type AiFailure = {
   kind: AiFailureKind;

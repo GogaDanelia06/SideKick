@@ -1,16 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { aiConfigured, askAi, buildPrompt, editPrompt } from "@/lib/ai/client";
+import type { AiFailureKind } from "@/lib/ai/call";
+import { aiConfigured, askAi, buildPromptDetailed, editPromptDetailed, type PromptOutcome } from "@/lib/ai/client";
 import { ensurePrompt } from "@/lib/ai/ensurePrompt";
 import { applyReplyStyle } from "@/lib/ai/replyStyle";
 import { requirePermission } from "@/lib/auth/permissions";
 import { DASH } from "@/lib/dashboard/routes";
 import { log } from "@/lib/logger";
 
+export type PromptFailure = { reason: AiFailureKind; status?: number; seconds: number };
+
 export type PromptResult =
   | { ok: true; prompt: string }
-  | { ok: false; error: "forbidden" | "unconfigured" | "failed" | "empty" };
+  | ({ ok: false; error: "forbidden" | "unconfigured" | "failed" | "empty" } & Partial<PromptFailure>);
 
 export type TestReply =
   | { ok: true; reply: string; handoff: boolean; promptDrafted?: boolean }
@@ -23,15 +26,17 @@ async function assistantAccess(): Promise<{ businessId: string } | { error: "for
   return { businessId: ctx.businessId };
 }
 
-function proposal(prompt: string | null): PromptResult {
-  return prompt ? { ok: true, prompt } : { ok: false, error: "failed" };
+function proposal(outcome: PromptOutcome): PromptResult {
+  if (outcome.ok) return { ok: true, prompt: outcome.prompt };
+  const { kind, status, waitedMs } = outcome.failure;
+  return { ok: false, error: "failed", reason: kind, status, seconds: Math.round(waitedMs / 1000) };
 }
 
 export async function generateAiPrompt(): Promise<PromptResult> {
   const access = await assistantAccess();
   if ("error" in access) return { ok: false, error: access.error };
 
-  return proposal(await buildPrompt(access.businessId));
+  return proposal(await buildPromptDetailed(access.businessId));
 }
 
 export async function refineAiPrompt(instructions: string): Promise<PromptResult> {
@@ -40,7 +45,7 @@ export async function refineAiPrompt(instructions: string): Promise<PromptResult
 
   const clean = instructions.trim();
   if (!clean) return { ok: false, error: "empty" };
-  return proposal(await editPrompt(access.businessId, clean));
+  return proposal(await editPromptDetailed(access.businessId, clean));
 }
 
 const TESTER_THREAD = /^[a-z0-9]{8,64}$/;

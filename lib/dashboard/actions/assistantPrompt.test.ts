@@ -8,14 +8,14 @@ vi.mock("@/lib/ai/ensurePrompt", () => ({ ensurePrompt: vi.fn() }));
 vi.mock("@/lib/ai/client", () => ({
   aiConfigured: vi.fn(),
   askAi: vi.fn(),
-  buildPrompt: vi.fn(),
-  editPrompt: vi.fn(),
+  buildPromptDetailed: vi.fn(),
+  editPromptDetailed: vi.fn(),
 }));
 
 import { revalidatePath } from "next/cache";
 import { generateAiPrompt, refineAiPrompt } from "./assistant";
 import { prisma } from "@/lib/db";
-import { aiConfigured, buildPrompt, editPrompt } from "@/lib/ai/client";
+import { aiConfigured, buildPromptDetailed as buildPrompt, editPromptDetailed as editPrompt } from "@/lib/ai/client";
 import { requirePermission } from "@/lib/auth/permissions";
 
 const OWNER = { userId: "u1", businessId: "b1", role: "OWNER" } as never;
@@ -35,7 +35,7 @@ beforeEach(() => {
 
 describe("generateAiPrompt()", () => {
   it("hands the text back and stores nothing", async () => {
-    vi.mocked(buildPrompt).mockResolvedValue("You are the assistant of Cool Cat.");
+    vi.mocked(buildPrompt).mockResolvedValue({ ok: true, prompt: "You are the assistant of Cool Cat." });
 
     expect(await generateAiPrompt()).toEqual({ ok: true, prompt: "You are the assistant of Cool Cat." });
     expect(buildPrompt).toHaveBeenCalledWith("b1");
@@ -43,9 +43,9 @@ describe("generateAiPrompt()", () => {
   });
 
   it("says it failed when the AI service wrote nothing", async () => {
-    vi.mocked(buildPrompt).mockResolvedValue(null);
+    vi.mocked(buildPrompt).mockResolvedValue({ ok: false, failure: { kind: "server_error", status: 502, waitedMs: 1200, detail: "HTTP 502" } });
 
-    expect(await generateAiPrompt()).toEqual({ ok: false, error: "failed" });
+    expect(await generateAiPrompt()).toEqual({ ok: false, error: "failed", reason: "server_error", status: 502, seconds: 1 });
     expectNothingStored();
   });
 
@@ -62,7 +62,7 @@ describe("generateAiPrompt()", () => {
 
 describe("refineAiPrompt()", () => {
   it("hands the rewrite back and stores nothing", async () => {
-    vi.mocked(editPrompt).mockResolvedValue("Shorter.");
+    vi.mocked(editPrompt).mockResolvedValue({ ok: true, prompt: "Shorter." });
 
     expect(await refineAiPrompt("  make it shorter ")).toEqual({ ok: true, prompt: "Shorter." });
     expect(editPrompt).toHaveBeenCalledWith("b1", "make it shorter");
@@ -75,9 +75,9 @@ describe("refineAiPrompt()", () => {
   });
 
   it("says it failed when the AI service wrote nothing", async () => {
-    vi.mocked(editPrompt).mockResolvedValue(null);
+    vi.mocked(editPrompt).mockResolvedValue({ ok: false, failure: { kind: "timeout", waitedMs: 280_000, detail: "aborted" } });
 
-    expect(await refineAiPrompt("shorter")).toEqual({ ok: false, error: "failed" });
+    expect(await refineAiPrompt("shorter")).toEqual({ ok: false, error: "failed", reason: "timeout", status: undefined, seconds: 280 });
     expectNothingStored();
   });
 });

@@ -2,9 +2,11 @@
 
 import { useContext, useState, useTransition } from "react";
 import { IconArrowBackUp, IconSparkles, IconWand } from "@tabler/icons-react";
-import { generateAiPrompt, refineAiPrompt } from "@/lib/dashboard/actions/assistant";
+import { generateAiPrompt, refineAiPrompt, type PromptResult } from "@/lib/dashboard/actions/assistant";
+import type { Text } from "@/lib/i18n/messages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { SectionSaveContext } from "../sectionSaveContext";
+import { promptFailureText } from "./promptFailure";
 import { RefinePanel } from "./RefinePanel";
 
 type Props = {
@@ -20,26 +22,25 @@ export function PromptAiActions({ ready, current, onPrompt }: Props) {
   const [pending, start] = useTransition();
   const [refining, setRefining] = useState(false);
   const [instructions, setInstructions] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Text | null>(null);
   const [previous, setPrevious] = useState<string | null>(null);
   const { dirty, saving } = useContext(SectionSaveContext);
   const blocked = !ready || pending || saving;
 
   const offline = t("dashboard.ai.promptAiActions.requiresTheAiModule");
-  const failed = t("dashboard.ai.promptAiActions.theAiServiceDid");
 
-  function run(work: () => Promise<{ ok: boolean; prompt?: string }>) {
+  function run(work: () => Promise<PromptResult>) {
     setError(null);
     const before = current;
     start(async () => {
       const res = await work();
-      if (res.ok && res.prompt) {
+      if (res.ok) {
         onPrompt(res.prompt);
         setPrevious(before);
         setRefining(false);
         setInstructions("");
       } else {
-        setError(failed);
+        setError(promptFailureText(res));
       }
     });
   }
@@ -95,7 +96,7 @@ export function PromptAiActions({ ready, current, onPrompt }: Props) {
           {t("dashboard.ai.promptAiActions.undo")}
         </button>
       ) : null}
-      {error ? <p className="text-[13px] text-red">{error}</p> : null}
+      {error ? <p className="text-[13px] text-red">{t(error)}</p> : null}
     </div>
   );
 }

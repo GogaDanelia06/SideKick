@@ -1,12 +1,19 @@
 {
   "promptAiActions": {
     "eGAnswerMore": "e.g. answer more briefly and always state the price",
+    "failure": {
+      "emptyReply": "The AI service sent back an empty answer. Try again.",
+      "refused": "The AI service refused the request (HTTP {status}). Try again; if it repeats, let us know.",
+      "serverError": "The AI service hit an error (HTTP {status}). Try again; if it repeats, let us know.",
+      "timeout": "The AI didn't finish within {seconds} seconds. This happens with long or old-format prompts — generate it in the new format first, or try again.",
+      "unreachable": "Couldn't reach the AI service. Try again in a little while."
+    },
     "generatePrompt": "Generate prompt",
     "refineWithAi": "Refine with AI",
     "requiresTheAiModule": "Requires the AI module",
     "rewrite": "Rewrite",
     "saveFirst": "The AI rewrites the saved prompt. Click Save first.",
-    "slow": "This can take up to a minute.",
+    "slow": "On a long prompt this can take a few minutes.",
     "theAiServiceDid": "The AI service did not answer. Try again.",
     "undo": "Bring back the previous text",
     "working": "Working…"

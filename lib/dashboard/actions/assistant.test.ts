@@ -8,8 +8,8 @@ vi.mock("@/lib/ai/ensurePrompt", () => ({ ensurePrompt: vi.fn() }));
 vi.mock("@/lib/ai/client", () => ({
   aiConfigured: () => true,
   askAi: vi.fn(),
-  buildPrompt: vi.fn(),
-  editPrompt: vi.fn(),
+  buildPromptDetailed: vi.fn(),
+  editPromptDetailed: vi.fn(),
 }));
 
 import { testAiReply } from "./assistant";
