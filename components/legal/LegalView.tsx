@@ -44,7 +44,7 @@ export function LegalView({
     <section className="pb-20 pt-8">
       <Container>
         <div className="mx-auto max-w-[760px]">
-          <h1 className="text-3xl font-semibold leading-snug tracking-[-0.01em]">
+          <h1 className="text-[20px] font-semibold leading-snug tracking-[-0.01em] [overflow-wrap:anywhere] min-[360px]:text-2xl sm:text-3xl">
             {t(title ?? doc.title)}
           </h1>
           <p className="mt-2 text-sm text-muted">
