@@ -6,6 +6,7 @@ import { aiConfigured, askAi, buildPromptDetailed, editPromptDetailed, type Prom
 import { ensurePrompt } from "@/lib/ai/ensurePrompt";
 import { applyReplyStyle } from "@/lib/ai/replyStyle";
 import { requirePermission } from "@/lib/auth/permissions";
+import { promptFailure } from "@/lib/dashboard/promptFailure";
 import { DASH } from "@/lib/dashboard/routes";
 import { log } from "@/lib/logger";
 
@@ -27,9 +28,7 @@ async function assistantAccess(): Promise<{ businessId: string } | { error: "for
 }
 
 function proposal(outcome: PromptOutcome): PromptResult {
-  if (outcome.ok) return { ok: true, prompt: outcome.prompt };
-  const { kind, status, waitedMs } = outcome.failure;
-  return { ok: false, error: "failed", reason: kind, status, seconds: Math.round(waitedMs / 1000) };
+  return outcome.ok ? { ok: true, prompt: outcome.prompt } : promptFailure(outcome.failure);
 }
 
 export async function generateAiPrompt(): Promise<PromptResult> {

@@ -4,6 +4,8 @@ import { getConversation, getConversations } from "@/lib/dashboard/queries";
 import { ConversationsView } from "@/components/dashboard/conversations/ConversationsView";
 import { CHANNEL_ORDER } from "@/lib/dashboard/channelMeta";
 
+export const maxDuration = 300;
+
 export default async function ConversationsPage({
   searchParams,
 }: {

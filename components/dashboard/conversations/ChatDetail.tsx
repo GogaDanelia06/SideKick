@@ -2,10 +2,13 @@
 
 import type { ConversationDetail } from "@/lib/dashboard/queries";
 import { ChatHeader } from "./chat/ChatHeader";
+import { CorrectionBar } from "./chat/CorrectionBar";
+import { CorrectionDialog } from "./chat/CorrectionDialog";
 import { EmptyChat } from "./chat/EmptyChat";
 import { MessageList } from "./chat/MessageList";
 import { ReplyBar } from "./chat/ReplyBar";
 import { useChatReply, type ChatMessage } from "./chat/useChatReply";
+import { useCorrection } from "./chat/useCorrection";
 
 export function ChatDetail({
   chat,
@@ -25,6 +28,7 @@ export function ChatDetail({
   onReleased?: () => void;
 }) {
   const composer = useChatReply(chat, onSent, onLead);
+  const correction = useCorrection(chat?.id ?? null);
 
   if (!chat) return <EmptyChat />;
 
@@ -37,15 +41,36 @@ export function ChatDetail({
         onMakeLead={() => void composer.makeLead()}
         onReleased={onReleased}
         onAiChange={onAiChange}
+        correcting={correction.active}
+        onCorrect={correction.active ? correction.stop : correction.start}
       />
-      <MessageList chatId={chat.id} messages={chat.messages} loading={loading} />
-      <ReplyBar
-        notice={composer.notice}
-        draft={composer.draft}
-        sending={composer.sending}
-        onChange={composer.changeDraft}
-        onSubmit={() => void composer.reply()}
+      <MessageList
+        chatId={chat.id}
+        messages={chat.messages}
+        loading={loading}
+        selectable={correction.active}
+        selected={correction.selected}
+        onToggle={correction.toggle}
       />
+      {correction.active ? (
+        <CorrectionBar count={correction.selected.length} onCancel={correction.stop} onNext={correction.openDialog} />
+      ) : (
+        <ReplyBar
+          notice={composer.notice}
+          draft={composer.draft}
+          sending={composer.sending}
+          onChange={composer.changeDraft}
+          onSubmit={() => void composer.reply()}
+        />
+      )}
+      {correction.dialog ? (
+        <CorrectionDialog
+          conversationId={chat.id}
+          messageIds={correction.selected}
+          onClose={correction.closeDialog}
+          onSaved={correction.stop}
+        />
+      ) : null}
     </div>
   );
 }

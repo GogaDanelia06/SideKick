@@ -5,6 +5,7 @@ import { CHANNEL_META } from "@/lib/dashboard/channelMeta";
 import type { ConversationDetail } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { ChatActions } from "./ChatActions";
+import { CorrectButton } from "./CorrectButton";
 
 export function ChatHeader({
   chat,
@@ -13,9 +14,13 @@ export function ChatHeader({
   onMakeLead,
   onReleased,
   onAiChange,
+  correcting,
+  onCorrect,
 }: {
   chat: ConversationDetail;
   makingLead: boolean;
+  correcting: boolean;
+  onCorrect: () => void;
   onBack: () => void;
   onMakeLead: () => void;
   onReleased?: () => void;
@@ -44,6 +49,7 @@ export function ChatHeader({
         </div>
       </div>
 
+      <CorrectButton active={correcting} onClick={onCorrect} />
       <ChatActions
         chat={chat}
         makingLead={makingLead}

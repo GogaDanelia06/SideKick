@@ -39,5 +39,23 @@
     "order": "Order",
     "planSpentOrLapsed": "Plan spent or lapsed",
     "waitingForAHuman": "Waiting for a human"
+  },
+  "correction": {
+    "button": "Correct the AI",
+    "buttonHint": "Select the AI's wrong answers and fix the prompt",
+    "cancel": "Cancel",
+    "close": "Close",
+    "describe": "Describe what was wrong and how it should have answered. The AI reviews the {count} selected messages and changes the prompt to match.",
+    "failed": "That didn't work. Try again.",
+    "next": "Improve the prompt",
+    "noChange": "The AI didn't change anything in the prompt. Try describing more precisely what should change.",
+    "pickHint": "Select the AI's wrong answers",
+    "placeholder": "e.g. don't mention the price until the customer asks for it",
+    "preview": "Show the new prompt",
+    "save": "Save the prompt",
+    "saved": "Prompt updated",
+    "selected": "{count} selected",
+    "title": "Improve the prompt from the selected messages",
+    "working": "The AI is working on the prompt — this can take a few minutes."
   }
 }

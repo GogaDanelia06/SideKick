@@ -1,18 +1,25 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import clsx from "clsx";
 import { useLanguage } from "@/lib/i18n/useLanguage";
+import { MessageBubble } from "./MessageBubble";
+import { PickableBubble } from "./PickableBubble";
 import type { ChatMessage } from "./useChatReply";
 
 export function MessageList({
   chatId,
   messages,
   loading,
+  selectable = false,
+  selected = [],
+  onToggle,
 }: {
   chatId: string;
   messages: ChatMessage[];
   loading: boolean;
+  selectable?: boolean;
+  selected?: string[];
+  onToggle?: (id: string) => void;
 }) {
   const { t } = useLanguage();
   const thread = useRef<HTMLDivElement>(null);
@@ -34,37 +41,13 @@ export function MessageList({
       ) : messages.length === 0 ? (
         <p className="m-auto text-sm text-muted">{t("dashboard.conversations.chatDetail.noMessages")}</p>
       ) : (
-        messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={clsx(
-              "max-w-[80%] rounded-[13px] px-3.5 py-2.5 text-[13px] leading-relaxed sm:max-w-[70%]",
-              msg.sender === "CUSTOMER" && "self-start rounded-tl-[4px] border border-border bg-surface",
-              msg.sender === "AI" && "ml-auto self-end rounded-tr-[4px] border border-ai bg-ai-surface",
-              msg.sender === "OPERATOR" && "ml-auto self-end rounded-tr-[4px] bg-primary text-white",
-            )}
-          >
-            {msg.sender === "AI" ? (
-              <span className="mb-1 block text-[10px] font-semibold text-ai">
-                ✦ {t("dashboard.conversations.chatDetail.aiReply")}
-              </span>
-            ) : null}
-            {msg.sender === "OPERATOR" ? (
-              <span className="mb-1 block text-[10px] font-semibold opacity-80">
-                {t("dashboard.conversations.chatDetail.adminManual")}
-              </span>
-            ) : null}
-            {msg.text}
-            <span
-              className={clsx(
-                "mt-1 block text-right text-[10px] tabular-nums",
-                msg.sender === "OPERATOR" ? "opacity-70" : "text-faint",
-              )}
-            >
-              {msg.timeLabel}
-            </span>
-          </div>
-        ))
+        messages.map((msg) =>
+          selectable && msg.sender === "AI" && onToggle ? (
+            <PickableBubble key={msg.id} msg={msg} picked={selected.includes(msg.id)} onToggle={() => onToggle(msg.id)} />
+          ) : (
+            <MessageBubble key={msg.id} msg={msg} />
+          ),
+        )
       )}
     </div>
   );
