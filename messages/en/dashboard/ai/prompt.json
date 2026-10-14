@@ -4,6 +4,7 @@
     "failure": {
       "emptyReply": "The AI service sent back an empty answer. Try again.",
       "refused": "The AI service refused the request (HTTP {status}). Try again; if it repeats, let us know.",
+      "rephrase": "The AI couldn't tell which part of the prompt to change. Make the instruction more specific (e.g. which section) and try again.",
       "serverError": "The AI service hit an error (HTTP {status}). Try again; if it repeats, let us know.",
       "timeout": "The AI didn't finish within {seconds} seconds. This happens with long or old-format prompts — generate it in the new format first, or try again.",
       "unreachable": "Couldn't reach the AI service. Try again in a little while."

@@ -8,7 +8,8 @@ describe("promptFailureText()", () => {
   it("names the real reason a prompt call failed", () => {
     expect(say({ ok: false, error: "failed", reason: "timeout", seconds: 280 })).toContain("280 seconds");
     expect(say({ ok: false, error: "failed", reason: "server_error", status: 502, seconds: 3 })).toContain("HTTP 502");
-    expect(say({ ok: false, error: "failed", reason: "refused", status: 422, seconds: 1 })).toContain("HTTP 422");
+    expect(say({ ok: false, error: "failed", reason: "refused", status: 401, seconds: 1 })).toContain("HTTP 401");
+    expect(say({ ok: false, error: "failed", reason: "refused", status: 422, seconds: 37 })).toBe(message("en", "dashboard.ai.promptAiActions.failure.rephrase"));
     expect(say({ ok: false, error: "failed", reason: "unreachable", seconds: 0 })).toBe(message("en", "dashboard.ai.promptAiActions.failure.unreachable"));
     expect(say({ ok: false, error: "failed", reason: "empty_reply", seconds: 9 })).toBe(message("en", "dashboard.ai.promptAiActions.failure.emptyReply"));
   });

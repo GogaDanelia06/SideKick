@@ -13,7 +13,7 @@ export function promptFailureText(result: Failure): Text {
     case "server_error":
       return phrase(`${BASE}.serverError`, { status });
     case "refused":
-      return phrase(`${BASE}.refused`, { status });
+      return result.status === 422 ? `${BASE}.rephrase` : phrase(`${BASE}.refused`, { status });
     case "unreachable":
       return `${BASE}.unreachable`;
     case "bad_reply":
