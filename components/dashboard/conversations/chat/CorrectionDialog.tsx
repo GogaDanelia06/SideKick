@@ -1,7 +1,8 @@
 "use client";
 
-import { IconSparkles, IconX } from "@tabler/icons-react";
+import { IconLoader2, IconSparkles, IconX } from "@tabler/icons-react";
 import { PromptDiffPanel } from "@/components/dashboard/ai/sections/PromptDiffPanel";
+import { WorkingIndicator } from "@/components/dashboard/ui/WorkingIndicator";
 import { diffText, hasChanges } from "@/lib/diff";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { useCorrectionDialog } from "./useCorrectionDialog";
@@ -38,7 +39,7 @@ export function CorrectionDialog({
               {t("dashboard.conversations.correction.describe", { count: messageIds.length })}
             </p>
           </div>
-          <button type="button" onClick={onClose} aria-label={t("dashboard.conversations.correction.close")} className="grid size-8 shrink-0 place-items-center rounded-[6px] border border-border text-muted">
+          <button type="button" disabled={d.pending} onClick={onClose} aria-label={t("dashboard.conversations.correction.close")} className="grid size-8 shrink-0 place-items-center rounded-[6px] border border-border text-muted disabled:opacity-40">
             <IconX size={18} />
           </button>
         </div>
@@ -53,16 +54,17 @@ export function CorrectionDialog({
             className="w-full rounded-[8px] border border-input bg-canvas p-3 text-sm outline-none placeholder:text-faint focus:border-blue disabled:opacity-60"
           />
           <button type="button" disabled={d.pending || !d.note.trim()} onClick={d.preview} className={`${BTN} border border-ai text-ai`}>
-            <IconSparkles size={16} /> {t("dashboard.conversations.correction.preview")}
+            {d.pending ? <IconLoader2 size={16} className="animate-spin" /> : <IconSparkles size={16} />}
+            {t("dashboard.conversations.correction.preview")}
           </button>
-          {d.pending ? <p className="text-[12px] text-faint">{t("dashboard.conversations.correction.working")}</p> : null}
+          {d.pending ? <WorkingIndicator hint="dashboard.conversations.correction.working" /> : null}
           {d.error ? <p className="text-[13px] text-red">{t(d.error)}</p> : null}
           {d.proposal && changed ? <PromptDiffPanel saved={d.proposal.saved} current={d.proposal.prompt} /> : null}
           {d.proposal && !changed ? <p className="text-[13px] text-amber">{t("dashboard.conversations.correction.noChange")}</p> : null}
         </div>
 
         <div className="flex justify-end gap-2 border-t border-border2 px-5 py-3">
-          <button type="button" onClick={onClose} className={`${BTN} border border-border text-muted`}>
+          <button type="button" disabled={d.pending} onClick={onClose} className={`${BTN} border border-border text-muted`}>
             {t("dashboard.conversations.correction.close")}
           </button>
           <button type="button" disabled={d.pending || !changed} onClick={d.save} className={`${BTN} bg-primary text-white`}>

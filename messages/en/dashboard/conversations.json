@@ -56,6 +56,6 @@
     "saved": "Prompt updated",
     "selected": "{count} selected",
     "title": "Improve the prompt from the selected messages",
-    "working": "The AI is working on the prompt — this can take a few minutes."
+    "working": "It usually takes 30–60 seconds. Keep this window open."
   }
 }

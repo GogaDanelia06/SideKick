@@ -4,6 +4,7 @@ import { useContext, useState, useTransition } from "react";
 import { IconArrowBackUp, IconSparkles, IconWand } from "@tabler/icons-react";
 import { generateAiPrompt, refineAiPrompt, type PromptResult } from "@/lib/dashboard/actions/assistant";
 import type { Text } from "@/lib/i18n/messages";
+import { WorkingIndicator } from "@/components/dashboard/ui/WorkingIndicator";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { SectionSaveContext } from "../sectionSaveContext";
 import { promptFailureText } from "./promptFailure";
@@ -88,8 +89,7 @@ export function PromptAiActions({ ready, current, onPrompt }: Props) {
         />
       ) : null}
 
-      {pending && !refining ? <p className="text-[13px] text-muted">{t("dashboard.ai.promptAiActions.working")}</p> : null}
-      {pending ? <p className="text-[12px] text-faint">{t("dashboard.ai.promptAiActions.slow")}</p> : null}
+      {pending ? <WorkingIndicator hint="dashboard.ai.promptAiActions.slow" /> : null}
       {previous !== null && !pending ? (
         <button type="button" onClick={undo} className="inline-flex items-center gap-1.5 self-start text-[13px] text-muted hover:text-ink">
           <IconArrowBackUp size={15} />
