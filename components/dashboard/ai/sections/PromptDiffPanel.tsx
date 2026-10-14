@@ -26,13 +26,13 @@ function Count({ sign, count, label, tone }: { sign: string; count: number; labe
   );
 }
 
-export function PromptDiffPanel({ saved, current }: { saved: string; current: string }) {
+export function PromptDiffPanel({ saved, current, context = 1 }: { saved: string; current: string; context?: number }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(true);
   const bodyId = useId();
-  const rows = useMemo(() => diffText(saved, current), [saved, current]);
+  const rows = useMemo(() => diffText(saved, current, { skipBlankLines: true }), [saved, current]);
   const counts = useMemo(() => countChanges(rows), [rows]);
-  const shown = useMemo(() => foldUnchanged(rows), [rows]);
+  const shown = useMemo(() => foldUnchanged(rows, context), [rows, context]);
 
   if (!hasChanges(rows)) return <p className="text-[13px] text-muted">{t("dashboard.ai.promptChanges.same")}</p>;
 

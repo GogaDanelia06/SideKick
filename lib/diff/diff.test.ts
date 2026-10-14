@@ -80,6 +80,12 @@ describe("diffText()", () => {
     expect(show(diffText("ა\n\nბ", "ა\nბ"))).toEqual(["  ა", "− ", "  ბ"]);
   });
 
+  it("can leave out lines that only add or remove empty space", () => {
+    const rows = diffText("ა\nბ\nგ", "ა\n\nბ\n\nგ ახალი", { skipBlankLines: true });
+    expect(show(rows)).toEqual(["  ა", "  ბ", "± გ[+ ახალი]"]);
+    expect(hasChanges(diffText("ა\nბ", "ა\n\n\nბ\n", { skipBlankLines: true }))).toBe(false);
+  });
+
   it("sees no change in line endings, trailing spaces or a final newline", () => {
     expect(hasChanges(diffText("ა\r\nბ  \n", "ა\nბ"))).toBe(false);
   });
@@ -92,6 +98,11 @@ describe("diffText()", () => {
 });
 
 describe("foldUnchanged()", () => {
+  it("can show the changed lines alone, with no context around them", () => {
+    const rows = diffText(lines(10), lines(10).replace("ხაზი 5", "ხაზი ხუთი"));
+    expect(show(foldUnchanged(rows, 0))).toEqual(["… 4", "± ხაზი [−5][+ხუთი]", "… 5"]);
+  });
+
   it("keeps a line of context around a change and folds the rest into gaps", () => {
     const rows = diffText(lines(10), lines(10).replace("ხაზი 5", "ხაზი ხუთი"));
     expect(show(foldUnchanged(rows))).toEqual(["… 3", "  ხაზი 4", "± ხაზი [−5][+ხუთი]", "  ხაზი 6", "… 4"]);

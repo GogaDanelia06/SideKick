@@ -22,7 +22,7 @@ export function CorrectionDialog({
 }) {
   const { t } = useLanguage();
   const d = useCorrectionDialog(conversationId, messageIds, onSaved);
-  const changed = d.proposal ? hasChanges(diffText(d.proposal.saved, d.proposal.prompt)) : false;
+  const changed = d.proposal ? hasChanges(diffText(d.proposal.saved, d.proposal.prompt, { skipBlankLines: true })) : false;
 
   return (
     <div className="fixed inset-0 z-[60] grid place-items-center bg-black/60 p-4">
@@ -59,7 +59,7 @@ export function CorrectionDialog({
           </button>
           {d.pending ? <WorkingIndicator hint="dashboard.conversations.correction.working" /> : null}
           {d.error ? <p className="text-[13px] text-red">{t(d.error)}</p> : null}
-          {d.proposal && changed ? <PromptDiffPanel saved={d.proposal.saved} current={d.proposal.prompt} /> : null}
+          {d.proposal && changed ? <PromptDiffPanel saved={d.proposal.saved} current={d.proposal.prompt} context={0} /> : null}
           {d.proposal && !changed ? <p className="text-[13px] text-amber">{t("dashboard.conversations.correction.noChange")}</p> : null}
         </div>
 

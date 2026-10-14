@@ -5,9 +5,12 @@ import { likeness, mergeWords } from "./words";
 const SIMILAR = 0.5;
 const MAX_PAIRS = 10_000;
 
-function lines(text: string): string[] {
+export type DiffOptions = { skipBlankLines?: boolean };
+
+function lines(text: string, { skipBlankLines = false }: DiffOptions): string[] {
   const clean = text.replace(/\r\n?/g, "\n").trimEnd();
-  return clean ? clean.split("\n") : [];
+  const all = clean ? clean.split("\n") : [];
+  return skipBlankLines ? all.filter((line) => line.trim() !== "") : all;
 }
 
 const sameLine = (x: string, y: string) => x.trimEnd() === y.trimEnd();
@@ -51,9 +54,9 @@ function change(removed: string[], added: string[]): DiffRow[] {
   return rows;
 }
 
-export function diffText(before: string, after: string): DiffRow[] {
-  const a = lines(before);
-  const b = lines(after);
+export function diffText(before: string, after: string, options: DiffOptions = {}): DiffRow[] {
+  const a = lines(before, options);
+  const b = lines(after, options);
   const rows: DiffRow[] = [];
   let i = 0;
   let j = 0;
