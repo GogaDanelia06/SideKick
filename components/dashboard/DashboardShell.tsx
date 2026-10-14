@@ -18,7 +18,7 @@ export function DashboardShell({ children, account }: { children: ReactNode; acc
         <Sidebar className="hidden lg:flex" account={account} />
         <div className="flex min-w-0 flex-1 flex-col">
           <Topbar onOpenMenu={() => setDrawerOpen(true)} />
-          <main key={account.businessId} className="flex-1 p-4 pb-24 sm:p-6 lg:pb-6">
+          <main key={account.businessId} className="flex-1 p-4 pb-24 sm:p-6 sm:pb-24 lg:pb-6">
             {children}
           </main>
         </div>
