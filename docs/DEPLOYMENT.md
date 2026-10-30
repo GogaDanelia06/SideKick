@@ -54,14 +54,17 @@ has broken the Vercel build once already — keep it lazy.
 
 3. **Add the environment variables** from the table above.
 
-4. **Set the build command** so migrations run before the build:
+4. **Set the build command** so the Prisma client is regenerated and migrations
+   run before the build:
 
    ```
-   prisma migrate deploy && next build
+   prisma generate && prisma migrate deploy && next build
    ```
 
-   Without this, a deploy that adds a table will ship code expecting a table
-   the database does not have. See [Migrations](#migrations).
+   Without `prisma migrate deploy`, a deploy that adds a table ships code
+   expecting a table the database does not have. Without `prisma generate`, a
+   build that restores cached packages type-checks against the previous
+   schema's client and fails. See [Migrations](#migrations).
 
 5. **Deploy**, then seed the reference data once:
 
