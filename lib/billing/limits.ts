@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { planLabel } from "@/lib/content/packages";
-import { isActivated } from "./access";
+import { isActivated } from "./activation";
 import { isExpired } from "./subscriptionState";
 import type { Text } from "@/lib/i18n/messages";
 

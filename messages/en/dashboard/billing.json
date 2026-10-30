@@ -17,8 +17,8 @@
     "yourSessionHasEnded": "Your session has ended — sign in again"
   },
   "locked": {
-    "choosePlan": "Choose a plan",
     "memberBody": "This business's plan isn't activated yet. Ask the owner to activate it.",
+    "navHint": "Activate a plan in Billing first",
     "notActive": "This business isn't activated yet. Activate a plan in Billing.",
     "ownerBody": "Choose a plan and activate it to start using SideKick. Until then the AI won't answer your customers.",
     "title": "Your account isn't activated yet"

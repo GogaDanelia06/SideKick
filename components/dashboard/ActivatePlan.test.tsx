@@ -11,11 +11,11 @@ const render = (owner: boolean) =>
   );
 
 describe("lockedOut()", () => {
-  it("keeps a business that is not activated out of every page but billing and profile", () => {
-    for (const path of ["/dashboard", "/dashboard/ai", "/dashboard/conversations", "/dashboard/channels", "/dashboard/team"]) {
+  it("keeps a business that is not activated on the billing page only", () => {
+    for (const path of ["/dashboard", "/dashboard/ai", "/dashboard/conversations", "/dashboard/team", "/dashboard/profile"]) {
       expect(lockedOut(false, path)).toBe(true);
     }
-    for (const path of ["/dashboard/billing", "/dashboard/billing/return", "/dashboard/profile"]) {
+    for (const path of ["/dashboard/billing", "/dashboard/billing/return"]) {
       expect(lockedOut(false, path)).toBe(false);
     }
   });
@@ -30,15 +30,13 @@ describe("lockedOut()", () => {
 });
 
 describe("ActivatePlan", () => {
-  it("sends the owner to billing", () => {
+  it("asks the owner to activate a plan", () => {
     const html = render(true);
-    expect(html).toContain('href="/dashboard/billing"');
     expect(html).toContain("ანგარიში ჯერ არ არის გააქტიურებული");
+    expect(html).toContain("აირჩიე პაკეტი");
   });
 
-  it("tells a team member to ask the owner, with no billing link", () => {
-    const html = render(false);
-    expect(html).not.toContain("/dashboard/billing");
-    expect(html).toContain("სთხოვე მფლობელს");
+  it("tells a team member to ask the owner", () => {
+    expect(render(false)).toContain("სთხოვე მფლობელს");
   });
 });

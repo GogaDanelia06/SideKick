@@ -34,7 +34,7 @@ export function MobileDrawer({ open, onClose, account }: { open: boolean; onClos
             <IconX size={20} />
           </button>
         </div>
-        <NavList onNavigate={onClose} />
+        <NavList onNavigate={onClose} locked={!account.activated} />
         <ProfileMenu account={account} onNavigate={onClose} />
       </aside>
     </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { PaymentProvider, Plan, Subscription } from "@prisma/client";
 import { Panel } from "@/components/dashboard/ui/Panel";
-import { isActivated } from "@/lib/billing/access";
+import { isActivated } from "@/lib/billing/activation";
 import { planLabel } from "@/lib/content/packages";
 import { fmtDate } from "@/lib/dashboard/time";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -33,12 +33,12 @@ export function PlanSummary({
         <div>
           <div className="text-xs text-muted">{t("dashboard.billing.view.currentPlan")}</div>
           <div className="mt-1 text-2xl font-semibold">{plan ? t(planLabel(plan)) : "—"}</div>
-          {subscription ? (
+          {subscription || !activated ? (
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
               <span className={activated ? undefined : "font-medium text-amber"}>
-                {t(SUB_STATUS[subscription.status] ?? "dashboard.billing.view.text")}
+                {t(subscription ? (SUB_STATUS[subscription.status] ?? "dashboard.billing.view.text") : "dashboard.billing.view.notActivated")}
               </span>
-              {subscription.renewsAt ? (
+              {subscription?.renewsAt ? (
                 <>
                   <span>·</span>
                   <span>

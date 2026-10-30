@@ -27,31 +27,18 @@ describe("provisionBusiness()", () => {
     );
   });
 
-  it("gives the business the four channels and a trial subscription", async () => {
+  it("gives the business the four channels", async () => {
     await provisionBusiness("u1", "X");
 
     const data = create.mock.calls[0][0].data as Record<string, { create?: unknown[] }>;
     expect(data.channels.create).toHaveLength(4);
-    expect(data.subscription).toBeTruthy();
   });
 
-  it("starts the business awaiting payment, on the cheapest plan if basic is gone", async () => {
-    vi.mocked(prisma.plan.findUnique).mockResolvedValue(null as never);
-    vi.mocked(prisma.plan.findFirst).mockResolvedValue({ id: "plan_cheap" } as never);
-
-    await provisionBusiness("u1", "X");
-
-    const data = create.mock.calls[0][0].data as { subscription?: { create: unknown } };
-    expect(data.subscription?.create).toEqual({ planId: "plan_cheap", status: "PENDING" });
-  });
-
-  it("still creates the business when no plan row exists", async () => {
-    vi.mocked(prisma.plan.findUnique).mockResolvedValue(null as never);
-    vi.mocked(prisma.plan.findFirst).mockResolvedValue(null as never);
-
+  it("starts the business with no plan, so it waits for activation", async () => {
     await provisionBusiness("u1", "X");
 
     const data = create.mock.calls[0][0].data as Record<string, unknown>;
     expect(data.subscription).toBeUndefined();
+    expect(prisma.plan.findUnique).not.toHaveBeenCalled();
   });
 });

@@ -18,7 +18,7 @@ const TABS: { href: string; label: Text }[] = [
 
 const iconFor = (href: string) => DASH_NAV.find((n) => n.href === href)!.icon;
 
-export function BottomNav({ className }: { className?: string }) {
+export function BottomNav({ className, locked = false }: { className?: string; locked?: boolean }) {
   const pathname = usePathname();
   const { t } = useLanguage();
 
@@ -32,6 +32,14 @@ export function BottomNav({ className }: { className?: string }) {
       {TABS.map((tab) => {
         const Icon = iconFor(tab.href);
         const active = pathname === tab.href;
+        if (locked) {
+          return (
+            <span key={tab.href} aria-disabled="true" className="flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-faint opacity-60">
+              <Icon size={20} />
+              {t(tab.label)}
+            </span>
+          );
+        }
         return (
           <Link
             key={tab.href}

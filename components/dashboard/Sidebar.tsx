@@ -26,7 +26,7 @@ export function Sidebar({ className, account }: { className?: string; account: A
           <span className={`ml-auto rounded-full px-2 py-0.5 text-[11px] font-semibold ${ROLE[role].pill}`}>{t(ROLE_LABEL[role])}</span>
         ) : null}
       </div>
-      <NavList />
+      <NavList locked={!account.activated} />
       <ProfileMenu account={account} />
     </aside>
   );

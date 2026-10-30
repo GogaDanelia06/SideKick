@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import type { OtherAccount } from "@/lib/auth/accountVault";
-import { isActivated } from "@/lib/billing/access";
+import { isActivated } from "@/lib/billing/activation";
 import { planLabel } from "@/lib/content/packages";
 import { initialOf } from "@/lib/i18n/initial";
 
