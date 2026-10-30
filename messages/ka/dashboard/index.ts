@@ -17,7 +17,6 @@ import orders from "./orders.json";
 import products from "./products.json";
 import profile from "./profile.json";
 import profileMenu from "./profileMenu.json";
-import sidebar from "./sidebar.json";
 import switcherRow from "./switcherRow.json";
 import team from "./team.json";
 import videos from "./videos.json";
@@ -42,7 +41,6 @@ const dashboard = {
   products,
   profile,
   profileMenu,
-  sidebar,
   switcherRow,
   team,
   videos,
