@@ -1,10 +1,6 @@
 {
   "account": {
-    "followers": "{count} followers",
-    "followersOne": "1 follower",
     "open": "Open the profile",
-    "posts": "{count} posts",
-    "postsOne": "1 post",
     "unavailable": "Couldn't load the account from Meta. Try Reconnect."
   },
   "connectMeta": {

@@ -24,8 +24,6 @@ describe("fetchAccountProfile()", () => {
         username: "sidekickge",
         name: "SideKick",
         profile_picture_url: "https://scontent.cdninstagram.com/p.jpg",
-        followers_count: 1240,
-        media_count: 18,
       }),
     );
 
@@ -37,8 +35,6 @@ describe("fetchAccountProfile()", () => {
       name: "SideKick",
       username: "sidekickge",
       picture: "https://scontent.cdninstagram.com/p.jpg",
-      followers: 1240,
-      posts: 18,
       link: "https://www.instagram.com/sidekickge",
     });
   });
@@ -58,7 +54,6 @@ describe("fetchAccountProfile()", () => {
       reply({
         name: "Sidekick.ge",
         link: "https://www.facebook.com/sidekick.ge",
-        followers_count: 1,
         picture: { data: { url: "https://scontent.xx.fbcdn.net/p.jpg" } },
       }),
     );
@@ -68,29 +63,21 @@ describe("fetchAccountProfile()", () => {
     expect(profile).toMatchObject({
       name: "Sidekick.ge",
       picture: "https://scontent.xx.fbcdn.net/p.jpg",
-      followers: 1,
-      posts: null,
       link: "https://www.facebook.com/sidekick.ge",
     });
   });
 
-  it("asks again without the counts when Meta refuses the first set of fields", async () => {
-    fetchMock
-      .mockReturnValueOnce(reply({ error: { code: 10, message: "permission" } }, 400))
-      .mockReturnValueOnce(reply({ name: "Sidekick.ge" }));
-
-    const profile = await fetchAccountProfile("FACEBOOK", "123", "EAA-page-token");
-
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(calledUrl(1).searchParams.get("fields")).not.toContain("followers_count");
-    expect(profile).toMatchObject({ name: "Sidekick.ge", link: "https://www.facebook.com/123" });
-  });
-
-  it("does not ask twice when Meta cannot be reached", async () => {
-    fetchMock.mockRejectedValue(new Error("timeout"));
+  it("returns nothing when Meta refuses the token", async () => {
+    fetchMock.mockReturnValue(reply({ error: { code: 190, message: "expired" } }, 400));
 
     expect(await fetchAccountProfile("FACEBOOK", "123", "EAA-page-token")).toBeNull();
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns nothing when Meta cannot be reached", async () => {
+    fetchMock.mockRejectedValue(new Error("timeout"));
+
+    expect(await fetchAccountProfile("FACEBOOK", "123", "EAA-page-token")).toBeNull();
   });
 
   it("drops links and pictures that are not https", async () => {

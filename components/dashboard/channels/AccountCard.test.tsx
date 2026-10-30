@@ -15,22 +15,20 @@ const ACCOUNT: AccountProfile = {
   name: "SideKick",
   username: "sidekickge",
   picture: "https://scontent.cdninstagram.com/p.jpg",
-  followers: 1240,
-  posts: 1,
   link: "https://www.instagram.com/sidekickge",
 };
 
 describe("AccountCard", () => {
-  it("shows the picture, name, username and counts, linking to the profile", () => {
+  it("shows the picture, name and username, linking to the profile", () => {
     const html = render(ACCOUNT);
     expect(html).toContain('href="https://www.instagram.com/sidekickge"');
     expect(html).toContain('src="https://scontent.cdninstagram.com/p.jpg"');
     expect(html).toContain("SideKick");
-    expect(html).toContain("@sidekickge · 1.2K გამომწერი · 1 პოსტი");
+    expect(html).toContain(">@sidekickge</span>");
   });
 
   it("falls back to the first letter and plain box when there is no picture or link", () => {
-    const html = render({ ...ACCOUNT, picture: null, link: null, username: null, followers: null, posts: null });
+    const html = render({ ...ACCOUNT, picture: null, link: null, username: null });
     expect(html).not.toContain("<a");
     expect(html).not.toContain("<img");
     expect(html).toContain(">S</span>");

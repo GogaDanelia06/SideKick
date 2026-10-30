@@ -9,8 +9,6 @@ export type AccountProfile = {
   name: string;
   username: string | null;
   picture: string | null;
-  followers: number | null;
-  posts: number | null;
   link: string | null;
 };
 
@@ -20,18 +18,12 @@ type Raw = {
   link?: string;
   profile_picture_url?: string;
   picture?: { data?: { url?: string } };
-  followers_count?: number;
-  media_count?: number;
   error?: { message?: string; code?: number };
 };
 
-type Reply = { ok: true; body: Raw } | { ok: false; answered: boolean };
-
-const PICTURE = "picture.width(96).height(96){url}";
-
-const FIELDS: Partial<Record<ChannelType, string[]>> = {
-  INSTAGRAM: ["username,name,profile_picture_url,followers_count,media_count", "username,name,profile_picture_url"],
-  FACEBOOK: [`name,link,followers_count,${PICTURE}`, `name,link,${PICTURE}`],
+const FIELDS: Partial<Record<ChannelType, string>> = {
+  INSTAGRAM: "username,name,profile_picture_url",
+  FACEBOOK: "name,link,picture.width(96).height(96){url}",
 };
 
 export async function fetchAccountProfile(
@@ -39,19 +31,15 @@ export async function fetchAccountProfile(
   externalId: string,
   token: string,
 ): Promise<AccountProfile | null> {
-  const host = graphHostFor(type, token);
-  const node = host === GRAPH_INSTAGRAM ? "me" : externalId;
+  const fields = FIELDS[type];
+  if (!fields) return null;
 
-  for (const fields of FIELDS[type] ?? []) {
-    const reply = await read(host, node, fields, token);
-    if (reply.ok) return toProfile(type, externalId, reply.body);
-    if (!reply.answered) return null;
-  }
-  return null;
+  const host = graphHostFor(type, token);
+  const raw = await read(host, host === GRAPH_INSTAGRAM ? "me" : externalId, fields, token);
+  return raw ? toProfile(type, externalId, raw) : null;
 }
 
 const https = (url: string | undefined) => (url?.startsWith("https://") ? url : null);
-const count = (n: number | undefined) => (typeof n === "number" ? n : null);
 
 function toProfile(type: ChannelType, id: string, raw: Raw): AccountProfile | null {
   const username = raw.username?.trim() || null;
@@ -62,8 +50,6 @@ function toProfile(type: ChannelType, id: string, raw: Raw): AccountProfile | nu
     name,
     username,
     picture: https(raw.profile_picture_url ?? raw.picture?.data?.url),
-    followers: count(raw.followers_count),
-    posts: count(raw.media_count),
     link:
       type === "INSTAGRAM"
         ? username && `https://www.instagram.com/${encodeURIComponent(username)}`
@@ -71,7 +57,7 @@ function toProfile(type: ChannelType, id: string, raw: Raw): AccountProfile | nu
   };
 }
 
-async function read(host: string, node: string, fields: string, token: string): Promise<Reply> {
+async function read(host: string, node: string, fields: string, token: string): Promise<Raw | null> {
   const where = { host: new URL(host).host, fields };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -90,15 +76,15 @@ async function read(host: string, node: string, fields: string, token: string): 
         code: body.error?.code,
         detail: body.error?.message ?? `HTTP ${res.status}`,
       });
-      return { ok: false, answered: true };
+      return null;
     }
-    return { ok: true, body };
+    return body;
   } catch (err) {
     log.warn("connected account lookup failed", {
       ...where,
       detail: err instanceof Error ? err.message : String(err),
     });
-    return { ok: false, answered: false };
+    return null;
   } finally {
     clearTimeout(timer);
   }
