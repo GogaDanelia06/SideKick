@@ -4,7 +4,7 @@ Every third-party library the project depends on directly: its version, its
 licence, what it is for, and the risk notes that matter at handover.
 
 - **Generated:** 2026-09-22, against `pnpm-lock.yaml` at that date.
-- **Runtime:** Node.js 24 LTS (`engines` in `package.json`, which Vercel follows), pnpm 10.34.5.
+- **Runtime:** Node.js 24 LTS (`engines` in `package.json`, which Vercel follows), pnpm 12.16.1 (settings in `pnpm-workspace.yaml`).
 - **Security audit:** on 2026-10-09 `pnpm audit` lists 10 advisories: seven in `next` (one critical;
   all fixed in 16.3.8 or later) and three in `sharp`, `braces` and `source-map-js`. On 2026-09-22 it
   listed none. Reproduce with `pnpm audit`, `pnpm licenses list` and `pnpm outdated`.
@@ -69,7 +69,7 @@ versions itself (`sharp ^0.35.4`, `postcss 8.5.23`).
 **ESLint 10.** ESLint 9 reached end of life on 2026-08-06. `eslint-plugin-react`, `-import`
 and `-jsx-a11y` (inside `eslint-config-next`) still declare ESLint 9 at most and call
 functions ESLint 10 removed, so `eslint.config.mjs` wraps them with `@eslint/compat`, and
-`pnpm.peerDependencyRules` accepts ESLint 10 for those three. Verified with a file of
+`peerDependencyRules` in `pnpm-workspace.yaml` accepts ESLint 10 for those three. Verified with a file of
 deliberate mistakes: every plugin still reports. Drop both once the plugins support 10.
 
 ## Held back on purpose

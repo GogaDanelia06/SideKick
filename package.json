@@ -6,20 +6,6 @@
   "engines": {
     "node": "24.x"
   },
-  "pnpm": {
-    "overrides": {
-      "deepmerge-ts": "^8.0.2"
-    },
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "eslint-plugin-import>eslint": "10",
-        "eslint-plugin-jsx-a11y>eslint": "10",
-        "eslint-plugin-react>eslint": "10"
-      }
-    }
-  },
-  "pnpmOverridesNote": "Prisma's config loader (@prisma/config, in Prisma 6.19 and 7.10 alike) pins deepmerge-ts 7.1.5, which has a high advisory (GHSA-ggr8-5vv4-36mx, patched in 8.0.0). Prisma only calls the plain deepmerge(), which 8.x left unchanged. Remove the override once Prisma ships deepmerge-ts 8 itself. Rationale: docs/DEPENDENCIES.md.",
-  "pnpmPeerRulesNote": "The three lint plugins inside eslint-config-next still declare ESLint 9 at most. They run on ESLint 10 through @eslint/compat (eslint.config.mjs), checked rule by rule. Remove each entry once the plugin declares ESLint 10 itself. Rationale: docs/DEPENDENCIES.md.",
   "scripts": {
     "predev": "prisma generate",
     "dev": "next dev",
