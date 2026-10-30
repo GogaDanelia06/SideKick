@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Panel } from "@/components/dashboard/ui/Panel";
 import type { TeamMember } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -29,13 +29,7 @@ export function MembersTable({
 }) {
   const { t } = useLanguage();
   const [menuFor, setMenuFor] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!menuFor) return;
-    const close = () => setMenuFor(null);
-    document.addEventListener("click", close);
-    return () => document.removeEventListener("click", close);
-  }, [menuFor]);
+  const closeMenu = useCallback(() => setMenuFor(null), []);
 
   return (
     <Panel className="overflow-x-auto">
@@ -61,7 +55,7 @@ export function MembersTable({
               pending={pending}
               run={run}
               onToggleMenu={() => setMenuFor(menuFor === m.id ? null : m.id)}
-              onCloseMenu={() => setMenuFor(null)}
+              onCloseMenu={closeMenu}
             />
           ))}
         </tbody>

@@ -9,11 +9,15 @@ vi.mock("@/lib/db", () => ({
 }));
 vi.mock("@/lib/session", () => ({ getContext: vi.fn() }));
 vi.mock("@/lib/billing/limits", () => ({ checkLimit: vi.fn() }));
+vi.mock("@/lib/security/rateLimit", () => ({ consume: vi.fn() }));
+vi.mock("./teamInviteMail", () => ({ sendTeamInvite: vi.fn() }));
 
 import { addTeamMember } from "./actions/teamInvite";
 import { prisma } from "@/lib/db";
 import { getContext } from "@/lib/session";
 import { checkLimit } from "@/lib/billing/limits";
+import { consume } from "@/lib/security/rateLimit";
+import { sendTeamInvite } from "./teamInviteMail";
 
 const form = (email: string, name = "") => {
   const fd = new FormData();
@@ -31,6 +35,8 @@ beforeEach(() => {
   vi.mocked(prisma.membership.findUnique).mockResolvedValue(null);
   vi.mocked(prisma.user.create).mockResolvedValue({ id: "new" } as never);
   vi.mocked(prisma.membership.create).mockResolvedValue({} as never);
+  vi.mocked(consume).mockResolvedValue({ ok: true, remaining: 1, retryAfterSec: 0 });
+  vi.mocked(sendTeamInvite).mockResolvedValue(true);
 });
 
 describe("addTeamMember", () => {
@@ -62,7 +68,7 @@ describe("addTeamMember", () => {
 
     const result = await addTeamMember(form("taken@example.com", "whatever the owner typed"));
 
-    expect(result).toEqual({ ok: true });
+    expect(result).toEqual({ ok: true, emailed: true });
     expect(prisma.user.create).not.toHaveBeenCalled();
     expect(prisma.user.upsert).not.toHaveBeenCalled();
     expect(prisma.membership.create).toHaveBeenCalledWith({

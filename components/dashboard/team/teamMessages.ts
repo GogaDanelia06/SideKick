@@ -22,6 +22,9 @@ export const ERRORS: Record<string, Text> = {
   cannot_remove_self: "dashboard.team.messages.youCanTRemove",
   not_found: "dashboard.team.messages.memberNotFound",
   bad_role: "dashboard.team.messages.thatIsNotA",
+  too_many_invites: "dashboard.team.messages.tooManyInvites",
+  not_sent: "dashboard.team.messages.inviteNotSent",
+  plan_limit: "dashboard.team.messages.planLimit",
 };
 
 export const TEAM_SAVED: Text = "dashboard.team.messages.teamUpdated";

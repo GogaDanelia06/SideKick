@@ -5,11 +5,14 @@ import type { Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getContext } from "@/lib/session";
 import { checkLimit } from "@/lib/billing/limits";
+import { consume } from "@/lib/security/rateLimit";
 import { DASH } from "../routes";
-import type { ActionResult } from "./result";
+import { sendTeamInvite } from "../teamInviteMail";
 import { RANK, canManageTeam, isRole, rankOf } from "./teamRoles";
 
-export async function addTeamMember(data: FormData): Promise<ActionResult> {
+export type InviteResult = { ok: true; emailed: boolean } | { ok: false; error: string };
+
+export async function addTeamMember(data: FormData): Promise<InviteResult> {
   const ctx = await getContext();
   if (!ctx) return { ok: false, error: "unauthorized" };
   if (!canManageTeam(ctx.role)) return { ok: false, error: "forbidden" };
@@ -34,6 +37,8 @@ export async function addTeamMember(data: FormData): Promise<ActionResult> {
   const verdict = await checkLimit(ctx.businessId, "users");
   if (!verdict.allowed) return { ok: false, error: "plan_limit" };
 
+  if (!(await consume("teamInvite", ctx.businessId)).ok) return { ok: false, error: "too_many_invites" };
+
   const userId =
     found?.id ??
     (
@@ -50,6 +55,25 @@ export async function addTeamMember(data: FormData): Promise<ActionResult> {
   await prisma.membership.create({
     data: { userId, businessId: ctx.businessId, role },
   });
+  const emailed = await sendTeamInvite(userId, ctx.businessId, ctx.userId);
   revalidatePath(DASH.team);
-  return { ok: true };
+  return { ok: true, emailed };
+}
+
+export async function resendTeamInvite(membershipId: string): Promise<InviteResult> {
+  const ctx = await getContext();
+  if (!ctx) return { ok: false, error: "unauthorized" };
+  if (!canManageTeam(ctx.role)) return { ok: false, error: "forbidden" };
+
+  const target = await prisma.membership.findFirst({
+    where: { id: membershipId, businessId: ctx.businessId },
+    select: { userId: true },
+  });
+  if (!target) return { ok: false, error: "not_found" };
+  if (target.userId === ctx.userId) return { ok: false, error: "forbidden" };
+
+  if (!(await consume("teamInvite", ctx.businessId)).ok) return { ok: false, error: "too_many_invites" };
+
+  const emailed = await sendTeamInvite(target.userId, ctx.businessId, ctx.userId);
+  return emailed ? { ok: true, emailed } : { ok: false, error: "not_sent" };
 }

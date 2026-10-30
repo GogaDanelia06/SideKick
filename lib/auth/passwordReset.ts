@@ -5,7 +5,7 @@ const TOKEN_TTL_MINUTES = 60;
 
 const hash = (token: string) => createHash("sha256").update(token).digest("hex");
 
-export async function createResetToken(email: string) {
+export async function createResetToken(email: string, ttlMinutes = TOKEN_TTL_MINUTES) {
   const user = await prisma.user.findUnique({
     where: { email: email.toLowerCase().trim() },
     select: { id: true, email: true, name: true },
@@ -18,7 +18,7 @@ export async function createResetToken(email: string) {
   });
 
   const token = randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + TOKEN_TTL_MINUTES * 60_000);
+  const expiresAt = new Date(Date.now() + ttlMinutes * 60_000);
 
   await prisma.passwordResetToken.create({
     data: { userId: user.id, tokenHash: hash(token), expiresAt },

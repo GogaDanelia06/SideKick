@@ -56,29 +56,27 @@ export function MemberRow({
       <td className="px-4 py-3 text-muted">{t(r.perms)}</td>
       <td className="px-4 py-3 text-right">
         {canManage ? (
-          <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              aria-label={t("dashboard.team.view.actions")}
-              aria-expanded={open}
-              onClick={onToggleMenu}
-              className="inline-grid size-8 place-items-center rounded-[6px] border border-border text-muted hover:border-blue hover:text-ink"
-            >
-              <IconDots size={16} />
-            </button>
-
-            {open ? (
-              <MemberMenu
-                member={m}
-                grantable={grantable}
-                myRank={myRank}
-                isSelf={isSelf}
-                pending={pending}
-                run={run}
-                onDone={onCloseMenu}
-              />
-            ) : null}
-          </div>
+          <button
+            type="button"
+            aria-label={t("dashboard.team.view.actions")}
+            aria-haspopup="dialog"
+            aria-expanded={open}
+            onClick={onToggleMenu}
+            className="inline-grid size-8 place-items-center rounded-[6px] border border-border text-muted hover:border-blue hover:text-ink"
+          >
+            <IconDots size={16} />
+          </button>
+        ) : null}
+        {canManage && open ? (
+          <MemberMenu
+            member={m}
+            grantable={grantable}
+            myRank={myRank}
+            isSelf={isSelf}
+            pending={pending}
+            run={run}
+            onClose={onCloseMenu}
+          />
         ) : null}
       </td>
     </tr>
