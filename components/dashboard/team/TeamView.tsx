@@ -8,7 +8,7 @@ import { useLanguage } from "@/lib/i18n/useLanguage";
 import { AddMemberForm } from "./AddMemberForm";
 import { MembersTable } from "./MembersTable";
 import { RoleCards } from "./RoleCards";
-import { ERRORS, RANK, ROLES, type Role } from "./teamMessages";
+import { ERRORS, teamAccess } from "./teamMessages";
 import { useTeamRun } from "./useTeamRun";
 
 export function TeamView({
@@ -24,9 +24,7 @@ export function TeamView({
   const team = useTeamRun();
   const [adding, setAdding] = useState(false);
 
-  const myRank = RANK[currentRole as Role] ?? -1;
-  const grantable = ROLES.filter((r) => RANK[r] <= myRank);
-  const canManage = currentRole === "OWNER" || currentRole === "ADMIN";
+  const { myRank, canManage, grantable } = teamAccess(currentRole);
 
   return (
     <div className="grid gap-4">

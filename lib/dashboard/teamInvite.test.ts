@@ -36,7 +36,7 @@ beforeEach(() => {
   vi.mocked(prisma.membership.findUnique).mockResolvedValue(null);
   vi.mocked(prisma.user.create).mockResolvedValue({ id: "new" } as never);
   vi.mocked(prisma.membership.create).mockResolvedValue({} as never);
-  vi.mocked(prisma.membership.findFirst).mockResolvedValue({ userId: "u2" } as never);
+  vi.mocked(prisma.membership.findFirst).mockResolvedValue({ userId: "u2", role: "OPERATOR" } as never);
   vi.mocked(consume).mockResolvedValue({ ok: true, remaining: 1, retryAfterSec: 0 });
   vi.mocked(sendTeamInvite).mockResolvedValue(true);
 });
@@ -76,7 +76,7 @@ describe("team invitations", () => {
   });
 
   it("refuses to resend to yourself, to strangers, or past the limit", async () => {
-    vi.mocked(prisma.membership.findFirst).mockResolvedValueOnce({ userId: "u1" } as never);
+    vi.mocked(prisma.membership.findFirst).mockResolvedValueOnce({ userId: "u1", role: "OWNER" } as never);
     expect(await resendTeamInvite("m1")).toEqual({ ok: false, error: "forbidden" });
 
     vi.mocked(prisma.membership.findFirst).mockResolvedValueOnce(null);
@@ -84,6 +84,14 @@ describe("team invitations", () => {
 
     throttled();
     expect(await resendTeamInvite("m2")).toEqual({ ok: false, error: "too_many_invites" });
+    expect(sendTeamInvite).not.toHaveBeenCalled();
+  });
+
+  it("refuses an admin resending to an owner", async () => {
+    vi.mocked(getContext).mockResolvedValue({ userId: "u1", businessId: "b1", role: "ADMIN" });
+    vi.mocked(prisma.membership.findFirst).mockResolvedValueOnce({ userId: "u3", role: "OWNER" } as never);
+
+    expect(await resendTeamInvite("m3")).toEqual({ ok: false, error: "forbidden" });
     expect(sendTeamInvite).not.toHaveBeenCalled();
   });
 

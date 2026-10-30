@@ -67,10 +67,10 @@ export async function resendTeamInvite(membershipId: string): Promise<InviteResu
 
   const target = await prisma.membership.findFirst({
     where: { id: membershipId, businessId: ctx.businessId },
-    select: { userId: true },
+    select: { userId: true, role: true },
   });
   if (!target) return { ok: false, error: "not_found" };
-  if (target.userId === ctx.userId) return { ok: false, error: "forbidden" };
+  if (target.userId === ctx.userId || RANK[target.role] > rankOf(ctx.role)) return { ok: false, error: "forbidden" };
 
   if (!(await consume("teamInvite", ctx.businessId)).ok) return { ok: false, error: "too_many_invites" };
 

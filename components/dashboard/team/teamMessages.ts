@@ -14,6 +14,17 @@ export const ROLES: Role[] = ["OWNER", "ADMIN", "OPERATOR", "VIEWER"];
 
 export const RANK: Record<Role, number> = { OWNER: 3, ADMIN: 2, OPERATOR: 1, VIEWER: 0 };
 
+export function teamAccess(role: string) {
+  const myRank = RANK[role as Role] ?? -1;
+  return {
+    myRank,
+    canManage: role === "OWNER" || role === "ADMIN",
+    grantable: ROLES.filter((r) => RANK[r] <= myRank),
+  };
+}
+
+export const canManageMember = (myRank: number, member: Role) => RANK[member] <= myRank;
+
 export const ERRORS: Record<string, Text> = {
   forbidden: "dashboard.team.messages.youDonTHave",
   email_required: "dashboard.team.messages.emailIsRequired",

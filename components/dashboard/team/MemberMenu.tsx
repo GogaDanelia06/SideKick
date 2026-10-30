@@ -8,7 +8,7 @@ import { resendTeamInvite } from "@/lib/dashboard/actions/teamInvite";
 import type { TeamMember } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { RoleOptions } from "./RoleOptions";
-import { ERRORS, RANK, ROLE, type Role } from "./teamMessages";
+import { ERRORS, ROLE, type Role } from "./teamMessages";
 import type { TeamRun } from "./useTeamRun";
 
 const ACTION = "flex w-full items-center gap-2.5 rounded-[8px] px-3 py-2.5 text-[13px] hover:bg-soft disabled:opacity-40";
@@ -16,7 +16,6 @@ const ACTION = "flex w-full items-center gap-2.5 rounded-[8px] px-3 py-2.5 text-
 export function MemberMenu({
   member: m,
   grantable,
-  myRank,
   isSelf,
   pending,
   run,
@@ -24,14 +23,12 @@ export function MemberMenu({
 }: {
   member: TeamMember;
   grantable: Role[];
-  myRank: number;
   isSelf: boolean;
   pending: boolean;
   run: TeamRun;
   onClose: () => void;
 }) {
   const { t } = useLanguage();
-  const locked = RANK[m.role] > myRank;
   const [error, setError] = useState<string | null>(null);
   const act = (fn: Parameters<TeamRun>[0]) => {
     setError(null);
@@ -71,7 +68,7 @@ export function MemberMenu({
         <RoleOptions
           roles={grantable}
           current={m.role}
-          disabled={pending || locked}
+          disabled={pending}
           onPick={(role) => act(() => updateMemberRole(m.id, role))}
         />
 
@@ -82,14 +79,14 @@ export function MemberMenu({
             </p>
           ) : null}
           {isSelf ? null : (
-            <button type="button" disabled={pending || locked} onClick={() => act(() => resendTeamInvite(m.id))} className={ACTION}>
+            <button type="button" disabled={pending} onClick={() => act(() => resendTeamInvite(m.id))} className={ACTION}>
               <IconMail size={16} className="text-muted" />
               {t("dashboard.team.view.resendInvite")}
             </button>
           )}
           <button
             type="button"
-            disabled={pending || isSelf || locked}
+            disabled={pending || isSelf}
             title={isSelf ? t("dashboard.team.view.youCanTRemove") : undefined}
             onClick={() => act(() => removeTeamMember(m.id))}
             className={`${ACTION} text-red`}

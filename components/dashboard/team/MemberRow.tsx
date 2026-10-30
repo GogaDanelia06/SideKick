@@ -5,7 +5,7 @@ import { ROLE_LABEL } from "@/lib/dashboard/businesses";
 import type { TeamMember } from "@/lib/dashboard/queries";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { MemberMenu } from "./MemberMenu";
-import { ROLE, type Role } from "./teamMessages";
+import { ROLE, canManageMember, type Role } from "./teamMessages";
 import type { TeamRun } from "./useTeamRun";
 
 export function MemberRow({
@@ -33,6 +33,7 @@ export function MemberRow({
 }) {
   const { t } = useLanguage();
   const r = ROLE[m.role];
+  const manageable = canManage && canManageMember(myRank, m.role);
 
   return (
     <tr className="border-b border-border2 last:border-0">
@@ -55,7 +56,7 @@ export function MemberRow({
       </td>
       <td className="px-4 py-3 text-muted">{t(r.perms)}</td>
       <td className="px-4 py-3 text-right">
-        {canManage ? (
+        {manageable ? (
           <button
             type="button"
             aria-label={t("dashboard.team.view.actions")}
@@ -67,11 +68,10 @@ export function MemberRow({
             <IconDots size={16} />
           </button>
         ) : null}
-        {canManage && open ? (
+        {manageable && open ? (
           <MemberMenu
             member={m}
             grantable={grantable}
-            myRank={myRank}
             isSelf={isSelf}
             pending={pending}
             run={run}
