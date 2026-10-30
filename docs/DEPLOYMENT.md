@@ -54,8 +54,9 @@ has broken the Vercel build once already — keep it lazy.
 
 3. **Add the environment variables** from the table above.
 
-4. **Set the build command** so the Prisma client is regenerated and migrations
-   run before the build:
+4. **Leave the build command alone.** `vercel.json` sets it to `pnpm run build`,
+   which overrides whatever the dashboard says, so the steps live in one place —
+   the `build` script in `package.json`:
 
    ```
    prisma generate && prisma migrate deploy && next build
