@@ -12,9 +12,10 @@ import type { Text } from "@/lib/i18n/messages";
 const SELECT =
   "h-9 rounded-[7px] border border-input bg-canvas px-2.5 text-[13px] outline-none focus:border-blue";
 
-const STATUSES: SubscriptionStatus[] = ["TRIAL", "ACTIVE", "PAST_DUE", "CANCELLED"];
+const STATUSES: SubscriptionStatus[] = ["PENDING", "TRIAL", "ACTIVE", "PAST_DUE", "CANCELLED"];
 
 const STATUS_LABEL: Record<SubscriptionStatus, Text> = {
+  PENDING: "admin.businesses.businessRow.pending",
   TRIAL: "admin.businesses.businessRow.trial",
   ACTIVE: "admin.businesses.businessRow.active",
   PAST_DUE: "admin.businesses.businessRow.pastDue",
@@ -32,7 +33,7 @@ export function BusinessRow({ business, plans }: { business: AdminBusiness; plan
   const sub = business.subscription;
 
   const [planId, setPlanId] = useState(sub?.plan.id ?? plans[0]?.id ?? "");
-  const [status, setStatus] = useState<SubscriptionStatus>(sub?.status ?? "TRIAL");
+  const [status, setStatus] = useState<SubscriptionStatus>(sub?.status ?? "PENDING");
   const [resetUsage, setResetUsage] = useState(true);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);

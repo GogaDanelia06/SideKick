@@ -11,7 +11,9 @@ export async function provisionBusiness(
   field?: string,
   db: Prisma.TransactionClient | typeof prisma = prisma,
 ) {
-  const plan = await db.plan.findUnique({ where: { key: "basic" } });
+  const plan =
+    (await db.plan.findUnique({ where: { key: "basic" } })) ??
+    (await db.plan.findFirst({ orderBy: { price: "asc" } }));
   return db.business.create({
     data: {
       name,
@@ -21,7 +23,7 @@ export async function provisionBusiness(
         create: { ...AI_DEFAULTS, languages: [DEFAULT_AI_LANGUAGE], roles: ["info", "sales", "support"] },
       },
       channels: { create: CHANNELS.map((type) => ({ type })) },
-      ...(plan ? { subscription: { create: { planId: plan.id, status: "TRIAL" } } } : {}),
+      ...(plan ? { subscription: { create: { planId: plan.id, status: "PENDING" } } } : {}),
     },
   });
 }

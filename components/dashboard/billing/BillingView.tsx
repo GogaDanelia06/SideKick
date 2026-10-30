@@ -34,7 +34,7 @@ export function BillingView({
 
       <div className="grid content-start gap-4">
         <SavedCard subscription={subscription} cardName={cardName} />
-        <CancelButton disabled={!canManage || !subscription || cancelled} cancelled={cancelled} />
+        <CancelButton disabled={!canManage || !subscription || cancelled || subscription.status === "PENDING"} cancelled={cancelled} />
       </div>
     </div>
   );

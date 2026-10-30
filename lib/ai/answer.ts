@@ -4,9 +4,15 @@ import { askAi, aiConfigured } from "./client";
 import { ensurePrompt } from "./ensurePrompt";
 import { applyReplyStyle } from "./replyStyle";
 import { deliverOutbound } from "@/lib/channels/send";
-import { checkLimit, countMessage } from "@/lib/billing/limits";
+import { checkLimit, countMessage, type LimitRefusal } from "@/lib/billing/limits";
 
 const HANDOFF_HOURS = 24;
+
+const STOPS: Record<LimitRefusal["reason"], { reason: string; why: string }> = {
+  limit: { reason: "limit_reached", why: "the plan's message limit is spent" },
+  expired: { reason: "subscription_expired", why: "the subscription has lapsed past its grace period" },
+  inactive: { reason: "subscription_inactive", why: "the business has not been activated yet" },
+};
 
 export async function answerCustomer(
   businessId: string,
@@ -29,14 +35,9 @@ export async function answerCustomer(
 
   const verdict = await checkLimit(businessId, "messages");
   if (!verdict.allowed) {
-    const expired = verdict.reason === "expired";
-    log.warn(
-      expired
-        ? "AI reply withheld — the subscription has lapsed past its grace period"
-        : "AI reply withheld — the plan's message limit is spent",
-      { businessId, conversationId, used: verdict.used, limit: verdict.limit },
-    );
-    await markLastMessage(conversationId, expired ? "subscription_expired" : "limit_reached");
+    const stop = STOPS[verdict.reason];
+    log.warn(`AI reply withheld — ${stop.why}`, { businessId, conversationId, used: verdict.used, limit: verdict.limit });
+    await markLastMessage(conversationId, stop.reason);
     return;
   }
 

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getContext } from "@/lib/session";
-import { can, requirePermission } from "@/lib/auth/permissions";
+import { can } from "@/lib/auth/permissions";
 import { availableProviders, parseProvider } from "@/lib/payments";
 import { isAllowedMonths, startCheckout } from "@/lib/billing/checkout";
 import { log } from "@/lib/logger";
@@ -57,34 +57,6 @@ export async function cancelSubscription(): Promise<ActionResult> {
     data: { status: "CANCELLED", cardRef: null },
   });
   if (updated.count === 0) return { ok: false, error: "no_subscription" };
-
-  revalidatePath(DASH.billing);
-  return { ok: true };
-}
-
-export type PlanSwitchResult = { ok: true } | { ok: false; error: string };
-
-export async function switchPlanWithoutPayment(planKey: string): Promise<PlanSwitchResult> {
-  const ctx = await requirePermission("billing:manage");
-  if (!ctx) return { ok: false, error: "forbidden" };
-
-  if (availableProviders().length > 0) {
-    return { ok: false, error: "payments_enabled" };
-  }
-
-  const plan = await prisma.plan.findUnique({ where: { key: planKey }, select: { id: true } });
-  if (!plan) return { ok: false, error: "unknown_plan" };
-
-  await prisma.subscription.upsert({
-    where: { businessId: ctx.businessId },
-    update: { planId: plan.id, status: "TRIAL", msgUsed: 0 },
-    create: { businessId: ctx.businessId, planId: plan.id, status: "TRIAL", msgUsed: 0 },
-  });
-
-  log.info("plan switched with no payment configured", {
-    businessId: ctx.businessId,
-    plan: planKey,
-  });
 
   revalidatePath(DASH.billing);
   return { ok: true };

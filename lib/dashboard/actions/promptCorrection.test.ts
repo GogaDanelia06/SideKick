@@ -5,6 +5,7 @@ vi.mock("@/lib/db", () => ({
   prisma: { conversation: { findFirst: vi.fn() }, aiConfig: { findUnique: vi.fn(), upsert: vi.fn() } },
 }));
 vi.mock("@/lib/auth/permissions", () => ({ requirePermission: vi.fn() }));
+vi.mock("@/lib/billing/access", () => ({ businessActivated: vi.fn(async () => true) }));
 vi.mock("@/lib/ai/client", () => ({ aiConfigured: vi.fn(), editPromptDetailed: vi.fn() }));
 
 import { revalidatePath } from "next/cache";

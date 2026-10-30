@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { aiConfig: { findUnique: vi.fn(), upsert: vi.fn(), update: vi.fn(), create: vi.fn() } } }));
 vi.mock("@/lib/auth/permissions", () => ({ requirePermission: vi.fn() }));
+vi.mock("@/lib/billing/access", () => ({ businessActivated: vi.fn(async () => true) }));
 vi.mock("@/lib/logger", () => ({ log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() } }));
 vi.mock("@/lib/ai/ensurePrompt", () => ({ ensurePrompt: vi.fn() }));
 vi.mock("@/lib/ai/client", () => ({
@@ -17,6 +18,7 @@ import { generateAiPrompt, refineAiPrompt } from "./assistant";
 import { prisma } from "@/lib/db";
 import { aiConfigured, buildPromptDetailed as buildPrompt, editPromptDetailed as editPrompt } from "@/lib/ai/client";
 import { requirePermission } from "@/lib/auth/permissions";
+import { businessActivated } from "@/lib/billing/access";
 
 const OWNER = { userId: "u1", businessId: "b1", role: "OWNER" } as never;
 
@@ -56,6 +58,12 @@ describe("generateAiPrompt()", () => {
     vi.mocked(requirePermission).mockResolvedValue(OWNER);
     vi.mocked(aiConfigured).mockReturnValue(false);
     expect(await generateAiPrompt()).toEqual({ ok: false, error: "unconfigured" });
+    expect(buildPrompt).not.toHaveBeenCalled();
+  });
+
+  it("does not ask the AI for a business that is not activated", async () => {
+    vi.mocked(businessActivated).mockResolvedValueOnce(false);
+    expect(await generateAiPrompt()).toEqual({ ok: false, error: "inactive" });
     expect(buildPrompt).not.toHaveBeenCalled();
   });
 });

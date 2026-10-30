@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { PaymentProvider, Plan, Subscription } from "@prisma/client";
 import { Panel } from "@/components/dashboard/ui/Panel";
+import { isActivated } from "@/lib/billing/access";
 import { planLabel } from "@/lib/content/packages";
 import { fmtDate } from "@/lib/dashboard/time";
 import { useLanguage } from "@/lib/i18n/useLanguage";
@@ -21,7 +22,8 @@ export function PlanSummary({
   canManage: boolean;
 }) {
   const { t } = useLanguage();
-  const [picking, setPicking] = useState(false);
+  const activated = isActivated(subscription);
+  const [picking, setPicking] = useState(!activated);
   const plan = subscription?.plan;
   const cancelled = subscription?.status === "CANCELLED";
 
@@ -33,7 +35,9 @@ export function PlanSummary({
           <div className="mt-1 text-2xl font-semibold">{plan ? t(planLabel(plan)) : "—"}</div>
           {subscription ? (
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
-              <span>{t(SUB_STATUS[subscription.status] ?? "dashboard.billing.view.text")}</span>
+              <span className={activated ? undefined : "font-medium text-amber"}>
+                {t(SUB_STATUS[subscription.status] ?? "dashboard.billing.view.text")}
+              </span>
               {subscription.renewsAt ? (
                 <>
                   <span>·</span>
@@ -60,9 +64,9 @@ export function PlanSummary({
       >
         {picking
           ? t("dashboard.billing.view.close")
-          : subscription
+          : activated
             ? t("dashboard.billing.view.changeOrRenewPlan")
-            : t("dashboard.billing.view.chooseAPlan")}
+            : t("dashboard.billing.view.activatePlan")}
       </button>
 
       {picking ? (

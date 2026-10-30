@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/db", () => ({ prisma: { plan: { findUnique: vi.fn() }, business: { create: vi.fn() } } }));
+vi.mock("@/lib/db", () => ({ prisma: { plan: { findUnique: vi.fn(), findFirst: vi.fn() }, business: { create: vi.fn() } } }));
 
 import { provisionBusiness } from "@/lib/provision";
 import { prisma } from "@/lib/db";
@@ -35,8 +35,19 @@ describe("provisionBusiness()", () => {
     expect(data.subscription).toBeTruthy();
   });
 
+  it("starts the business awaiting payment, on the cheapest plan if basic is gone", async () => {
+    vi.mocked(prisma.plan.findUnique).mockResolvedValue(null as never);
+    vi.mocked(prisma.plan.findFirst).mockResolvedValue({ id: "plan_cheap" } as never);
+
+    await provisionBusiness("u1", "X");
+
+    const data = create.mock.calls[0][0].data as { subscription?: { create: unknown } };
+    expect(data.subscription?.create).toEqual({ planId: "plan_cheap", status: "PENDING" });
+  });
+
   it("still creates the business when no plan row exists", async () => {
     vi.mocked(prisma.plan.findUnique).mockResolvedValue(null as never);
+    vi.mocked(prisma.plan.findFirst).mockResolvedValue(null as never);
 
     await provisionBusiness("u1", "X");
 

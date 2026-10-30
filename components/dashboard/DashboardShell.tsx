@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { ActivatePlan, lockedOut } from "./ActivatePlan";
 import { Sidebar } from "./Sidebar";
 import type { Account } from "@/lib/dashboard/queries/account";
 import { Topbar } from "./Topbar";
@@ -11,6 +13,8 @@ import { ToastProvider } from "./ui/Toast";
 
 export function DashboardShell({ children, account }: { children: ReactNode; account: Account }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const locked = lockedOut(account.activated, usePathname() ?? "");
+  const role = account.businesses.find((b) => b.id === account.businessId)?.role;
 
   return (
     <div className="dash-scope flex min-h-screen bg-canvas text-ink">
@@ -19,7 +23,7 @@ export function DashboardShell({ children, account }: { children: ReactNode; acc
         <div className="flex min-w-0 flex-1 flex-col">
           <Topbar onOpenMenu={() => setDrawerOpen(true)} />
           <main key={account.businessId} className="flex-1 p-4 pb-24 sm:p-6 sm:pb-24 lg:pb-6">
-            {children}
+            {locked ? <ActivatePlan owner={role === "OWNER"} /> : children}
           </main>
         </div>
         <BottomNav className="lg:hidden" />

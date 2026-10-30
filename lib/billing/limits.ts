@@ -1,15 +1,16 @@
 import { prisma } from "@/lib/db";
 import { planLabel } from "@/lib/content/packages";
+import { isActivated } from "./access";
 import { isExpired } from "./subscriptionState";
 import type { Text } from "@/lib/i18n/messages";
 
 export type LimitName = "messages" | "channels" | "users" | "products";
 
-export const BILLING_STOPS: ReadonlySet<string> = new Set(["limit_reached", "subscription_expired"]);
+export const BILLING_STOPS: ReadonlySet<string> = new Set(["limit_reached", "subscription_expired", "subscription_inactive"]);
 
 export type LimitRefusal = {
   allowed: false;
-  reason: "limit" | "expired";
+  reason: "limit" | "expired" | "inactive";
   limit: number;
   used: number;
   planName: Text;
@@ -22,6 +23,7 @@ function unlimited(cap: number): boolean {
 }
 
 type PlanCaps = {
+  active: boolean;
   planName: Text;
   renewsAt: Date | null;
   msgLimit: number;
@@ -35,6 +37,7 @@ async function capsFor(businessId: string): Promise<PlanCaps | null> {
   const subscription = await prisma.subscription.findUnique({
     where: { businessId },
     select: {
+      status: true,
       msgUsed: true,
       renewsAt: true,
       plan: {
@@ -52,6 +55,7 @@ async function capsFor(businessId: string): Promise<PlanCaps | null> {
   if (!subscription) return null;
 
   return {
+    active: isActivated(subscription),
     planName: planLabel(subscription.plan),
     renewsAt: subscription.renewsAt,
     msgLimit: subscription.plan.msgLimit,
@@ -64,7 +68,9 @@ async function capsFor(businessId: string): Promise<PlanCaps | null> {
 
 export async function checkLimit(businessId: string, what: LimitName, adding = 1): Promise<LimitVerdict> {
   const caps = await capsFor(businessId);
-  if (!caps) return { allowed: true };
+  if (!caps?.active) {
+    return { allowed: false, reason: "inactive", limit: 0, used: 0, planName: caps?.planName ?? { ka: "—", en: "—" } };
+  }
 
   const deny = (limit: number, used: number): LimitVerdict =>
     unlimited(limit) || used + adding <= limit

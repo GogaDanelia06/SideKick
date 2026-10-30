@@ -6,6 +6,7 @@ import { aiConfigured, askAi, buildPromptDetailed, editPromptDetailed, type Prom
 import { ensurePrompt } from "@/lib/ai/ensurePrompt";
 import { applyReplyStyle } from "@/lib/ai/replyStyle";
 import { requirePermission } from "@/lib/auth/permissions";
+import { businessActivated } from "@/lib/billing/access";
 import { promptFailure } from "@/lib/dashboard/promptFailure";
 import { DASH } from "@/lib/dashboard/routes";
 import { log } from "@/lib/logger";
@@ -14,16 +15,17 @@ export type PromptFailure = { reason: AiFailureKind; status?: number; seconds: n
 
 export type PromptResult =
   | { ok: true; prompt: string }
-  | ({ ok: false; error: "forbidden" | "unconfigured" | "failed" | "empty" } & Partial<PromptFailure>);
+  | ({ ok: false; error: "forbidden" | "unconfigured" | "inactive" | "failed" | "empty" } & Partial<PromptFailure>);
 
 export type TestReply =
   | { ok: true; reply: string; handoff: boolean; promptDrafted?: boolean }
-  | { ok: false; error: "forbidden" | "unconfigured" | "empty" | "failed" | "emoji_only" };
+  | { ok: false; error: "forbidden" | "unconfigured" | "inactive" | "empty" | "failed" | "emoji_only" };
 
-async function assistantAccess(): Promise<{ businessId: string } | { error: "forbidden" | "unconfigured" }> {
+async function assistantAccess(): Promise<{ businessId: string } | { error: "forbidden" | "unconfigured" | "inactive" }> {
   const ctx = await requirePermission("ai:write");
   if (!ctx) return { error: "forbidden" };
   if (!aiConfigured()) return { error: "unconfigured" };
+  if (!(await businessActivated(ctx.businessId))) return { error: "inactive" };
   return { businessId: ctx.businessId };
 }
 

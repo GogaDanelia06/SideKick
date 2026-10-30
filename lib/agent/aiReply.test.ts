@@ -53,4 +53,13 @@ describe("acceptAiReply()", () => {
 
     expect(body.error).toBe("subscription_expired");
   });
+
+  it("says so when the business has not been activated", async () => {
+    limit.mockResolvedValue({ ...SPENT, reason: "inactive", limit: 0, used: 0 } as never);
+    const { status, body } = await refusal(await acceptAiReply("b1", "გამარჯობა!"));
+
+    expect(status).toBe(402);
+    expect(body.error).toBe("subscription_inactive");
+    expect(body.message).toContain("not been activated");
+  });
 });

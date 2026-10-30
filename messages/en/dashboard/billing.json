@@ -2,11 +2,12 @@
   "checkoutParts": {
     "bankOfGeorgia": "Bank of Georgia",
     "cardDetailsAreEntered": "Card details are entered on the bank's page — we never store them.",
+    "contactUs": "Contact us",
     "couldNotReachThe": "Could not reach the bank. Try again or pick the other one.",
     "current": "Current",
     "onlyTheOwnerCan": "Only the owner can change the plan",
     "payOnTheBank": "Pay on the bank's page:",
-    "paymentsAreOnChange": "Payments are on — change the plan through the bank",
+    "paymentSoon": "Online payment is coming soon. Contact us to activate this plan and we'll switch it on for you.",
     "pickABank": "Pick a bank",
     "pickAPeriod": "Pick a period",
     "somethingWentWrong": "Something went wrong",
@@ -15,8 +16,12 @@
     "thatPlanCouldNot": "That plan could not be found",
     "yourSessionHasEnded": "Your session has ended — sign in again"
   },
-  "freePlanSwitch": {
-    "switch": "Switch"
+  "locked": {
+    "choosePlan": "Choose a plan",
+    "memberBody": "This business's plan isn't activated yet. Ask the owner to activate it.",
+    "notActive": "This business isn't activated yet. Activate a plan in Billing.",
+    "ownerBody": "Choose a plan and activate it to start using SideKick. Until then the AI won't answer your customers.",
+    "title": "Your account isn't activated yet"
   },
   "return": {
     "backToBilling": "Back to billing",
@@ -29,12 +34,12 @@
   },
   "view": {
     "aCardIsSaved": "A card is saved on your first payment so the plan can renew automatically.",
+    "activatePlan": "Activate a plan",
     "active": "Active",
     "activeUntil": "Active until",
     "cancelSubscription": "Cancel subscription",
     "cancelled": "Cancelled",
     "changeOrRenewPlan": "Change or renew plan",
-    "chooseAPlan": "Choose a plan",
     "close": "Close",
     "currentPlan": "Current plan",
     "expired": "Expired",
@@ -42,6 +47,7 @@
     "messageLimit": "Message limit",
     "mo": "mo",
     "noPaymentsYet": "No payments yet",
+    "notActivated": "Not activated",
     "paid": "Paid",
     "pastDue": "Past due",
     "paymentHistory": "Payment history",

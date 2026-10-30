@@ -9,6 +9,7 @@ export const STATUS: Record<PaymentStatus, { label: Text; tone: string }> = {
 };
 
 export const SUB_STATUS: Record<string, Text> = {
+  PENDING: "dashboard.billing.view.notActivated",
   TRIAL: "dashboard.billing.view.trial",
   ACTIVE: "dashboard.billing.view.active",
   PAST_DUE: "dashboard.billing.view.pastDue",

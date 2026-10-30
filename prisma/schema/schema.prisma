@@ -54,7 +54,10 @@ enum LeadStatus {
   CLOSED
 }
 
+/// PENDING is a business that signed up but is not activated yet: it can open
+/// Billing and nothing else. A founder activates it from /admin/businesses.
 enum SubscriptionStatus {
+  PENDING
   TRIAL
   ACTIVE
   PAST_DUE

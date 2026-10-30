@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { aiConfig: { findUnique: vi.fn(), upsert: vi.fn() } } }));
 vi.mock("@/lib/auth/permissions", () => ({ requirePermission: vi.fn() }));
+vi.mock("@/lib/billing/access", () => ({ businessActivated: vi.fn(async () => true) }));
 vi.mock("@/lib/logger", () => ({ log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() } }));
 vi.mock("@/lib/ai/ensurePrompt", () => ({ ensurePrompt: vi.fn() }));
 vi.mock("@/lib/ai/client", () => ({

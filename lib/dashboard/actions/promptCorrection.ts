@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { aiConfigured, editPromptDetailed } from "@/lib/ai/client";
 import { correctionInstruction } from "@/lib/ai/correctionInstruction";
 import { requirePermission } from "@/lib/auth/permissions";
+import { businessActivated } from "@/lib/billing/access";
 import { DEFAULT_AI_LANGUAGE } from "@/lib/dashboard/aiLanguages";
 import { promptFailure } from "@/lib/dashboard/promptFailure";
 import { DASH } from "@/lib/dashboard/routes";
@@ -20,6 +21,7 @@ export async function proposePromptCorrection(
   const ctx = await requirePermission("ai:write");
   if (!ctx) return { ok: false, error: "forbidden" };
   if (!aiConfigured()) return { ok: false, error: "unconfigured" };
+  if (!(await businessActivated(ctx.businessId))) return { ok: false, error: "inactive" };
 
   const conversation = await prisma.conversation.findFirst({
     where: { id: conversationId, businessId: ctx.businessId },

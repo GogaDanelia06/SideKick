@@ -8,8 +8,7 @@ import { startPlanCheckout } from "@/lib/dashboard/actions/billing";
 import { BILLING_PERIODS, periodPrice, periodSavingPct, planLabel } from "@/lib/content/packages";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import { track } from "@/lib/analytics/track";
-import { BankChoice, CurrentPlanBadge, checkoutError } from "./checkoutParts";
-import { FreePlanSwitch } from "./FreePlanSwitch";
+import { BankChoice, CurrentPlanBadge, PaymentSoon, checkoutError } from "./checkoutParts";
 
 type Props = {
   plans: Plan[];
@@ -35,10 +34,6 @@ export function PlanCheckout({ plans, subscription, providers, canManage }: Prop
       if (!res.ok) setError(res.error);
       else window.location.href = res.redirectUrl;
     });
-  }
-
-  if (providers.length === 0) {
-    return <FreePlanSwitch plans={plans} subscription={subscription} canManage={canManage} />;
   }
 
   return (
@@ -94,7 +89,8 @@ export function PlanCheckout({ plans, subscription, providers, canManage }: Prop
         })}
       </div>
 
-      {selected ? <BankChoice providers={providers} pending={pending} onPay={pay} /> : null}
+      {selected && providers.length > 0 ? <BankChoice providers={providers} pending={pending} onPay={pay} /> : null}
+      {selected && providers.length === 0 ? <PaymentSoon /> : null}
 
       {error ? (
         <ErrorBanner>{t(checkoutError(error))}</ErrorBanner>

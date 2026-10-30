@@ -45,9 +45,11 @@ beforeEach(() => {
 });
 
 describe("checkLimit", () => {
-  it("allows a business with no subscription rather than locking it out", async () => {
+  it("locks a business with no plan, or one not activated yet", async () => {
     findUnique.mockResolvedValue(null);
-    expect(await checkLimit("b1", "products")).toEqual({ allowed: true });
+    expect(await checkLimit("b1", "products")).toMatchObject({ allowed: false, reason: "inactive" });
+    findUnique.mockResolvedValue({ ...plan(), status: "PENDING" });
+    expect(await checkLimit("b1", "messages")).toMatchObject({ allowed: false, reason: "inactive" });
   });
 
   it("allows while under the cap", async () => {

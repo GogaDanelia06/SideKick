@@ -1,7 +1,8 @@
 "use client";
 
 import type { PaymentProvider } from "@prisma/client";
-import { IconExternalLink } from "@tabler/icons-react";
+import Link from "next/link";
+import { IconExternalLink, IconInfoCircle } from "@tabler/icons-react";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Text } from "@/lib/i18n/messages";
 
@@ -17,7 +18,6 @@ const ERRORS: Record<string, Text> = {
   unknown_provider: "dashboard.billing.checkoutParts.pickABank",
   provider_unavailable: "dashboard.billing.checkoutParts.thatBankIsNot",
   unknown_plan: "dashboard.billing.checkoutParts.thatPlanCouldNot",
-  payments_enabled: "dashboard.billing.checkoutParts.paymentsAreOnChange",
   checkout_failed: "dashboard.billing.checkoutParts.couldNotReachThe",
 };
 
@@ -68,6 +68,24 @@ export function BankChoice({
       <p className="text-[11px] text-faint">
         {t("dashboard.billing.checkoutParts.cardDetailsAreEntered")}
       </p>
+    </div>
+  );
+}
+
+export function PaymentSoon() {
+  const { t } = useLanguage();
+  return (
+    <div className="grid gap-2.5 rounded-[8px] border border-border bg-soft p-3">
+      <p className="flex gap-2 text-[13px] text-muted">
+        <IconInfoCircle size={16} className="mt-0.5 shrink-0 text-blue" />
+        {t("dashboard.billing.checkoutParts.paymentSoon")}
+      </p>
+      <Link
+        href="/contact"
+        className="inline-flex h-10 items-center justify-center rounded-[8px] bg-primary px-4 text-[13px] font-medium text-white"
+      >
+        {t("dashboard.billing.checkoutParts.contactUs")}
+      </Link>
     </div>
   );
 }

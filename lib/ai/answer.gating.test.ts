@@ -43,7 +43,7 @@ beforeEach(() => {
 
 describe("answerCustomer() — whether the AI answers", () => {
   it("withholds the reply once the plan's messages are spent", async () => {
-    limit.mockResolvedValue({ allowed: false, used: 500, limit: 500, planName: "Basic" } as never);
+    limit.mockResolvedValue({ allowed: false, reason: "limit", used: 500, limit: 500, planName: "Basic" } as never);
 
     await answerCustomer("b1", "c1", "გამარჯობა");
 

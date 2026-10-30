@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import type { OtherAccount } from "@/lib/auth/accountVault";
+import { isActivated } from "@/lib/billing/access";
 import { planLabel } from "@/lib/content/packages";
 import { initialOf } from "@/lib/i18n/initial";
 
@@ -11,7 +12,7 @@ export type ProfileUser = Prisma.UserGetPayload<{ select: typeof PROFILE_USER_FI
 export async function getAccount(userId: string, businessId: string) {
   const [user, subscription, memberships] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true, isAdmin: true } }),
-    prisma.subscription.findUnique({ where: { businessId }, select: { plan: { select: { name: true, nameEn: true } } } }),
+    prisma.subscription.findUnique({ where: { businessId }, select: { status: true, plan: { select: { name: true, nameEn: true } } } }),
     prisma.membership.findMany({
       where: { userId },
       orderBy: { createdAt: "asc" },
@@ -25,6 +26,7 @@ export async function getAccount(userId: string, businessId: string) {
     email: user?.email ?? "",
     initial: initialOf(name),
     planName: subscription ? planLabel(subscription.plan) : null,
+    activated: isActivated(subscription),
     isAdmin: user?.isAdmin ?? false,
     businessId,
     businesses: memberships.map(({ role, business }) => ({ id: business.id, name: business.name, role })),
