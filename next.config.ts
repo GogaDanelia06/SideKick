@@ -4,11 +4,13 @@ const isDev = process.env.NODE_ENV !== "production";
 
 const BLOB_HOST = "https://*.public.blob.vercel-storage.com";
 
+const META_IMAGES = "https://*.fbcdn.net https://*.cdninstagram.com https://*.fbsbx.com";
+
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: ${BLOB_HOST} https://img.youtube.com https://*.googleusercontent.com`,
+  `img-src 'self' data: blob: ${BLOB_HOST} https://img.youtube.com https://*.googleusercontent.com ${META_IMAGES}`,
   `media-src 'self' blob: ${BLOB_HOST}`,
   "font-src 'self' data:",
   `connect-src 'self'${isDev ? " ws: http://localhost:*" : ""}`,

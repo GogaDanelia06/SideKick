@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ChannelSummary } from "@/lib/dashboard/queries";
+import type { ChannelAccounts } from "@/lib/channels/channelAccounts";
 import {
   IconBrandFacebook,
   IconBrandInstagram,
@@ -9,6 +10,7 @@ import {
   IconWorld,
 } from "@tabler/icons-react";
 import { Panel } from "@/components/dashboard/ui/Panel";
+import { ChannelAccount } from "./ChannelAccount";
 import { ChannelActions } from "./ChannelActions";
 import { ConnectButton } from "./ConnectButton";
 import { ConnectResult } from "./ConnectResult";
@@ -22,12 +24,18 @@ const META = {
   WEBSITE: { name: "dashboard.channels.view.websiteApi", Icon: IconWorld, color: "var(--blue)" },
 } as const;
 
-export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
+export function ChannelsView({
+  channels,
+  accounts,
+}: {
+  channels: ChannelSummary[];
+  accounts: Promise<ChannelAccounts>;
+}) {
   const { t } = useLanguage();
   const [refusal, setRefusal] = useState<string | null>(null);
 
   return (
-    <div className="grid gap-3">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-3">
       {refusal ? <p className="text-[13px] text-red">{refusal}</p> : null}
 
       {channels.map((c) => {
@@ -42,6 +50,7 @@ export function ChannelsView({ channels }: { channels: ChannelSummary[] }) {
               <div className="text-xs text-muted">
                 {t("dashboard.channels.view.lastSync")}: {c.lastSyncAt ? new Date(c.lastSyncAt).toISOString().slice(0, 10) : "—"}
               </div>
+              {c.linked ? <ChannelAccount accounts={accounts} id={c.id} /> : null}
             </div>
             <ChannelStatus connected={c.connected} linked={c.linked} />
             {c.linked ? <ChannelActions channel={c} name={m.name} onRefusal={setRefusal} /> : <ConnectButton type={c.type} />}

@@ -1,4 +1,12 @@
 {
+  "account": {
+    "followers": "{count} გამომწერი",
+    "followersOne": "1 გამომწერი",
+    "open": "პროფილის გახსნა",
+    "posts": "{count} პოსტი",
+    "postsOne": "1 პოსტი",
+    "unavailable": "Meta-დან ანგარიში ვერ ჩაიტვირთა. სცადე ხელახლა დაკავშირება."
+  },
   "connectMeta": {
     "connect": "დაკავშირება",
     "connected": "დაკავშირდა.",
