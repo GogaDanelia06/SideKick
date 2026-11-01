@@ -12,7 +12,7 @@ export type ProfileUser = Prisma.UserGetPayload<{ select: typeof PROFILE_USER_FI
 export async function getAccount(userId: string, businessId: string) {
   const [user, subscription, memberships] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true, isAdmin: true } }),
-    prisma.subscription.findUnique({ where: { businessId }, select: { status: true, plan: { select: { name: true, nameEn: true } } } }),
+    prisma.subscription.findUnique({ where: { businessId }, select: { status: true, renewsAt: true, plan: { select: { name: true, nameEn: true } } } }),
     prisma.membership.findMany({
       where: { userId },
       orderBy: { createdAt: "asc" },

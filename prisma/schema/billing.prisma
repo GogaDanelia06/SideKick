@@ -22,11 +22,13 @@ model Plan {
   updatedAt     DateTime       @default(now()) @updatedAt
 }
 
+/// Founders add, change and remove plans by hand in the database's table
+/// editor, so the id fills itself in and a new row starts locked (PENDING).
 model Subscription {
-  id         String             @id @default(cuid())
+  id         String             @id @default(dbgenerated("(gen_random_uuid())::text"))
   businessId String             @unique
   planId     String
-  status     SubscriptionStatus @default(TRIAL)
+  status     SubscriptionStatus @default(PENDING)
   msgUsed    Int                @default(0)
   renewsAt   DateTime?
   cardRef    String?
