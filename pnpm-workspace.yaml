@@ -12,8 +12,12 @@ allowBuilds:
 
 # @prisma/config pins deepmerge-ts 7.1.5 (GHSA-ggr8-5vv4-36mx, patched in 8.0.0).
 # Remove once Prisma depends on deepmerge-ts 8 itself.
+# The other three patch what @vercel/blob and postcss still pull in; see docs/DEPENDENCIES.md.
 overrides:
   deepmerge-ts: ^8.0.2
+  undici: ^6.29.1
+  source-map-js: ^1.2.2
+  zod: ^4.6.7
 
 # These lint plugins still declare ESLint 9 at most; they run on 10 through @eslint/compat.
 # Remove each entry once the plugin declares ESLint 10 itself.

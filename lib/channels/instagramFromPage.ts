@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
+import { openToken } from "@/lib/security/tokenCipher";
 import { linkChannel } from "./linkChannel";
 import type { Page } from "./connectGraph";
 
@@ -11,7 +12,7 @@ export async function linkInstagramFromPage(businessId: string, page: Page): Pro
     where: { businessId, type: "INSTAGRAM" },
     select: { externalId: true, accessToken: true },
   });
-  if (existing?.accessToken?.startsWith("IGA") && existing.externalId === igId) {
+  if (openToken(existing?.accessToken)?.startsWith("IGA") && existing?.externalId === igId) {
     log.info("Instagram already holds an Instagram Login token for this account", {
       businessId,
       accountId: igId,

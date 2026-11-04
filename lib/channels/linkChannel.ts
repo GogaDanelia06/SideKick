@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
 import { checkLimit } from "@/lib/billing/limits";
+import { sealToken } from "@/lib/security/tokenCipher";
 import type { ChannelType } from "@prisma/client";
 
 export type LinkResult = { ok: true } | { ok: false; reason: "limit" | "already_linked" };
@@ -25,7 +26,7 @@ export async function linkChannel(
 
   const live = {
     externalId,
-    accessToken,
+    accessToken: sealToken(accessToken),
     tokenExpiresAt,
     connected: true,
     status: "ACTIVE" as const,

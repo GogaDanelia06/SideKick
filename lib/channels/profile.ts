@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
+import { openToken } from "@/lib/security/tokenCipher";
 import { graphHostFor } from "./graphHost";
 import { fetchCustomerName } from "./customerProfile";
 
@@ -13,7 +14,8 @@ export async function nameCustomer(conversationId: string): Promise<void> {
     },
   });
 
-  const channel = conversation?.channel;
+  const stored = conversation?.channel;
+  const channel = stored && { ...stored, accessToken: openToken(stored.accessToken) };
 
   const fields =
     channel?.type === "INSTAGRAM"

@@ -177,7 +177,8 @@ Documented, not hidden. Fuller treatment in
 | 8.3 | Pre-existing weak passwords (`123456`) on 2 accounts | ⚠️ | Those accounts are guessable | Force a reset on them |
 | 8.4 | Role change needs re-login | ⚠️ | Revoked access lingers up to 7 days | Per-request role lookup, or forced sign-out on change |
 | 8.5 | Automated tests cover the security *logic*, not yet the DB integration | ⚠️ | 124 unit tests guard permissions, validation, reset tokens, the rate-limit window and log redaction; tenant isolation at the query level is still only hand-verified | Add DB-backed integration tests for cross-tenant queries (needs a test database in CI) |
-| 8.6 | Channel / payment integrations | ⬜ | Not in scope this engagement | Add when commissioned; schema already models them |
+| 8.6 | Meta access tokens at rest | ✅ | AES-256-GCM in `lib/security/tokenCipher.ts`; a database read alone no longer yields a token that can post as a Page | Set `TOKEN_ENCRYPTION_KEY`, then `pnpm tokens:encrypt --fix` once |
+| 8.7 | AI tools cost money per call | ✅ | Prompt generation, refinement, correction and the tester share 60 calls per business per hour (`aiTool` in `rateLimit.ts`) | — |
 
 ---
 
@@ -185,9 +186,9 @@ Documented, not hidden. Fuller treatment in
 
 | # | Control | Status | Evidence |
 | --- | --- | --- | --- |
-| 9.1 | No known vulnerabilities in production deps | ✅ | `pnpm audit` → clean (2026-09-22) |
+| 9.1 | No known vulnerabilities in production deps | ✅ | `pnpm audit` → clean (2026-11-04, after Next 16.3.5 → 16.4.2 closed three critical remote-code-execution advisories) |
 | 9.2 | No strong-copyleft (GPL/AGPL) licence; weak-copyleft libraries listed | ✅ | [DEPENDENCIES.md](DEPENDENCIES.md) |
-| 9.3 | Patched versions forced where upstream lags | ✅ | pnpm `overrides` for `deepmerge-ts` |
+| 9.3 | Patched versions forced where upstream lags | ✅ | pnpm `overrides` for `deepmerge-ts`, `undici`, `source-map-js`, `zod` |
 | 9.4 | Update + audit policy documented | ✅ | [DEPENDENCIES.md](DEPENDENCIES.md#update-policy) |
 
 ---

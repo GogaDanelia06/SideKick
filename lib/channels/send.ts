@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/logger";
+import { openToken } from "@/lib/security/tokenCipher";
 import type { ChannelType } from "@prisma/client";
 import { type DeliveryResult, sendToMessenger } from "./messengerSend";
 
@@ -20,7 +21,8 @@ export async function deliverOutbound(
     },
   });
 
-  const channel = conversation?.channel;
+  const stored = conversation?.channel;
+  const channel = stored && { ...stored, accessToken: openToken(stored.accessToken) };
   if (
     !conversation?.customerRef ||
     !channel ||

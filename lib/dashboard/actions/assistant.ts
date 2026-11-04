@@ -10,22 +10,27 @@ import { businessActivated } from "@/lib/billing/access";
 import { promptFailure } from "@/lib/dashboard/promptFailure";
 import { DASH } from "@/lib/dashboard/routes";
 import { log } from "@/lib/logger";
+import { consume } from "@/lib/security/rateLimit";
 
 export type PromptFailure = { reason: AiFailureKind; status?: number; seconds: number };
 
 export type PromptResult =
   | { ok: true; prompt: string }
-  | ({ ok: false; error: "forbidden" | "unconfigured" | "inactive" | "failed" | "empty" } & Partial<PromptFailure>);
+  | ({ ok: false; error: AccessError | "failed" | "empty" } & Partial<PromptFailure>);
 
 export type TestReply =
   | { ok: true; reply: string; handoff: boolean; promptDrafted?: boolean }
-  | { ok: false; error: "forbidden" | "unconfigured" | "inactive" | "empty" | "failed" | "emoji_only" };
+  | { ok: false; error: AccessError | "empty" | "failed" | "emoji_only" };
 
-async function assistantAccess(): Promise<{ businessId: string } | { error: "forbidden" | "unconfigured" | "inactive" }> {
+type AccessError = "forbidden" | "unconfigured" | "inactive" | "rate_limited";
+
+/** Every call here costs the AI provider money and none counts toward the plan, hence the hourly cap. */
+async function assistantAccess(): Promise<{ businessId: string } | { error: AccessError }> {
   const ctx = await requirePermission("ai:write");
   if (!ctx) return { error: "forbidden" };
   if (!aiConfigured()) return { error: "unconfigured" };
   if (!(await businessActivated(ctx.businessId))) return { error: "inactive" };
+  if (!(await consume("aiTool", ctx.businessId)).ok) return { error: "rate_limited" };
   return { businessId: ctx.businessId };
 }
 

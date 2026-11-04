@@ -9,6 +9,7 @@ import { businessActivated } from "@/lib/billing/access";
 import { DEFAULT_AI_LANGUAGE } from "@/lib/dashboard/aiLanguages";
 import { promptFailure } from "@/lib/dashboard/promptFailure";
 import { DASH } from "@/lib/dashboard/routes";
+import { consume } from "@/lib/security/rateLimit";
 import type { PromptResult } from "./assistant";
 
 export type CorrectionProposal = { ok: true; prompt: string; saved: string } | Extract<PromptResult, { ok: false }>;
@@ -22,6 +23,7 @@ export async function proposePromptCorrection(
   if (!ctx) return { ok: false, error: "forbidden" };
   if (!aiConfigured()) return { ok: false, error: "unconfigured" };
   if (!(await businessActivated(ctx.businessId))) return { ok: false, error: "inactive" };
+  if (!(await consume("aiTool", ctx.businessId)).ok) return { ok: false, error: "rate_limited" };
 
   const conversation = await prisma.conversation.findFirst({
     where: { id: conversationId, businessId: ctx.businessId },

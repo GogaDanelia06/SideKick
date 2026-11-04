@@ -6,6 +6,7 @@ vi.mock("@/lib/auth/permissions", () => ({ requirePermission: vi.fn() }));
 vi.mock("@/lib/billing/access", () => ({ businessActivated: vi.fn(async () => true) }));
 vi.mock("@/lib/logger", () => ({ log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() } }));
 vi.mock("@/lib/ai/ensurePrompt", () => ({ ensurePrompt: vi.fn() }));
+vi.mock("@/lib/security/rateLimit", () => ({ consume: vi.fn(async () => ({ ok: true })) }));
 vi.mock("@/lib/ai/client", () => ({
   aiConfigured: () => true,
   askAi: vi.fn(),
@@ -19,6 +20,7 @@ import { askAi } from "@/lib/ai/client";
 import { ensurePrompt } from "@/lib/ai/ensurePrompt";
 import { log } from "@/lib/logger";
 import { requirePermission } from "@/lib/auth/permissions";
+import { consume } from "@/lib/security/rateLimit";
 
 const ask = vi.mocked(askAi);
 const THREAD = "0a1b2c3d4e5f6a7b";
@@ -97,6 +99,13 @@ describe("testAiReply()", () => {
   it("reports a failure to give a prompt as a failure on our side", async () => {
     vi.mocked(ensurePrompt).mockRejectedValue(new Error("db down"));
     expect(await testAiReply("hi", THREAD)).toEqual({ ok: false, error: "failed" });
+    expect(ask).not.toHaveBeenCalled();
+  });
+
+  it("stops before calling the AI once the hourly budget is spent", async () => {
+    vi.mocked(consume).mockResolvedValueOnce({ ok: false, remaining: 0, retryAfterSec: 60 });
+    expect(await testAiReply("hi", THREAD)).toEqual({ ok: false, error: "rate_limited" });
+    expect(consume).toHaveBeenCalledWith("aiTool", "b1");
     expect(ask).not.toHaveBeenCalled();
   });
 });

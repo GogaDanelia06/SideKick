@@ -49,6 +49,7 @@ what makes a re-send land on the same row instead of creating a second copy.
 | `META_VERIFY_TOKEN` | to complete setup | A string **we invent**. It only has to match what is typed into the App Dashboard. 16+ characters. |
 | `META_APP_ID` | to connect a Page | Facebook Login's client id, used by the connect button. |
 | `INSTAGRAM_APP_ID` | to connect Instagram | The **Instagram** app's client id. A different application; `META_APP_ID` here fails as "invalid client". |
+| `TOKEN_ENCRYPTION_KEY` | strongly recommended | 32 random bytes in base64 (`openssl rand -base64 32`). Page and Instagram tokens are encrypted with it before they are stored. Without it they are stored readable. Never change it once set: tokens sealed with the old key stop working and every channel must be reconnected. After first setting it, run `pnpm tokens:encrypt --fix` once against production. |
 | `INSTAGRAM_APP_SECRET` | to receive Instagram | Signs Instagram's webhook deliveries **and** its token exchange. Without it every Instagram delivery fails its signature check and vanishes. |
 | `AI_SERVICE_WEBHOOK_URL` | to notify the AI | Where we `POST` "a customer wrote in". Supplied by the AI team. |
 | `AI_SERVICE_WEBHOOK_TOKEN` | to notify the AI | Bearer token we send with that push, so they can tell it is us. 32+ characters. |

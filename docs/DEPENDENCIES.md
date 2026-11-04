@@ -22,14 +22,14 @@ licence opinion, have a lawyer confirm.
 
 | Package | Version | Licence | Purpose | Notes |
 | --- | --- | --- | --- | --- |
-| `next` | 16.3.5 | MIT | The framework — routing, rendering, build, server | Core. Pinned; see [update policy](#update-policy). |
+| `next` | 16.4.2 | MIT | The framework — routing, rendering, build, server | Core. Pinned; see [update policy](#update-policy). |
 | `react` | 19.3.0 | MIT | UI runtime | Pinned; moves together with `react-dom`. |
 | `react-dom` | 19.3.0 | MIT | React DOM renderer | Must match `react` exactly. |
 | `next-auth` | 5.0.0-beta.32 | ISC | Authentication (sessions, providers, callbacks) | **Beta**. See [risk](#elevated-risk-next-auth). |
 | `@auth/prisma-adapter` | 2.11.3 | ISC | Stores Auth.js users/accounts via Prisma | Pinned; keep aligned with `next-auth`. |
 | `@prisma/client` | 6.19.3 | Apache-2.0 | Type-safe database client (generated) | Pinned; equals the `prisma` CLI. |
 | `bcryptjs` | 3.0.3 | BSD-3-Clause | Password hashing (cost 10) | Pure JS; ships its own types. |
-| `zod` | 4.6.5 | MIT | Runtime input validation | Every request body and env var. |
+| `zod` | 4.6.7 | MIT | Runtime input validation | Every request body and env var. |
 | `@vercel/blob` | 2.8.0 | Apache-2.0 | Storage for admin media uploads | |
 | `@tabler/icons-react` | 3.47.0 | MIT | Icon set | Tree-shaken; only imported icons ship. |
 | `fflate` | 0.8.3 | MIT | Zip for the product Excel import/export | Pure JS. |
@@ -43,7 +43,7 @@ licence opinion, have a lawyer confirm.
 | `typescript` | 6.0.3 | Apache-2.0 | Type checker |
 | `tailwindcss`, `@tailwindcss/postcss` | 4.3.3 | MIT | CSS engine and its PostCSS plugin |
 | `eslint` | 10.11.0 | MIT | Linter |
-| `eslint-config-next` | 16.3.5 | MIT | Next.js lint rules; same version as `next` |
+| `eslint-config-next` | 16.4.2 | MIT | Next.js lint rules; same version as `next` |
 | `@eslint/compat` | 2.1.1 | Apache-2.0 | Runs the older plugins inside `eslint-config-next` on ESLint 10 |
 | `vitest` | 5.0.1 | MIT | Unit tests |
 | `tsx` | 4.23.15 | MIT | Runs the TS seed scripts |
@@ -52,19 +52,22 @@ licence opinion, have a lawyer confirm.
 
 ## Dependency override
 
-One patched transitive package, forced by pnpm `overrides` (`pnpmOverridesNote` points here).
+Patched transitive packages, forced by pnpm `overrides` (`pnpmOverridesNote` points here).
 
 | Override | Forces | Fixes | Remove when |
 | --- | --- | --- | --- |
 | `deepmerge-ts` | `^8.0.2` | GHSA-ggr8-5vv4-36mx: a crafted self-referencing object crashes `deepmerge()` | `@prisma/config` depends on 8.x itself |
+| `undici` | `^6.29.1` | GHSA-9fm3-97px-rjf6 and others: TLS certificate bypass, denial of service | `@vercel/blob` depends on 6.29.1 or later |
+| `source-map-js` | `^1.2.2` | event-loop denial of service from a crafted source map | `postcss` depends on 1.2.2 or later |
+| `zod` | `^4.6.7` | memory exhaustion on oversized collections; `@vercel/cli-config` pins 4.1.11 | `@vercel/cli-config` depends on 4.6.6 or later |
 
 Prisma's config loader pins 7.1.5 (in 6.19 and 7.10 alike) and calls only the plain
 `deepmerge()`, which 8.0 left unchanged; it runs in the Prisma CLI, never on a request.
 Checked with `prisma validate` and `prisma migrate status`; recheck with
 `npm view @prisma/config@latest dependencies.deepmerge-ts`.
 
-The earlier `sharp` and `postcss` overrides are gone: Next 16.3.5 ships the patched
-versions itself (`sharp ^0.35.4`, `postcss 8.5.23`).
+The earlier `sharp` and `postcss` overrides are gone: Next 16.4.2 ships the patched
+versions itself (`sharp ^0.35.5`, `postcss 8.5.23`).
 
 **ESLint 10.** ESLint 9 reached end of life on 2026-08-06. `eslint-plugin-react`, `-import`
 and `-jsx-a11y` (inside `eslint-config-next`) still declare ESLint 9 at most and call

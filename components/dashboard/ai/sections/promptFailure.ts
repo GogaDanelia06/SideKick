@@ -7,6 +7,7 @@ const BASE = "dashboard.ai.promptAiActions.failure";
 
 export function promptFailureText(result: Failure): Text {
   if (result.error === "inactive") return "dashboard.billing.locked.notActive";
+  if (result.error === "rate_limited") return `${BASE}.tooMany`;
   const status = result.status ?? "—";
   switch (result.reason) {
     case "timeout":

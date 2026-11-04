@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { openToken, sealToken } from "@/lib/security/tokenCipher";
 import { log } from "@/lib/logger";
 import { refreshLongLived } from "./instagramToken";
 
@@ -35,7 +36,8 @@ export async function refreshInstagramTokens(now = new Date()): Promise<RefreshR
     const age = channel.lastSyncAt ? now.getTime() - channel.lastSyncAt.getTime() : Infinity;
     if (age < MIN_AGE_HOURS * 60 * 60 * 1000) continue;
 
-    const fresh = await refreshLongLived(channel.accessToken!);
+    const current = openToken(channel.accessToken);
+    const fresh = current ? await refreshLongLived(current) : null;
     if (!fresh) {
       report.failed += 1;
       log.error("Instagram token could not be renewed — this channel will stop", undefined, {
@@ -47,7 +49,7 @@ export async function refreshInstagramTokens(now = new Date()): Promise<RefreshR
 
     await prisma.channel.update({
       where: { id: channel.id },
-      data: { accessToken: fresh.token, tokenExpiresAt: fresh.expiresAt, lastSyncAt: now },
+      data: { accessToken: sealToken(fresh.token), tokenExpiresAt: fresh.expiresAt, lastSyncAt: now },
     });
     report.renewed += 1;
     log.info("Instagram token renewed", {

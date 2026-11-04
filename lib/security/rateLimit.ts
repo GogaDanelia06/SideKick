@@ -17,6 +17,7 @@ export const LIMITS = {
   reset: { max: 10, windowSec: 60 * 60 },
   teamInvite: { max: 20, windowSec: 60 * 60 },
   agent: { max: 600, windowSec: 60 },
+  aiTool: { max: 60, windowSec: 60 * 60 },
 } as const satisfies Record<string, LimitRule>;
 
 export type LimitName = keyof typeof LIMITS;
