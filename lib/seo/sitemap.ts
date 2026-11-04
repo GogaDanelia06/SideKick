@@ -79,6 +79,7 @@ export const SITEMAP_PAGES: SitemapEntry[] = [
   legalPage("terms", "/terms"),
   legalPage("privacy", "/privacy"),
   legalPage("data-protection", "/data-protection"),
+  legalPage("data-deletion", "/data-deletion"),
 ];
 
 export type ResolvedPage = { path: string; lastModified: Date; changeFrequency: SitemapEntry["changeFrequency"]; priority: number };

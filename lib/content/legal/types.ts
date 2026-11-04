@@ -12,7 +12,7 @@ export type LegalSection = {
 };
 
 export type LegalDoc = {
-  slug: "terms" | "privacy" | "data-protection";
+  slug: "terms" | "privacy" | "data-protection" | "data-deletion";
   title: Bilingual;
   description: Bilingual;
   updated: string;

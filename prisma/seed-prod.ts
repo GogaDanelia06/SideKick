@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { PLANS } from "./seed-data";
 import { FAQS } from "../lib/content/faq";
-import { TERMS, PRIVACY, DATA_PROTECTION } from "../lib/content/legal";
+import { TERMS, PRIVACY, DATA_PROTECTION, DATA_DELETION } from "../lib/content/legal";
 import { BENEFITS } from "../lib/content/benefits";
 import { SERVICES } from "../lib/content/services";
 import { ICONS } from "../lib/content/icons";
@@ -35,6 +35,7 @@ async function main() {
     { doc: "terms", src: TERMS },
     { doc: "privacy", src: PRIVACY },
     { doc: "data-protection", src: DATA_PROTECTION },
+    { doc: "data-deletion", src: DATA_DELETION },
   ]) {
     if ((await prisma.legalSection.count({ where: { doc } })) > 0) continue;
     await prisma.legalSection.createMany({

@@ -52,6 +52,10 @@ export const FOOTER = {
       label: { ka: "მონაცემთა დაცვა", en: "Data protection" },
       href: ROUTES.dataProtection,
     },
+    {
+      label: { ka: "მონაცემების წაშლა", en: "Data deletion" },
+      href: ROUTES.dataDeletion,
+    },
 
   ] satisfies FooterLink[],
 

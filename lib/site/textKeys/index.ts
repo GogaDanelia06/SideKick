@@ -27,6 +27,7 @@ export const LEGAL_DOCS: LegalDocMeta[] = [
     title: ka("პერსონალურ მონაცემთა დაცვა", "Personal data protection"),
     route: "/data-protection",
   },
+  { doc: "data-deletion", title: ka("მონაცემების წაშლა", "Data deletion"), route: "/data-deletion" },
 ];
 
 export function findLegalDoc(doc: string): LegalDocMeta | undefined {

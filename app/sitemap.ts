@@ -26,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { url: absoluteUrl("/terms"), lastModified: fallback, changeFrequency: "yearly", priority: 0.3 },
       { url: absoluteUrl("/privacy"), lastModified: fallback, changeFrequency: "yearly", priority: 0.3 },
       { url: absoluteUrl("/data-protection"), lastModified: fallback, changeFrequency: "yearly", priority: 0.3 },
+      { url: absoluteUrl("/data-deletion"), lastModified: fallback, changeFrequency: "yearly", priority: 0.3 },
     ];
   }
 }

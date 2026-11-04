@@ -10,6 +10,7 @@ const KNOWN_PATHS = new Set([
   "/privacy",
   "/terms",
   "/data-protection",
+  "/data-deletion",
   "/start",
   "/login",
   "/register",

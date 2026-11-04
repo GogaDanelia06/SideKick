@@ -2,6 +2,7 @@ import {
   IconLock,
   IconScale,
   IconSearch,
+  IconTrash,
 } from "@tabler/icons-react";
 import { ka, type AdminPage } from "./types";
 
@@ -33,6 +34,13 @@ export const LEGAL_PAGE: AdminPage = {
       legalDoc: "data-protection",
     },
     {
+      key: "data-deletion",
+      label: ka("მონაცემების წაშლა", "Data deletion"),
+      icon: IconTrash,
+      kind: "legal",
+      legalDoc: "data-deletion",
+    },
+    {
       key: "seo-terms",
       label: ka("SEO — წესები", "SEO — Terms"),
       icon: IconSearch,
@@ -52,6 +60,13 @@ export const LEGAL_PAGE: AdminPage = {
       icon: IconSearch,
       kind: "seo",
       seoPath: "/data-protection",
+    },
+    {
+      key: "seo-deletion",
+      label: ka("SEO — მონაცემების წაშლა", "SEO — Data deletion"),
+      icon: IconSearch,
+      kind: "seo",
+      seoPath: "/data-deletion",
     },
   ],
 };

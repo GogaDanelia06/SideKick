@@ -13,6 +13,7 @@ export const ROUTES = {
   terms: "/terms",
   privacy: "/privacy",
   dataProtection: "/data-protection",
+  dataDeletion: "/data-deletion",
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
