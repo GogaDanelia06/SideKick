@@ -33,13 +33,13 @@ export function MembersTable({
 
   return (
     <Panel className="overflow-x-auto">
-      <table className="w-full min-w-[720px] text-sm">
+      <table className="w-full table-fixed text-sm md:min-w-[720px] md:table-auto">
         <thead>
           <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-faint">
             <th className={HEAD}>{t("dashboard.team.view.member")}</th>
-            <th className={HEAD}>{t("dashboard.team.view.role")}</th>
-            <th className={HEAD}>{t("dashboard.team.view.permissions")}</th>
-            <th className="px-4 py-3" />
+            <th className={`${HEAD} hidden md:table-cell`}>{t("dashboard.team.view.role")}</th>
+            <th className={`${HEAD} hidden md:table-cell`}>{t("dashboard.team.view.permissions")}</th>
+            <th className="w-16 px-4 py-3" />
           </tr>
         </thead>
         <tbody>

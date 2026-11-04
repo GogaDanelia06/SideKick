@@ -34,6 +34,7 @@ export function MemberRow({
   const { t } = useLanguage();
   const r = ROLE[m.role];
   const manageable = canManage && canManageMember(myRank, m.role);
+  const pill = <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${r.pill}`}>{t(ROLE_LABEL[m.role])}</span>;
 
   return (
     <tr className="border-b border-border2 last:border-0">
@@ -48,13 +49,12 @@ export function MemberRow({
               {isSelf ? <span className="ml-1.5 text-xs text-muted">({t("dashboard.team.view.you")})</span> : null}
             </div>
             <div className="truncate text-xs text-muted">{m.user.email}</div>
+            <div className="mt-2 md:hidden">{pill}</div>
           </div>
         </div>
       </td>
-      <td className="px-4 py-3">
-        <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${r.pill}`}>{t(ROLE_LABEL[m.role])}</span>
-      </td>
-      <td className="px-4 py-3 text-muted">{t(r.perms)}</td>
+      <td className="hidden px-4 py-3 md:table-cell">{pill}</td>
+      <td className="hidden px-4 py-3 text-muted md:table-cell">{t(r.perms)}</td>
       <td className="px-4 py-3 text-right">
         {manageable ? (
           <button

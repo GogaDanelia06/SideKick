@@ -21,15 +21,15 @@ export function LeadsTable({
 
   return (
     <Panel className="overflow-x-auto">
-      <table className="w-full min-w-[900px] text-sm">
+      <table className="w-full table-fixed text-sm md:min-w-[900px] md:table-auto">
         <thead>
           <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-faint">
             {COLUMNS.map((c, i) => (
-              <th key={i} className="px-4 py-3 font-semibold">
+              <th key={i} className={`px-4 py-3 font-semibold ${i > 0 ? "hidden md:table-cell" : ""}`}>
                 {t(c)}
               </th>
             ))}
-            <th className="px-4 py-3" />
+            <th className="w-16 px-4 py-3 md:w-auto" />
           </tr>
         </thead>
         <tbody>
