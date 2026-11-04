@@ -1,9 +1,9 @@
-import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import { consume } from "@/lib/security/rateLimit";
 import { log } from "@/lib/logger";
+import { bearerToken, safeEqual } from "@/lib/security/safeEqual";
 
 export type AgentContext = { businessId: string };
 
@@ -21,18 +21,6 @@ export function notFound(message: string): AgentDenial {
   return { response: NextResponse.json({ error: message }, { status: 404 }) };
 }
 
-function tokenMatches(given: string, expected: string): boolean {
-  const a = Buffer.from(given);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
-}
-
-function bearer(request: Request): string {
-  const header = request.headers.get("authorization") ?? "";
-  return header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-}
-
 export async function authenticate(
   request: Request,
   businessId: unknown,
@@ -43,8 +31,8 @@ export async function authenticate(
     return { response: NextResponse.json({ error: "agent API is not enabled" }, { status: 503 }) };
   }
 
-  const given = bearer(request);
-  if (!given || !tokenMatches(given, expected)) {
+  const given = bearerToken(request);
+  if (!given || !safeEqual(given, expected)) {
     log.warn("agent API rejected a request", { hasToken: given.length > 0 });
     return { response: NextResponse.json({ error: "unauthorized" }, { status: 401 }) };
   }

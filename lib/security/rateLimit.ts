@@ -45,7 +45,7 @@ export async function consume(name: LimitName, subject: string): Promise<LimitRe
     });
 
     if (hits.length >= rule.max) {
-      const oldest = hits[0]!.createdAt.getTime();
+      const oldest = hits[0]?.createdAt.getTime() ?? Date.now();
       const retryAfterSec = Math.max(
         1,
         Math.ceil((oldest + rule.windowSec * 1000 - Date.now()) / 1000),
@@ -80,11 +80,14 @@ async function sweep(): Promise<void> {
     await prisma.rateLimitHit.deleteMany({
       where: { createdAt: { lt: new Date(Date.now() - MAX_WINDOW_SEC * 1000) } },
     });
-  } catch {}
+  } catch (err) {
+    log.warn("could not sweep old rate-limit rows", { error: String(err) });
+  }
 }
 
 export function clientIp(req: Request): string {
   const fwd = req.headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0]!.trim();
+  const first = fwd?.split(",")[0]?.trim();
+  if (first) return first;
   return req.headers.get("x-real-ip")?.trim() || "unknown";
 }

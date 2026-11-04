@@ -6,6 +6,8 @@ import { findGroup } from "@/lib/site/textKeys";
 import type { BoxItem } from "@/components/admin/boxes/BoxFields";
 import type { SectionData } from "@/components/admin/sectionData";
 
+type BoxKind = NonNullable<AdminSection["boxKind"]>;
+
 type BoxRow = Pick<BoxItem, "id" | "order" | "published" | "icon" | "titleKa" | "titleEn">;
 
 const boxItem = (row: BoxRow, bodyKa: string, bodyEn: string): BoxItem => ({
@@ -39,8 +41,8 @@ export async function loadStats(): Promise<SectionData> {
   return { kind: "stats", stats, sources };
 }
 
-export async function loadText(section: AdminSection): Promise<SectionData | undefined> {
-  const group = findGroup(section.textGroup!);
+export async function loadText(groupSlug: string): Promise<SectionData | undefined> {
+  const group = findGroup(groupSlug);
   if (!group) return undefined;
   const rows = await prisma.siteSetting.findMany({
     where: { key: { in: group.fields.map((f) => f.key) } },
@@ -52,10 +54,10 @@ export async function loadText(section: AdminSection): Promise<SectionData | und
   };
 }
 
-export async function loadBoxes(section: AdminSection): Promise<SectionData> {
+export async function loadBoxes(boxKind: BoxKind): Promise<SectionData> {
   const items =
-    section.boxKind === "benefit"
+    boxKind === "benefit"
       ? (await prisma.benefit.findMany({ orderBy: { order: "asc" } })).map((b) => boxItem(b, b.descKa, b.descEn))
       : (await prisma.serviceBox.findMany({ orderBy: { order: "asc" } })).map((s) => boxItem(s, s.bodyKa, s.bodyEn));
-  return { kind: "boxes", boxKind: section.boxKind!, items };
+  return { kind: "boxes", boxKind, items };
 }

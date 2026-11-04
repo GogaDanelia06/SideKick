@@ -26,7 +26,12 @@ afterEach(() => {
 
 describe("sendToMessenger()", () => {
   it("posts the shape Meta documents", async () => {
-    await sendToMessenger("PAGE_1", "page-token", "PSID_1", "დიახ, გვაქვს");
+    await sendToMessenger({
+      accountId: "PAGE_1",
+      accessToken: "page-token",
+      recipientId: "PSID_1",
+      text: "დიახ, გვაქვს",
+    });
 
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toContain("/PAGE_1/messages");
@@ -39,7 +44,12 @@ describe("sendToMessenger()", () => {
   });
 
   it("reports the id Meta gives back", async () => {
-    const result = await sendToMessenger("PAGE_1", "t", "PSID_1", "hi");
+    const result = await sendToMessenger({
+      accountId: "PAGE_1",
+      accessToken: "t",
+      recipientId: "PSID_1",
+      text: "hi",
+    });
     expect(result).toEqual({ status: "SENT", externalId: "mid_out_1" });
   });
 
@@ -48,7 +58,12 @@ describe("sendToMessenger()", () => {
       refused(400, { error: { message: "Messaging window closed", code: 1545041 } }),
     );
 
-    const result = await sendToMessenger("PAGE_1", "t", "PSID_1", "hi");
+    const result = await sendToMessenger({
+      accountId: "PAGE_1",
+      accessToken: "t",
+      recipientId: "PSID_1",
+      text: "hi",
+    });
     expect(result.status).toBe("WINDOW_CLOSED");
   });
 
@@ -57,7 +72,12 @@ describe("sendToMessenger()", () => {
       refused(400, { error: { message: "Invalid OAuth access token", code: 190 } }),
     );
 
-    const result = await sendToMessenger("PAGE_1", "bad", "PSID_1", "hi");
+    const result = await sendToMessenger({
+      accountId: "PAGE_1",
+      accessToken: "bad",
+      recipientId: "PSID_1",
+      text: "hi",
+    });
     expect(result.status).toBe("FAILED");
     expect(result.detail).toBe("Invalid OAuth access token");
   });
@@ -65,7 +85,12 @@ describe("sendToMessenger()", () => {
   it("turns a network fault into a result instead of throwing", async () => {
     fetchMock.mockRejectedValue(new Error("socket hang up"));
 
-    await expect(sendToMessenger("PAGE_1", "t", "PSID_1", "hi")).resolves.toEqual({
+    await expect(sendToMessenger({
+      accountId: "PAGE_1",
+      accessToken: "t",
+      recipientId: "PSID_1",
+      text: "hi",
+    })).resolves.toEqual({
       status: "FAILED",
       detail: "socket hang up",
     });

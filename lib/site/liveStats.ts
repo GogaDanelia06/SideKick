@@ -8,12 +8,11 @@ let timer: ReturnType<typeof setInterval> | null = null;
 const listeners = new Set<() => void>();
 
 async function pull(): Promise<void> {
-  try {
-    const res = await fetch(ENDPOINT, { cache: "no-store" });
-    if (!res.ok) return;
-    snapshot = (await res.json()) as Snapshot;
-    for (const notify of listeners) notify();
-  } catch {}
+  const res = await fetch(ENDPOINT, { cache: "no-store" }).catch(() => null);
+  const next = res?.ok ? ((await res.json().catch(() => null)) as Snapshot | null) : null;
+  if (!next) return;
+  snapshot = next;
+  for (const notify of listeners) notify();
 }
 
 function visible(): boolean {

@@ -7,13 +7,21 @@ import type { ChannelType } from "@prisma/client";
 
 export type LinkResult = { ok: true } | { ok: false; reason: "limit" | "already_linked" };
 
-export async function linkChannel(
-  businessId: string,
-  type: ChannelType,
-  externalId: string,
-  accessToken: string,
-  tokenExpiresAt: Date | null = null,
-): Promise<LinkResult> {
+export type LinkInput = {
+  businessId: string;
+  type: ChannelType;
+  externalId: string;
+  accessToken: string;
+  tokenExpiresAt?: Date | null;
+};
+
+export async function linkChannel({
+  businessId,
+  type,
+  externalId,
+  accessToken,
+  tokenExpiresAt = null,
+}: LinkInput): Promise<LinkResult> {
   const existing = await prisma.channel.findFirst({
     where: { businessId, type },
     select: { id: true, connected: true },

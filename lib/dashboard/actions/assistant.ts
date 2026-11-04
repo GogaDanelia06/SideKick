@@ -24,7 +24,6 @@ export type TestReply =
 
 type AccessError = "forbidden" | "unconfigured" | "inactive" | "rate_limited";
 
-/** Every call here costs the AI provider money and none counts toward the plan, hence the hourly cap. */
 async function assistantAccess(): Promise<{ businessId: string } | { error: AccessError }> {
   const ctx = await requirePermission("ai:write");
   if (!ctx) return { error: "forbidden" };

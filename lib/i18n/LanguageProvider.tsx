@@ -9,6 +9,7 @@ import {
 import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY } from "./config";
 import { textIn, type Text, type Vars } from "./messages";
 import type { Locale } from "./types";
+import { readStored, writeStored } from "@/lib/browserStorage";
 
 type LanguageContextValue = {
   locale: Locale;
@@ -31,11 +32,8 @@ function subscribe(onChange: () => void) {
 }
 
 function getSnapshot(): Locale {
-  try {
-    const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-    if (stored === "ka" || stored === "en") return stored;
-  } catch {}
-  return DEFAULT_LOCALE;
+  const stored = readStored(LOCALE_STORAGE_KEY);
+  return stored === "ka" || stored === "en" ? stored : DEFAULT_LOCALE;
 }
 
 function getServerSnapshot(): Locale {
@@ -43,9 +41,7 @@ function getServerSnapshot(): Locale {
 }
 
 function commit(next: Locale) {
-  try {
-    localStorage.setItem(LOCALE_STORAGE_KEY, next);
-  } catch {}
+  writeStored(LOCALE_STORAGE_KEY, next);
   listeners.forEach((notify) => notify());
 }
 

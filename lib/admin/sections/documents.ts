@@ -10,8 +10,7 @@ const legalTitle = (doc: string) => {
   return drafted ? textIn("ka", drafted.title) : "";
 };
 
-export async function loadLegal(section: AdminSection): Promise<SectionData> {
-  const doc = section.legalDoc!;
+export async function loadLegal(doc: string): Promise<SectionData> {
   const [rows, titleRow] = await Promise.all([
     prisma.legalSection.findMany({ where: { doc }, orderBy: { order: "asc" } }),
     prisma.siteSetting.findUnique({ where: { key: legalTitleKey(doc) } }),

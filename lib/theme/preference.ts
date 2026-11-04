@@ -1,4 +1,5 @@
 import { DARK_QUERY, DEFAULT_THEME, THEME_STORAGE_KEY, type Theme } from "./config";
+import { readStored, writeStored } from "@/lib/browserStorage";
 
 export function systemTheme(): Theme {
   try {
@@ -20,17 +21,10 @@ export function watchSystemTheme(onChange: (theme: Theme) => void): () => void {
 }
 
 export function chosenTheme(): Theme | null {
-  try {
-    const value = localStorage.getItem(THEME_STORAGE_KEY);
-    return value === "light" || value === "dark" ? value : null;
-  } catch {
-    return null;
-  }
+  const value = readStored(THEME_STORAGE_KEY);
+  return value === "light" || value === "dark" ? value : null;
 }
 
 export function rememberTheme(next: Theme): void {
-  try {
-    if (next === systemTheme()) localStorage.removeItem(THEME_STORAGE_KEY);
-    else localStorage.setItem(THEME_STORAGE_KEY, next);
-  } catch {}
+  writeStored(THEME_STORAGE_KEY, next === systemTheme() ? null : next);
 }

@@ -1,16 +1,11 @@
-import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes } from "node:crypto";
+import { safeEqual } from "@/lib/security/safeEqual";
 
 const MAX_AGE_SEC = 15 * 60;
 
 const secret = () => process.env.AUTH_SECRET ?? "";
 
 const sign = (payload: string) => createHmac("sha256", secret()).update(payload).digest("hex");
-
-function equal(a: string, b: string): boolean {
-  const x = Buffer.from(a);
-  const y = Buffer.from(b);
-  return x.length === y.length && timingSafeEqual(x, y);
-}
 
 export function issueState(businessId: string, now = Date.now()): string {
   const payload = Buffer.from(
@@ -26,7 +21,7 @@ export function readState(value: string | null, now = Date.now()): { businessId:
   if (dot <= 0) return null;
 
   const payload = value.slice(0, dot);
-  if (!equal(value.slice(dot + 1), sign(payload))) return null;
+  if (!safeEqual(value.slice(dot + 1), sign(payload))) return null;
 
   try {
     const data = JSON.parse(Buffer.from(payload, "base64url").toString()) as {

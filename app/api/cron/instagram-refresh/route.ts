@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { timingSafeEqual } from "node:crypto";
 import { refreshInstagramTokens } from "@/lib/channels/instagramRefresh";
 import { log } from "@/lib/logger";
+import { bearerToken, safeEqual } from "@/lib/security/safeEqual";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +9,7 @@ function authorised(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
   if (!secret) return false;
 
-  const header = request.headers.get("authorization") ?? "";
-  const given = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-  const a = Buffer.from(given);
-  const b = Buffer.from(secret);
-  return a.length === b.length && timingSafeEqual(a, b);
+  return safeEqual(bearerToken(request), secret);
 }
 
 export async function GET(request: Request) {

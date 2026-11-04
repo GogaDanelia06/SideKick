@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   const endActive = () => all.filter((c) => SESSION_COOKIE.test(c.name)).forEach((c) => jar.set(expiredCookie(c.name, secure)));
   const open = (session: JWT, value: string) => jar.set(name, value, cookieOptions(session, secure));
   function park(session: JWT, value: string, among = entries): boolean {
-    const slot = slotFor(among, session.uid!);
+    const slot = session.uid && slotFor(among, session.uid);
     if (!slot || value.length > MAX_TOKEN_CHARS) return false;
     among.filter((e) => e.uid === session.uid && e.slot !== slot).forEach((e) => drop(e.slot));
     jar.set(slot, value, cookieOptions(session, secure));

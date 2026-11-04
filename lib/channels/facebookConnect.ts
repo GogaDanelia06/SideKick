@@ -44,7 +44,12 @@ export async function connectFromCode(
   const page = list[0];
   if (!page.access_token) return { ok: false, reason: "failed" };
 
-  const linked = await linkChannel(businessId, "FACEBOOK", page.id, page.access_token);
+  const linked = await linkChannel({
+    businessId,
+    type: "FACEBOOK",
+    externalId: page.id,
+    accessToken: page.access_token,
+  });
   if (!linked.ok) return { ok: false, reason: linked.reason };
 
   if (!(await subscribePage(page.id, page.access_token))) {

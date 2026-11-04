@@ -34,13 +34,13 @@ export async function deliverOutbound(
     return null;
   }
 
-  const result = await sendToMessenger(
-    channel.externalId,
-    channel.accessToken,
-    conversation.customerRef,
+  const result = await sendToMessenger({
+    accountId: channel.externalId,
+    accessToken: channel.accessToken,
+    recipientId: conversation.customerRef,
     text,
-    channel.type,
-  );
+    channelType: channel.type,
+  });
 
   await prisma.message.update({
     where: { id: messageId },

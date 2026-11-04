@@ -1,8 +1,6 @@
 import { prisma } from "../lib/db";
 import { isSealed, openToken, sealToken } from "../lib/security/tokenCipher";
 
-// Seals the channel access tokens stored before TOKEN_ENCRYPTION_KEY existed.
-// Run with the same key as production; without --fix it only counts.
 async function main() {
   const fix = process.argv.includes("--fix");
   if (!process.env.TOKEN_ENCRYPTION_KEY) {
@@ -22,7 +20,9 @@ async function main() {
     where: { accessToken: { not: null } },
     select: { id: true, type: true, businessId: true, accessToken: true },
   });
-  const plain = rows.filter((r) => r.accessToken && !isSealed(r.accessToken));
+  const plain = rows.flatMap(({ accessToken, ...row }) =>
+    accessToken && !isSealed(accessToken) ? [{ ...row, token: accessToken }] : [],
+  );
   console.log(`${rows.length} channel(s) hold a token, ${plain.length} still unencrypted.`);
   if (!fix || plain.length === 0) {
     if (plain.length) console.log("Re-run with --fix to encrypt them.");
@@ -31,7 +31,7 @@ async function main() {
 
   let sealed = 0;
   for (const row of plain) {
-    const token = row.accessToken!;
+    const { token } = row;
     const next = sealToken(token);
     if (!isSealed(next) || openToken(next) !== token) {
       console.error(`  ${row.type} ${row.id}: the key did not round-trip, left as it was`);

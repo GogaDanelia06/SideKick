@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { tokensMatch, verifySignature } from "./meta";
+import { verifySignature } from "./meta";
 import { SECRET, delivery, message, sign } from "./metaTestKit";
 
 describe("verifySignature()", () => {
@@ -45,18 +45,6 @@ describe("verifySignature()", () => {
     const reserialised = JSON.stringify(JSON.parse(body), null, 2);
     expect(reserialised).not.toBe(body);
     expect(verifySignature(reserialised, signature, SECRET)).toBe(false);
-  });
-});
-
-describe("tokensMatch()", () => {
-  it("accepts the exact token", () => {
-    expect(tokensMatch("verify-me-please", "verify-me-please")).toBe(true);
-  });
-
-  it("rejects a different or truncated token", () => {
-    expect(tokensMatch("verify-me-pleas", "verify-me-please")).toBe(false);
-    expect(tokensMatch("VERIFY-ME-PLEASE", "verify-me-please")).toBe(false);
-    expect(tokensMatch("", "verify-me-please")).toBe(false);
   });
 });
 

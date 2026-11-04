@@ -28,7 +28,12 @@ export async function linkInstagramFromPage(businessId: string, page: Page): Pro
     });
   }
 
-  const linked = await linkChannel(businessId, "INSTAGRAM", igId, page.access_token);
+  const linked = await linkChannel({
+    businessId,
+    type: "INSTAGRAM",
+    externalId: igId,
+    accessToken: page.access_token,
+  });
   if (!linked.ok) {
     log.warn("could not carry the Page's Instagram account across", {
       businessId,

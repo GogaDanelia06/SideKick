@@ -23,18 +23,26 @@ function route(channelType: ChannelType, accountId: string, accessToken: string)
   return { host, path: addressedByAccountId ? accountId : "me" };
 }
 
-export async function sendToMessenger(
-  pageId: string,
-  accessToken: string,
-  recipientId: string,
-  text: string,
-  channelType: ChannelType = "FACEBOOK",
-): Promise<DeliveryResult> {
+export type Outbound = {
+  accountId: string;
+  accessToken: string;
+  recipientId: string;
+  text: string;
+  channelType?: ChannelType;
+};
+
+export async function sendToMessenger({
+  accountId,
+  accessToken,
+  recipientId,
+  text,
+  channelType = "FACEBOOK",
+}: Outbound): Promise<DeliveryResult> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const { host, path } = route(channelType, pageId, accessToken);
+    const { host, path } = route(channelType, accountId, accessToken);
     const res = await fetch(
       `${host}/${GRAPH_VERSION}/${path}/messages` +
         `?access_token=${encodeURIComponent(accessToken)}`,

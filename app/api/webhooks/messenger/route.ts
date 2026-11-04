@@ -1,6 +1,7 @@
 import { after } from "next/server";
 import { log } from "@/lib/logger";
-import { PLATFORMS, parseMessagingEvents, tokensMatch, verifySignature } from "@/lib/channels/meta";
+import { PLATFORMS, parseMessagingEvents, verifySignature } from "@/lib/channels/meta";
+import { safeEqual } from "@/lib/security/safeEqual";
 import { recordInbound, type RecordedMessage } from "@/lib/channels/inbound";
 import { describe, describeRaw, traceDelivery } from "@/lib/channels/webhookDebug";
 import { followUp } from "@/lib/channels/followUp";
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
   const challenge = params.get("hub.challenge");
 
   if (mode !== "subscribe" || !token || !challenge) return text("bad request", 400);
-  if (!tokensMatch(token, expected)) {
+  if (!safeEqual(token, expected)) {
     log.warn("messenger webhook verify token did not match");
     return text("forbidden", 403);
   }

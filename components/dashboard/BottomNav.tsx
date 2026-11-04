@@ -8,15 +8,18 @@ import { DASH_NAV } from "@/lib/dashboard/nav";
 import { useLanguage } from "@/lib/i18n/useLanguage";
 import type { Text } from "@/lib/i18n/messages";
 
-const TABS: { href: string; label: Text }[] = [
-  { href: DASH.home, label: "dashboard.bottomNav.home" },
-  { href: DASH.conversations, label: "dashboard.bottomNav.chats" },
-  { href: DASH.orders, label: "dashboard.bottomNav.orders" },
-  { href: DASH.products, label: "dashboard.bottomNav.products" },
-  { href: DASH.analytics, label: "dashboard.bottomNav.stats" },
-];
+const LABELS: Record<string, Text> = {
+  [DASH.home]: "dashboard.bottomNav.home",
+  [DASH.conversations]: "dashboard.bottomNav.chats",
+  [DASH.orders]: "dashboard.bottomNav.orders",
+  [DASH.products]: "dashboard.bottomNav.products",
+  [DASH.analytics]: "dashboard.bottomNav.stats",
+};
 
-const iconFor = (href: string) => DASH_NAV.find((n) => n.href === href)!.icon;
+const TABS = Object.entries(LABELS).flatMap(([href, label]) => {
+  const item = DASH_NAV.find((n) => n.href === href);
+  return item ? [{ href, label, Icon: item.icon }] : [];
+});
 
 export function BottomNav({ className, locked = false }: { className?: string; locked?: boolean }) {
   const pathname = usePathname();
@@ -29,8 +32,7 @@ export function BottomNav({ className, locked = false }: { className?: string; l
         className,
       )}
     >
-      {TABS.map((tab) => {
-        const Icon = iconFor(tab.href);
+      {TABS.map(({ Icon, ...tab }) => {
         const active = pathname === tab.href;
         if (locked) {
           return (

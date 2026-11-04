@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { readStored, writeStored } from "@/lib/browserStorage";
 
 export type TesterTurn = { from: "you" | "ai"; text: string; handoff?: boolean };
 
@@ -20,7 +21,7 @@ function isTurn(value: unknown): value is TesterTurn {
 
 function load(): Chat | null {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
+    const saved = JSON.parse(readStored(STORAGE_KEY) ?? "null");
     const valid = typeof saved?.loginId === "string" && typeof saved.thread === "string" && Array.isArray(saved.turns);
     return valid ? { loginId: saved.loginId, thread: saved.thread, turns: saved.turns.filter(isTurn) } : null;
   } catch {
@@ -36,12 +37,7 @@ function current(): State {
 function commit(next: State) {
   const saved = current().chat;
   state = next;
-  if (next.chat !== saved) {
-    try {
-      if (next.chat) localStorage.setItem(STORAGE_KEY, JSON.stringify(next.chat));
-      else localStorage.removeItem(STORAGE_KEY);
-    } catch {}
-  }
+  if (next.chat !== saved) writeStored(STORAGE_KEY, next.chat ? JSON.stringify(next.chat) : null);
   listeners.forEach((notify) => notify());
 }
 

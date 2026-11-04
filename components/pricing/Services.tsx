@@ -18,7 +18,7 @@ export function Services({
   title?: Text;
   sub?: Text;
 }) {
-  const useDb = Boolean(boxes && boxes.length > 0);
+  const dbBoxes = boxes?.length ? boxes : null;
 
   return (
     <section className="pb-6 pt-[60px]">
@@ -33,8 +33,8 @@ export function Services({
           />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {useDb
-            ? boxes!.map((b, i) => (
+          {dbBoxes
+            ? dbBoxes.map((b, i) => (
                 <ServiceCard key={i} title={b.title} body={b.body} iconName={b.icon} />
               ))
             : SERVICES.map((s, i) => (

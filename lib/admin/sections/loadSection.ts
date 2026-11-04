@@ -11,15 +11,15 @@ export async function loadSection(section: AdminSection, route: string): Promise
     case "stats":
       return loadStats();
     case "text":
-      return loadText(section);
+      return section.textGroup ? loadText(section.textGroup) : undefined;
     case "boxes":
-      return loadBoxes(section);
+      return section.boxKind ? loadBoxes(section.boxKind) : undefined;
     case "plans":
       return loadPlans();
     case "faq":
       return loadFaq();
     case "legal":
-      return loadLegal(section);
+      return section.legalDoc ? loadLegal(section.legalDoc) : undefined;
     case "seo":
       return loadSeo(section, route);
   }

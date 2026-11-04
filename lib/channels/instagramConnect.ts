@@ -35,7 +35,13 @@ export async function connectInstagramFromCode(
   const account = await fetchAccount(long.token);
   if (!account) return { ok: false, reason: "no_account" };
 
-  const linked = await linkChannel(businessId, "INSTAGRAM", account.id, long.token, long.expiresAt);
+  const linked = await linkChannel({
+    businessId,
+    type: "INSTAGRAM",
+    externalId: account.id,
+    accessToken: long.token,
+    tokenExpiresAt: long.expiresAt,
+  });
   if (!linked.ok) return { ok: false, reason: linked.reason };
 
   const subscribed = await subscribeToMessages(long.token);

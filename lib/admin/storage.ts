@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { del, put } from "@vercel/blob";
+import { log } from "@/lib/logger";
 
 export type StoredMedia = { url: string };
 export type StorageResult = StoredMedia | { error: "not_configured" };
@@ -45,5 +46,7 @@ export async function removeStoredMedia(url: string): Promise<void> {
     } else if (process.env.BLOB_READ_WRITE_TOKEN && new URL(url).hostname.endsWith(".public.blob.vercel-storage.com")) {
       await del(url);
     }
-  } catch {}
+  } catch (err) {
+    log.warn("could not delete a replaced media file", { url, error: String(err) });
+  }
 }

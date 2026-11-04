@@ -19,12 +19,10 @@ export function useLiveMessages(
 
     async function pullChat() {
       if (!openId || document.hidden) return;
-      try {
-        const res = await fetch(`/api/dashboard/conversations/${openId}`);
-        if (!res.ok) return;
-        const chat = (await res.json()) as ConversationDetail;
-        if (!stopped) onChat(chat);
-      } catch {}
+      const res = await fetch(`/api/dashboard/conversations/${openId}`).catch(() => null);
+      if (!res?.ok) return;
+      const chat = (await res.json().catch(() => null)) as ConversationDetail | null;
+      if (chat && !stopped) onChat(chat);
     }
 
     const chat = setInterval(pullChat, CHAT_MS);

@@ -37,7 +37,7 @@ export async function readSession(token: string, salt: string): Promise<JWT | nu
 
 export const personOf = (session: JWT): Person => {
   const email = session.email ?? "";
-  return { uid: session.uid!, email, name: session.name?.trim() || email.split("@")[0] || "—" };
+  return { uid: session.uid ?? "", email, name: session.name?.trim() || email.split("@")[0] || "—" };
 };
 
 export const encodeLabel = (person: Person) => Buffer.from(JSON.stringify(person)).toString("base64url");

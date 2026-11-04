@@ -1,3 +1,5 @@
+const ID_PREFIXES = ["/embed/", "/shorts/"];
+
 export function normalizeYouTubeUrl(raw: string): string | null {
   const input = raw.trim();
   if (!input) return null;
@@ -14,9 +16,9 @@ export function normalizeYouTubeUrl(raw: string): string | null {
 
   if (host === "youtu.be") id = url.pathname.slice(1);
   else if (host === "youtube.com" || host === "m.youtube.com") {
+    const prefix = ID_PREFIXES.find((p) => url.pathname.startsWith(p));
     if (url.pathname === "/watch") id = url.searchParams.get("v");
-    else if (url.pathname.startsWith("/embed/")) id = url.pathname.slice(7);
-    else if (url.pathname.startsWith("/shorts/")) id = url.pathname.slice(8);
+    else if (prefix) id = url.pathname.slice(prefix.length);
   }
 
   id = id?.split("/")[0] ?? null;

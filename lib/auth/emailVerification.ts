@@ -1,4 +1,4 @@
-import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "@/lib/db";
 
 const TOKEN_TTL_HOURS = 24;
@@ -29,10 +29,6 @@ export async function verifyVerificationToken(token: string) {
     include: { user: { select: { id: true, email: true, emailVerified: true } } },
   });
   if (!record || record.usedAt || record.expiresAt < new Date()) return null;
-
-  const a = Buffer.from(record.tokenHash);
-  const b = Buffer.from(hash(token));
-  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
 
   return record;
 }

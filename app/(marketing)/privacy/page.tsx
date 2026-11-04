@@ -1,44 +1,10 @@
-import { LegalView } from "@/components/legal/LegalView";
-import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { HOME_CRUMB, type Crumb } from "@/lib/content/breadcrumbs";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbSchema, webPageSchema } from "@/lib/seo/jsonld";
-import { seoFor } from "@/lib/seo/metadata";
-import { getLegalSections, getLegalTitle } from "@/lib/site/content";
+import { LegalPage, legalMetadata } from "@/components/legal/LegalPage";
 import { PRIVACY } from "@/lib/content/legal";
-import { DEFAULT_LOCALE } from "@/lib/i18n/config";
-import { textIn } from "@/lib/i18n/messages";
 
-export const generateMetadata = seoFor({
-  title: PRIVACY.title.ka,
-  description: PRIVACY.description.ka,
-  path: "/privacy",
-});
+export const generateMetadata = legalMetadata(PRIVACY);
 
 export const revalidate = 3600;
 
-const crumbs: Crumb[] = [
-  HOME_CRUMB,
-  { label: "privacy.privacyPolicy", href: "/privacy" },
-];
-
-export default async function Page() {
-  const [sections, title] = await Promise.all([
-    getLegalSections("privacy"),
-    getLegalTitle("privacy"),
-  ]);
-  return (
-    <>
-      <JsonLd data={breadcrumbSchema(crumbs.map((c) => ({ name: textIn(DEFAULT_LOCALE, c.label), path: c.href })))} />
-      <JsonLd
-        data={webPageSchema({
-          name: `${PRIVACY.title.ka} | Sidekick`,
-          description: PRIVACY.description.ka,
-          path: "/privacy",
-        })}
-      />
-      <Breadcrumbs items={crumbs} />
-      <LegalView doc={PRIVACY} sections={sections} title={title ?? undefined} />
-    </>
-  );
+export default function Page() {
+  return <LegalPage doc={PRIVACY} crumb="privacy.privacyPolicy" />;
 }

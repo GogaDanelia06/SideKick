@@ -1,5 +1,6 @@
 import { applyFields, changedFields, type Fields } from "./fields";
 import type { SectionOwner, SectionKey } from "./request";
+import { readStored, storedKeys, writeStored } from "@/lib/browserStorage";
 
 const PREFIX = "sidekick.ai-draft:";
 
@@ -15,7 +16,7 @@ const isFields = (value: unknown): value is Fields =>
 
 export function readDraft(place: DraftPlace): Draft | null {
   try {
-    const draft = JSON.parse(localStorage.getItem(keyOf(place)) ?? "null");
+    const draft = JSON.parse(readStored(keyOf(place)) ?? "null");
     return typeof draft?.id === "number" && isFields(draft.fields) ? { id: draft.id, fields: draft.fields } : null;
   } catch {
     return null;
@@ -26,23 +27,16 @@ let lastId = 0;
 
 export function writeDraft(place: DraftPlace, fields: Fields): number {
   lastId = Math.max(Date.now(), lastId + 1);
-  try {
-    localStorage.setItem(keyOf(place), JSON.stringify({ id: lastId, fields }));
-  } catch {}
+  writeStored(keyOf(place), JSON.stringify({ id: lastId, fields }));
   return lastId;
 }
 
 export function dropDraft(place: DraftPlace, id?: number) {
-  try {
-    if (id === undefined || readDraft(place)?.id === id) localStorage.removeItem(keyOf(place));
-  } catch {}
+  if (id === undefined || readDraft(place)?.id === id) writeStored(keyOf(place), null);
 }
 
 export function clearAiDrafts() {
-  try {
-    const keys = Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i));
-    for (const key of keys) if (key?.startsWith(PREFIX)) localStorage.removeItem(key);
-  } catch {}
+  for (const key of storedKeys()) if (key.startsWith(PREFIX)) writeStored(key, null);
 }
 
 export function restoreDraft(form: HTMLFormElement, place: DraftPlace, saved: Fields): boolean {

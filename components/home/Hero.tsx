@@ -15,7 +15,8 @@ import { Stats } from "./Stats";
 import { MOCKS } from "./mocks/registry";
 
 function ShippedSlide({ index }: { index: number }) {
-  const slide = HERO_SLIDES[index]!;
+  const slide = HERO_SLIDES[index];
+  if (!slide) return null;
   const Mock = MOCKS[slide.mock];
 
   return <HeroSlide slide={slide} mock={<Mock />} />;
@@ -61,15 +62,22 @@ export function Hero({
               }}
               onTransitionEnd={carousel.settle}
             >
-              {track.map((slideIndex, slot) => (
-                <div
-                  key={slot}
-                  className="w-full shrink-0"
-                  {...(slot === carousel.position ? {} : { inert: true })}
-                >
-                  {useDb ? <DbHeroSlide slide={slides[slideIndex]!} /> : <ShippedSlide index={slideIndex} />}
-                </div>
-              ))}
+              {track.map((slideIndex, slot) => {
+                const dbSlide = useDb ? slides[slideIndex] : undefined;
+                return (
+                  <div
+                    key={slot}
+                    className="w-full shrink-0"
+                    {...(slot === carousel.position ? {} : { inert: true })}
+                  >
+                    {dbSlide ? (
+                      <DbHeroSlide slide={dbSlide} />
+                    ) : (
+                      <ShippedSlide index={slideIndex} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

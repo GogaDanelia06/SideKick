@@ -19,7 +19,13 @@ describe("which host each channel is answered on", () => {
   it("sends an Instagram reply to graph.instagram.com, not graph.facebook.com", async () => {
     const fetchMock = stubFetch({ message_id: "mid.ig" });
 
-    await sendToMessenger("IGID_1", "IGA-token", "IGSID_1", "გამარჯობა", "INSTAGRAM");
+    await sendToMessenger({
+      accountId: "IGID_1",
+      accessToken: "IGA-token",
+      recipientId: "IGSID_1",
+      text: "გამარჯობა",
+      channelType: "INSTAGRAM",
+    });
 
     const url = String(fetchMock.mock.calls[0][0]);
     expect(url).toContain("https://graph.instagram.com/");
@@ -29,7 +35,13 @@ describe("which host each channel is answered on", () => {
   it("sends an Instagram reply on a Page token to graph.facebook.com, addressed as me", async () => {
     const fetchMock = stubFetch({ message_id: "mid.ig.page" });
 
-    await sendToMessenger("IGID_1", "EAA-page-token", "IGSID_1", "გამარჯობა", "INSTAGRAM");
+    await sendToMessenger({
+      accountId: "IGID_1",
+      accessToken: "EAA-page-token",
+      recipientId: "IGSID_1",
+      text: "გამარჯობა",
+      channelType: "INSTAGRAM",
+    });
 
     const url = String(fetchMock.mock.calls[0][0]);
     expect(url).toContain("https://graph.facebook.com/");
@@ -40,7 +52,13 @@ describe("which host each channel is answered on", () => {
   it("still sends a Facebook reply to graph.facebook.com", async () => {
     const fetchMock = stubFetch({ message_id: "mid.fb" });
 
-    await sendToMessenger("PAGE_1", "EAA-token", "PSID_1", "გამარჯობა", "FACEBOOK");
+    await sendToMessenger({
+      accountId: "PAGE_1",
+      accessToken: "EAA-token",
+      recipientId: "PSID_1",
+      text: "გამარჯობა",
+      channelType: "FACEBOOK",
+    });
 
     expect(String(fetchMock.mock.calls[0][0])).toContain("https://graph.facebook.com/");
   });
@@ -48,7 +66,12 @@ describe("which host each channel is answered on", () => {
   it("defaults to Facebook when no channel is named", async () => {
     const fetchMock = stubFetch({});
 
-    await sendToMessenger("PAGE_1", "tok", "PSID_1", "hi");
+    await sendToMessenger({
+      accountId: "PAGE_1",
+      accessToken: "tok",
+      recipientId: "PSID_1",
+      text: "hi",
+    });
 
     expect(String(fetchMock.mock.calls[0][0])).toContain("https://graph.facebook.com/");
   });

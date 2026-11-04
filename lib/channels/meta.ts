@@ -39,12 +39,6 @@ export function verifySignature(
   return matched;
 }
 
-export function tokensMatch(given: string, expected: string): boolean {
-  const a = Buffer.from(given, "utf8");
-  const b = Buffer.from(expected, "utf8");
-  return a.length === b.length && timingSafeEqual(a, b);
-}
-
 export function parseMessagingEvents(payload: unknown): InboundMessage[] {
   const out: InboundMessage[] = [];
 

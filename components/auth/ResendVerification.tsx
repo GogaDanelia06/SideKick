@@ -12,13 +12,11 @@ export function ResendVerification({ email }: Props) {
 
   async function resend() {
     setState("sending");
-    try {
-      await fetch("/api/auth/resend", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-    } catch {}
+    await fetch("/api/auth/resend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    }).catch(() => null);
     setState("done");
   }
 
