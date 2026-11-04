@@ -10,6 +10,14 @@ async function main() {
     process.exit(1);
   }
 
+  const [{ role, canWrite }] = await prisma.$queryRaw<{ role: string; canWrite: boolean }[]>`
+    SELECT current_user AS role, has_table_privilege(current_user, '"Channel"', 'UPDATE') AS "canWrite"`;
+  console.log(`Connected as ${role}${canWrite ? "" : " (read-only on Channel)"}.`);
+  if (fix && !canWrite) {
+    console.error("This user may not change channels. Use the owner's connection string (usually neondb_owner).");
+    process.exit(1);
+  }
+
   const rows = await prisma.channel.findMany({
     where: { accessToken: { not: null } },
     select: { id: true, type: true, businessId: true, accessToken: true },
